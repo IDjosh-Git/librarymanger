@@ -1,0 +1,7 @@
+{
+  "name": "library-manager-multi-api",
+  "version": "4.0.0",
+  "private": true,
+  "scripts": {"test": "node --test tests/book-lookup.test.cjs"},
+  "engines": {"node": ">=20"}
+}

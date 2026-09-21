@@ -104,3 +104,32 @@ header{overflow:clip}header:before{right:0}
 .book-grid{grid-template-columns:minmax(0,1fr)}
 @media(max-width:650px){.batch-book{padding:12px}.batch-book-head{align-items:flex-start;gap:9px;flex-wrap:wrap}.batch-book-state{margin-left:auto}.batch-book-fields{grid-template-columns:minmax(0,1fr);gap:10px}.batch-review-toolbar{align-items:flex-start}.batch-list-count{width:100%;padding-left:30px}.batch-book-number{height:26px;width:26px}}
 @media(max-width:365px){.batch-book-state{flex-basis:auto}.batch-book-head{gap:7px}.batch-book-check{gap:5px}}
+
+/* 3.3 — Searchable, copy-specific circulation pickers. */
+.circulation-form{align-items:start;gap:12px 14px}
+.circulation-form .book-picker{padding:18px;background:var(--surface2);border:1px solid var(--line);border-radius:17px;display:flex;flex-direction:column;gap:9px;min-width:0}
+.circulation-form .book-picker label{margin:0;color:var(--ink);font-size:.8rem}
+.circulation-form .book-picker .search-wrap{width:100%}
+.circulation-form .book-picker .search-wrap input{background:var(--surface);padding-left:44px;min-width:0}
+.circulation-form .book-picker select{width:100%;min-height:49px;padding:9px 39px 9px 13px;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:12px;cursor:pointer;font-size:.82rem;text-overflow:ellipsis}
+.circulation-form .book-picker select:disabled{opacity:.72;cursor:not-allowed}
+.circulation-form .picker-count,.circulation-form .field-help{font-size:.74rem;line-height:1.55;color:var(--muted);margin:0;overflow-wrap:anywhere}
+.circulation-form .book-picker .picker-count{margin-top:1px}
+.circulation-form .field-help{margin-top:6px}
+.circulation-form input[readonly]{background:var(--surface2);color:var(--ink);cursor:default}
+.circulation-form #lendBookDisplay,.circulation-form #returnBookDisplay{font-size:.82rem}
+.circulation-form .circulation-submit{min-height:51px;display:inline-flex;align-items:center;justify-content:center}
+@media(max-width:650px){.circulation-form{grid-template-columns:minmax(0,1fr);gap:10px}.circulation-form>div{grid-column:1/-1}.circulation-form .book-picker{padding:14px}.circulation-form .book-picker select{font-size:.8rem}}
+
+/* Circulation actions stay visible and tappable in both themes. */
+.picker-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:3px}
+.picker-actions button{min-height:40px;display:inline-flex;align-items:center;justify-content:center}
+.history-return{display:inline-flex;align-items:center;gap:5px;white-space:nowrap}
+.history-return .app-icon{height:14px;width:14px}
+@media(max-width:650px){.picker-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.picker-actions button{min-width:0;white-space:normal;padding:6px 8px;font-size:.72rem}}
+
+.copy-detail{font-size:.76rem;color:var(--muted);line-height:1.5;white-space:normal;overflow-wrap:anywhere;margin:8px 1px 0;padding:10px 12px;background:var(--surface2);border-left:3px solid var(--accent2);border-radius:8px}
+
+/* Multi-provider book lookup: visible, non-writing preview */
+.metadata-preview{margin-top:10px;border:1px solid var(--line,#d2e4e6);border-radius:14px;background:var(--surface-2,#edf5f6);padding:12px 14px;font-size:.82rem;line-height:1.55;overflow-wrap:anywhere;color:var(--text,#1b3c42)}
+.lookupnote code{font-size:.9em;overflow-wrap:anywhere}
