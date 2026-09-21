@@ -60,3 +60,47 @@ header{overflow:clip}header:before{right:0}
 @media(max-width:365px){.head h1{font-size:1rem}.head p{display:none}.head-actions{gap:4px}.theme-switch,.header-icon-button{height:39px;min-height:39px;width:39px}.logo{height:38px;width:38px}.pager button span{display:none}}
 /* Keep the floating controls clear of the important right-aligned loan actions on narrow screens. */
 @media(max-width:650px){.scroll-controls{left:5px;right:auto;bottom:calc(95px + env(safe-area-inset-bottom))}.scroll-controls button{width:40px;height:40px;min-height:40px;border-radius:12px}.scroll-controls .app-icon{width:18px;height:18px}}
+
+/* Bulk duplicate review — responsive and theme aware. */
+.batch-actions{align-items:center}
+.batch-actions button{display:inline-flex;align-items:center;justify-content:center;gap:7px;line-height:1.2}
+.batch-actions button .app-icon{flex:0 0 16px}
+.batch-actions-secondary{padding-top:11px;margin-top:11px;border-top:1px solid var(--line)}
+.batch-count{display:inline-grid;place-items:center;min-width:22px;height:22px;padding:0 5px;border-radius:99px;background:var(--warn-bg);color:var(--orange);font-size:.72rem;font-weight:800}
+.batch-duplicate-row td:first-child{box-shadow:inset 3px 0 var(--orange)}
+.batch-duplicate-row td:last-child{color:var(--orange)}
+.batch-table th:first-child{min-width:58px}
+.batch-table th:first-child input{vertical-align:middle}
+.batch-actions button:focus-visible,.batch-table input[type=checkbox]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(max-width:650px){.batch-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.batch-actions button{font-size:.73rem;padding:8px 7px;min-height:45px;white-space:normal}.batch-actions-secondary #batchSave{grid-column:1/-1}.batch-count{min-width:19px;height:19px}}
+
+/* 3.2: Scanned books are a vertical, single-column review list on every screen. */
+.batch-review{margin-top:15px;min-width:0;max-width:100%;overflow:visible;border:0;background:transparent}
+.batch-review-toolbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:11px 12px;background:var(--soft);border:1px solid var(--line);border-radius:13px;margin-bottom:11px}
+.batch-all-label{display:inline-flex;align-items:center;gap:9px;cursor:pointer;font-size:.81rem;color:var(--ink);font-weight:800}
+.batch-all-label input,.batch-book-check input{appearance:auto;accent-color:var(--accent);width:21px;height:21px;min-width:21px;min-height:21px;padding:0;margin:0;cursor:pointer}
+.batch-list-count{font-size:.73rem;color:var(--muted);font-weight:700}
+.batch-book-list{display:flex;flex-direction:column;gap:12px;width:100%;min-width:0}
+.batch-book{display:block;min-width:0;max-width:100%;padding:15px;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 4px 13px rgba(0,0,0,.025)}
+.batch-book-duplicate{border-left:4px solid var(--orange)}
+.batch-book-head{display:flex;align-items:center;gap:12px;min-width:0;padding-bottom:13px;border-bottom:1px solid var(--line)}
+.batch-book-check{display:inline-flex;align-items:center;gap:8px;flex:none;cursor:pointer;color:var(--muted)}
+.batch-book-number{display:grid;place-items:center;background:var(--soft);color:var(--accent);border-radius:10px;width:30px;height:30px;font-size:.73rem;font-weight:850}
+.batch-book-source{display:flex;flex-direction:column;gap:3px;min-width:0;flex:1}
+.batch-book-source strong{font-size:.82rem;color:var(--ink);overflow-wrap:anywhere;line-height:1.3}
+.batch-review .batch-path{font-size:.69rem;color:var(--muted);max-width:none;overflow-wrap:anywhere;line-height:1.3}
+.batch-book-state{flex:none;font-size:.68rem;font-weight:800;padding:5px 9px;border-radius:99px;background:var(--soft);color:var(--accent);text-align:center}
+.batch-book-state.duplicate,.batch-book-state.incomplete{background:var(--warn-bg);color:var(--orange)}
+.batch-book-state.error{background:var(--danger-bg);color:var(--red)}
+.batch-book-state.saved{background:var(--success-bg);color:var(--green)}
+.batch-book-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px;margin-top:13px;min-width:0}
+.batch-book-field{display:flex;flex-direction:column;gap:5px;min-width:0;font-weight:700;font-size:.73rem;color:var(--muted)}
+.batch-book-field input{min-width:0;width:100%;font-size:.81rem;min-height:44px;padding:8px 11px;background:var(--surface2);color:var(--ink);border:1px solid var(--line);border-radius:10px}
+.batch-book-field input:disabled{opacity:.7}
+.batch-book-error,.batch-book-hint{margin:10px 0 0;font-size:.73rem;line-height:1.45;color:var(--red)}
+.batch-book-hint{color:var(--orange)}
+.batch-review input[type=checkbox]:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+/* The normal inventory card view also displays one book per row, not tiles side by side. */
+.book-grid{grid-template-columns:minmax(0,1fr)}
+@media(max-width:650px){.batch-book{padding:12px}.batch-book-head{align-items:flex-start;gap:9px;flex-wrap:wrap}.batch-book-state{margin-left:auto}.batch-book-fields{grid-template-columns:minmax(0,1fr);gap:10px}.batch-review-toolbar{align-items:flex-start}.batch-list-count{width:100%;padding-left:30px}.batch-book-number{height:26px;width:26px}}
+@media(max-width:365px){.batch-book-state{flex-basis:auto}.batch-book-head{gap:7px}.batch-book-check{gap:5px}}

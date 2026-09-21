@@ -144,9 +144,15 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
   <div class="batch-details"><div><label for="batchDefaultShelf">Shelf for loose photos (optional for folders)</label><input id="batchDefaultShelf" maxlength="120" placeholder="Example: Shelf A01"></div><button id="batchStart" class="alt" disabled>Scan selected images</button></div>
   <div class="batch-progress" aria-live="polite"><span id="batchStatus">Choose a folder, ZIP, or photos to begin.</span><progress id="batchProgress" max="100" value="0" aria-label="Batch scanning progress"></progress></div>
   <div id="batchSummary" class="batch-summary" aria-live="polite"></div>
-  <div class="batch-actions"><button id="batchSave" class="green" disabled>Save selected to Supabase</button><button id="batchSelectReady" class="light" disabled>Select ready books</button><button id="batchStop" class="light" disabled>Stop scanning</button><button id="batchClear" class="light" disabled>Clear batch</button></div>
-  <div class="batch-info">The folder immediately containing each image becomes its Shelf / Location. You can edit shelf, barcode and title below. A repeated ISBN may represent another physical copy, so duplicates are flagged for your review rather than automatically deleted. Unreadable images are not saved until corrected.</div>
-  <div id="batchResults" class="batch-table" aria-live="polite"><div class="empty">No barcode photos selected yet.</div></div>
+  <div class="batch-actions" role="group" aria-label="Bulk selection">
+    <button id="batchSelectAll" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg> Select all</button>
+    <button id="batchSelectDuplicates" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#alert"></use></svg> Select duplicates <span id="batchDuplicateCount" class="batch-count" aria-hidden="true">0</span></button>
+    <button id="batchSelectReady" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check"></use></svg> Select non-duplicates</button>
+    <button id="batchDeselectAll" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#x"></use></svg> Clear selection</button>
+  </div>
+  <div class="batch-actions batch-actions-secondary"><button id="batchSave" type="button" class="green" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#upload"></use></svg> Save selected to Supabase</button><button id="batchRemoveSelected" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#trash"></use></svg> Remove selected from review</button><button id="batchStop" type="button" class="light" disabled>Stop scanning</button><button id="batchClear" type="button" class="light" disabled>Clear batch</button></div>
+  <div class="batch-info">Scanned books appear one below another. Select all unsaved rows, or select just the possible duplicates (even if metadata is incomplete) to review or remove them in one action. A repeated ISBN can represent a separate physical copy: duplicates are <strong>never deleted from Supabase automatically</strong>. Removing a row here affects only this unsaved review list. Confirm before saving possible duplicates.</div>
+  <div id="batchResults" class="batch-review" aria-live="polite"><div class="empty">No barcode photos selected yet.</div></div>
  </div>
 </section></div>
 
@@ -261,7 +267,7 @@ async function reloadAll(){
  }catch(e){msg("Could not load shared library: "+(e?.message||e),"err")}
 }
 function renderAll(){renderBooks();renderLoans()}
-const PAGE_SIZE=25;let bookFilter="all",bookSearch="",bookPage=1,loanFilter="all",loanSearch="",loanPage=1,bookView="table",bookSort="newest",bookPageSize=25,loanPageSize=25;try{bookView=localStorage.getItem("library_manager_inventory_view_v1")==="grid"?"grid":"table";bookSort=["newest","oldest","title","shelf","due"].includes(localStorage.getItem("library_manager_sort_v1"))?localStorage.getItem("library_manager_sort_v1"):"newest"}catch{}
+const PAGE_SIZE=25;let bookFilter="all",bookSearch="",bookPage=1,loanFilter="all",loanSearch="",loanPage=1,bookView="grid",bookSort="newest",bookPageSize=25,loanPageSize=25;try{bookView=localStorage.getItem("library_manager_inventory_view_v2")==="table"?"table":"grid";bookSort=["newest","oldest","title","shelf","due"].includes(localStorage.getItem("library_manager_sort_v1"))?localStorage.getItem("library_manager_sort_v1"):"newest"}catch{}
 const uiIcon=(name)=>`<svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#${name}"></use></svg>`;
 function statusPill(b){const state=b.book_status||"Available",late=state==="Borrowed"&&b.due_date&&b.due_date<today();return `<span class="pill ${late?"overdue":state==="Borrowed"?"borrowed":"available"}">${late?"Overdue":esc(state)}</span>`}
 function renderPager(target,page,max,onData){const el=$(target);if(!el)return;el.innerHTML=max<=1?"":`<button type="button" data-page="1" ${page===1?"disabled":""} aria-label="First page" title="First page">${uiIcon("chevrons-left")}</button><button type="button" data-page="${page-1}" ${page===1?"disabled":""} aria-label="Previous page">${uiIcon("chevron-left")} <span>Previous</span></button><span class="table-meta" aria-live="polite">Page ${page} / ${max}</span><button type="button" data-page="${page+1}" ${page===max?"disabled":""} aria-label="Next page"><span>Next</span> ${uiIcon("chevron-right")}</button><button type="button" data-page="${max}" ${page===max?"disabled":""} aria-label="Last page" title="Last page">${uiIcon("chevrons-right")}</button>`;el.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>onData(Number(b.dataset.page)))}
@@ -408,37 +414,60 @@ function batchShelf(path,fallback=""){
 function batchAttr(v){return esc(v).replace(/"/g,"&quot;").replace(/'/g,"&#39;")}
 function batchImageName(name){return /\.(?:jpe?g|png|webp)$/i.test(String(name||""))}
 function batchOutput(message){$("batchStatus").textContent=message}
+function batchValid(x){return !!(!x.saved&&x.barcode&&x.shelf&&x.title&&!x.error)}
+function refreshBatchDuplicates(){
+ const existing=new Set(books.map(b=>clean(b.barcode)).filter(Boolean));
+ const counts=new Map(),savedBarcodes=new Set();
+ batchItems.forEach(x=>{if(x.barcode){const barcode=clean(x.barcode);if(x.saved)savedBarcodes.add(barcode);else counts.set(barcode,(counts.get(barcode)||0)+1)}});
+ batchItems.forEach(x=>{if(!x.saved)x.duplicate=!!(x.barcode&&(existing.has(clean(x.barcode))||savedBarcodes.has(clean(x.barcode))||(counts.get(clean(x.barcode))||0)>1))});
+}
 function batchSummary(){
+ refreshBatchDuplicates();
  const done=batchItems.filter(x=>x.saved).length;
- const ready=batchItems.filter(x=>!x.saved&&x.barcode&&x.shelf&&x.title).length;
+ const ready=batchItems.filter(batchValid).length;
  const failed=batchItems.filter(x=>!x.saved&&x.error).length;
  const selected=batchItems.filter(x=>!x.saved&&x.selected).length;
  const dup=batchItems.filter(x=>!x.saved&&x.duplicate).length;
- $("batchSummary").innerHTML=`<span>${batchItems.length} photos</span><span>${ready} ready</span><span>${failed} need attention</span><span>${dup} possible duplicates</span><span>${selected} selected</span><span>${done} saved</span>`;
- $("batchSave").disabled=batchActive||batchSaving||selected===0;
- $("batchStart").disabled=batchActive||batchSaving||!batchQueue.length;
- $("batchSelectReady").disabled=batchActive||batchSaving||!batchItems.some(x=>!x.saved&&x.barcode&&x.shelf&&x.title);
+ const selectableDuplicates=batchItems.filter(x=>!x.saved&&x.duplicate).length;
+ const locked=batchActive||batchSaving;
+ $("batchSummary").innerHTML=`<span>${batchItems.length} photos</span><span>${ready} complete</span><span>${failed} need attention</span><span>${dup} possible duplicates</span><span>${selected} selected</span><span>${done} saved</span>`;
+ $("batchSave").disabled=locked||selected===0;
+ $("batchStart").disabled=locked||!batchQueue.length;
+ $("batchSelectAll").disabled=locked||!batchItems.some(x=>!x.saved);
+ $("batchSelectDuplicates").disabled=locked||!selectableDuplicates;
+ $("batchDuplicateCount").textContent=String(selectableDuplicates);
+ $("batchSelectReady").disabled=locked||!batchItems.some(x=>batchValid(x)&&!x.duplicate);
+ const header=$("batchSelectAllCheckbox"),unsaved=batchItems.filter(x=>!x.saved);
+ if(header){const checked=unsaved.filter(x=>x.selected).length;header.checked=!!unsaved.length&&checked===unsaved.length;header.indeterminate=checked>0&&checked<unsaved.length}
+ $("batchDeselectAll").disabled=locked||!selected;
+ $("batchRemoveSelected").disabled=locked||!selected;
  $("batchStop").disabled=!batchActive;
- $("batchClear").disabled=batchActive||batchSaving||(!batchItems.length&&!batchQueue.length)
+ $("batchClear").disabled=locked||(!batchItems.length&&!batchQueue.length)
 }
 function renderBatch(){
  batchSummary();
  if(!batchItems.length){$("batchResults").innerHTML='<div class="empty">No barcode photos selected yet.</div>';return}
- let h='<table><thead><tr><th>Save</th><th>Photo / Folder</th><th>Shelf / Location</th><th>Barcode / ISBN</th><th>Title</th><th>Author</th><th>Result</th></tr></thead><tbody>';
+ const locked=batchActive||batchSaving;
+ const unsaved=batchItems.filter(x=>!x.saved);
+ let h=`<div class="batch-review-toolbar"><label class="batch-all-label"><input type="checkbox" id="batchSelectAllCheckbox" aria-label="Select all unsaved scanned books" ${unsaved.length&&unsaved.every(x=>x.selected)?'checked ':''}${locked||!unsaved.length?'disabled':''}><span>Select all scanned books</span></label><span class="batch-list-count">${batchItems.length} ${batchItems.length===1?'book':'books'} · One book per row</span></div><div class="batch-book-list" role="list">`;
  batchItems.forEach((x,i)=>{
   const validity=x.barcode&&x.shelf&&x.title;
-  const result=x.saved?'Saved ✓':x.error?'Check: '+esc(x.error):(x.duplicate?'Possible duplicate — verify physical copy':(validity?'Ready':'Fill missing details'));
-  h+=`<tr><td><input type="checkbox" aria-label="Save photo ${i+1}" data-batch-select="${i}" ${x.selected?'checked':''} ${x.saved?'disabled':''}></td>
-  <td><strong>${esc(x.fileName)}</strong><div class="batch-path">${esc(x.path)}</div></td>
-  <td><input aria-label="Shelf for ${batchAttr(x.fileName)}" data-batch-field="shelf" data-batch-index="${i}" maxlength="120" value="${batchAttr(x.shelf)}" ${x.saved?'disabled':''}></td>
-  <td><input aria-label="Barcode for ${batchAttr(x.fileName)}" data-batch-field="barcode" data-batch-index="${i}" maxlength="80" value="${batchAttr(x.barcode)}" ${x.saved?'disabled':''}></td>
-  <td><input aria-label="Title for ${batchAttr(x.fileName)}" data-batch-field="title" data-batch-index="${i}" maxlength="350" value="${batchAttr(x.title)}" ${x.saved?'disabled':''}></td>
-  <td><input aria-label="Author for ${batchAttr(x.fileName)}" data-batch-field="authors" data-batch-index="${i}" maxlength="350" value="${batchAttr(x.authors)}" ${x.saved?'disabled':''}></td>
-  <td><div class="${x.error?'batch-error':''}">${result}</div></td></tr>`
+  const result=x.saved?'Saved':x.error?'Needs attention':x.duplicate?'Possible duplicate':validity?'Ready to save':'Missing details';
+  const state=x.saved?'saved':x.error?'error':x.duplicate?'duplicate':validity?'ready':'incomplete';
+  const field=(name,label,max)=>`<label class="batch-book-field"><span>${label}</span><input aria-label="${label} for ${batchAttr(x.fileName)}" data-batch-field="${name}" data-batch-index="${i}" maxlength="${max}" value="${batchAttr(x[name])}" ${x.saved?'disabled':''}></label>`;
+  h+=`<article role="listitem" class="batch-book ${x.duplicate&&!x.saved?'batch-book-duplicate':''}" aria-label="Scanned book ${i+1}: ${batchAttr(x.fileName)}">
+   <div class="batch-book-head"><label class="batch-book-check"><input type="checkbox" aria-label="Select book ${i+1}${x.duplicate?' (possible duplicate)':''}" data-batch-select="${i}" ${x.selected?'checked':''} ${x.saved||locked?'disabled':''}><span class="batch-book-number">${i+1}</span></label><div class="batch-book-source"><strong>${esc(x.fileName)}</strong><span class="batch-path">${esc(x.path)}</span></div><span class="batch-book-state ${state}">${result}</span></div>
+   <div class="batch-book-fields">${field('shelf','Shelf / location',120)}${field('barcode','Barcode / ISBN',80)}${field('title','Book title',350)}${field('authors','Author',350)}</div>
+   ${x.error?`<p class="batch-book-error" role="status">${esc(x.error)}</p>`:''}${x.duplicate&&!x.saved?'<p class="batch-book-hint">Check whether this is a different physical copy before saving.</p>':''}
+  </article>`;
  });
- h+='</tbody></table>';
- $("batchResults").innerHTML=h
+ h+='</div>';
+ $("batchResults").innerHTML=h;
+ // Sync the newly-created select-all checkbox after each render, including partial selections.
+ const all=$("batchSelectAllCheckbox");
+ if(all)all.indeterminate=unsaved.length>0&&unsaved.some(x=>x.selected)&&!unsaved.every(x=>x.selected);
 }
+
 function setBatchQueue(files,source){
  if(batchActive||batchSaving)return batchOutput('Finish or stop the current batch first.');
  if(!session?.user)return batchOutput('Sign in to Supabase before uploading.');
@@ -538,13 +567,31 @@ async function runBatch(){
   if(!batchStopRequested)batchOutput(`Finished scanning ${batchItems.length} photos. Review, correct and save the selected rows.`)
  }finally{batchActive=false;batchQueue=[];renderBatch()}
 }
-function batchSelectReady(){batchItems.forEach(x=>{if(!x.saved)x.selected=!!(x.barcode&&x.shelf&&x.title&&!x.duplicate)});renderBatch()}
+function batchSelectAll(){batchItems.forEach(x=>{if(!x.saved)x.selected=true});batchOutput('Selected all unsaved rows. Fix incomplete rows and review duplicates before saving.');renderBatch()}
+function batchSelectDuplicates(){refreshBatchDuplicates();batchItems.forEach(x=>{if(!x.saved)x.selected=!!x.duplicate});batchOutput('Selected all possible duplicates, including incomplete rows. Remove them from the review list or correct and confirm before saving physical copies.');renderBatch()}
+function batchSelectReady(){refreshBatchDuplicates();batchItems.forEach(x=>{if(!x.saved)x.selected=!!(batchValid(x)&&!x.duplicate)});batchOutput('Selected complete non-duplicate rows.');renderBatch()}
+function batchDeselectAll(){batchItems.forEach(x=>{if(!x.saved)x.selected=false});batchOutput('Selection cleared; no book records changed.');renderBatch()}
+function batchRemoveSelected(){
+ if(batchActive||batchSaving)return;
+ const selected=batchItems.filter(x=>x.selected&&!x.saved);
+ if(!selected.length)return;
+ if(!confirm(`Remove ${selected.length} selected photo${selected.length===1?'':'s'} from this review list? This does NOT delete books from Supabase.`))return;
+ const removed=new Set(selected);
+ batchItems=batchItems.filter(x=>!removed.has(x));
+ batchOutput(`Removed ${selected.length} photo${selected.length===1?'':'s'} from this review list. No Supabase records were deleted.`);
+ renderBatch();
+}
 async function saveBatch(){
  if(batchActive||batchSaving||!session?.user)return;
  const selected=batchItems.filter(x=>x.selected&&!x.saved);
  if(!selected.length)return batchOutput('Select at least one ready record to save.');
- const invalid=selected.filter(x=>!x.barcode||!x.shelf||!x.title);
- if(invalid.length)return batchOutput('Fill barcode, shelf and title for every selected record.');
+ const invalid=selected.filter(x=>!batchValid(x));
+ if(invalid.length)return batchOutput(`Fix barcode, shelf, title and scan errors for ${invalid.length} selected row${invalid.length===1?'':'s'}, or clear those selections before saving.`);
+ refreshBatchDuplicates();
+ const duplicates=selected.filter(x=>x.duplicate);
+ if(duplicates.length&&!confirm(`You selected ${duplicates.length} possible duplicate${duplicates.length===1?'':'s'}. A repeated ISBN may be another physical copy, but saving creates NEW inventory records. Only continue if you checked that each selected duplicate is a separate book. Save ${selected.length} selected records?`)){
+  return batchOutput('Save cancelled. Review possible duplicates or remove them from the unsaved batch.');
+ }
  const uploader=session.user.id;
  batchSaving=true;renderBatch();batchOutput(`Saving ${selected.length} books to the shared Supabase inventory…`);
  let count=0,fail=0,mirror=[];
@@ -589,7 +636,12 @@ $("batchStop").onclick=()=>{batchStopRequested=true;batchOutput('Stopping after 
 $("batchClear").onclick=clearBatch;
 $("batchSave").onclick=saveBatch;
 $("batchSelectReady").onclick=batchSelectReady;
+$("batchSelectAll").onclick=batchSelectAll;
+$("batchSelectDuplicates").onclick=batchSelectDuplicates;
+$("batchDeselectAll").onclick=batchDeselectAll;
+$("batchRemoveSelected").onclick=batchRemoveSelected;
 $("batchResults").addEventListener('change',async e=>{
+ if(e.target.id==='batchSelectAllCheckbox'){e.target.checked?batchSelectAll():batchDeselectAll();return}
  const ch=e.target.closest('[data-batch-select]');
  if(ch){const x=batchItems[Number(ch.dataset.batchSelect)];if(x&&!x.saved)x.selected=!!ch.checked;batchSummary();return}
  const field=e.target.closest('[data-batch-field]');if(!field||batchActive||batchSaving)return;
@@ -609,7 +661,7 @@ $("batchResults").addEventListener('change',async e=>{
 function applyTheme(mode){const dark=mode==="dark";document.documentElement.dataset.theme=dark?"dark":"light";$("themeLabel").textContent=dark?"Switch to light mode":"Switch to dark mode";$("themeToggle").setAttribute("aria-label",dark?"Switch to light mode":"Switch to dark mode");$("themeToggle").title=dark?"Switch to light mode":"Switch to dark mode";document.querySelector('meta[name="theme-color"]').content=dark?"#091a21":"#083940";try{localStorage.setItem("library_manager_theme_v2",dark?"dark":"light")}catch{}}
 applyTheme(document.documentElement.dataset.theme);$("themeToggle").onclick=()=>applyTheme(document.documentElement.dataset.theme==="dark"?"light":"dark");
 $("bookSearch").addEventListener("input",e=>{bookSearch=e.target.value;bookPage=1;renderBooks()});
-function setBookView(view){bookView=view==="grid"?"grid":"table";$("viewTable").setAttribute("aria-pressed",String(bookView==="table"));$("viewGrid").setAttribute("aria-pressed",String(bookView==="grid"));try{localStorage.setItem("library_manager_inventory_view_v1",bookView)}catch{};if(session?.user)renderBooks()}
+function setBookView(view){bookView=view==="grid"?"grid":"table";$("viewTable").setAttribute("aria-pressed",String(bookView==="table"));$("viewGrid").setAttribute("aria-pressed",String(bookView==="grid"));try{localStorage.setItem("library_manager_inventory_view_v2",bookView)}catch{};if(session?.user)renderBooks()}
 $("viewTable").onclick=()=>setBookView("table");$("viewGrid").onclick=()=>setBookView("grid");$("bookSort").value=bookSort;$("bookSort").onchange=e=>{bookSort=e.target.value;bookPage=1;try{localStorage.setItem("library_manager_sort_v1",bookSort)}catch{};renderBooks()};$("bookPageSize").onchange=e=>{bookPageSize=Number(e.target.value)||25;bookPage=1;renderBooks()};$("loanPageSize").onchange=e=>{loanPageSize=Number(e.target.value)||25;loanPage=1;renderLoans()};setBookView(bookView);
 $("loanSearch").addEventListener("input",e=>{loanSearch=e.target.value;loanPage=1;renderLoans()});
 $("clearFilters").onclick=()=>{$("bookSearch").value="";bookSearch="";bookFilter="all";bookPage=1;setPressed("book","all");renderBooks()};$("clearLoanFilters").onclick=()=>{$("loanSearch").value="";loanSearch="";loanFilter="all";loanPage=1;setPressed("loan","all");renderLoans()};
