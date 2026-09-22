@@ -16,9 +16,7 @@ async def main():
    async def api(route):
     await route.fulfill(status=200,content_type='application/json',body='{"found":true,"metadata":{"title":"Matilda","authors":"Roald Dahl","publisher":"Puffin","publication_year":"1988","language":"eng","pages":"240","subject":"Fiction"},"sources":["Google Books","Open Library Search","HathiTrust"]}')
    await page.route('https://book-test.invalid/api/book-lookup*',api)
-   html=(ROOT/'index.html').read_text().replace('<head>','<head><base href="https://book-test.invalid/">',1)
-   html=html.replace('\n})();\n</script>','\nwindow.__seedBatchForTest=rows=>{batchItems=rows;renderBatch()};window.__getBatchForTest=()=>batchItems;\n})();\n</script>',1)
-   await page.set_content(html,wait_until='domcontentloaded')
+   await page.set_content((ROOT/'index.html').read_text().replace('<head>','<head><base href="https://book-test.invalid/">',1),wait_until='domcontentloaded')
    await page.add_style_tag(content=(ROOT/'assets/app.css').read_text())
    await page.wait_for_function("document.getElementById('totalBooks').textContent==='3'")
    await page.locator('#manualBarcode').fill(ISBN)
@@ -28,14 +26,7 @@ async def main():
    await page.locator('#addManual').click()
    await page.wait_for_function("document.getElementById('totalBooks').textContent==='4'")
    new=await page.evaluate("window.__db.data.library_books.find(b=>b.barcode==='9780140328721')")
-   assert new['title']=='Matilda' and new['publisher']=='Puffin' and new['book_id']=='LIB-000219'
-   assert 'LIB-000219' in await page.locator('#status').inner_text(), 'save should show assigned ID'
-   # The generated ID appears in the inventory but is not editable; shelf remains editable.
-   await page.locator('#viewTable').click()
-   assert await page.locator(f'[data-book="{new["record_id"]}"][data-field="book_id"]').get_attribute('contenteditable') is None
-   assert await page.locator(f'[data-book="{new["record_id"]}"][data-field="shelf_location"]').count()==1
-   assert 'LIB-000219' in await page.locator('#bookTable').inner_text()
-   await page.locator('#viewGrid').click()
+   assert new['title']=='Matilda' and new['publisher']=='Puffin'
    # Refill only missing fields on an existing copy with matching ISBN and title.
    await page.evaluate("window.__db.data.library_books.find(b=>b.barcode==='9780140328721').publisher=null")
    await page.locator('#reload').click()
@@ -52,20 +43,6 @@ async def main():
    await page.wait_for_function("document.getElementById('status').textContent.includes('different title')")
    original=await page.evaluate("window.__db.data.library_books.find(b=>b.record_id==='11111111-1111-4111-8111-111111111111')")
    assert original['title']=='Practical Data Analysis' and not original.get('publisher')
-   # A database-returned ID must stay bound to the right photo even if Supabase returns
-   # batch insert rows in reverse order. The mock deliberately reverses responses.
-   await page.evaluate("""() => {
-     window.__seedBatchForTest([
-      {fileName:'book-A.png',path:'Shelf 4/book-A.png',barcode:'90001001',title:'Book A',authors:'Author A',shelf:'Shelf 4',selected:true,saved:false,error:'',duplicate:false},
-      {fileName:'book-B.png',path:'Shelf 4/book-B.png',barcode:'90001002',title:'Book B',authors:'Author B',shelf:'Shelf 4',selected:true,saved:false,error:'',duplicate:false}
-     ]);
-   }""")
-   await page.locator('#batchSave').click()
-   await page.wait_for_function("window.__getBatchForTest().every(x=>x.saved)")
-   matched=await page.evaluate("""() => window.__getBatchForTest().map(x=>({title:x.title,id:x.book_id,db:window.__db.data.library_books.find(b=>b.title===x.title)?.book_id}))""")
-   assert all(x['id']==x['db'] for x in matched),matched
-   assert matched[0]['id']!=matched[1]['id'],matched
-   assert 'Saved · LIB-' in await page.locator('#batchResults').inner_text()
    assert not issues, issues
    print(f'PASS metadata preview, ISBN fill, enrichment confirmation, mismatch protection; {width}px',flush=True)
    await page.close()

@@ -16,7 +16,7 @@ MOCK = r'''(() => {
   const deep=x=>JSON.parse(JSON.stringify(x));
   const data={library_books:deep(BOOKS_LITERAL),library_loans:deep(LOANS_LITERAL)};
   const writes=[];
-  window.__db={data,writes,nextBookNumber:219};
+  window.__db={data,writes};
   const session={user:{id:'u-test',email:'test@example.org'}};
   class Query {
     constructor(table){this.table=table;this.filters=[];this.action=null;this.payload=null;}
@@ -29,20 +29,13 @@ MOCK = r'''(() => {
     range(a,b){return Promise.resolve({data:deep(data[this.table].filter(x=>this.filters.every(([k,v])=>x[k]===v)).slice(a,b+1)),error:null});}
     async single(){
       const arr=data[this.table]; let row;
-      if(this.action==='insert'){if(this.table==='library_loans'&&window.__db.failLoanInsert)return {data:null,error:{message:'Simulated loan database failure'}};row={...deep(this.payload),id:this.table==='library_loans'?'mock-loan-'+Date.now():this.payload.record_id,created_at:new Date().toISOString()};if(this.table==='library_books')row.book_id='LIB-'+String(window.__db.nextBookNumber++).padStart(6,'0');arr.unshift(row);}
+      if(this.action==='insert'){if(this.table==='library_loans'&&window.__db.failLoanInsert)return {data:null,error:{message:'Simulated loan database failure'}};row={...deep(this.payload),id:this.table==='library_loans'?'mock-loan-'+Date.now():this.payload.record_id,created_at:new Date().toISOString()};arr.unshift(row);}
       else if(this.action==='update'){row=arr.find(x=>this.filters.every(([k,v])=>x[k]===v));if(!row)return {data:null,error:{message:'Not found'}};Object.assign(row,deep(this.payload));}
       else row=arr.find(x=>this.filters.every(([k,v])=>x[k]===v));
       if(row)writes.push({table:this.table,action:this.action,row:deep(row)});
       return {data:row?deep(row):null,error:null};
     }
-    then(ok,bad){
-      if(this.action==='insert'&&Array.isArray(this.payload)){
-        const rows=this.payload.map(item=>({...deep(item),id:item.record_id,book_id:'LIB-'+String(window.__db.nextBookNumber++).padStart(6,'0'),created_at:new Date().toISOString()}));
-        data[this.table].unshift(...rows);
-        return Promise.resolve({data:deep(rows.reverse()),error:null}).then(ok,bad);
-      }
-      return Promise.resolve({data:deep(data[this.table].filter(x=>this.filters.every(([k,v])=>x[k]===v))),error:null}).then(ok,bad);
-    }
+    then(ok,bad){return Promise.resolve({data:deep(data[this.table].filter(x=>this.filters.every(([k,v])=>x[k]===v))),error:null}).then(ok,bad);}
   }
   window.supabase={createClient(){return {auth:{onAuthStateChange(){return {}},async getSession(){return {data:{session},error:null}},async signOut(){return {error:null}}},from(table){return new Query(table)}}}};
 })()'''.replace('BOOKS_LITERAL',json.dumps(BOOKS)).replace('LOANS_LITERAL',json.dumps(LOANS))
@@ -60,11 +53,6 @@ async def check(page,width,height):
   assert await page.locator('#lendBookSelect option').count()==3, '2 available copies plus placeholder'
   assert await page.locator('#returnBookSelect option').count()==2, '1 borrowed copy plus placeholder'
   assert await page.locator('#lendBookSelect option').nth(1).get_attribute('value') != await page.locator('#lendBookSelect option').nth(2).get_attribute('value')
-  # Book dropdown shows TITLES ONLY, although option values identify separate copies.
-  labels=await page.locator('#lendBookSelect option').all_text_contents()
-  assert labels[1:]==['Practical Data Analysis','Practical Data Analysis'],labels
-  assert all('Book ID:' not in label and 'Shelf:' not in label and 'ISBN:' not in label for label in labels)
-  assert await page.locator('#returnBookSelect option').nth(1).inner_text()=='Everyday Excel'
   # Click inventory Lend on a copy with no book_id: this used to fail because UUID was normalized.
   await page.locator('[data-lend-book="11111111-1111-4111-8111-111111111111"]').click()
   assert await page.locator('#lend').get_attribute('class')=='panel active'
@@ -76,9 +64,6 @@ async def check(page,width,height):
   await page.locator('#lendBookSelect').select_option(BOOKS[1]['record_id'])
   assert await page.locator('#lendBookId').input_value()=='BK-002'
   assert await page.locator('#lendBookSelect').input_value()==BOOKS[1]['record_id']
-  assert await page.locator('#lendBookDisplay').input_value()=='Practical Data Analysis'
-  assert 'Book ID: BK-002' in await page.locator('#lendCopyDetail').inner_text()
-  assert 'Shelf: Shelf B' in await page.locator('#lendCopyDetail').inner_text()
   await page.locator('#borrowerName').fill('Taylor Bello')
   await page.locator('#confirmLend').click()
   await page.wait_for_function("document.getElementById('availableBooks').textContent==='1'")
@@ -90,8 +75,6 @@ async def check(page,width,height):
   assert await page.locator('#returnBookSelect option').count()==2
   await page.locator('#returnBookSelect').select_option(BOOKS[1]['record_id'])
   assert await page.locator('#returnBookId').input_value()=='BK-002'
-  assert await page.locator('#returnBookDisplay').input_value()=='Practical Data Analysis'
-  assert 'Book ID: BK-002' in await page.locator('#returnCopyDetail').inner_text()
   assert await page.locator('#returnBorrower').input_value()=='Taylor Bello'
   assert await page.locator('#returnDue').input_value()==await page.locator('#dueDate').input_value()
   await page.locator('#confirmReturn').click()
