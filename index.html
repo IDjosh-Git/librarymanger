@@ -167,9 +167,9 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
   <p class="picker-count" id="lendBookCount" role="status" aria-live="polite">Available books will appear here after sign-in.</p>
   <div class="picker-actions"><button type="button" id="clearLendBook" class="light smallbtn">Clear chosen book</button><button type="button" id="refreshLendBooks" class="light smallbtn">Refresh available copies</button></div>
  </div>
- <div class="full"><label for="lendBookDisplay">Selected book</label><input id="lendBookDisplay" readonly placeholder="Choose or scan a book above"><p id="lendCopyDetail" class="copy-detail" role="status" aria-live="polite">Select a copy to view its full details here.</p></div>
+ <div class="full"><label for="lendBookDisplay">Selected book</label><input id="lendBookDisplay" readonly placeholder="Choose or scan a book above"><p id="lendCopyDetail" class="copy-detail" role="status" aria-live="polite">Select a copy to view its Book ID and shelf below.</p></div>
  <div><label for="borrowerName">Borrower name</label><input id="borrowerName" placeholder="Borrower's full name" autocomplete="name"></div>
- <div><label for="lendBookId">Book ID</label><input id="lendBookId" readonly placeholder="Filled automatically after selection" aria-describedby="lendIdHelp"><p class="field-help" id="lendIdHelp">Shows the inventory Book ID; if none is assigned, shows the unique internal record reference.</p></div>
+ <div><label for="lendBookId">Book ID</label><input id="lendBookId" readonly placeholder="Filled automatically after selection" aria-describedby="lendIdHelp"><p class="field-help" id="lendIdHelp">Your selected book’s permanent Book ID appears automatically.</p></div>
  <div><label for="dateBorrowed">Date borrowed</label><input id="dateBorrowed" type="date"></div><div><label for="dueDate">Due date</label><input id="dueDate" type="date"></div>
  <div class="full"><button id="confirmLend" class="alt circulation-submit" type="button" style="width:100%">Confirm lending</button></div>
 </div></div>
@@ -185,8 +185,8 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
   <p class="picker-count" id="returnBookCount" role="status" aria-live="polite">Borrowed books will appear here after sign-in.</p>
   <div class="picker-actions"><button type="button" id="clearReturnBook" class="light smallbtn">Clear chosen book</button><button type="button" id="refreshReturnBooks" class="light smallbtn">Refresh borrowed copies</button></div>
  </div>
- <div class="full"><label for="returnBookDisplay">Selected book</label><input id="returnBookDisplay" readonly placeholder="Choose or scan a borrowed book above"><p id="returnCopyDetail" class="copy-detail" role="status" aria-live="polite">Select a borrowed copy to view its full details here.</p></div>
- <div><label for="returnBookId">Book ID</label><input id="returnBookId" readonly placeholder="Filled automatically after selection" aria-describedby="returnIdHelp"><p class="field-help" id="returnIdHelp">Shows the Book ID or the exact copy’s internal reference if no Book ID is assigned.</p></div>
+ <div class="full"><label for="returnBookDisplay">Selected book</label><input id="returnBookDisplay" readonly placeholder="Choose or scan a borrowed book above"><p id="returnCopyDetail" class="copy-detail" role="status" aria-live="polite">Select a borrowed copy to view its Book ID and borrower below.</p></div>
+ <div><label for="returnBookId">Book ID</label><input id="returnBookId" readonly placeholder="Filled automatically after selection" aria-describedby="returnIdHelp"><p class="field-help" id="returnIdHelp">Your selected book’s permanent Book ID appears automatically.</p></div>
  <div><label for="returnBorrower">Borrower</label><input id="returnBorrower" readonly></div>
  <div><label for="returnDue">Due date</label><input id="returnDue" readonly></div>
  <div><label for="returnDate">Return date</label><input id="returnDate" type="date"></div>
@@ -221,7 +221,7 @@ function sheetLinked(){return !!session?.user&&!!parseSheetId(sheetUrl())&&!!goo
 function updateSheetUI(){let linked=sheetLinked(),s=sheetSettings();$("sheetBadge").textContent=linked?"Linked • Sync enabled":"Not linked";$("sheetBadge").className=linked?"badge ok":"badge";$("sheetState").textContent=linked?"Your own Google Sheet is linked. Supabase is the shared main database.":"Optional: enter your OWN Google Sheet, deployed Apps Script /exec URL and matching token. Scanning does not require Google Sheets.";$("sheetUrl").value=s.sheet||"";$("connectorUrl").value=s.url||"";$("connectorToken").value=s.token||""}
 function authUI(){let signedIn=!!session?.user;$("authBadge").textContent=signedIn?"Signed in":"Own account required";$("authBadge").className=signedIn?"badge ok":"badge";$("loggedOut").hidden=signedIn;$("loggedIn").hidden=!signedIn;$("sheetBox").hidden=!signedIn;$("libraryArea").hidden=!signedIn;$("who").textContent=signedIn?session.user.email||"Signed in":"";updateSheetUI()}
 function setAuthMode(mode){authMode=mode;let creating=mode==="signup";$("signupFields").hidden=!creating;$("confirmPassword").required=creating;$("password").autocomplete=creating?"new-password":"current-password";$("password").minLength=creating?8:1;$("authSubmit").textContent=creating?"Create My Account":"Sign In";$("showSignIn").classList.toggle("active",!creating);$("showSignUp").classList.toggle("active",creating);$("showSignIn").setAttribute("aria-pressed",String(!creating));$("showSignUp").setAttribute("aria-pressed",String(creating));$("authIntro").textContent=creating?"Create your own login to scan into the shared library.":"Sign in with your own email and password."}
-function resetAccountState(){libraryOwnerId=null;books=[];loans=[];selectedLend=null;selectedReturn=null;$("lendCopyDetail").textContent="Select a copy to view its full details here.";$("returnCopyDetail").textContent="Select a borrowed copy to view its full details here.";$("lendBookSearch").value="";$("returnBookSearch").value="";$("lendBookDisplay").value="";$("lendBookId").value="";$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";batchStopRequested=true;batchQueue=[];batchItems=[];batchMetadataCache.clear();$("batchProgress").value=0;bookSearch="";loanSearch="";bookFilter="all";loanFilter="all";bookPage=1;loanPage=1;$("bookSearch").value="";$("loanSearch").value="";setPressed("book","all");setPressed("loan","all");renderBatch();renderAll()}
+function resetAccountState(){libraryOwnerId=null;books=[];loans=[];selectedLend=null;selectedReturn=null;$("lendCopyDetail").textContent="Select a copy to view its Book ID and shelf below.";$("returnCopyDetail").textContent="Select a borrowed copy to view its Book ID and borrower below.";$("lendBookSearch").value="";$("returnBookSearch").value="";$("lendBookDisplay").value="";$("lendBookId").value="";$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";batchStopRequested=true;batchQueue=[];batchItems=[];batchMetadataCache.clear();$("batchProgress").value=0;bookSearch="";loanSearch="";bookFilter="all";loanFilter="all";bookPage=1;loanPage=1;$("bookSearch").value="";$("loanSearch").value="";setPressed("book","all");setPressed("loan","all");renderBatch();renderAll()}
 function authRedirectOptions(){if(!/^https?:$/.test(location.protocol))return {};return {emailRedirectTo:location.origin+location.pathname}}
 function authError(e){let text=e?.message||"Authentication failed.";if(/rate limit|email rate/i.test(text))text+=" Try later; if emails are limited, the project owner must configure SMTP in Supabase.";return text}
 function tab(name){requestAnimationFrame(updatePageControls);document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===name));document.querySelectorAll("[data-tab]").forEach(x=>{let a=x.dataset.tab===name;x.classList.toggle("active",a);x.setAttribute("aria-pressed",String(a))});document.querySelectorAll("[data-gotab]").forEach(x=>{let a=x.dataset.gotab===name;x.classList.toggle("active",a);x.setAttribute("aria-current",a?"page":"false")})}document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>tab(b.dataset.tab));document.querySelectorAll("[data-gotab]").forEach(b=>b.onclick=()=>tab(b.dataset.gotab));
@@ -309,7 +309,7 @@ function renderBooks(){
  const q=bookSearch.trim().toLocaleLowerCase();let visible=books.filter(b=>(bookFilter==="all"|| (bookFilter==="available"?(b.book_status||"Available")==="Available":bookFilter==="borrowed"?b.book_status==="Borrowed":b.book_status==="Borrowed"&&!!b.due_date&&b.due_date<today()))&&(!q||[b.book_id,b.barcode,b.title,b.authors,b.publisher,b.shelf_location,b.borrower_name].some(v=>String(v||"").toLocaleLowerCase().includes(q))));
  visible.sort((a,b)=>{const name=(v)=>String(v||"");if(bookSort==="title")return name(a.title).localeCompare(name(b.title),undefined,{numeric:true,sensitivity:"base"})||name(a.book_id).localeCompare(name(b.book_id));if(bookSort==="shelf")return name(a.shelf_location).localeCompare(name(b.shelf_location),undefined,{numeric:true,sensitivity:"base"})||name(a.title).localeCompare(name(b.title));if(bookSort==="due")return (a.due_date||"9999").localeCompare(b.due_date||"9999");const diff=new Date(b.created_at||b.updated_at||0)-new Date(a.created_at||a.updated_at||0);return bookSort==="oldest"?-diff:diff});
  const pages=Math.max(1,Math.ceil(visible.length/bookPageSize));bookPage=Math.max(1,Math.min(bookPage,pages));const start=(bookPage-1)*bookPageSize;
- $("bookTableMeta").textContent=`${visible.length} of ${books.length} books · ${$("bookSort").selectedOptions[0].textContent.toLowerCase()} · Edit IDs and shelves in table view`;
+ $("bookTableMeta").textContent=`${visible.length} of ${books.length} books · ${$("bookSort").selectedOptions[0].textContent.toLowerCase()} · Book IDs automatic · edit shelves in table view`;
  if(!visible.length){$("bookTable").innerHTML=`<div class="empty">${uiIcon("search")}<strong>${books.length?"No matching books":"Your shelves are waiting"}</strong><p>${books.length?"Try a different search or clear the filters.":"Scan a barcode or add a book to get started."}</p></div>`;renderPager("bookPager",1,1,()=>{});return}
  if(bookView==="grid"){
   const pageBooks=visible.slice(start,start+bookPageSize);
@@ -319,7 +319,7 @@ function renderBooks(){
  }
  $("bookTable").className="tablewrap";
  let h='<table><thead><tr><th>No.</th><th>Book ID</th><th>Barcode</th><th>Title</th><th>Authors</th><th>Status</th><th>Borrower</th><th>Due</th><th>Shelf</th><th>Actions</th></tr></thead><tbody>';
- visible.slice(start,start+bookPageSize).forEach((b,i)=>{const id=esc(b.record_id),isBorrowed=b.book_status==="Borrowed";h+=`<tr><td data-label="No.">${start+i+1}</td><td data-label="Book ID" contenteditable="true" role="textbox" aria-label="Edit book ID" data-book="${id}" data-field="book_id">${esc(b.book_id||"")}</td><td data-label="Barcode">${esc(b.barcode||"")}</td><td data-label="Title">${esc(b.title||"")}</td><td data-label="Authors">${esc(b.authors||"")}</td><td data-label="Status">${statusPill(b)}</td><td data-label="Borrower">${esc(b.borrower_name||"")}</td><td data-label="Due">${esc(b.due_date||"")}</td><td data-label="Shelf" contenteditable="true" role="textbox" aria-label="Edit shelf location" data-book="${id}" data-field="shelf_location">${esc(b.shelf_location||"")}</td><td data-label="Actions"><div class="action-cell"><button type="button" class="icon-btn" title="${isBorrowed?"Return":"Lend"} this copy" aria-label="${isBorrowed?"Return":"Lend"} ${esc(b.title||"book")}" data-${isBorrowed?"return":"lend"}-book="${id}">${uiIcon(isBorrowed?"arrow-down-left":"arrow-up-right")}</button><button type="button" class="icon-btn" title="Copy book ID" aria-label="Copy book ID" data-copy-book="${id}">${uiIcon("copy")}</button><button type="button" class="icon-btn" title="Find missing book details" aria-label="Find missing details for ${esc(b.title||"book")}" data-enrich-book="${id}">${uiIcon("refresh")}</button>${(b.user_id===session?.user?.id||session?.user?.id===libraryOwnerId)?`<button type="button" class="icon-btn danger" title="Delete book" aria-label="Delete ${esc(b.title||"book")}" data-delete-book="${id}">${uiIcon("trash")}</button>`:""}</div></td></tr>`});
+ visible.slice(start,start+bookPageSize).forEach((b,i)=>{const id=esc(b.record_id),isBorrowed=b.book_status==="Borrowed";h+=`<tr><td data-label="No.">${start+i+1}</td><td data-label="Book ID" title="Automatically assigned by Supabase; cannot be edited" data-book="${id}" data-field="book_id">${esc(b.book_id||"Pending ID")}</td><td data-label="Barcode">${esc(b.barcode||"")}</td><td data-label="Title">${esc(b.title||"")}</td><td data-label="Authors">${esc(b.authors||"")}</td><td data-label="Status">${statusPill(b)}</td><td data-label="Borrower">${esc(b.borrower_name||"")}</td><td data-label="Due">${esc(b.due_date||"")}</td><td data-label="Shelf" contenteditable="true" role="textbox" aria-label="Edit shelf location" data-book="${id}" data-field="shelf_location">${esc(b.shelf_location||"")}</td><td data-label="Actions"><div class="action-cell"><button type="button" class="icon-btn" title="${isBorrowed?"Return":"Lend"} this copy" aria-label="${isBorrowed?"Return":"Lend"} ${esc(b.title||"book")}" data-${isBorrowed?"return":"lend"}-book="${id}">${uiIcon(isBorrowed?"arrow-down-left":"arrow-up-right")}</button><button type="button" class="icon-btn" title="Copy book ID" aria-label="Copy book ID" data-copy-book="${id}">${uiIcon("copy")}</button><button type="button" class="icon-btn" title="Find missing book details" aria-label="Find missing details for ${esc(b.title||"book")}" data-enrich-book="${id}">${uiIcon("refresh")}</button>${(b.user_id===session?.user?.id||session?.user?.id===libraryOwnerId)?`<button type="button" class="icon-btn danger" title="Delete book" aria-label="Delete ${esc(b.title||"book")}" data-delete-book="${id}">${uiIcon("trash")}</button>`:""}</div></td></tr>`});
  h+='</tbody></table>';$("bookTable").innerHTML=h;renderPager("bookPager",bookPage,pages,p=>{bookPage=p;renderBooks();$("bookTable").scrollIntoView({block:"start",behavior:"smooth"})});
 }
 function renderLoans(){
@@ -396,21 +396,23 @@ async function enrichBook(recordId){
  googleBook(updated);await reloadAll();msg('Missing book details filled. Existing information was preserved.','ok');
  }catch(e){msg('Book lookup failed. No book data was changed: '+String(e?.message||e),'err')}finally{busy=false}
 }
-async function addBook(code){if(!session?.user)return msg("Sign in first.","warn");code=clean(code);if(!code)return msg("No barcode detected.","warn");if(busy)return;busy=true;try{let n=new Date(),row={user_id:session.user.id,record_id:uuid(),scan_date:n.toLocaleDateString(),scan_time:n.toLocaleTimeString(),barcode:code,lookup_status:"Manual",book_status:"Available"};if(isISBN(code)){try{let info=await lookupISBN(code);if(info){let src=(info._sources||[]).join(" + ");delete info._sources;row={...row,...info,lookup_status:src?"Found: "+src:"Found"}}else row.lookup_status="Not found"}catch{row.lookup_status="Lookup error"}}let {data,error}=await sb.from(BOOKS).insert(row).select("*").single();if(error)return msg(error.message,"err");googleBook(data);await reloadAll();msg(sheetLinked()?"Book saved to Supabase • Google request submitted (not verified).":"Book saved to Supabase.","ok")}finally{busy=false}}
+async function addBook(code){if(!session?.user)return msg("Sign in first.","warn");code=clean(code);if(!code)return msg("No barcode detected.","warn");if(busy)return;busy=true;try{let n=new Date(),row={user_id:session.user.id,record_id:uuid(),scan_date:n.toLocaleDateString(),scan_time:n.toLocaleTimeString(),barcode:code,lookup_status:"Manual",book_status:"Available"};if(isISBN(code)){try{let info=await lookupISBN(code);if(info){let src=(info._sources||[]).join(" + ");delete info._sources;row={...row,...info,lookup_status:src?"Found: "+src:"Found"}}else row.lookup_status="Not found"}catch{row.lookup_status="Lookup error"}}let {data,error}=await sb.from(BOOKS).insert(row).select("*").single();if(error)return msg(error.message,"err");if(!data?.book_id)return msg('Supabase saved the book but did not return its Book ID. Refresh inventory and check before scanning again.','warn');googleBook(data);await reloadAll();msg(sheetLinked()?`Book ${data.book_id} saved to Supabase • Google request submitted (not verified).`:`Book ${data.book_id} saved to Supabase.`,"ok")}finally{busy=false}}
 // Book selectors always use the exact inventory record_id, NOT an ISBN or a potentially repeated Book ID.
 const pickerIds={lend:{search:"lendBookSearch",select:"lendBookSelect",count:"lendBookCount"},return:{search:"returnBookSearch",select:"returnBookSelect",count:"returnBookCount"}};
 function bookIsEligible(b,mode){return mode==="lend"?(b.book_status||"Available")==="Available":b.book_status==="Borrowed"}
 function bookSearchText(b,mode){const active=mode==="return"?loans.find(l=>l.book_record_id===b.record_id&&l.status==="Borrowed"):null;return [b.title,b.authors,b.book_id,b.record_id,b.barcode,b.shelf_location,b.borrower_name,active?.borrower_name].join(" ").toLocaleLowerCase()}
-function bookChoiceLabel(b,mode){
- const title=String(b.title||"Untitled book"),id=b.book_id?`Book ID: ${b.book_id}`:`Copy reference: ${b.record_id||"Unknown"}`;
- const suffix=[b.authors?`By ${b.authors}`:"",id,b.shelf_location?`Shelf: ${b.shelf_location}`:"",b.barcode?`ISBN: ${b.barcode}`:"",mode==="return"?(b.borrower_name||loans.find(l=>l.book_record_id===b.record_id&&l.status==="Borrowed")?.borrower_name||""):""].filter(Boolean).join(" · ");
- return `${title} — ${suffix}`;
+// Only the title is visible in either book dropdown. Option values remain unique record IDs.
+function bookChoiceLabel(b){return String(b.title||"Untitled book").trim()||"Untitled book"}
+function bookCopyDetail(b,mode){
+ const id=b.book_id?`Book ID: ${b.book_id}`:`Copy reference: ${b.record_id||"Unknown"}`;
+ const extra=[b.authors?`By ${b.authors}`:"",id,b.shelf_location?`Shelf: ${b.shelf_location}`:"",b.barcode?`ISBN: ${b.barcode}`:"",mode==="return"?(b.borrower_name||loans.find(l=>l.book_record_id===b.record_id&&l.status==="Borrowed")?.borrower_name||""):""].filter(Boolean);
+ return extra.join(" · ");
 }
 function clearSelectedBook(mode){
  if(mode==="lend"){
-  selectedLend=null;$("lendBookDisplay").value="";$("lendBookId").value="";$("lendCopyDetail").textContent="Select a copy to view its full details here.";$("lendBookSelect").value="";
+  selectedLend=null;$("lendBookDisplay").value="";$("lendBookId").value="";$("lendCopyDetail").textContent="Select a copy to view its Book ID and shelf below.";$("lendBookSelect").value="";
  }else{
-  selectedReturn=null;$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";$("returnCopyDetail").textContent="Select a borrowed copy to view its full details here.";$("returnBookSelect").value="";
+  selectedReturn=null;$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";$("returnCopyDetail").textContent="Select a borrowed copy to view its Book ID and borrower below.";$("returnBookSelect").value="";
  }
 }
 function renderBookPicker(mode){
@@ -433,7 +435,7 @@ function renderBookPicker(mode){
  }
  select.value=active?.record_id||"";
  select.disabled=!eligible.length;
- count.textContent=eligible.length?`${eligible.length} ${mode==="lend"?"available":"borrowed"} ${eligible.length===1?"copy":"copies"} · ${matches.length} match${matches.length===1?"":"es"}${matches.length>shown.length?" · Showing first 200; search to narrow":""}. Choose the exact copy when titles or ISBNs repeat.`:`No ${mode==="lend"?"available":"borrowed"} books right now. ${mode==="lend"?"Add books to inventory first.":"Lend a book first."}`;
+ count.textContent=eligible.length?`${eligible.length} ${mode==="lend"?"available":"borrowed"} ${eligible.length===1?"copy":"copies"} · ${matches.length} match${matches.length===1?"":"es"}${matches.length>shown.length?" · Showing first 200; search to narrow":""}. If several copies share a title, search its Book ID or shelf to identify the copy. Details appear after selection.`:`No ${mode==="lend"?"available":"borrowed"} books right now. ${mode==="lend"?"Add books to inventory first.":"Lend a book first."}`;
 }
 function setSelectedBook(mode,b){
  if(!session?.user)return msg("Sign in first.","warn");
@@ -442,10 +444,10 @@ function setSelectedBook(mode,b){
  // Clear the opposite operation so a previous selection cannot be confused with this one.
  clearSelectedBook(mode);
  if(mode==="lend"){
-  selectedLend=b;$("lendBookDisplay").value=bookChoiceLabel(b,mode);$("lendBookId").value=b.book_id||b.record_id;$("lendCopyDetail").textContent=bookChoiceLabel(b,mode);
+  selectedLend=b;$("lendBookDisplay").value=bookChoiceLabel(b,mode);$("lendBookId").value=b.book_id||b.record_id;$("lendCopyDetail").textContent=bookCopyDetail(b,mode);
  }else{
   selectedReturn=b;const active=loans.find(l=>l.book_record_id===b.record_id&&l.status==="Borrowed");
-  $("returnBookDisplay").value=bookChoiceLabel(b,mode);$("returnBookId").value=b.book_id||b.record_id;$("returnCopyDetail").textContent=bookChoiceLabel(b,mode);
+  $("returnBookDisplay").value=bookChoiceLabel(b,mode);$("returnBookId").value=b.book_id||b.record_id;$("returnCopyDetail").textContent=bookCopyDetail(b,mode);
   $("returnBorrower").value=b.borrower_name||active?.borrower_name||"";$("returnDue").value=b.due_date||active?.due_date||"";
  }
  $(pickerIds[mode].search).value="";renderBookPicker(mode);tab(mode);
@@ -588,7 +590,7 @@ function renderBatch(){
  let h=`<div class="batch-review-toolbar"><label class="batch-all-label"><input type="checkbox" id="batchSelectAllCheckbox" aria-label="Select all unsaved scanned books" ${unsaved.length&&unsaved.every(x=>x.selected)?'checked ':''}${locked||!unsaved.length?'disabled':''}><span>Select all scanned books</span></label><span class="batch-list-count">${batchItems.length} ${batchItems.length===1?'book':'books'} · One book per row</span></div><div class="batch-book-list" role="list">`;
  batchItems.forEach((x,i)=>{
   const validity=x.barcode&&x.shelf&&x.title;
-  const result=x.saved?'Saved':x.error?'Needs attention':x.duplicate?'Possible duplicate':validity?'Ready to save':'Missing details';
+  const result=x.saved?(x.book_id?`Saved · ${x.book_id}`:'Saved'):x.error?'Needs attention':x.duplicate?'Possible duplicate':validity?'Ready to save':'Missing details';
   const state=x.saved?'saved':x.error?'error':x.duplicate?'duplicate':validity?'ready':'incomplete';
   const field=(name,label,max)=>`<label class="batch-book-field"><span>${label}</span><input aria-label="${label} for ${batchAttr(x.fileName)}" data-batch-field="${name}" data-batch-index="${i}" maxlength="${max}" value="${batchAttr(x[name])}" ${x.saved?'disabled':''}></label>`;
   h+=`<article role="listitem" class="batch-book ${x.duplicate&&!x.saved?'batch-book-duplicate':''}" aria-label="Scanned book ${i+1}: ${batchAttr(x.fileName)}">
@@ -738,13 +740,14 @@ async function saveBatch(){
    const payload=slice.map(x=>({user_id:uploader,record_id:uuid(),scan_date:n.toLocaleDateString(),scan_time:n.toLocaleTimeString(),barcode:clean(x.barcode),title:x.title.trim(),authors:x.authors.trim()||null,publisher:x.publisher||null,publication_year:x.publication_year||null,language:x.language||null,pages:x.pages||null,subject:x.subject||null,shelf_location:x.shelf.trim(),lookup_status:x.lookup_status||'Batch upload',book_status:'Available'}));
    const batchResult=await sb.from(BOOKS).insert(payload).select('*');
    if(!batchResult.error){
-    (batchResult.data||[]).forEach((db,j)=>{slice[j].saved=true;slice[j].selected=false;slice[j].error='';count++;mirror.push(db)})
+    const byRecord=new Map((batchResult.data||[]).map(db=>[db.record_id,db]));
+    slice.forEach((item,j)=>{const db=byRecord.get(payload[j].record_id);if(db?.book_id){item.saved=true;item.book_id=db.book_id;item.selected=false;item.error='';count++;mirror.push(db)}else{item.error='Supabase did not return an assigned Book ID. Refresh inventory before retrying this photo.';item.selected=false;fail++}})
    }else{
     // If one row fails validation, save other valid rows individually.
     for(let j=0;j<payload.length;j++){
      const {data,error}=await sb.from(BOOKS).insert(payload[j]).select('*').single();
      if(error){slice[j].error='Supabase: '+error.message;slice[j].selected=false;fail++}
-     else{slice[j].saved=true;slice[j].selected=false;slice[j].error='';count++;mirror.push(data)}
+     else{slice[j].saved=true;slice[j].book_id=data.book_id;slice[j].selected=false;slice[j].error='';count++;mirror.push(data)}
     }
    }
    $("batchProgress").max=selected.length;$("batchProgress").value=Math.min(i+slice.length,selected.length);
@@ -828,7 +831,7 @@ $("clearBooksKey").onclick=()=>{localStorage.removeItem(GOOGLE_BOOKS_KEY);$("goo
  $(ids.search).addEventListener("input",()=>{clearSelectedBook(mode);renderBookPicker(mode)});
  $(ids.select).addEventListener("change",e=>{
   const id=e.target.value;if(!id){clearSelectedBook(mode);return}
-  // Use the immutable row record ID, even when books share a title, ISBN or user-entered Book ID.
+  // Use the immutable row record ID, even when books share a title or ISBN.
   setSelectedBook(mode,books.find(b=>b.record_id===id));
  });
 });
@@ -842,7 +845,7 @@ $("bookTable").addEventListener("click",async e=>{
  const del=e.target.closest("[data-delete-book]");if(del)return deleteBookRecord(del.dataset.deleteBook);
  const lend=e.target.closest("[data-lend-book]");if(lend){const b=books.find(x=>x.record_id===lend.dataset.lendBook);if(b)return setSelectedBook("lend",b)}
  const ret=e.target.closest("[data-return-book]");if(ret){const b=books.find(x=>x.record_id===ret.dataset.returnBook);if(b)return setSelectedBook("return",b)}
- const edit=e.target.closest("[data-edit-book]");if(edit){setBookView("table");const td=$("bookTable").querySelector(`[data-book="${CSS.escape(edit.dataset.editBook)}"][data-field="book_id"]`);td?.focus();return}
+ const edit=e.target.closest("[data-edit-book]");if(edit){setBookView("table");const td=$("bookTable").querySelector(`[data-book="${CSS.escape(edit.dataset.editBook)}"][data-field="shelf_location"]`);td?.focus();return}
  const copy=e.target.closest("[data-copy-book]");if(copy){const b=books.find(x=>x.record_id===copy.dataset.copyBook);if(!b)return;const text=b.book_id||b.record_id;try{await navigator.clipboard.writeText(text);msg("Book ID copied to clipboard.","ok")}catch{msg("Copy not available here. Book ID: "+text,"warn")}}
 });
 $("showSignIn").onclick=()=>setAuthMode("signin");$("showSignUp").onclick=()=>setAuthMode("signup");
@@ -851,7 +854,7 @@ $("forgotPassword").onclick=forgotPassword;$("resendConfirmation").onclick=resen
 $("signOut").onclick=signOut;$("reload").onclick=reloadAll;$("reloadLoans").onclick=reloadAll;
 $("saveSheet").onclick=()=>{if(!session?.user)return msg("Sign in first.","warn");let s=$("sheetUrl").value.trim(),c=$("connectorUrl").value.trim(),t=$("connectorToken").value.trim();if(!parseSheetId(s))return msg("Enter a valid Google Sheet URL that you own.","warn");if(!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/i.test(c))return msg("Enter your deployed Apps Script URL ending in /exec.","warn");try{let u=new URL(c);t=t||u.searchParams.get("token")||""}catch{}if(!t)return msg("Add the token from your Code.gs in the token field, or append ?token=YOUR_TOKEN to the /exec link.","warn");localStorage.setItem(userSheetKey(),JSON.stringify({sheet:s,url:c,token:t}));updateSheetUI();msg("Your Google Sheet settings are saved on this device. Test Connection before using sync.","ok")};$("testSheet").onclick=googlePing;$("syncExisting").onclick=syncExisting;
 $("scanInventory").onclick=()=>$("inventoryCamera").click();$("scanLend").onclick=()=>$("lendCamera").click();$("scanReturn").onclick=()=>$("returnCamera").click();$("inventoryCamera").onchange=e=>scanFile(e.target.files?.[0],"inventory",$("inventoryPreview"));$("lendCamera").onchange=e=>scanFile(e.target.files?.[0],"lend",$("lendPreview"));$("returnCamera").onchange=e=>scanFile(e.target.files?.[0],"return",$("returnPreview"));$("addManual").onclick=()=>addBook($("manualBarcode").value);$("manualBarcode").onkeydown=e=>{if(e.key==="Enter")addBook($("manualBarcode").value)};$("confirmLend").onclick=confirmLend;$("confirmReturn").onclick=confirmReturn;$("dateBorrowed").value=today();$("dueDate").value=plusDays(today(),14);$("returnDate").value=today();
-$("bookTable").addEventListener("focusout",async e=>{let c=e.target.closest("[contenteditable]");if(!c||!session?.user)return;let val=c.innerText.trim();let upd={[c.dataset.field]:val||null,updated_at:new Date().toISOString()};let {data,error}=await sb.from(BOOKS).update(upd).eq("record_id",c.dataset.book).select("*").single();if(error)msg(error.message,"err");else{let b=books.find(x=>x.record_id===c.dataset.book);if(b)b[c.dataset.field]=val;googleBook(data);msg(sheetLinked()?"Book updated in Supabase • Google request submitted (not verified).":"Book updated in Supabase.","ok")}});
+$("bookTable").addEventListener("focusout",async e=>{let c=e.target.closest('[contenteditable][data-field="shelf_location"]');if(!c||!session?.user)return;let val=c.innerText.trim();let upd={shelf_location:val||null,updated_at:new Date().toISOString()};let {data,error}=await sb.from(BOOKS).update(upd).eq("record_id",c.dataset.book).select("*").single();if(error)msg(error.message,"err");else{let b=books.find(x=>x.record_id===c.dataset.book);if(b)b[c.dataset.field]=val;googleBook(data);msg(sheetLinked()?"Book updated in Supabase • Google request submitted (not verified).":"Book updated in Supabase.","ok")}});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&session?.user)reloadAll()});$("exportBooks").onclick=()=>exportRows(books.map(b=>({Book_ID:b.book_id,Barcode:b.barcode,Title:b.title,Authors:b.authors,Publisher:b.publisher,Year:b.publication_year,Status:b.book_status,Borrower:b.borrower_name,Date_Borrowed:b.date_borrowed,Due_Date:b.due_date,Return_Date:b.return_date,Shelf:b.shelf_location})),"Library_Books");
 $("exportLoans").onclick=()=>exportRows(loans.map(l=>({Book:l.book_title,Book_ID:l.book_id,Barcode:l.barcode,Borrower:l.borrower_name,Date_Borrowed:l.date_borrowed,Due_Date:l.due_date,Return_Date:l.return_date,Status:isOverdue(l)?"Overdue":l.status})),"Loan_History");
 (async()=>{
