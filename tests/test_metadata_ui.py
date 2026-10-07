@@ -5,6 +5,7 @@ from playwright.async_api import async_playwright
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from test_circulation import ROOT, MOCK
 ISBN='9780140328721'
+SCANNED_ISBN=']E0 978014032872112345'
 async def main():
  async with async_playwright() as p:
   browser=await p.chromium.launch(headless=True,executable_path='/usr/bin/chromium',args=['--no-sandbox'])
@@ -17,11 +18,21 @@ async def main():
     await route.fulfill(status=200,content_type='application/json',body='{"found":true,"metadata":{"title":"Matilda","authors":"Roald Dahl","publisher":"Puffin","publication_year":"1988","language":"eng","pages":"240","subject":"Fiction"},"sources":["Google Books","Open Library Search","HathiTrust"]}')
    await page.route('https://book-test.invalid/api/book-lookup*',api)
    html=(ROOT/'index.html').read_text().replace('<head>','<head><base href="https://book-test.invalid/">',1)
-   html=html.replace('\n})();\n</script>','\nwindow.__seedBatchForTest=rows=>{batchItems=rows;renderBatch()};window.__getBatchForTest=()=>batchItems;\n})();\n</script>',1)
+   html=html.replace('\n})();\n</script>','\nwindow.__seedBatchForTest=rows=>{batchItems=rows;renderBatch()};window.__getBatchForTest=()=>batchItems;window.__normalizeIsbnForTest=normalizeIsbn;window.__suggestIsbnCorrectionForTest=suggestIsbnCorrection;\n})();\n</script>',1)
    await page.set_content(html,wait_until='domcontentloaded')
    await page.add_style_tag(content=(ROOT/'assets/app.css').read_text())
    await page.wait_for_function("document.getElementById('totalBooks').textContent==='3'")
-   await page.locator('#manualBarcode').fill(ISBN)
+   assert await page.evaluate("value => window.__normalizeIsbnForTest(value)",SCANNED_ISBN)==ISBN
+   assert await page.evaluate("value => window.__suggestIsbnCorrectionForTest(value)","9780140328722")==ISBN
+   assert await page.evaluate("value => window.__suggestIsbnCorrectionForTest(value)","978014032872212345")==ISBN
+   assert await page.evaluate("value => window.__suggestIsbnCorrectionForTest(value)","0140328727")=="0140328726"
+   assert await page.evaluate("value => window.__suggestIsbnCorrectionForTest(value)","90001001")==""
+   await page.locator('#manualBarcode').fill('9780140328722')
+   await page.locator('#previewMetadata').click()
+   assert await page.locator('[data-use-isbn-suggestion]').inner_text()=='Use suggested ISBN'
+   await page.locator('[data-use-isbn-suggestion]').click()
+   await page.wait_for_function("document.getElementById('metadataPreview').textContent.includes('Matilda')")
+   await page.locator('#manualBarcode').fill(SCANNED_ISBN)
    await page.locator('#previewMetadata').click()
    await page.wait_for_function("document.getElementById('metadataPreview').textContent.includes('Matilda')")
    assert await page.locator('#totalBooks').inner_text()=='3','preview should not write a new book'
