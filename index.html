@@ -111,9 +111,9 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 </details>
 
 <details class="lookupbox">
-  <summary class="lookuphead"><strong><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg> &nbsp; Book details lookup</strong><span class="badge ok">8 catalogs · 10 lookups</span></summary>
+  <summary class="lookuphead"><strong><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg> &nbsp; Book details lookup</strong><span class="badge ok">6 catalogs · 7 lookups</span></summary>
   <div class="lookupbody">
-    <div class="lookupnote">ISBN lookup checks Google Books, Open Library Search, Edition and Books API, HathiTrust, Crossref, Internet Archive and Wikidata; Library of Congress provides a final fallback. Optional ISBNdb adds another catalog if you have a paid key. It keeps checking when fields are missing, accepts only matching ISBNs, and never overwrites details you entered.</div>
+    <div class="lookupnote">ISBN lookup checks Google Books, Open Library, HathiTrust and Crossref; Library of Congress provides a final fallback. Optional ISBNdb adds another catalog if you have a paid key. Only matching ISBNs are accepted, and missing fields can be filled without overwriting the details you entered.</div>
     <label for="googleBooksKey">Google Books key on this browser (legacy fallback only)</label>
     <input id="googleBooksKey" type="password" placeholder="Optional Google Books API key">
     <p class="lookupnote">For Vercel, add <code>GOOGLE_BOOKS_API_KEY</code> or optional paid <code>ISBNDB_API_KEY</code> under Project → Settings → Environment Variables, then redeploy. Never put an ISBNdb key in this page, GitHub, or your browser.</p><div class="row" style="margin-top:8px"><button id="saveBooksKey" class="light">Save API Key</button><button id="clearBooksKey" class="light">Clear Key</button></div>
@@ -353,19 +353,6 @@ async function lookupOpenLibraryISBN(code){
  const d=await browserMetaRequest("https://openlibrary.org/isbn/"+encodeURIComponent(code)+".json");if(![...(d.isbn_13||[]),...(d.isbn_10||[])].some(i=>sameIsbn(i,code)))return null;
  return{title:d.title||"",authors:d.by_statement||"",publisher:(d.publishers||[]).join("; "),publication_year:yearOnly(d.publish_date),language:(d.languages||[]).map(x=>String(x?.key||"").split("/").pop()).filter(Boolean).join(", "),pages:String(d.number_of_pages||""),subject:joinSubjects(d.subjects||[]),_source:"Open Library Edition"}
 }
-async function lookupOpenLibraryBooks(code){
- const key="ISBN:"+code,u="https://openlibrary.org/api/books?bibkeys="+encodeURIComponent(key)+"&format=json&jscmd=data";
- const d=await browserMetaRequest(u),r=d[key],ids=r?.identifiers||{};
- if(!r?.title||![...(ids.isbn_13||[]),...(ids.isbn_10||[])].some(i=>sameIsbn(i,code)))return null;
- return{title:r.title,authors:(r.authors||[]).map(x=>x.name||"").filter(Boolean).join("; "),publisher:(r.publishers||[]).map(x=>x.name||"").filter(Boolean).slice(0,3).join("; "),publication_year:yearOnly(r.publish_date),language:(r.languages||[]).map(x=>String(x?.key||"").split("/").pop()).filter(Boolean).join(", "),pages:String(r.number_of_pages||""),subject:joinSubjects(r.subjects||[]),_source:"Open Library Books API"}
-}
-async function lookupWikidata(code){
- const query=`SELECT ?isbn ?bookLabel ?authorLabel ?publisherLabel ?publicationDate ?languageLabel ?subjectLabel WHERE { { ?book wdt:P212 ?isbn. } UNION { ?book wdt:P957 ?isbn. } FILTER(REPLACE(STR(?isbn), "-", "") = "${code}") OPTIONAL { ?book wdt:P50 ?author. } OPTIONAL { ?book wdt:P123 ?publisher. } OPTIONAL { ?book wdt:P577 ?publicationDate. } OPTIONAL { ?book wdt:P407 ?language. } OPTIONAL { ?book wdt:P921 ?subject. } SERVICE wikibase:label { bd:serviceParam wikibase:language "en". } } LIMIT 10`;
- const u="https://query.wikidata.org/sparql?query="+encodeURIComponent(query)+"&format=json",d=await browserMetaRequest(u);
- const rows=(d.results?.bindings||[]).filter(x=>sameIsbn(x.isbn?.value,code));if(!rows.length)return null;
- const values=key=>[...new Set(rows.map(x=>x[key]?.value).filter(Boolean))].join("; ");
- return{title:values("bookLabel"),authors:values("authorLabel"),publisher:values("publisherLabel"),publication_year:yearOnly(values("publicationDate")),language:values("languageLabel"),pages:"",subject:values("subjectLabel"),_source:"Wikidata"}
-}
 const metadataCache=new Map();
 async function lookupISBN(code){
  code=clean(code).toUpperCase();if(!validIsbn(code))return null;
@@ -378,7 +365,7 @@ async function lookupISBN(code){
    if(response.status===429||response.status===400)return null;
   }catch{}
   // Local HTML preview or temporarily unavailable Vercel backend: retain working direct lookup.
-  const results=await Promise.allSettled([lookupGoogleBooks(code),lookupOpenLibrarySearch(code),lookupOpenLibraryBooks(code),lookupWikidata(code)]),combined={},sources=[];
+  const results=await Promise.allSettled([lookupGoogleBooks(code),lookupOpenLibrarySearch(code)]),combined={},sources=[];
   results.forEach(r=>{if(r.status==='fulfilled'&&r.value?.title){mergeMeta(combined,r.value);sources.push(r.value._source)}});
   if(!combined.title||!combined.publisher){try{const edition=await lookupOpenLibraryISBN(code);if(edition?.title){mergeMeta(combined,edition);sources.push(edition._source)}}catch{}}
   return combined.title?{...combined,_sources:sources}:null;
