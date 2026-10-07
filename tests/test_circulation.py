@@ -57,6 +57,21 @@ async def check(page,width,height):
   await page.wait_for_timeout(800)
   print("DEBUG",width,"errors",issues,"status",await page.locator("#status").inner_text(),"total",await page.locator("#totalBooks").inner_text(),"supabase",await page.evaluate("typeof window.supabase"),flush=True)
   await page.wait_for_function("document.getElementById('totalBooks').textContent==='3'", timeout=2500)
+  if width<900:
+    assert not await page.locator('.workspace-nav').is_visible()
+    assert await page.locator('.bottomnav').is_visible()
+    await page.locator('[data-gotab="lend"]').click()
+  else:
+    assert await page.locator('.workspace-nav').is_visible()
+    assert not await page.locator('.bottomnav').is_visible()
+    await page.locator('[data-tab="lend"]').click()
+  assert await page.locator('#lend').get_attribute('class')=='panel active'
+  assert await page.locator('[data-tab="lend"]').get_attribute('aria-current')=='page'
+  await page.locator('[data-tab="inventory"]').click() if width>=900 else await page.locator('[data-gotab="inventory"]').click()
+  if width>=900:
+    await page.locator('#navImportShelf').click()
+    assert await page.locator('#inventory').get_attribute('class')=='panel active'
+    assert await page.locator('#batchHeading').is_visible()
   assert await page.locator('#lendBookSelect option').count()==3, '2 available copies plus placeholder'
   assert await page.locator('#returnBookSelect option').count()==2, '1 borrowed copy plus placeholder'
   assert await page.locator('#lendBookSelect option').nth(1).get_attribute('value') != await page.locator('#lendBookSelect option').nth(2).get_attribute('value')

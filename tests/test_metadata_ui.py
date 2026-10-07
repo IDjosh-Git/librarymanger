@@ -5,23 +5,44 @@ from playwright.async_api import async_playwright
 sys.path.insert(0,str(Path(__file__).resolve().parent))
 from test_circulation import ROOT, MOCK
 ISBN='9780140328721'
+SCANNED_ISBN=']E0 978014032872112345'
 async def main():
  async with async_playwright() as p:
   browser=await p.chromium.launch(headless=True,executable_path='/usr/bin/chromium',args=['--no-sandbox'])
   for width in (int(os.environ.get("TEST_WIDTH","1440")),):
    page=await browser.new_page(viewport={'width':width,'height':900})
    issues=[];page.on('pageerror',lambda e:issues.append(str(e)))
+   retry_calls=0
    await page.evaluate(MOCK)
    await page.route('https://cdn.jsdelivr.net/**',lambda route:route.fulfill(status=200,content_type='application/javascript',body=''))
    async def api(route):
+    nonlocal retry_calls
+    if 'isbn=9780061120084' in route.request.url:
+     retry_calls+=1
+     if retry_calls==1:
+      await route.fulfill(status=429,headers={'Retry-After':'0'},content_type='application/json',body='{"error":"Too many lookups"}')
+      return
     await route.fulfill(status=200,content_type='application/json',body='{"found":true,"metadata":{"title":"Matilda","authors":"Roald Dahl","publisher":"Puffin","publication_year":"1988","language":"eng","pages":"240","subject":"Fiction"},"sources":["Google Books","Open Library Search","HathiTrust"]}')
    await page.route('https://book-test.invalid/api/book-lookup*',api)
    html=(ROOT/'index.html').read_text().replace('<head>','<head><base href="https://book-test.invalid/">',1)
-   html=html.replace('\n})();\n</script>','\nwindow.__seedBatchForTest=rows=>{batchItems=rows;renderBatch()};window.__getBatchForTest=()=>batchItems;\n})();\n</script>',1)
+   html=html.replace('\n})();\n</script>','\nwindow.__seedBatchForTest=rows=>{batchItems=rows;renderBatch()};window.__getBatchForTest=()=>batchItems;window.__normalizeIsbnForTest=normalizeIsbn;window.__suggestIsbnCorrectionForTest=suggestIsbnCorrection;window.__batchLookupForTest=batchLookUp;\n})();\n</script>',1)
    await page.set_content(html,wait_until='domcontentloaded')
    await page.add_style_tag(content=(ROOT/'assets/app.css').read_text())
    await page.wait_for_function("document.getElementById('totalBooks').textContent==='3'")
-   await page.locator('#manualBarcode').fill(ISBN)
+   assert await page.evaluate("value => window.__normalizeIsbnForTest(value)",SCANNED_ISBN)==ISBN
+   assert await page.evaluate("value => window.__suggestIsbnCorrectionForTest(value)","9780140328722")==ISBN
+   assert await page.evaluate("value => window.__suggestIsbnCorrectionForTest(value)","978014032872212345")==ISBN
+   assert await page.evaluate("value => window.__suggestIsbnCorrectionForTest(value)","0140328727")=="0140328726"
+   assert await page.evaluate("value => window.__suggestIsbnCorrectionForTest(value)","90001001")==""
+   retry_row=await page.evaluate("""async () => {const row={barcode:'9780061120084',title:'',lookup_status:'Manual'};await window.__batchLookupForTest(row);return row}""")
+   assert retry_calls==2,'a rate-limited folder lookup should retry instead of becoming a false miss'
+   assert retry_row['title']=='Matilda' and retry_row['lookup_status'].startswith('Found:')
+   await page.locator('#manualBarcode').fill('9780140328722')
+   await page.locator('#previewMetadata').click()
+   assert await page.locator('[data-use-isbn-suggestion]').inner_text()=='Use suggested ISBN'
+   await page.locator('[data-use-isbn-suggestion]').click()
+   await page.wait_for_function("document.getElementById('metadataPreview').textContent.includes('Matilda')")
+   await page.locator('#manualBarcode').fill(SCANNED_ISBN)
    await page.locator('#previewMetadata').click()
    await page.wait_for_function("document.getElementById('metadataPreview').textContent.includes('Matilda')")
    assert await page.locator('#totalBooks').inner_text()=='3','preview should not write a new book'
