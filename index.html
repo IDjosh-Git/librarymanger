@@ -111,9 +111,9 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 </details>
 
 <details class="lookupbox">
-  <summary class="lookuphead"><strong><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg> &nbsp; Book details lookup</strong><span class="badge ok">6 catalogs · 7 lookups</span></summary>
+  <summary class="lookuphead"><strong><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg> &nbsp; Book details lookup</strong><span class="badge ok">8 catalogs · 10 lookups</span></summary>
   <div class="lookupbody">
-    <div class="lookupnote">ISBN lookup checks Google Books, Open Library, HathiTrust and Crossref; Library of Congress provides a final fallback. Optional ISBNdb adds another catalog if you have a paid key. Only matching ISBNs are accepted, and missing fields can be filled without overwriting the details you entered.</div>
+    <div class="lookupnote">ISBN lookup checks Google Books, Open Library Search, Edition and Books API, HathiTrust, Crossref, Internet Archive and Wikidata; Library of Congress provides a final fallback. Optional ISBNdb adds another catalog if you have a paid key. It keeps checking when fields are missing, accepts only matching ISBNs, and never overwrites details you entered.</div>
     <label for="googleBooksKey">Google Books key on this browser (legacy fallback only)</label>
     <input id="googleBooksKey" type="password" placeholder="Optional Google Books API key">
     <p class="lookupnote">For Vercel, add <code>GOOGLE_BOOKS_API_KEY</code> or optional paid <code>ISBNDB_API_KEY</code> under Project → Settings → Environment Variables, then redeploy. Never put an ISBNdb key in this page, GitHub, or your browser.</p><div class="row" style="margin-top:8px"><button id="saveBooksKey" class="light">Save API Key</button><button id="clearBooksKey" class="light">Clear Key</button></div>
@@ -132,11 +132,7 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 <div class="grid3"><div class="stat"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#book"></use></svg><b id="totalBooks">0</b><span>Total books</span></div><div class="stat"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg><b id="availableBooks">0</b><span>Available</span></div><div class="stat warning"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg><b id="borrowedBooks">0</b><span>On loan</span></div></div>
 <div id="overdueAlert" class="alert-banner" hidden><div style="display:flex;gap:9px;align-items:center"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#alert"></use></svg><div><strong id="overdueAlertTitle">Overdue loans</strong><p>Review loans that have passed their due date.</p></div></div><button id="overdueAlertAction" type="button">View loans →</button></div>
 <div class="toolbar"><div class="search-wrap"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input id="bookSearch" type="search" placeholder="Search title, author, ISBN, ID, borrower or shelf…" aria-label="Search inventory"></div><div class="filter-row" role="group" aria-label="Filter books"><button class="filter-chip active" type="button" data-book-filter="all" aria-pressed="true">All books</button><button class="filter-chip" type="button" data-book-filter="available" aria-pressed="false">Available</button><button class="filter-chip" type="button" data-book-filter="borrowed" aria-pressed="false">On loan</button><button class="filter-chip" type="button" data-book-filter="overdue" aria-pressed="false">Overdue</button></div></div>
-<div class="inventory-options"><div class="select-control"><label for="bookSort">Sort by</label><select id="bookSort" aria-label="Sort inventory"><option value="newest">Recently added</option><option value="oldest">Oldest added</option><option value="title">Title A–Z</option><option value="shelf">Shelf A–Z</option><option value="due">Due date</option></select></div><div class="select-control"><label for="bookPageSize">Per page</label><select id="bookPageSize" aria-label="Books per page"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></div><div class="view-switch" role="group" aria-label="Inventory view"><button type="button" id="viewTable" aria-pressed="true" title="Table view" aria-label="Table view"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#list"></use></svg></button><button type="button" id="viewGrid" aria-pressed="false" title="Card view" aria-label="Card view"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg></button></div></div><div class="table-actions"><span id="bookTableMeta" class="table-meta" aria-live="polite">Newest books first</span><div class="row"><button id="clearFilters" type="button" class="light smallbtn">Clear filters</button><button id="exportBooks" type="button" class="light smallbtn"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export all · Excel</button></div></div><section class="title-recovery" aria-labelledby="titleRecoveryHeading">
-  <div class="title-recovery-head"><div><h3 id="titleRecoveryHeading">Missing book titles <span id="missingTitleCount" class="badge">0</span></h3><p>Find titles for already-scanned books using their ISBN or a matching copy in this library. Review matches before saving; existing titles and book IDs stay unchanged.</p></div><button type="button" id="findMissingTitles" class="alt"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg> Find missing titles</button></div>
-  <div id="titleRecoveryPanel" hidden><div id="titleRecoveryStatus" role="status" aria-live="polite"></div><div id="titleRecoveryRows" class="title-recovery-list"></div><div class="title-recovery-actions"><button type="button" id="selectRecoveredTitles" class="light" hidden>Select found</button><button type="button" id="clearRecoveredTitles" class="light" hidden>Clear selection</button><button type="button" id="saveRecoveredTitles" class="green" hidden>Save selected titles</button><button type="button" id="cancelTitleRecovery" class="light" hidden>Stop lookup</button></div></div>
-</section>
-<div id="bookTable" class="tablewrap"></div><div id="bookPager" class="pager" aria-label="Inventory pages"></div>
+<div class="inventory-options"><div class="select-control"><label for="bookSort">Sort by</label><select id="bookSort" aria-label="Sort inventory"><option value="newest">Recently added</option><option value="oldest">Oldest added</option><option value="title">Title A–Z</option><option value="shelf">Shelf A–Z</option><option value="due">Due date</option></select></div><div class="select-control"><label for="bookPageSize">Per page</label><select id="bookPageSize" aria-label="Books per page"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></div><div class="view-switch" role="group" aria-label="Inventory view"><button type="button" id="viewTable" aria-pressed="true" title="Table view" aria-label="Table view"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#list"></use></svg></button><button type="button" id="viewGrid" aria-pressed="false" title="Card view" aria-label="Card view"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg></button></div></div><div class="table-actions"><span id="bookTableMeta" class="table-meta" aria-live="polite">Newest books first</span><div class="row"><button id="clearFilters" type="button" class="light smallbtn">Clear filters</button><button id="exportBooks" type="button" class="light smallbtn"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export all · Excel</button></div></div><div id="bookTable" class="tablewrap"></div><div id="bookPager" class="pager" aria-label="Inventory pages"></div>
 <section class="batch-box" aria-labelledby="batchHeading">
  <div class="batch-head"><h3 id="batchHeading"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg> Import an entire shelf</h3><p>Choose image folders, a ZIP archive, or individual photos. Check every book before you save it.</p></div>
  <div class="batch-body">
@@ -225,7 +221,7 @@ function sheetLinked(){return !!session?.user&&!!parseSheetId(sheetUrl())&&!!goo
 function updateSheetUI(){let linked=sheetLinked(),s=sheetSettings();$("sheetBadge").textContent=linked?"Linked • Sync enabled":"Not linked";$("sheetBadge").className=linked?"badge ok":"badge";$("sheetState").textContent=linked?"Your own Google Sheet is linked. Supabase is the shared main database.":"Optional: enter your OWN Google Sheet, deployed Apps Script /exec URL and matching token. Scanning does not require Google Sheets.";$("sheetUrl").value=s.sheet||"";$("connectorUrl").value=s.url||"";$("connectorToken").value=s.token||""}
 function authUI(){let signedIn=!!session?.user;$("authBadge").textContent=signedIn?"Signed in":"Own account required";$("authBadge").className=signedIn?"badge ok":"badge";$("loggedOut").hidden=signedIn;$("loggedIn").hidden=!signedIn;$("sheetBox").hidden=!signedIn;$("libraryArea").hidden=!signedIn;$("who").textContent=signedIn?session.user.email||"Signed in":"";updateSheetUI()}
 function setAuthMode(mode){authMode=mode;let creating=mode==="signup";$("signupFields").hidden=!creating;$("confirmPassword").required=creating;$("password").autocomplete=creating?"new-password":"current-password";$("password").minLength=creating?8:1;$("authSubmit").textContent=creating?"Create My Account":"Sign In";$("showSignIn").classList.toggle("active",!creating);$("showSignUp").classList.toggle("active",creating);$("showSignIn").setAttribute("aria-pressed",String(!creating));$("showSignUp").setAttribute("aria-pressed",String(creating));$("authIntro").textContent=creating?"Create your own login to scan into the shared library.":"Sign in with your own email and password."}
-function resetAccountState(){stopTitleRecovery=true;recoveryRows=[];$('titleRecoveryRows').replaceChildren();$('titleRecoveryPanel').hidden=true;libraryOwnerId=null;books=[];loans=[];selectedLend=null;selectedReturn=null;$("lendCopyDetail").textContent="Select a copy to view its Book ID and shelf below.";$("returnCopyDetail").textContent="Select a borrowed copy to view its Book ID and borrower below.";$("lendBookSearch").value="";$("returnBookSearch").value="";$("lendBookDisplay").value="";$("lendBookId").value="";$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";batchStopRequested=true;batchQueue=[];batchItems=[];batchMetadataCache.clear();$("batchProgress").value=0;bookSearch="";loanSearch="";bookFilter="all";loanFilter="all";bookPage=1;loanPage=1;$("bookSearch").value="";$("loanSearch").value="";setPressed("book","all");setPressed("loan","all");renderBatch();renderAll()}
+function resetAccountState(){libraryOwnerId=null;books=[];loans=[];selectedLend=null;selectedReturn=null;$("lendCopyDetail").textContent="Select a copy to view its Book ID and shelf below.";$("returnCopyDetail").textContent="Select a borrowed copy to view its Book ID and borrower below.";$("lendBookSearch").value="";$("returnBookSearch").value="";$("lendBookDisplay").value="";$("lendBookId").value="";$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";batchStopRequested=true;batchQueue=[];batchItems=[];batchMetadataCache.clear();$("batchProgress").value=0;bookSearch="";loanSearch="";bookFilter="all";loanFilter="all";bookPage=1;loanPage=1;$("bookSearch").value="";$("loanSearch").value="";setPressed("book","all");setPressed("loan","all");renderBatch();renderAll()}
 function authRedirectOptions(){if(!/^https?:$/.test(location.protocol))return {};return {emailRedirectTo:location.origin+location.pathname}}
 function authError(e){let text=e?.message||"Authentication failed.";if(/rate limit|email rate/i.test(text))text+=" Try later; if emails are limited, the project owner must configure SMTP in Supabase.";return text}
 function tab(name){requestAnimationFrame(updatePageControls);document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===name));document.querySelectorAll("[data-tab]").forEach(x=>{let a=x.dataset.tab===name;x.classList.toggle("active",a);x.setAttribute("aria-pressed",String(a))});document.querySelectorAll("[data-gotab]").forEach(x=>{let a=x.dataset.gotab===name;x.classList.toggle("active",a);x.setAttribute("aria-current",a?"page":"false")})}document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>tab(b.dataset.tab));document.querySelectorAll("[data-gotab]").forEach(b=>b.onclick=()=>tab(b.dataset.gotab));
@@ -306,7 +302,6 @@ function statusPill(b){const state=b.book_status||"Available",late=state==="Borr
 function renderPager(target,page,max,onData){const el=$(target);if(!el)return;el.innerHTML=max<=1?"":`<button type="button" data-page="1" ${page===1?"disabled":""} aria-label="First page" title="First page">${uiIcon("chevrons-left")}</button><button type="button" data-page="${page-1}" ${page===1?"disabled":""} aria-label="Previous page">${uiIcon("chevron-left")} <span>Previous</span></button><span class="table-meta" aria-live="polite">Page ${page} / ${max}</span><button type="button" data-page="${page+1}" ${page===max?"disabled":""} aria-label="Next page"><span>Next</span> ${uiIcon("chevron-right")}</button><button type="button" data-page="${max}" ${page===max?"disabled":""} aria-label="Last page" title="Last page">${uiIcon("chevrons-right")}</button>`;el.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>onData(Number(b.dataset.page)))}
 function setPressed(type,value){document.querySelectorAll(`[data-${type}-filter]`).forEach(b=>{const on=b.dataset[type+"Filter"]===value;b.classList.toggle("active",on);b.setAttribute("aria-pressed",String(on))})}
 function renderBooks(){
- $("missingTitleCount").textContent=books.filter(b=>!String(b.title||"").trim()).length;
  books=[...books].sort((a,b)=>new Date(b.created_at||b.updated_at||0)-new Date(a.created_at||a.updated_at||0));
  const available=books.filter(b=>(b.book_status||"Available")==="Available").length,borrowed=books.filter(b=>b.book_status==="Borrowed").length;
  $("totalBooks").textContent=books.length;$("availableBooks").textContent=available;$("borrowedBooks").textContent=borrowed;
@@ -314,17 +309,17 @@ function renderBooks(){
  const q=bookSearch.trim().toLocaleLowerCase();let visible=books.filter(b=>(bookFilter==="all"|| (bookFilter==="available"?(b.book_status||"Available")==="Available":bookFilter==="borrowed"?b.book_status==="Borrowed":b.book_status==="Borrowed"&&!!b.due_date&&b.due_date<today()))&&(!q||[b.book_id,b.barcode,b.title,b.authors,b.publisher,b.shelf_location,b.borrower_name].some(v=>String(v||"").toLocaleLowerCase().includes(q))));
  visible.sort((a,b)=>{const name=(v)=>String(v||"");if(bookSort==="title")return name(a.title).localeCompare(name(b.title),undefined,{numeric:true,sensitivity:"base"})||name(a.book_id).localeCompare(name(b.book_id));if(bookSort==="shelf")return name(a.shelf_location).localeCompare(name(b.shelf_location),undefined,{numeric:true,sensitivity:"base"})||name(a.title).localeCompare(name(b.title));if(bookSort==="due")return (a.due_date||"9999").localeCompare(b.due_date||"9999");const diff=new Date(b.created_at||b.updated_at||0)-new Date(a.created_at||a.updated_at||0);return bookSort==="oldest"?-diff:diff});
  const pages=Math.max(1,Math.ceil(visible.length/bookPageSize));bookPage=Math.max(1,Math.min(bookPage,pages));const start=(bookPage-1)*bookPageSize;
- $("bookTableMeta").textContent=`${visible.length} of ${books.length} books · ${$("bookSort").selectedOptions[0].textContent.toLowerCase()} · Book IDs automatic · edit titles or shelves in table view`;
+ $("bookTableMeta").textContent=`${visible.length} of ${books.length} books · ${$("bookSort").selectedOptions[0].textContent.toLowerCase()} · Book IDs automatic · edit shelves in table view`;
  if(!visible.length){$("bookTable").innerHTML=`<div class="empty">${uiIcon("search")}<strong>${books.length?"No matching books":"Your shelves are waiting"}</strong><p>${books.length?"Try a different search or clear the filters.":"Scan a barcode or add a book to get started."}</p></div>`;renderPager("bookPager",1,1,()=>{});return}
  if(bookView==="grid"){
   const pageBooks=visible.slice(start,start+bookPageSize);
   $("bookTable").className="tablewrap grid-wrap";
-  $("bookTable").innerHTML='<div class="book-grid">'+pageBooks.map(b=>{const id=esc(b.record_id),isBorrowed=b.book_status==="Borrowed",canDelete=b.user_id===session?.user?.id||session?.user?.id===libraryOwnerId;return `<article class="book-card"><div class="book-card-top"><span class="book-monogram" aria-hidden="true">${uiIcon("book")}</span>${statusPill(b)}</div><h3 title="${esc(b.title||"Untitled book")}">${esc(b.title||"Untitled book")}</h3><p class="book-author">${esc(b.authors||"Author not listed")}</p><dl><div><dt>Book ID</dt><dd>${esc(b.book_id||"Not set")}</dd></div><div><dt>Shelf</dt><dd>${esc(b.shelf_location||"Not assigned")}</dd></div><div><dt>${isBorrowed?"Due date":"Barcode"}</dt><dd>${esc(isBorrowed?b.due_date||"Not set":b.barcode||"Not set")}</dd></div></dl><div class="book-card-actions"><button type="button" class="card-primary" data-${isBorrowed?"return":"lend"}-book="${id}">${uiIcon(isBorrowed?"arrow-down-left":"arrow-up-right")} ${isBorrowed?"Return":"Lend"}</button><button type="button" class="icon-btn" data-copy-book="${id}" title="Copy book ID" aria-label="Copy book ID">${uiIcon("copy")}</button><button type="button" class="icon-btn" data-edit-book="${id}" title="Edit title or shelf in table" aria-label="Edit book title or shelf in table">${uiIcon("pencil")}</button><button type="button" class="icon-btn" data-enrich-book="${id}" title="Find missing book details" aria-label="Find missing details for ${esc(b.title||"book")}">${uiIcon("refresh")}</button>${canDelete?`<button type="button" class="icon-btn danger" data-delete-book="${id}" title="Delete book" aria-label="Delete ${esc(b.title||"book")}">${uiIcon("trash")}</button>`:""}</div></article>`}).join("")+"</div>";
+  $("bookTable").innerHTML='<div class="book-grid">'+pageBooks.map(b=>{const id=esc(b.record_id),isBorrowed=b.book_status==="Borrowed",canDelete=b.user_id===session?.user?.id||session?.user?.id===libraryOwnerId;return `<article class="book-card"><div class="book-card-top"><span class="book-monogram" aria-hidden="true">${uiIcon("book")}</span>${statusPill(b)}</div><h3 title="${esc(b.title||"Untitled book")}">${esc(b.title||"Untitled book")}</h3><p class="book-author">${esc(b.authors||"Author not listed")}</p><dl><div><dt>Book ID</dt><dd>${esc(b.book_id||"Not set")}</dd></div><div><dt>Shelf</dt><dd>${esc(b.shelf_location||"Not assigned")}</dd></div><div><dt>${isBorrowed?"Due date":"Barcode"}</dt><dd>${esc(isBorrowed?b.due_date||"Not set":b.barcode||"Not set")}</dd></div></dl><div class="book-card-actions"><button type="button" class="card-primary" data-${isBorrowed?"return":"lend"}-book="${id}">${uiIcon(isBorrowed?"arrow-down-left":"arrow-up-right")} ${isBorrowed?"Return":"Lend"}</button><button type="button" class="icon-btn" data-copy-book="${id}" title="Copy book ID" aria-label="Copy book ID">${uiIcon("copy")}</button><button type="button" class="icon-btn" data-edit-book="${id}" title="Edit in table" aria-label="Edit book in table">${uiIcon("pencil")}</button><button type="button" class="icon-btn" data-enrich-book="${id}" title="Find missing book details" aria-label="Find missing details for ${esc(b.title||"book")}">${uiIcon("refresh")}</button>${canDelete?`<button type="button" class="icon-btn danger" data-delete-book="${id}" title="Delete book" aria-label="Delete ${esc(b.title||"book")}">${uiIcon("trash")}</button>`:""}</div></article>`}).join("")+"</div>";
   renderPager("bookPager",bookPage,pages,p=>{bookPage=p;renderBooks();$("bookTable").scrollIntoView({block:"start",behavior:"smooth"})});return;
  }
  $("bookTable").className="tablewrap";
  let h='<table><thead><tr><th>No.</th><th>Book ID</th><th>Barcode</th><th>Title</th><th>Authors</th><th>Status</th><th>Borrower</th><th>Due</th><th>Shelf</th><th>Actions</th></tr></thead><tbody>';
- visible.slice(start,start+bookPageSize).forEach((b,i)=>{const id=esc(b.record_id),isBorrowed=b.book_status==="Borrowed";h+=`<tr><td data-label="No.">${start+i+1}</td><td data-label="Book ID">${esc(b.book_id||"")}</td><td data-label="Barcode">${esc(b.barcode||"")}</td><td data-label="Title" contenteditable="true" role="textbox" aria-label="Edit book title" data-book="${id}" data-field="title">${esc(b.title||"")}</td><td data-label="Authors">${esc(b.authors||"")}</td><td data-label="Status">${statusPill(b)}</td><td data-label="Borrower">${esc(b.borrower_name||"")}</td><td data-label="Due">${esc(b.due_date||"")}</td><td data-label="Shelf" contenteditable="true" role="textbox" aria-label="Edit shelf location" data-book="${id}" data-field="shelf_location">${esc(b.shelf_location||"")}</td><td data-label="Actions"><div class="action-cell"><button type="button" class="icon-btn" title="${isBorrowed?"Return":"Lend"} this copy" aria-label="${isBorrowed?"Return":"Lend"} ${esc(b.title||"book")}" data-${isBorrowed?"return":"lend"}-book="${id}">${uiIcon(isBorrowed?"arrow-down-left":"arrow-up-right")}</button><button type="button" class="icon-btn" title="Copy book ID" aria-label="Copy book ID" data-copy-book="${id}">${uiIcon("copy")}</button><button type="button" class="icon-btn" title="Find missing book details" aria-label="Find missing details for ${esc(b.title||"book")}" data-enrich-book="${id}">${uiIcon("refresh")}</button>${(b.user_id===session?.user?.id||session?.user?.id===libraryOwnerId)?`<button type="button" class="icon-btn danger" title="Delete book" aria-label="Delete ${esc(b.title||"book")}" data-delete-book="${id}">${uiIcon("trash")}</button>`:""}</div></td></tr>`});
+ visible.slice(start,start+bookPageSize).forEach((b,i)=>{const id=esc(b.record_id),isBorrowed=b.book_status==="Borrowed";h+=`<tr><td data-label="No.">${start+i+1}</td><td data-label="Book ID" title="Automatically assigned by Supabase; cannot be edited" data-book="${id}" data-field="book_id">${esc(b.book_id||"Pending ID")}</td><td data-label="Barcode">${esc(b.barcode||"")}</td><td data-label="Title">${esc(b.title||"")}</td><td data-label="Authors">${esc(b.authors||"")}</td><td data-label="Status">${statusPill(b)}</td><td data-label="Borrower">${esc(b.borrower_name||"")}</td><td data-label="Due">${esc(b.due_date||"")}</td><td data-label="Shelf" contenteditable="true" role="textbox" aria-label="Edit shelf location" data-book="${id}" data-field="shelf_location">${esc(b.shelf_location||"")}</td><td data-label="Actions"><div class="action-cell"><button type="button" class="icon-btn" title="${isBorrowed?"Return":"Lend"} this copy" aria-label="${isBorrowed?"Return":"Lend"} ${esc(b.title||"book")}" data-${isBorrowed?"return":"lend"}-book="${id}">${uiIcon(isBorrowed?"arrow-down-left":"arrow-up-right")}</button><button type="button" class="icon-btn" title="Copy book ID" aria-label="Copy book ID" data-copy-book="${id}">${uiIcon("copy")}</button><button type="button" class="icon-btn" title="Find missing book details" aria-label="Find missing details for ${esc(b.title||"book")}" data-enrich-book="${id}">${uiIcon("refresh")}</button>${(b.user_id===session?.user?.id||session?.user?.id===libraryOwnerId)?`<button type="button" class="icon-btn danger" title="Delete book" aria-label="Delete ${esc(b.title||"book")}" data-delete-book="${id}">${uiIcon("trash")}</button>`:""}</div></td></tr>`});
  h+='</tbody></table>';$("bookTable").innerHTML=h;renderPager("bookPager",bookPage,pages,p=>{bookPage=p;renderBooks();$("bookTable").scrollIntoView({block:"start",behavior:"smooth"})});
 }
 function renderLoans(){
@@ -358,6 +353,19 @@ async function lookupOpenLibraryISBN(code){
  const d=await browserMetaRequest("https://openlibrary.org/isbn/"+encodeURIComponent(code)+".json");if(![...(d.isbn_13||[]),...(d.isbn_10||[])].some(i=>sameIsbn(i,code)))return null;
  return{title:d.title||"",authors:d.by_statement||"",publisher:(d.publishers||[]).join("; "),publication_year:yearOnly(d.publish_date),language:(d.languages||[]).map(x=>String(x?.key||"").split("/").pop()).filter(Boolean).join(", "),pages:String(d.number_of_pages||""),subject:joinSubjects(d.subjects||[]),_source:"Open Library Edition"}
 }
+async function lookupOpenLibraryBooks(code){
+ const key="ISBN:"+code,u="https://openlibrary.org/api/books?bibkeys="+encodeURIComponent(key)+"&format=json&jscmd=data";
+ const d=await browserMetaRequest(u),r=d[key],ids=r?.identifiers||{};
+ if(!r?.title||![...(ids.isbn_13||[]),...(ids.isbn_10||[])].some(i=>sameIsbn(i,code)))return null;
+ return{title:r.title,authors:(r.authors||[]).map(x=>x.name||"").filter(Boolean).join("; "),publisher:(r.publishers||[]).map(x=>x.name||"").filter(Boolean).slice(0,3).join("; "),publication_year:yearOnly(r.publish_date),language:(r.languages||[]).map(x=>String(x?.key||"").split("/").pop()).filter(Boolean).join(", "),pages:String(r.number_of_pages||""),subject:joinSubjects(r.subjects||[]),_source:"Open Library Books API"}
+}
+async function lookupWikidata(code){
+ const query=`SELECT ?isbn ?bookLabel ?authorLabel ?publisherLabel ?publicationDate ?languageLabel ?subjectLabel WHERE { { ?book wdt:P212 ?isbn. } UNION { ?book wdt:P957 ?isbn. } FILTER(REPLACE(STR(?isbn), "-", "") = "${code}") OPTIONAL { ?book wdt:P50 ?author. } OPTIONAL { ?book wdt:P123 ?publisher. } OPTIONAL { ?book wdt:P577 ?publicationDate. } OPTIONAL { ?book wdt:P407 ?language. } OPTIONAL { ?book wdt:P921 ?subject. } SERVICE wikibase:label { bd:serviceParam wikibase:language "en". } } LIMIT 10`;
+ const u="https://query.wikidata.org/sparql?query="+encodeURIComponent(query)+"&format=json",d=await browserMetaRequest(u);
+ const rows=(d.results?.bindings||[]).filter(x=>sameIsbn(x.isbn?.value,code));if(!rows.length)return null;
+ const values=key=>[...new Set(rows.map(x=>x[key]?.value).filter(Boolean))].join("; ");
+ return{title:values("bookLabel"),authors:values("authorLabel"),publisher:values("publisherLabel"),publication_year:yearOnly(values("publicationDate")),language:values("languageLabel"),pages:"",subject:values("subjectLabel"),_source:"Wikidata"}
+}
 const metadataCache=new Map();
 async function lookupISBN(code){
  code=clean(code).toUpperCase();if(!validIsbn(code))return null;
@@ -370,7 +378,7 @@ async function lookupISBN(code){
    if(response.status===429||response.status===400)return null;
   }catch{}
   // Local HTML preview or temporarily unavailable Vercel backend: retain working direct lookup.
-  const results=await Promise.allSettled([lookupGoogleBooks(code),lookupOpenLibrarySearch(code)]),combined={},sources=[];
+  const results=await Promise.allSettled([lookupGoogleBooks(code),lookupOpenLibrarySearch(code),lookupOpenLibraryBooks(code),lookupWikidata(code)]),combined={},sources=[];
   results.forEach(r=>{if(r.status==='fulfilled'&&r.value?.title){mergeMeta(combined,r.value);sources.push(r.value._source)}});
   if(!combined.title||!combined.publisher){try{const edition=await lookupOpenLibraryISBN(code);if(edition?.title){mergeMeta(combined,edition);sources.push(edition._source)}}catch{}}
   return combined.title?{...combined,_sources:sources}:null;
@@ -401,104 +409,7 @@ async function enrichBook(recordId){
  googleBook(updated);await reloadAll();msg('Missing book details filled. Existing information was preserved.','ok');
  }catch(e){msg('Book lookup failed. No book data was changed: '+String(e?.message||e),'err')}finally{busy=false}
 }
-// A review-first bulk cleanup. Searches are read-only until a signed-in user confirms changes.
-let recoveringTitles=false,stopTitleRecovery=false,recoveryRows=[];
-function missingTitle(b){return !String(b.title||'').trim()}
-function recoveryStatus(text){$('titleRecoveryStatus').textContent=text}
-function recoveryControls(){
- const found=recoveryRows.filter(x=>x.title).length,selected=recoveryRows.filter(x=>x.title&&x.selected).length;
- $('selectRecoveredTitles').hidden=!found||recoveringTitles;
- $('clearRecoveredTitles').hidden=!found||recoveringTitles;
- $('saveRecoveredTitles').hidden=!found||recoveringTitles;
- $('saveRecoveredTitles').disabled=!selected;
- $('saveRecoveredTitles').textContent=`Save ${selected} selected title${selected===1?'':'s'}`;
- $('cancelTitleRecovery').hidden=!recoveringTitles;
- $('findMissingTitles').disabled=recoveringTitles;
-}
-function renderRecoveryRows(){
- const holder=$('titleRecoveryRows');holder.replaceChildren();
- for(const row of recoveryRows){
-  const item=document.createElement('div');item.className='title-recovery-item';
-  const label=document.createElement('label');label.className='title-recovery-choice';
-  const checkbox=document.createElement('input');checkbox.type='checkbox';checkbox.checked=!!row.selected;
-  checkbox.disabled=!row.title||recoveringTitles;checkbox.setAttribute('aria-label','Select title for '+row.bookId);
-  checkbox.addEventListener('change',()=>{row.selected=checkbox.checked;recoveryControls()});
-  const details=document.createElement('span');
-  const name=document.createElement('strong');name.textContent=row.title||'Title not found';
-  const barcode=document.createElement('small');barcode.textContent=`${row.bookId} · ISBN/barcode: ${row.barcode||'Missing'} · ${row.source||row.reason||'Needs manual review'}`;
-  details.append(name,barcode);label.append(checkbox,details);item.append(label);holder.append(item);
- }
- recoveryControls();
-}
-async function findMissingTitles(){
- if(!session?.user)return msg('Sign in first.','warn');
- if(recoveringTitles||busy)return msg('Finish the current operation first.','warn');
- const missing=books.filter(missingTitle);
- if(!missing.length)return msg('Every book already has a title.','ok');
- const activeUser=session.user.id;recoveryRows=[];recoveringTitles=true;stopTitleRecovery=false;
- $('titleRecoveryPanel').hidden=false;recoveryStatus(`Checking ${missing.length} untitled books. Nothing is being saved yet…`);recoveryControls();
- // Exact, unambiguous ISBN/barcode matches in the shared inventory can resolve without an external API.
- const known=new Map();for(const book of books){if(missingTitle(book))continue;const code=clean(book.barcode).toUpperCase();if(!code)continue;
-  if(!known.has(code))known.set(code,new Map());const text=String(book.title).trim();known.get(code).set(text.toLocaleLowerCase(),text);
- }
- const lookedUp=new Map();let done=0;
- try{
- for(const book of missing){
-  if(stopTitleRecovery||session?.user?.id!==activeUser)break;
-  const barcode=clean(book.barcode).toUpperCase(),titles=known.get(barcode),entry={recordId:book.record_id,bookId:book.book_id||book.record_id,barcode,title:'',source:'',reason:'',selected:false};
-  if(titles?.size===1){entry.title=[...titles.values()][0];entry.source='Matching inventory copy';}
-  else if(titles?.size>1){entry.reason='Conflicting titles for the same barcode. Review manually.';}
-  else if(!validIsbn(barcode)){entry.reason='Not a valid ISBN-10/13. Edit the title manually.';}
-  else{
-   if(!lookedUp.has(barcode)){
-    if(lookedUp.size){await new Promise(resolve=>setTimeout(resolve,2100));}
-    if(stopTitleRecovery||session?.user?.id!==activeUser)break;
-    try{lookedUp.set(barcode,await lookupISBN(barcode))}catch(e){lookedUp.set(barcode,null);entry.reason='Catalog lookup unavailable; try again later.'}
-   }
-   const info=lookedUp.get(barcode);
-   if(info?.title){entry.title=String(info.title).trim();entry.source=(info._sources||[]).join(' + ')||'Matched ISBN catalog';}
-   else if(!entry.reason)entry.reason='No matching title returned. Enter manually.';
-  }
-  entry.selected=!!entry.title;recoveryRows.push(entry);done++;
-  recoveryStatus(`Checked ${done}/${missing.length} books · ${recoveryRows.filter(x=>x.title).length} titles found. No changes saved.`);
-  renderRecoveryRows();
- }
- }finally{recoveringTitles=false;stopTitleRecovery=false;recoveryControls();renderRecoveryRows();}
- if(session?.user?.id!==activeUser){recoveryRows=[];renderRecoveryRows();return;}
- const found=recoveryRows.filter(x=>x.title).length,unresolved=recoveryRows.length-found;
- recoveryStatus(`${found} title${found===1?'':'s'} found; ${unresolved} need manual review.${done<missing.length?' Lookup stopped.':''} Select the correct results, then save.`);
-}
-async function saveRecoveredTitles(){
- if(!session?.user||busy||recoveringTitles)return msg('Sign in and finish any current operation first.','warn');
- const selected=recoveryRows.filter(x=>x.title&&x.selected);
- if(!selected.length)return msg('Select at least one matched title.','warn');
- if(!confirm(`Save ${selected.length} matched title${selected.length===1?'':'s'} to Supabase?\nOnly blank titles will be changed. Existing Book IDs, loan details and other fields stay the same.`))return;
- const activeUser=session.user.id;busy=true;$('saveRecoveredTitles').disabled=true;$('findMissingTitles').disabled=true;
- let saved=0,skipped=0,errors=0;
- try{
- for(const row of selected){
-  if(session?.user?.id!==activeUser)break;
-  try{
-   const {data:latest,error:readError}=await sb.from(BOOKS).select('record_id,book_id,barcode,title').eq('record_id',row.recordId).maybeSingle();
-   if(readError)throw readError;
-   if(!latest||!missingTitle(latest)||clean(latest.barcode).toUpperCase()!==row.barcode){skipped++;continue;}
-   const update=sb.from(BOOKS).update({title:row.title,lookup_status:'Title found: '+row.source,updated_at:new Date().toISOString()}).eq('record_id',row.recordId);
-   // Optimistic locking: do not overwrite a title entered by another staff member meanwhile.
-   const match=latest.title===null?update.is('title',null):update.eq('title',latest.title);
-   const {data:changed,error:writeError}=await match.select('*').maybeSingle();if(writeError)throw writeError;
-   if(!changed){skipped++;continue;}
-   googleBook(changed);saved++;row.selected=false;
-  }catch(e){errors++;console.warn('Title update failed',String(e?.message||e))}
-  recoveryStatus(`Saved ${saved}/${selected.length} titles · ${skipped} skipped · ${errors} errors…`);
- }
- await reloadAll();
- recoveryRows=recoveryRows.filter(x=>!books.some(b=>b.record_id===x.recordId&&!missingTitle(b)));
- renderRecoveryRows();
- recoveryStatus(`Finished: ${saved} titles saved, ${skipped} skipped, ${errors} failed. Unmatched books need manual entry.`);
- msg(errors?`Saved ${saved} titles; ${errors} updates failed. See the review panel.`:`Saved ${saved} titles to Supabase. Existing Book IDs and loan records were preserved.`,errors?'warn':'ok');
- }finally{busy=false;$('findMissingTitles').disabled=false;recoveryControls()}
-}
-async function addBook(code){if(!session?.user)return msg("Sign in first.","warn");code=clean(code);if(!code)return msg("No barcode detected.","warn");if(busy)return;busy=true;try{let n=new Date(),row={user_id:session.user.id,record_id:uuid(),scan_date:n.toLocaleDateString(),scan_time:n.toLocaleTimeString(),barcode:code,lookup_status:"Manual",book_status:"Available"};if(isISBN(code)){try{let info=await lookupISBN(code);if(info){let src=(info._sources||[]).join(" + ");delete info._sources;row={...row,...info,lookup_status:src?"Found: "+src:"Found"}}else row.lookup_status="Not found"}catch{row.lookup_status="Lookup error"}}let {data,error}=await sb.from(BOOKS).insert(row).select("*").single();if(error)return msg(error.message,"err");googleBook(data);await reloadAll();msg(sheetLinked()?"Book saved to Supabase • Google request submitted (not verified).":"Book saved to Supabase.","ok")}finally{busy=false}}
+async function addBook(code){if(!session?.user)return msg("Sign in first.","warn");code=clean(code);if(!code)return msg("No barcode detected.","warn");if(busy)return;busy=true;try{let n=new Date(),row={user_id:session.user.id,record_id:uuid(),scan_date:n.toLocaleDateString(),scan_time:n.toLocaleTimeString(),barcode:code,lookup_status:"Manual",book_status:"Available"};if(isISBN(code)){try{let info=await lookupISBN(code);if(info){let src=(info._sources||[]).join(" + ");delete info._sources;row={...row,...info,lookup_status:src?"Found: "+src:"Found"}}else row.lookup_status="Not found"}catch{row.lookup_status="Lookup error"}}let {data,error}=await sb.from(BOOKS).insert(row).select("*").single();if(error)return msg(error.message,"err");if(!data?.book_id)return msg('Supabase saved the book but did not return its Book ID. Refresh inventory and check before scanning again.','warn');googleBook(data);await reloadAll();msg(sheetLinked()?`Book ${data.book_id} saved to Supabase • Google request submitted (not verified).`:`Book ${data.book_id} saved to Supabase.`,"ok")}finally{busy=false}}
 // Book selectors always use the exact inventory record_id, NOT an ISBN or a potentially repeated Book ID.
 const pickerIds={lend:{search:"lendBookSearch",select:"lendBookSelect",count:"lendBookCount"},return:{search:"returnBookSearch",select:"returnBookSelect",count:"returnBookCount"}};
 function bookIsEligible(b,mode){return mode==="lend"?(b.book_status||"Available")==="Available":b.book_status==="Borrowed"}
@@ -692,7 +603,7 @@ function renderBatch(){
  let h=`<div class="batch-review-toolbar"><label class="batch-all-label"><input type="checkbox" id="batchSelectAllCheckbox" aria-label="Select all unsaved scanned books" ${unsaved.length&&unsaved.every(x=>x.selected)?'checked ':''}${locked||!unsaved.length?'disabled':''}><span>Select all scanned books</span></label><span class="batch-list-count">${batchItems.length} ${batchItems.length===1?'book':'books'} · One book per row</span></div><div class="batch-book-list" role="list">`;
  batchItems.forEach((x,i)=>{
   const validity=x.barcode&&x.shelf&&x.title;
-  const result=x.saved?'Saved':x.error?'Needs attention':x.duplicate?'Possible duplicate':validity?'Ready to save':'Missing details';
+  const result=x.saved?(x.book_id?`Saved · ${x.book_id}`:'Saved'):x.error?'Needs attention':x.duplicate?'Possible duplicate':validity?'Ready to save':'Missing details';
   const state=x.saved?'saved':x.error?'error':x.duplicate?'duplicate':validity?'ready':'incomplete';
   const field=(name,label,max)=>`<label class="batch-book-field"><span>${label}</span><input aria-label="${label} for ${batchAttr(x.fileName)}" data-batch-field="${name}" data-batch-index="${i}" maxlength="${max}" value="${batchAttr(x[name])}" ${x.saved?'disabled':''}></label>`;
   h+=`<article role="listitem" class="batch-book ${x.duplicate&&!x.saved?'batch-book-duplicate':''}" aria-label="Scanned book ${i+1}: ${batchAttr(x.fileName)}">
@@ -842,13 +753,14 @@ async function saveBatch(){
    const payload=slice.map(x=>({user_id:uploader,record_id:uuid(),scan_date:n.toLocaleDateString(),scan_time:n.toLocaleTimeString(),barcode:clean(x.barcode),title:x.title.trim(),authors:x.authors.trim()||null,publisher:x.publisher||null,publication_year:x.publication_year||null,language:x.language||null,pages:x.pages||null,subject:x.subject||null,shelf_location:x.shelf.trim(),lookup_status:x.lookup_status||'Batch upload',book_status:'Available'}));
    const batchResult=await sb.from(BOOKS).insert(payload).select('*');
    if(!batchResult.error){
-    (batchResult.data||[]).forEach((db,j)=>{slice[j].saved=true;slice[j].selected=false;slice[j].error='';count++;mirror.push(db)})
+    const byRecord=new Map((batchResult.data||[]).map(db=>[db.record_id,db]));
+    slice.forEach((item,j)=>{const db=byRecord.get(payload[j].record_id);if(db?.book_id){item.saved=true;item.book_id=db.book_id;item.selected=false;item.error='';count++;mirror.push(db)}else{item.error='Supabase did not return an assigned Book ID. Refresh inventory before retrying this photo.';item.selected=false;fail++}})
    }else{
     // If one row fails validation, save other valid rows individually.
     for(let j=0;j<payload.length;j++){
      const {data,error}=await sb.from(BOOKS).insert(payload[j]).select('*').single();
      if(error){slice[j].error='Supabase: '+error.message;slice[j].selected=false;fail++}
-     else{slice[j].saved=true;slice[j].selected=false;slice[j].error='';count++;mirror.push(data)}
+     else{slice[j].saved=true;slice[j].book_id=data.book_id;slice[j].selected=false;slice[j].error='';count++;mirror.push(data)}
     }
    }
    $("batchProgress").max=selected.length;$("batchProgress").value=Math.min(i+slice.length,selected.length);
@@ -921,11 +833,6 @@ function filterCommands(){const q=$("commandSearch").value.trim().toLowerCase();
 $("commandOpen").onclick=openCommands;$("commandClose").onclick=closeCommands;$("commandBackdrop").onclick=e=>{if(e.target===$("commandBackdrop"))closeCommands()};$("commandSearch").oninput=filterCommands;
 $("commandList").onclick=e=>{const action=e.target.closest("[data-command]");if(!action||action.hidden)return;const type=action.dataset.command;closeCommands();if(type==="theme")return $("themeToggle").click();if(type==="signin")return $("email").focus();if(!session?.user)return;switch(type){case "find":tab("inventory");$("bookSearch").focus();break;case "scan":tab("inventory");$("scanInventory").click();break;case "add":tab("inventory");$("manualBarcode").focus();break;case "lend":tab("lend");$("borrowerName").focus();break;case "return":tab("return");$("scanReturn").focus();break;case "overdue":$("overdueAlertAction").click();break;case "import":tab("inventory");$("batchHeading").scrollIntoView({behavior:"smooth",block:"start"});break;case "export":$("exportBooks").click();break;}}
 $("commandBackdrop").onkeydown=e=>{if(e.key==="Escape"){e.preventDefault();closeCommands()}else if(e.key==="Tab"){const items=[...$("commandBackdrop").querySelectorAll("button:not([hidden]):not([disabled]),input:not([hidden])")].filter(x=>x.getClientRects().length);if(!items.length)return;if(e.shiftKey&&document.activeElement===items[0]){e.preventDefault();items.at(-1).focus()}else if(!e.shiftKey&&document.activeElement===items.at(-1)){e.preventDefault();items[0].focus()}}};document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();$("commandBackdrop").hidden?openCommands():closeCommands()}else if(e.key==="Escape"&&!$("commandBackdrop").hidden){closeCommands()}});
-$('findMissingTitles').onclick=findMissingTitles;
-$('saveRecoveredTitles').onclick=saveRecoveredTitles;
-$('selectRecoveredTitles').onclick=()=>{recoveryRows.forEach(x=>{x.selected=!!x.title});renderRecoveryRows()};
-$('clearRecoveredTitles').onclick=()=>{recoveryRows.forEach(x=>{x.selected=false});renderRecoveryRows()};
-$('cancelTitleRecovery').onclick=()=>{stopTitleRecovery=true;recoveryStatus('Finishing the current lookup, then stopping…')};
 $("clearForm").onclick=()=>{$("metadataPreview").hidden=true;clearForms()};$("previewMetadata").onclick=previewISBN;
 $("clearLendBook").onclick=()=>{clearSelectedBook("lend");$("lendBookSearch").value="";renderBookPicker("lend");msg("Lending selection cleared.","ok")};
 $("clearReturnBook").onclick=()=>{clearSelectedBook("return");$("returnBookSearch").value="";renderBookPicker("return");msg("Return selection cleared.","ok")};
@@ -937,7 +844,7 @@ $("clearBooksKey").onclick=()=>{localStorage.removeItem(GOOGLE_BOOKS_KEY);$("goo
  $(ids.search).addEventListener("input",()=>{clearSelectedBook(mode);renderBookPicker(mode)});
  $(ids.select).addEventListener("change",e=>{
   const id=e.target.value;if(!id){clearSelectedBook(mode);return}
-  // Use the immutable row record ID, even when books share a title, ISBN or user-entered Book ID.
+  // Use the immutable row record ID, even when books share a title or ISBN.
   setSelectedBook(mode,books.find(b=>b.record_id===id));
  });
 });
@@ -951,7 +858,7 @@ $("bookTable").addEventListener("click",async e=>{
  const del=e.target.closest("[data-delete-book]");if(del)return deleteBookRecord(del.dataset.deleteBook);
  const lend=e.target.closest("[data-lend-book]");if(lend){const b=books.find(x=>x.record_id===lend.dataset.lendBook);if(b)return setSelectedBook("lend",b)}
  const ret=e.target.closest("[data-return-book]");if(ret){const b=books.find(x=>x.record_id===ret.dataset.returnBook);if(b)return setSelectedBook("return",b)}
- const edit=e.target.closest("[data-edit-book]");if(edit){setBookView("table");const td=$("bookTable").querySelector(`[data-book="${CSS.escape(edit.dataset.editBook)}"][data-field="title"]`);td?.focus();return}
+ const edit=e.target.closest("[data-edit-book]");if(edit){setBookView("table");const td=$("bookTable").querySelector(`[data-book="${CSS.escape(edit.dataset.editBook)}"][data-field="shelf_location"]`);td?.focus();return}
  const copy=e.target.closest("[data-copy-book]");if(copy){const b=books.find(x=>x.record_id===copy.dataset.copyBook);if(!b)return;const text=b.book_id||b.record_id;try{await navigator.clipboard.writeText(text);msg("Book ID copied to clipboard.","ok")}catch{msg("Copy not available here. Book ID: "+text,"warn")}}
 });
 $("showSignIn").onclick=()=>setAuthMode("signin");$("showSignUp").onclick=()=>setAuthMode("signup");
@@ -960,7 +867,7 @@ $("forgotPassword").onclick=forgotPassword;$("resendConfirmation").onclick=resen
 $("signOut").onclick=signOut;$("reload").onclick=reloadAll;$("reloadLoans").onclick=reloadAll;
 $("saveSheet").onclick=()=>{if(!session?.user)return msg("Sign in first.","warn");let s=$("sheetUrl").value.trim(),c=$("connectorUrl").value.trim(),t=$("connectorToken").value.trim();if(!parseSheetId(s))return msg("Enter a valid Google Sheet URL that you own.","warn");if(!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/i.test(c))return msg("Enter your deployed Apps Script URL ending in /exec.","warn");try{let u=new URL(c);t=t||u.searchParams.get("token")||""}catch{}if(!t)return msg("Add the token from your Code.gs in the token field, or append ?token=YOUR_TOKEN to the /exec link.","warn");localStorage.setItem(userSheetKey(),JSON.stringify({sheet:s,url:c,token:t}));updateSheetUI();msg("Your Google Sheet settings are saved on this device. Test Connection before using sync.","ok")};$("testSheet").onclick=googlePing;$("syncExisting").onclick=syncExisting;
 $("scanInventory").onclick=()=>$("inventoryCamera").click();$("scanLend").onclick=()=>$("lendCamera").click();$("scanReturn").onclick=()=>$("returnCamera").click();$("inventoryCamera").onchange=e=>scanFile(e.target.files?.[0],"inventory",$("inventoryPreview"));$("lendCamera").onchange=e=>scanFile(e.target.files?.[0],"lend",$("lendPreview"));$("returnCamera").onchange=e=>scanFile(e.target.files?.[0],"return",$("returnPreview"));$("addManual").onclick=()=>addBook($("manualBarcode").value);$("manualBarcode").onkeydown=e=>{if(e.key==="Enter")addBook($("manualBarcode").value)};$("confirmLend").onclick=confirmLend;$("confirmReturn").onclick=confirmReturn;$("dateBorrowed").value=today();$("dueDate").value=plusDays(today(),14);$("returnDate").value=today();
-$("bookTable").addEventListener("focusout",async e=>{let c=e.target.closest("[contenteditable]");if(!c||!session?.user)return;let val=c.innerText.trim();let upd={[c.dataset.field]:val||null,updated_at:new Date().toISOString()};let {data,error}=await sb.from(BOOKS).update(upd).eq("record_id",c.dataset.book).select("*").single();if(error)msg(error.message,"err");else{let b=books.find(x=>x.record_id===c.dataset.book);if(b)b[c.dataset.field]=val;googleBook(data);msg(sheetLinked()?"Book updated in Supabase • Google request submitted (not verified).":"Book updated in Supabase.","ok")}});
+$("bookTable").addEventListener("focusout",async e=>{let c=e.target.closest('[contenteditable][data-field="shelf_location"]');if(!c||!session?.user)return;let val=c.innerText.trim();let upd={shelf_location:val||null,updated_at:new Date().toISOString()};let {data,error}=await sb.from(BOOKS).update(upd).eq("record_id",c.dataset.book).select("*").single();if(error)msg(error.message,"err");else{let b=books.find(x=>x.record_id===c.dataset.book);if(b)b[c.dataset.field]=val;googleBook(data);msg(sheetLinked()?"Book updated in Supabase • Google request submitted (not verified).":"Book updated in Supabase.","ok")}});
 document.addEventListener("visibilitychange",()=>{if(!document.hidden&&session?.user)reloadAll()});$("exportBooks").onclick=()=>exportRows(books.map(b=>({Book_ID:b.book_id,Barcode:b.barcode,Title:b.title,Authors:b.authors,Publisher:b.publisher,Year:b.publication_year,Status:b.book_status,Borrower:b.borrower_name,Date_Borrowed:b.date_borrowed,Due_Date:b.due_date,Return_Date:b.return_date,Shelf:b.shelf_location})),"Library_Books");
 $("exportLoans").onclick=()=>exportRows(loans.map(l=>({Book:l.book_title,Book_ID:l.book_id,Barcode:l.barcode,Borrower:l.borrower_name,Date_Borrowed:l.date_borrowed,Due_Date:l.due_date,Return_Date:l.return_date,Status:isOverdue(l)?"Overdue":l.status})),"Loan_History");
 (async()=>{
