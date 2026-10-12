@@ -635,7 +635,7 @@ function renderBatch(){
   const field=(name,label,max)=>`<label class="batch-book-field"><span>${label}</span><input aria-label="${label} for ${batchAttr(x.fileName)}" data-batch-field="${name}" data-batch-index="${i}" maxlength="${max}" value="${batchAttr(x[name])}" ${x.saved?'disabled':''}></label>`;
   h+=`<article role="listitem" class="batch-book ${x.duplicate&&!x.saved?'batch-book-duplicate':''}" aria-label="Scanned book ${i+1}: ${batchAttr(x.fileName)}">
    <div class="batch-book-head"><label class="batch-book-check"><input type="checkbox" aria-label="Select book ${i+1}${x.duplicate?' (possible duplicate)':''}" data-batch-select="${i}" ${x.selected?'checked':''} ${x.saved||locked?'disabled':''}><span class="batch-book-number">${i+1}</span></label><div class="batch-book-source"><strong>${esc(x.fileName)}</strong><span class="batch-path">${esc(x.path)}</span></div><span class="batch-book-state ${state}">${result}</span></div>
-   <div class="batch-book-content"><img class="batch-book-photo" loading="lazy" alt="Original photo for ${batchAttr(x.fileName)}" src="${batchAttr(batchPreview(x))}"><div class="batch-book-fields">${field('shelf','Shelf / location',120)}${field('barcode','Barcode / ISBN',80)}${field('title','Book title',350)}${field('authors','Author',350)}</div></div>
+   <div class="batch-book-content"><img class="batch-book-photo" loading="lazy" alt="Original photo for ${batchAttr(x.fileName)}" src="${batchAttr(batchPreview(x))}"><div class="batch-book-fields">${field('shelf','Shelf / location',120)}<div class="batch-isbn-action">${field('barcode','Barcode / ISBN',80)}<button type="button" class="light batch-lookup-btn" data-batch-lookup="${i}" ${x.saved||locked?'disabled':''}>Find book details</button></div>${field('title','Book title',350)}${field('authors','Author',350)}</div></div>
    ${x.error?`<p class="batch-book-error" role="status">${esc(x.error)}</p>`:''}${!x.title&&x.lookup_status!=='Manual'?`<p class="batch-book-hint">Lookup: ${esc(x.lookup_status)}</p>`:''}${x.duplicate&&!x.saved?'<p class="batch-book-hint">Check whether this is a different physical copy before saving.</p>':''}
   </article>`;
  });
@@ -766,7 +766,7 @@ async function runBatch(){
     await batchLookUp(row);
     row.duplicate=batchDuplicate(row.barcode,row);
     row.error=!row.title?'Book title missing — enter it manually.':!row.shelf?'Shelf missing — enter the shelf / location.':'';
-    row.selected=!!(row.barcode&&row.shelf&&row.title&&!row.error&&!row.duplicate)
+    row.selected=!!(row.barcode&&row.shelf&&row.title&&!row.error)
    }catch(err){row.error=String(err?.message||err);row.selected=false}
    if(session?.user?.id!==uploader)break;
    batchItems.push(row);$("batchProgress").value=i+1;
@@ -818,7 +818,7 @@ async function saveBatch(){
     // If one row fails validation, save other valid rows individually.
     for(let j=0;j<payload.length;j++){
      const {data,error}=await sb.from(BOOKS).insert(payload[j]).select('*').single();
-     if(error){slice[j].error='Supabase: '+error.message;slice[j].selected=false;fail++}
+     if(error){slice[j].error=(error.code==='23505'?'Database unique constraint prevents another copy of this ISBN/barcode; apply the duplicate-copy SQL migration. ':'Supabase: ')+error.message;slice[j].selected=false;fail++}
      else if(!data?.book_id){slice[j].error='Supabase inserted the book but did not return a Book ID. Refresh inventory before retrying.';slice[j].selected=false;fail++}
      else{slice[j].saved=true;slice[j].book_id=data.book_id;slice[j].selected=false;slice[j].error='';count++;mirror.push(data)}
     }
@@ -852,6 +852,30 @@ $("batchSelectAll").onclick=batchSelectAll;
 $("batchSelectDuplicates").onclick=batchSelectDuplicates;
 $("batchDeselectAll").onclick=batchDeselectAll;
 $("batchRemoveSelected").onclick=batchRemoveSelected;
+async function batchLookupInCard(index){
+ const x=batchItems[index];
+ if(!x||x.saved||batchActive||batchSaving||batchZipLoading)return;
+ // Read the editable ISBN directly from this card, without requiring the top form.
+ const input=Array.from($("batchResults").querySelectorAll('[data-batch-field="barcode"]')).find(el=>Number(el.dataset.batchIndex)===index);
+ if(input)x.barcode=clean(input.value);
+ if(!x.barcode){x.error='ISBN/barcode missing — enter the number shown in this photo.';renderBatch();return}
+ x.error='';x.lookup_status='Looking up book details…';
+ const button=$("batchResults").querySelector(`[data-batch-lookup="${index}"]`);
+ if(button){button.disabled=true;button.textContent='Finding details…'}
+ await batchLookUp(x);
+ x.duplicate=batchDuplicate(x.barcode,x);
+ x.error=!x.title?'Book title not found automatically — type the title beside this photo.':!x.shelf?'Shelf / location missing.':'';
+ if(!x.error)x.selected=true;
+ renderBatch();
+ batchOutput(x.title?`Found details for ${x.fileName}. Check the title, then save this book${x.duplicate?' as another physical copy':''}.`:`No matching book title found for ${x.fileName}; enter the title manually in this same card.`);
+}
+$("batchResults").addEventListener('click',e=>{
+ const button=e.target.closest('[data-batch-lookup]');
+ if(button)batchLookupInCard(Number(button.dataset.batchLookup));
+});
+$("batchResults").addEventListener('keydown',e=>{
+ if(e.key==='Enter'&&e.target.matches('[data-batch-field="barcode"]')){e.preventDefault();batchLookupInCard(Number(e.target.dataset.batchIndex))}
+});
 $("batchResults").addEventListener('change',async e=>{
  if(e.target.id==='batchAttentionOnly'){batchAttentionOnly=e.target.checked;renderBatch();return}
  if(e.target.id==='batchSelectAllCheckbox'){e.target.checked?batchSelectAll():batchDeselectAll();return}
@@ -868,7 +892,7 @@ $("batchResults").addEventListener('change',async e=>{
  }
  x.duplicate=batchDuplicate(x.barcode,x);
  x.error=(!x.barcode?'Barcode missing — enter it from the photo.':!x.title?'Book title missing — enter it manually.':!x.shelf?'Shelf missing.':'');
- if(x.error)x.selected=false;
+ x.selected=!!(!x.error&&x.barcode&&x.title&&x.shelf);
  renderBatch()
 });
 
