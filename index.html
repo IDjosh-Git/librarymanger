@@ -142,7 +142,7 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 <div class="toolbar"><div class="search-wrap"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input id="bookSearch" type="search" placeholder="Search title, author, ISBN, ID, borrower or shelf…" aria-label="Search inventory"></div><div class="filter-row" role="group" aria-label="Filter books"><button class="filter-chip active" type="button" data-book-filter="all" aria-pressed="true">All books</button><button class="filter-chip" type="button" data-book-filter="available" aria-pressed="false">Available</button><button class="filter-chip" type="button" data-book-filter="borrowed" aria-pressed="false">On loan</button><button class="filter-chip" type="button" data-book-filter="overdue" aria-pressed="false">Overdue</button></div></div>
 <div class="inventory-options"><div class="select-control"><label for="bookSort">Sort by</label><select id="bookSort" aria-label="Sort inventory"><option value="newest">Recently added</option><option value="oldest">Oldest added</option><option value="title">Title A–Z</option><option value="shelf">Shelf A–Z</option><option value="due">Due date</option></select></div><div class="select-control"><label for="bookPageSize">Per page</label><select id="bookPageSize" aria-label="Books per page"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></div><div class="view-switch" role="group" aria-label="Inventory view"><button type="button" id="viewTable" aria-pressed="true" title="Table view" aria-label="Table view"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#list"></use></svg></button><button type="button" id="viewGrid" aria-pressed="false" title="Card view" aria-label="Card view"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg></button></div></div><div class="table-actions"><span id="bookTableMeta" class="table-meta" aria-live="polite">Newest books first</span><div class="row"><button id="clearFilters" type="button" class="light smallbtn">Clear filters</button><button id="exportBooks" type="button" class="light smallbtn"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export all · Excel</button></div></div><div id="bookTable" class="tablewrap"></div><div id="bookPager" class="pager" aria-label="Inventory pages"></div>
 <section class="batch-box" aria-labelledby="batchHeading">
- <div class="batch-head"><h3 id="batchHeading"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg> Import an entire shelf</h3><p>Choose image folders, a ZIP archive, or individual photos. Check every book before you save it.</p></div>
+ <div class="batch-head"><h3 id="batchHeading"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg> Import an entire shelf</h3><p>Choose folders larger than 1 GB (up to 4 GB of images), ZIP archives up to 2 GB, or photos. Unreadable images stay visible for manual ISBN entry. Large imports depend on available device memory.</p></div>
  <div class="batch-body">
   <div class="batch-picker">
     <label><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg> Upload folder<input id="batchFolder" aria-label="Upload barcode folder" type="file" accept="image/*" webkitdirectory directory multiple></label>
@@ -229,7 +229,7 @@ function sheetLinked(){return !!session?.user&&!!parseSheetId(sheetUrl())&&!!goo
 function updateSheetUI(){let linked=sheetLinked(),s=sheetSettings();$("sheetBadge").textContent=linked?"Linked • Sync enabled":"Not linked";$("sheetBadge").className=linked?"badge ok":"badge";$("sheetState").textContent=linked?"Your own Google Sheet is linked. Supabase is the shared main database.":"Optional: enter your OWN Google Sheet, deployed Apps Script /exec URL and matching token. Scanning does not require Google Sheets.";$("sheetUrl").value=s.sheet||"";$("connectorUrl").value=s.url||"";$("connectorToken").value=s.token||""}
 function authUI(){let signedIn=!!session?.user;$("authBadge").textContent=signedIn?"Signed in":"Own account required";$("authBadge").className=signedIn?"badge ok":"badge";$("loggedOut").hidden=signedIn;$("loggedIn").hidden=!signedIn;$("sheetBox").hidden=!signedIn;$("libraryArea").hidden=!signedIn;$("who").textContent=signedIn?session.user.email||"Signed in":"";updateSheetUI()}
 function setAuthMode(mode){authMode=mode;let creating=mode==="signup";$("signupFields").hidden=!creating;$("confirmPassword").required=creating;$("password").autocomplete=creating?"new-password":"current-password";$("password").minLength=creating?8:1;$("authSubmit").textContent=creating?"Create My Account":"Sign In";$("showSignIn").classList.toggle("active",!creating);$("showSignUp").classList.toggle("active",creating);$("showSignIn").setAttribute("aria-pressed",String(!creating));$("showSignUp").setAttribute("aria-pressed",String(creating));$("authIntro").textContent=creating?"Create your own login to scan into the shared library.":"Sign in with your own email and password."}
-function resetAccountState(){libraryOwnerId=null;books=[];loans=[];selectedLend=null;selectedReturn=null;$("lendCopyDetail").textContent="Select a copy to view its Book ID and shelf below.";$("returnCopyDetail").textContent="Select a borrowed copy to view its Book ID and borrower below.";$("lendBookSearch").value="";$("returnBookSearch").value="";$("lendBookDisplay").value="";$("lendBookId").value="";$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";batchStopRequested=true;batchQueue=[];batchItems=[];batchMetadataCache.clear();$("batchProgress").value=0;bookSearch="";loanSearch="";bookFilter="all";loanFilter="all";bookPage=1;loanPage=1;$("bookSearch").value="";$("loanSearch").value="";setPressed("book","all");setPressed("loan","all");renderBatch();renderAll()}
+function resetAccountState(){libraryOwnerId=null;books=[];loans=[];selectedLend=null;selectedReturn=null;$("lendCopyDetail").textContent="Select a copy to view its Book ID and shelf below.";$("returnCopyDetail").textContent="Select a borrowed copy to view its Book ID and borrower below.";$("lendBookSearch").value="";$("returnBookSearch").value="";$("lendBookDisplay").value="";$("lendBookId").value="";$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";batchStopRequested=true;batchQueue=[];releaseBatchPreviews();batchItems=[];batchMetadataCache.clear();$("batchProgress").value=0;bookSearch="";loanSearch="";bookFilter="all";loanFilter="all";bookPage=1;loanPage=1;$("bookSearch").value="";$("loanSearch").value="";setPressed("book","all");setPressed("loan","all");renderBatch();renderAll()}
 function authRedirectOptions(){if(!/^https?:$/.test(location.protocol))return {};return {emailRedirectTo:location.origin+location.pathname}}
 function authError(e){let text=e?.message||"Authentication failed.";if(/rate limit|email rate/i.test(text))text+=" Try later; if emails are limited, the project owner must configure SMTP in Supabase.";return text}
 function tab(name){requestAnimationFrame(updatePageControls);document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===name));document.querySelectorAll("[data-tab]").forEach(x=>{let a=x.dataset.tab===name;x.classList.toggle("active",a);x.setAttribute("aria-pressed",String(a));x.setAttribute("aria-current",a?"page":"false")});document.querySelectorAll("[data-gotab]").forEach(x=>{let a=x.dataset.gotab===name;x.classList.toggle("active",a);x.setAttribute("aria-current",a?"page":"false")})}document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>tab(b.dataset.tab));document.querySelectorAll("[data-gotab]").forEach(b=>b.onclick=()=>tab(b.dataset.gotab));
@@ -561,13 +561,26 @@ async function deleteBookRecord(recordId){
  let {error}=await sb.from(BOOKS).delete().eq("record_id",recordId);if(error)return msg(error.message,"err");
  googleDeleteBook(recordId);await reloadAll();msg(sheetLinked()?"Book deleted from Supabase • Google request submitted (not verified).":"Book deleted from Supabase.","ok")
 }
-async function scanFile(file,mode,preview){if(!file)return;if(!window.Html5Qrcode)return msg("Barcode reader did not load. Check your internet connection and reload.","err");let u=URL.createObjectURL(file);preview.src=u;preview.style.display="block";msg("Reading barcode...");try{let q=new Html5Qrcode("decoder"),code=await q.scanFile(file,true);try{await q.clear()}catch{}if(mode==="inventory")await addBook(code);else if(mode==="lend")await selectLend(code);else await selectReturn(code)}catch{msg("Could not read barcode. Retake the photo closer and straight.","warn")}finally{setTimeout(()=>URL.revokeObjectURL(u),4000)}}
+async function scanFile(file,mode,preview){
+ if(!file)return;
+ const url=URL.createObjectURL(file);preview.src=url;preview.style.display='block';msg('Reading image…');
+ try{
+  let code=await decodeBatchBarcode(file);
+  if(!code)code=clean(prompt('No barcode was recognized automatically. View the photo and enter its ISBN or barcode (or Cancel):','')||'');
+  if(!code)return msg('Image kept in preview; no book added. Use manual ISBN entry when ready.','warn');
+  if(mode==='inventory')await addBook(code);else if(mode==='lend')await selectLend(code);else await selectReturn(code);
+ }catch(err){msg('Could not process the image: '+String(err?.message||err),'warn')}
+ finally{setTimeout(()=>URL.revokeObjectURL(url),60000)}
+}
 function exportRows(rows,name){if(!rows.length)return msg("Nothing to export.","warn");if(!window.XLSX)return msg("Excel export library did not load. Check your internet connection and reload.","err");let wb=XLSX.utils.book_new(),ws=XLSX.utils.json_to_sheet(rows);XLSX.utils.book_append_sheet(wb,ws,name);XLSX.writeFile(wb,name+"_"+today()+".xlsx")}
 
 
 /* Batch import. Each physical barcode photo creates at most one book row. */
-const BATCH_MAX_FILES=500,BATCH_MAX_IMAGE=20*1024*1024,BATCH_MAX_ZIP=100*1024*1024,BATCH_MAX_TOTAL=250*1024*1024;
-let batchItems=[],batchQueue=[],batchActive=false,batchSaving=false,batchStopRequested=false,batchCounter=0,batchZipLoading=false;
+const BATCH_MAX_FILES=12000,BATCH_MAX_IMAGE=60*1024*1024,BATCH_MAX_ZIP=2*1024*1024*1024,BATCH_MAX_TOTAL=4*1024*1024*1024;
+const batchImageUrls=new Map();
+function batchPreview(x){if(!x?.file)return "";if(!batchImageUrls.has(x.file))batchImageUrls.set(x.file,URL.createObjectURL(x.file));return batchImageUrls.get(x.file)}
+function releaseBatchPreviews(){for(const url of batchImageUrls.values())URL.revokeObjectURL(url);batchImageUrls.clear()}
+let batchAttentionOnly=false,batchItems=[],batchQueue=[],batchActive=false,batchSaving=false,batchStopRequested=false,batchCounter=0,batchZipLoading=false;
 const batchMetadataCache=new Map();
 function batchShelf(path,fallback="",source="photos"){
  const bits=String(path||"").replace(/\\/g,"/").split("/").filter(x=>x&&x!=="."&&x!=="..");
@@ -589,7 +602,7 @@ function batchSummary(){
  refreshBatchDuplicates();
  const done=batchItems.filter(x=>x.saved).length;
  const ready=batchItems.filter(batchValid).length;
- const failed=batchItems.filter(x=>!x.saved&&x.error).length;
+ const failed=batchItems.filter(x=>!x.saved&&(!x.barcode||!x.title||!x.shelf||x.error)).length;
  const selected=batchItems.filter(x=>!x.saved&&x.selected).length;
  const dup=batchItems.filter(x=>!x.saved&&x.duplicate).length;
  const selectableDuplicates=batchItems.filter(x=>!x.saved&&x.duplicate).length;
@@ -613,15 +626,16 @@ function renderBatch(){
  if(!batchItems.length){$("batchResults").innerHTML='<div class="empty">No barcode photos selected yet.</div>';return}
  const locked=batchActive||batchSaving||batchZipLoading;
  const unsaved=batchItems.filter(x=>!x.saved);
- let h=`<div class="batch-review-toolbar"><label class="batch-all-label"><input type="checkbox" id="batchSelectAllCheckbox" aria-label="Select all unsaved scanned books" ${unsaved.length&&unsaved.every(x=>x.selected)?'checked ':''}${locked||!unsaved.length?'disabled':''}><span>Select all scanned books</span></label><span class="batch-list-count">${batchItems.length} ${batchItems.length===1?'book':'books'} · One book per row</span></div><div class="batch-book-list" role="list">`;
+ let h=`<div class="batch-review-toolbar"><label class="batch-attention-filter"><input type="checkbox" id="batchAttentionOnly" ${batchAttentionOnly?"checked":""}> Show only books needing attention (with photos)</label><label class="batch-all-label"><input type="checkbox" id="batchSelectAllCheckbox" aria-label="Select all unsaved scanned books" ${unsaved.length&&unsaved.every(x=>x.selected)?'checked ':''}${locked||!unsaved.length?'disabled':''}><span>Select all scanned books</span></label><span class="batch-list-count">${batchItems.length} ${batchItems.length===1?'book':'books'} · One book per row</span></div><div class="batch-book-list" role="list">`;
  batchItems.forEach((x,i)=>{
+  if(batchAttentionOnly&&(x.saved||(x.barcode&&x.shelf&&x.title&&!x.error)))return;
   const validity=x.barcode&&x.shelf&&x.title;
   const result=x.saved?(x.book_id?`Saved · ${x.book_id}`:'Saved'):x.error?'Needs attention':x.duplicate?'Possible duplicate':validity?'Ready to save':'Missing details';
   const state=x.saved?'saved':x.error?'error':x.duplicate?'duplicate':validity?'ready':'incomplete';
   const field=(name,label,max)=>`<label class="batch-book-field"><span>${label}</span><input aria-label="${label} for ${batchAttr(x.fileName)}" data-batch-field="${name}" data-batch-index="${i}" maxlength="${max}" value="${batchAttr(x[name])}" ${x.saved?'disabled':''}></label>`;
   h+=`<article role="listitem" class="batch-book ${x.duplicate&&!x.saved?'batch-book-duplicate':''}" aria-label="Scanned book ${i+1}: ${batchAttr(x.fileName)}">
    <div class="batch-book-head"><label class="batch-book-check"><input type="checkbox" aria-label="Select book ${i+1}${x.duplicate?' (possible duplicate)':''}" data-batch-select="${i}" ${x.selected?'checked':''} ${x.saved||locked?'disabled':''}><span class="batch-book-number">${i+1}</span></label><div class="batch-book-source"><strong>${esc(x.fileName)}</strong><span class="batch-path">${esc(x.path)}</span></div><span class="batch-book-state ${state}">${result}</span></div>
-   <div class="batch-book-fields">${field('shelf','Shelf / location',120)}${field('barcode','Barcode / ISBN',80)}${field('title','Book title',350)}${field('authors','Author',350)}</div>
+   <div class="batch-book-content"><img class="batch-book-photo" loading="lazy" alt="Original photo for ${batchAttr(x.fileName)}" src="${batchAttr(batchPreview(x))}"><div class="batch-book-fields">${field('shelf','Shelf / location',120)}${field('barcode','Barcode / ISBN',80)}${field('title','Book title',350)}${field('authors','Author',350)}</div></div>
    ${x.error?`<p class="batch-book-error" role="status">${esc(x.error)}</p>`:''}${!x.title&&x.lookup_status!=='Manual'?`<p class="batch-book-hint">Lookup: ${esc(x.lookup_status)}</p>`:''}${x.duplicate&&!x.saved?'<p class="batch-book-hint">Check whether this is a different physical copy before saving.</p>':''}
   </article>`;
  });
@@ -639,10 +653,10 @@ function setBatchQueue(files,source){
  const fallback=$("batchDefaultShelf").value.trim();
  if(!eligible.length)return batchOutput('No JPG, PNG or WebP pictures found.');
  if(eligible.length>BATCH_MAX_FILES)return batchOutput(`Limit each batch to ${BATCH_MAX_FILES} pictures; split your folder or ZIP.`);
- if(eligible.some(x=>x.size>BATCH_MAX_IMAGE))return batchOutput('At least one image is over 20 MB. Compress large photos and retry.');
- if(eligible.reduce((s,x)=>s+x.size,0)>BATCH_MAX_TOTAL)return batchOutput('Pictures exceed the 250 MB batch limit. Split into smaller batches.');
+ if(eligible.some(x=>x.size>BATCH_MAX_IMAGE))return batchOutput('An individual image exceeds 60 MB; reduce that image size.');
+ if(eligible.reduce((s,x)=>s+x.size,0)>BATCH_MAX_TOTAL)return batchOutput('Pictures exceed the 4 GB batch limit. Split into smaller batches.');
  if(batchItems.length && !confirm('Replace the current review list? Any unsaved results will be lost.'))return;
- batchItems=[];batchMetadataCache.clear();
+ releaseBatchPreviews();batchItems=[];batchMetadataCache.clear();
  batchQueue=eligible.map(x=>({...x,shelf:batchShelf(x.path,fallback,source),source}));
  batchStopRequested=false;
  $("batchProgress").max=batchQueue.length;$("batchProgress").value=0;
@@ -654,7 +668,7 @@ async function batchZipFiles(file){
  if(!session?.user)return batchOutput('Sign in first.');
  const uploader=session.user.id;
  if(batchActive||batchSaving||batchZipLoading)return;
- if(file.size>BATCH_MAX_ZIP)return batchOutput('ZIP is over 100 MB. Split it into smaller archives.');
+ if(file.size>BATCH_MAX_ZIP)return batchOutput('ZIP is over 2 GB. Split into smaller archives. Large ZIP files require sufficient browser memory.');
  if(!window.JSZip)return batchOutput('ZIP reader did not load. Check your internet connection and reload the app.');
  batchZipLoading=true;batchOutput('Opening ZIP archive…');renderBatch();
  try{
@@ -662,11 +676,11 @@ async function batchZipFiles(file){
   if(!entries.length)return batchOutput('No JPG, PNG or WebP photos found in ZIP.');
   if(entries.length>BATCH_MAX_FILES)return batchOutput(`ZIP contains over ${BATCH_MAX_FILES} photos. Split it into smaller ZIPs.`);
   const sizes=entries.map(x=>Number(x._data?.uncompressedSize)||0);
-  if(sizes.some(n=>n>BATCH_MAX_IMAGE)||sizes.reduce((a,b)=>a+b,0)>BATCH_MAX_TOTAL)return batchOutput('ZIP contains oversized images or more than 250 MB unpacked. Split/compress it.');
+  if(sizes.some(n=>n>BATCH_MAX_IMAGE)||sizes.reduce((a,b)=>a+b,0)>BATCH_MAX_TOTAL)return batchOutput('ZIP contains an image over 60 MB or more than 4 GB unpacked.');
   const rows=[];
   for(const x of entries){
    const blob=await x.async('blob');
-   if(blob.size>BATCH_MAX_IMAGE)return batchOutput('An image in ZIP exceeds 20 MB.');
+   if(blob.size>BATCH_MAX_IMAGE)return batchOutput('An image in ZIP exceeds 60 MB.');
    const path=x.name.replace(/\\/g,'/');
    rows.push({file:new File([blob],path.split('/').pop(),{type:batchMime(path)}),path,size:blob.size});
   }
@@ -677,23 +691,43 @@ async function batchZipFiles(file){
 }
 function batchMime(path){return /\.png$/i.test(path)?'image/png':/\.webp$/i.test(path)?'image/webp':'image/jpeg'}
 async function decodeBatchBarcode(file){
- let nativeFailure=null;
- if(typeof BarcodeDetector!=='undefined' && typeof createImageBitmap==='function'){
-  let image;
-  try{
-   image=await createImageBitmap(file);
-   const d=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e','code_128','code_39','itf']});
-   const found=await d.detect(image);
-   if(found.length>1)throw new Error('Multiple barcodes in one photo; retake with one barcode only.');
-   if(found.length===1)return clean(found[0].rawValue);
-  }catch(err){nativeFailure=err; if(/Multiple barcodes/.test(err?.message||''))throw err}
-  finally{image?.close?.()}
+ // Accept multiple barcodes, arbitrary rotation and ordinary cover images. The image is
+ // never rejected merely for its shape; unreadable photos go to manual review.
+ const candidates=[];
+ const add=values=>{for(const result of values||[]){const code=clean(result.rawValue||result);if(code&&!candidates.includes(code))candidates.push(code)}};
+ let bitmap=null;
+ try{
+  if(typeof createImageBitmap==='function')bitmap=await createImageBitmap(file);
+  if(bitmap&&typeof BarcodeDetector!=='undefined'){
+   const supported=await BarcodeDetector.getSupportedFormats?.()||[];
+   const formats=['ean_13','ean_8','upc_a','upc_e','code_128','code_39','code_93','itf','codabar','qr_code','data_matrix','pdf417','aztec'].filter(f=>supported.includes(f));
+   if(formats.length){
+    const detector=new BarcodeDetector({formats});
+    try{add(await detector.detect(bitmap))}catch{}
+    // Rotate and downscale only when needed; scan both the whole photo and its central crop.
+    if(!candidates.length){
+     const maxSide=2200,scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
+     for(const degrees of [0,90,180,270]){
+      if(candidates.length)break;
+      const rotated=degrees===90||degrees===270;
+      const canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round((rotated?bitmap.height:bitmap.width)*scale));canvas.height=Math.max(1,Math.round((rotated?bitmap.width:bitmap.height)*scale));
+      const ctx=canvas.getContext('2d',{willReadFrequently:true});
+      ctx.translate(canvas.width/2,canvas.height/2);ctx.rotate(degrees*Math.PI/180);
+      ctx.drawImage(bitmap,-bitmap.width*scale/2,-bitmap.height*scale/2,bitmap.width*scale,bitmap.height*scale);
+      try{add(await detector.detect(canvas))}catch{}
+     }
+    }
+   }
+  }
+ }catch{}finally{bitmap?.close?.()}
+ if(candidates.length){const preferred=candidates.find(c=>validIsbn(normalizeIsbn(c)))||candidates.find(c=>/^97[89]\d{10}$/.test(c))||candidates[0];return preferred}
+ if(window.Html5Qrcode){
+  const reader=new Html5Qrcode('decoder',{verbose:false});
+  try{return clean(await reader.scanFile(file,true))}catch{}
+  finally{try{await reader.clear()}catch{}}
  }
- if(!window.Html5Qrcode)throw new Error('Barcode decoder did not load. Check your internet connection.');
- const reader=new Html5Qrcode('decoder',{verbose:false});
- try{return clean(await reader.scanFile(file,true))}
- catch(err){throw new Error('Barcode unreadable. Retake a sharp, close photo or type its number below.')}
- finally{try{await reader.clear()}catch{}}
+ // Do not throw a retake/shape error: the reviewer can see the original and type its code.
+ return '';
 }
 async function batchLookUp(row){
  const isbn=normalizeIsbn(row.barcode);if(!isISBN(isbn)){const suggestion=suggestIsbnCorrection(isbn);row.lookup_status=suggestion?'Invalid ISBN; possible check digit: '+suggestion:'Barcode is not an ISBN';return}
@@ -725,10 +759,10 @@ async function runBatch(){
   for(let i=0;i<queue.length;i++){
    if(batchStopRequested||session?.user?.id!==uploader){batchOutput(`Stopped after ${i} of ${queue.length} pictures. Review the completed scans.`);break}
    const item=queue[i];batchOutput(`Scanning ${i+1}/${queue.length}: ${item.path}`);
-   const row={fileName:item.file.name,path:item.path,shelf:item.shelf,barcode:'',title:'',authors:'',publisher:'',publication_year:'',language:'',pages:'',subject:'',lookup_status:'Manual',error:'',duplicate:false,selected:false,saved:false};
+   const row={file:item.file,fileName:item.file.name,path:item.path,shelf:item.shelf,barcode:'',title:'',authors:'',publisher:'',publication_year:'',language:'',pages:'',subject:'',lookup_status:'Manual',error:'',duplicate:false,selected:false,saved:false};
    try{
     row.barcode=await decodeBatchBarcode(item.file);
-    if(!row.barcode)throw new Error('No barcode detected.');
+    if(!row.barcode)throw new Error('No barcode recognized automatically. Read ISBN/barcode from the picture and enter it below.');
     await batchLookUp(row);
     row.duplicate=batchDuplicate(row.barcode,row);
     row.error=!row.title?'Book title missing — enter it manually.':!row.shelf?'Shelf missing — enter the shelf / location.':'';
@@ -752,6 +786,7 @@ function batchRemoveSelected(){
  if(!selected.length)return;
  if(!confirm(`Remove ${selected.length} selected photo${selected.length===1?'':'s'} from this review list? This does NOT delete books from Supabase.`))return;
  const removed=new Set(selected);
+ selected.forEach(x=>{const u=batchImageUrls.get(x.file);if(u){URL.revokeObjectURL(u);batchImageUrls.delete(x.file)}});
  batchItems=batchItems.filter(x=>!removed.has(x));
  batchOutput(`Removed ${selected.length} photo${selected.length===1?'':'s'} from this review list. No Supabase records were deleted.`);
  renderBatch();
@@ -804,7 +839,7 @@ async function saveBatch(){
  }catch(err){batchOutput('Batch save stopped: '+String(err?.message||err)+'. Successfully saved rows remain saved.')}
  finally{batchSaving=false;renderBatch()}
 }
-function clearBatch(){if(batchActive||batchSaving||batchZipLoading)return;batchItems=[];batchQueue=[];batchMetadataCache.clear();batchStopRequested=false;$("batchFolder").value='';$("batchZip").value='';$("batchPhotos").value='';$("batchProgress").value=0;batchOutput('Batch cleared. No Supabase records were deleted.');renderBatch()}
+function clearBatch(){if(batchActive||batchSaving||batchZipLoading)return;releaseBatchPreviews();batchItems=[];batchQueue=[];batchMetadataCache.clear();batchStopRequested=false;$("batchFolder").value='';$("batchZip").value='';$("batchPhotos").value='';$("batchProgress").value=0;batchOutput('Batch cleared. No Supabase records were deleted.');renderBatch()}
 $("batchFolder").onchange=e=>{const f=Array.from(e.target.files||[]);setBatchQueue(f.map(file=>({file,path:file.webkitRelativePath||file.name,size:file.size})),'folder');e.target.value=''};
 $("batchZip").onchange=e=>{const f=e.target.files?.[0];batchZipFiles(f);e.target.value=''};
 $("batchPhotos").onchange=e=>{const f=Array.from(e.target.files||[]);setBatchQueue(f.map(file=>({file,path:file.name,size:file.size})),'photos');e.target.value=''};
@@ -818,6 +853,7 @@ $("batchSelectDuplicates").onclick=batchSelectDuplicates;
 $("batchDeselectAll").onclick=batchDeselectAll;
 $("batchRemoveSelected").onclick=batchRemoveSelected;
 $("batchResults").addEventListener('change',async e=>{
+ if(e.target.id==='batchAttentionOnly'){batchAttentionOnly=e.target.checked;renderBatch();return}
  if(e.target.id==='batchSelectAllCheckbox'){e.target.checked?batchSelectAll():batchDeselectAll();return}
  const ch=e.target.closest('[data-batch-select]');
  if(ch){const x=batchItems[Number(ch.dataset.batchSelect)];if(x&&!x.saved)x.selected=!!ch.checked;batchSummary();return}
@@ -831,7 +867,7 @@ $("batchResults").addEventListener('change',async e=>{
   if(x.barcode&&!x.title)await batchLookUp(x);
  }
  x.duplicate=batchDuplicate(x.barcode,x);
- x.error=(!x.barcode?'Barcode missing.':!x.title?'Book title missing — enter it manually.':!x.shelf?'Shelf missing.':'');
+ x.error=(!x.barcode?'Barcode missing — enter it from the photo.':!x.title?'Book title missing — enter it manually.':!x.shelf?'Shelf missing.':'');
  if(x.error)x.selected=false;
  renderBatch()
 });

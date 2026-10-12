@@ -176,3 +176,10 @@ header{background:linear-gradient(115deg,#10392f 0%,#165c4d 56%,#278469 100%)}
 @media(max-width:650px){
  #libraryArea>.pad{padding:13px}
 }
+
+/* Batch photo review and attention queue */
+.batch-book-content{display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap;margin-top:12px}
+.batch-book-photo{display:block;width:165px;max-width:100%;height:185px;object-fit:contain;border-radius:10px;background:var(--surface,#f4f6f5);border:1px solid #b9c9c5;flex-shrink:0}
+.batch-book-content .batch-book-fields{flex:1;min-width:min(300px,100%)}
+.batch-attention-filter{display:flex;align-items:center;gap:8px;font-weight:650;cursor:pointer}
+@media(max-width:650px){.batch-book-photo{width:100%;height:240px}.batch-book-content .batch-book-fields{min-width:100%}}
