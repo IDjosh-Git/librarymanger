@@ -567,10 +567,12 @@ function exportRows(rows,name){if(!rows.length)return msg("Nothing to export.","
 
 /* Batch import. Each physical barcode photo creates at most one book row. */
 const BATCH_MAX_FILES=500,BATCH_MAX_IMAGE=20*1024*1024,BATCH_MAX_ZIP=100*1024*1024,BATCH_MAX_TOTAL=250*1024*1024;
-let batchItems=[],batchQueue=[],batchActive=false,batchSaving=false,batchStopRequested=false,batchCounter=0;
+let batchItems=[],batchQueue=[],batchActive=false,batchSaving=false,batchStopRequested=false,batchCounter=0,batchZipLoading=false;
 const batchMetadataCache=new Map();
-function batchShelf(path,fallback=""){
+function batchShelf(path,fallback="",source="photos"){
  const bits=String(path||"").replace(/\\/g,"/").split("/").filter(x=>x&&x!=="."&&x!=="..");
+ // Nested folder names indicate shelves. At the root, an explicit default shelf wins.
+ if(source==="folder"&&bits.length===2&&String(fallback||"").trim())return String(fallback).trim();
  return bits.length>1?bits[bits.length-2].trim():String(fallback||"").trim()
 }
 function batchAttr(v){return esc(v).replace(/"/g,"&quot;").replace(/'/g,"&#39;")}
@@ -591,7 +593,7 @@ function batchSummary(){
  const selected=batchItems.filter(x=>!x.saved&&x.selected).length;
  const dup=batchItems.filter(x=>!x.saved&&x.duplicate).length;
  const selectableDuplicates=batchItems.filter(x=>!x.saved&&x.duplicate).length;
- const locked=batchActive||batchSaving;
+ const locked=batchActive||batchSaving||batchZipLoading;
  $("batchSummary").innerHTML=`<span>${batchItems.length} photos</span><span>${ready} complete</span><span>${failed} need attention</span><span>${dup} possible duplicates</span><span>${selected} selected</span><span>${done} saved</span>`;
  $("batchSave").disabled=locked||selected===0;
  $("batchStart").disabled=locked||!batchQueue.length;
@@ -609,7 +611,7 @@ function batchSummary(){
 function renderBatch(){
  batchSummary();
  if(!batchItems.length){$("batchResults").innerHTML='<div class="empty">No barcode photos selected yet.</div>';return}
- const locked=batchActive||batchSaving;
+ const locked=batchActive||batchSaving||batchZipLoading;
  const unsaved=batchItems.filter(x=>!x.saved);
  let h=`<div class="batch-review-toolbar"><label class="batch-all-label"><input type="checkbox" id="batchSelectAllCheckbox" aria-label="Select all unsaved scanned books" ${unsaved.length&&unsaved.every(x=>x.selected)?'checked ':''}${locked||!unsaved.length?'disabled':''}><span>Select all scanned books</span></label><span class="batch-list-count">${batchItems.length} ${batchItems.length===1?'book':'books'} · One book per row</span></div><div class="batch-book-list" role="list">`;
  batchItems.forEach((x,i)=>{
@@ -631,7 +633,7 @@ function renderBatch(){
 }
 
 function setBatchQueue(files,source){
- if(batchActive||batchSaving)return batchOutput('Finish or stop the current batch first.');
+ if(batchActive||batchSaving||(batchZipLoading&&source!=='ZIP'))return batchOutput('Finish the current batch or ZIP import first.');
  if(!session?.user)return batchOutput('Sign in to Supabase before uploading.');
  const eligible=files.filter(x=>batchImageName(x.path));
  const fallback=$("batchDefaultShelf").value.trim();
@@ -641,7 +643,7 @@ function setBatchQueue(files,source){
  if(eligible.reduce((s,x)=>s+x.size,0)>BATCH_MAX_TOTAL)return batchOutput('Pictures exceed the 250 MB batch limit. Split into smaller batches.');
  if(batchItems.length && !confirm('Replace the current review list? Any unsaved results will be lost.'))return;
  batchItems=[];batchMetadataCache.clear();
- batchQueue=eligible.map(x=>({...x,shelf:batchShelf(x.path,fallback),source}));
+ batchQueue=eligible.map(x=>({...x,shelf:batchShelf(x.path,fallback,source),source}));
  batchStopRequested=false;
  $("batchProgress").max=batchQueue.length;$("batchProgress").value=0;
  batchOutput(`${batchQueue.length} photos selected. Press “Scan selected images”.`);
@@ -651,10 +653,10 @@ async function batchZipFiles(file){
  if(!file)return;
  if(!session?.user)return batchOutput('Sign in first.');
  const uploader=session.user.id;
- if(batchActive||batchSaving)return;
+ if(batchActive||batchSaving||batchZipLoading)return;
  if(file.size>BATCH_MAX_ZIP)return batchOutput('ZIP is over 100 MB. Split it into smaller archives.');
  if(!window.JSZip)return batchOutput('ZIP reader did not load. Check your internet connection and reload the app.');
- batchOutput('Opening ZIP archive…');
+ batchZipLoading=true;batchOutput('Opening ZIP archive…');renderBatch();
  try{
   const zip=await JSZip.loadAsync(file,{checkCRC32:false}),entries=Object.values(zip.files).filter(x=>!x.dir&&batchImageName(x.name)&&!x.name.includes('__MACOSX/'));
   if(!entries.length)return batchOutput('No JPG, PNG or WebP photos found in ZIP.');
@@ -671,6 +673,7 @@ async function batchZipFiles(file){
   if(session?.user?.id!==uploader)return batchOutput('Account changed. ZIP import cancelled.');
   setBatchQueue(rows,'ZIP')
  }catch(err){batchOutput('Could not open ZIP: '+String(err?.message||err))}
+ finally{batchZipLoading=false;renderBatch()}
 }
 function batchMime(path){return /\.png$/i.test(path)?'image/png':/\.webp$/i.test(path)?'image/webp':'image/jpeg'}
 async function decodeBatchBarcode(file){
@@ -713,7 +716,7 @@ async function batchLookUp(row){
 }
 function batchDuplicate(code,row){return !!code&&(books.some(b=>clean(b.barcode)===code)||batchItems.some(b=>b!==row&&b.barcode===code))}
 async function runBatch(){
- if(!session?.user||batchActive||batchSaving||!batchQueue.length)return;
+ if(!session?.user||batchActive||batchSaving||batchZipLoading||!batchQueue.length)return;
  const uploader=session.user.id;
  batchActive=true;batchStopRequested=false;batchItems=[];
  const queue=batchQueue;$("batchProgress").max=queue.length;$("batchProgress").value=0;
@@ -728,8 +731,8 @@ async function runBatch(){
     if(!row.barcode)throw new Error('No barcode detected.');
     await batchLookUp(row);
     row.duplicate=batchDuplicate(row.barcode,row);
-    row.error=!row.title?'Book title missing — enter it manually.':'';
-    row.selected=!!(row.barcode&&row.shelf&&row.title&&!row.duplicate)
+    row.error=!row.title?'Book title missing — enter it manually.':!row.shelf?'Shelf missing — enter the shelf / location.':'';
+    row.selected=!!(row.barcode&&row.shelf&&row.title&&!row.error&&!row.duplicate)
    }catch(err){row.error=String(err?.message||err);row.selected=false}
    if(session?.user?.id!==uploader)break;
    batchItems.push(row);$("batchProgress").value=i+1;
@@ -744,7 +747,7 @@ function batchSelectDuplicates(){refreshBatchDuplicates();batchItems.forEach(x=>
 function batchSelectReady(){refreshBatchDuplicates();batchItems.forEach(x=>{if(!x.saved)x.selected=!!(batchValid(x)&&!x.duplicate)});batchOutput('Selected complete non-duplicate rows.');renderBatch()}
 function batchDeselectAll(){batchItems.forEach(x=>{if(!x.saved)x.selected=false});batchOutput('Selection cleared; no book records changed.');renderBatch()}
 function batchRemoveSelected(){
- if(batchActive||batchSaving)return;
+ if(batchActive||batchSaving||batchZipLoading)return;
  const selected=batchItems.filter(x=>x.selected&&!x.saved);
  if(!selected.length)return;
  if(!confirm(`Remove ${selected.length} selected photo${selected.length===1?'':'s'} from this review list? This does NOT delete books from Supabase.`))return;
@@ -754,7 +757,7 @@ function batchRemoveSelected(){
  renderBatch();
 }
 async function saveBatch(){
- if(batchActive||batchSaving||!session?.user)return;
+ if(batchActive||batchSaving||batchZipLoading||!session?.user)return;
  const selected=batchItems.filter(x=>x.selected&&!x.saved);
  if(!selected.length)return batchOutput('Select at least one ready record to save.');
  const invalid=selected.filter(x=>!batchValid(x));
@@ -781,6 +784,7 @@ async function saveBatch(){
     for(let j=0;j<payload.length;j++){
      const {data,error}=await sb.from(BOOKS).insert(payload[j]).select('*').single();
      if(error){slice[j].error='Supabase: '+error.message;slice[j].selected=false;fail++}
+     else if(!data?.book_id){slice[j].error='Supabase inserted the book but did not return a Book ID. Refresh inventory before retrying.';slice[j].selected=false;fail++}
      else{slice[j].saved=true;slice[j].book_id=data.book_id;slice[j].selected=false;slice[j].error='';count++;mirror.push(data)}
     }
    }
@@ -800,7 +804,7 @@ async function saveBatch(){
  }catch(err){batchOutput('Batch save stopped: '+String(err?.message||err)+'. Successfully saved rows remain saved.')}
  finally{batchSaving=false;renderBatch()}
 }
-function clearBatch(){if(batchActive||batchSaving)return;batchItems=[];batchQueue=[];batchMetadataCache.clear();batchStopRequested=false;$("batchFolder").value='';$("batchZip").value='';$("batchPhotos").value='';$("batchProgress").value=0;batchOutput('Batch cleared. No Supabase records were deleted.');renderBatch()}
+function clearBatch(){if(batchActive||batchSaving||batchZipLoading)return;batchItems=[];batchQueue=[];batchMetadataCache.clear();batchStopRequested=false;$("batchFolder").value='';$("batchZip").value='';$("batchPhotos").value='';$("batchProgress").value=0;batchOutput('Batch cleared. No Supabase records were deleted.');renderBatch()}
 $("batchFolder").onchange=e=>{const f=Array.from(e.target.files||[]);setBatchQueue(f.map(file=>({file,path:file.webkitRelativePath||file.name,size:file.size})),'folder');e.target.value=''};
 $("batchZip").onchange=e=>{const f=e.target.files?.[0];batchZipFiles(f);e.target.value=''};
 $("batchPhotos").onchange=e=>{const f=Array.from(e.target.files||[]);setBatchQueue(f.map(file=>({file,path:file.name,size:file.size})),'photos');e.target.value=''};
@@ -822,8 +826,9 @@ $("batchResults").addEventListener('change',async e=>{
  const name=field.dataset.batchField;
  x[name]=name==='barcode'?clean(field.value):field.value.trim();
  if(name==='barcode'){
-  x.error='';x.title='';x.authors='';x.publisher='';x.publication_year='';x.language='';x.pages='';x.subject='';x.lookup_status='Manual';
-  if(x.barcode)await batchLookUp(x);
+  x.error='';x.lookup_status='Manual';
+  // Preserve manually corrected metadata when a barcode is amended.
+  if(x.barcode&&!x.title)await batchLookUp(x);
  }
  x.duplicate=batchDuplicate(x.barcode,x);
  x.error=(!x.barcode?'Barcode missing.':!x.title?'Book title missing — enter it manually.':!x.shelf?'Shelf missing.':'');
