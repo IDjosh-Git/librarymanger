@@ -188,3 +188,36 @@ header{background:linear-gradient(115deg,#10392f 0%,#165c4d 56%,#278469 100%)}
 .batch-isbn-action{display:flex;flex-direction:column;gap:6px;min-width:0}
 .batch-isbn-action .batch-book-field{width:100%}
 .batch-lookup-btn{align-self:flex-start;font-size:.78rem;padding:7px 12px;min-height:36px}
+
+/* Image-to-book workflow and inventory completeness filters */
+.quality-filters{display:flex;flex-direction:column;gap:8px;margin:12px 0;padding:13px 14px;background:var(--surface2);border:1px solid var(--line);border-radius:14px}
+.quality-filters>strong{font-size:.83rem;color:var(--ink)}
+.quality-hint{margin:0;font-size:.75rem;color:var(--muted);line-height:1.45}
+.quality-filters .filter-row{flex-wrap:wrap}
+.scan-ocr-setting{display:flex;align-items:flex-start;gap:12px;padding:14px;margin:11px 0;border-radius:12px;border:1px solid var(--line);background:var(--surface2);cursor:pointer}
+.scan-ocr-setting input{width:19px;height:19px;min-height:19px;accent-color:var(--accent);flex:0 0 auto;margin:2px 0}
+.scan-ocr-setting strong{display:block;font-size:.82rem;color:var(--ink)}
+.scan-ocr-setting small{display:block;font-size:.75rem;line-height:1.4;color:var(--muted);font-weight:500;margin-top:3px}
+.batch-extra-fields{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.batch-action-row{display:flex;flex-wrap:wrap;gap:8px}
+.batch-action-row button{min-height:40px;white-space:normal;font-size:.76rem}
+.batch-matches{padding:0 12px}
+.batch-candidate-note{font-size:.75rem;color:var(--muted);margin:8px 0}
+.batch-match{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px;margin:6px 0;background:var(--surface2);border:1px solid var(--line);border-radius:11px}
+.batch-match span{min-width:0;flex:1}
+.batch-match strong{display:block;font-size:.81rem;color:var(--ink);overflow-wrap:anywhere}
+.batch-match small{display:block;font-size:.72rem;color:var(--muted);line-height:1.5}
+.batch-match button{flex-shrink:0;white-space:normal}
+.ocr-text{margin:8px 13px 12px;padding:10px;border:1px dashed var(--line);border-radius:10px;font-size:.75rem;color:var(--muted)}
+.ocr-text summary{cursor:pointer;font-weight:750}
+.ocr-text pre{max-height:220px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-size:.74rem}
+.book-editor-backdrop{position:fixed;z-index:80;inset:0;display:grid;place-items:center;background:rgba(5,22,17,.68);padding:15px;overflow:auto}
+.book-editor{width:min(740px,100%);max-height:92dvh;overflow-y:auto;background:var(--surface);border-radius:19px;padding:22px;box-shadow:0 20px 55px rgba(0,0,0,.25);color:var(--ink)}
+.book-editor-head{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:17px}.book-editor-head h2{font-size:1.17rem;margin:0}
+.book-editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+.book-editor-grid label{display:block;font-size:.75rem;color:var(--muted)}
+.book-editor-grid input{display:block;margin-top:5px;background:var(--surface);color:var(--ink)}
+.book-editor-grid .wide{grid-column:1/-1}
+.book-editor-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:17px}
+#editorResults{font-size:.78rem;line-height:1.55;margin-top:13px}
+@media(max-width:620px){.book-editor{padding:15px}.book-editor-grid{grid-template-columns:1fr}.batch-extra-fields{grid-template-columns:1fr}.batch-match{align-items:flex-start;flex-direction:column}.batch-match button{width:100%}}
