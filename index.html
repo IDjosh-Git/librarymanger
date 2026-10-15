@@ -122,9 +122,9 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 </details>
 
 <details class="lookupbox">
-  <summary class="lookuphead"><strong><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg> &nbsp; Book details lookup</strong><span class="badge ok">8 catalogs · 10 lookups</span></summary>
+  <summary class="lookuphead"><strong><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg> &nbsp; Book details lookup</strong><span class="badge ok">Expanded book catalog search</span></summary>
   <div class="lookupbody">
-    <div class="lookupnote">ISBN lookup checks Google Books, Open Library Search, Edition and Books API, HathiTrust, Crossref, Internet Archive and Wikidata; Library of Congress provides a final fallback. Optional ISBNdb adds another catalog if you have a paid key. It keeps checking when fields are missing, accepts only matching ISBNs, and never overwrites details you entered.</div>
+    <div class="lookupnote">ISBN lookup checks Google Books, Open Library Search, Edition and Books API, HathiTrust, Crossref, DataCite, Internet Archive and Wikidata; Library of Congress provides a final fallback. Optional ISBNdb adds another catalog if you have a paid key. It keeps checking when fields are missing, accepts only matching ISBNs, and never overwrites details you entered.</div>
     <label for="googleBooksKey">Google Books key on this browser (legacy fallback only)</label>
     <input id="googleBooksKey" type="password" placeholder="Optional Google Books API key">
     <p class="lookupnote">For Vercel, add <code>GOOGLE_BOOKS_API_KEY</code> or optional paid <code>ISBNDB_API_KEY</code> under Project → Settings → Environment Variables, then redeploy. Never put an ISBNdb key in this page, GitHub, or your browser.</p><div class="row" style="margin-top:8px"><button id="saveBooksKey" class="light">Save API Key</button><button id="clearBooksKey" class="light">Clear Key</button></div>
@@ -136,7 +136,7 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 <div id="inventory" class="panel active">
 <div class="hero"><span class="eyebrow">Inventory · your collection</span><h2>Make room for more stories.</h2><p>Scan a barcode, enter an ISBN, or import an entire shelf. Books are saved to the same shared inventory for your team.</p><div class="hero-actions"><button id="scanInventory" class="scanbtn"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg> Scan a book</button><button type="button" id="jumpBatch" class="light">
 <svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg> Import a shelf</button></div><input id="inventoryCamera" type="file" accept="image/*" capture="environment" hidden><img id="inventoryPreview" class="preview"></div>
-<div class="section"><label for="manualBarcode">Add by barcode or ISBN</label><div class="row manual-form" style="margin-top:7px"><input id="manualBarcode" aria-label="Book barcode or ISBN" style="flex:2;min-width:150px" placeholder="Scan or type barcode / ISBN" autocomplete="off"><button id="addManual" class="alt" style="flex:1;min-width:110px"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#book"></use></svg> Add book</button><button id="previewMetadata" type="button" class="light">Find details</button><button id="clearForm" class="light">Clear</button></div><div id="metadataPreview" class="metadata-preview" role="status" aria-live="polite" hidden></div></div>
+<div class="section manual-entry-section"><div class="manual-entry-fields"><div><label for="manualBarcode">Book barcode or ISBN</label><input id="manualBarcode" aria-label="Book barcode or ISBN" placeholder="Scan or type barcode / ISBN" autocomplete="off"></div><div><label for="manualShelf">Shelf number / location</label><input id="manualShelf" aria-label="Shelf number or location" maxlength="120" placeholder="e.g. A-04 or Shelf 12" autocomplete="off"></div><div><label for="manualTitle">Title (optional if lookup fails)</label><input id="manualTitle" aria-label="Book title, optional" maxlength="350" placeholder="Optional manual title"></div></div><div class="row manual-form-actions" style="margin-top:10px"><button id="addManual" class="alt"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#book"></use></svg> Add book</button><button id="previewMetadata" type="button" class="light">Find details</button><button id="clearForm" class="light">Clear</button></div><p class="quality-hint">Your shelf number is saved with the book and also prefilled when you scan a single photo. If no catalog finds the ISBN, enter its title here and save the book for later review.</p><div id="metadataPreview" class="metadata-preview" role="status" aria-live="polite" hidden></div></div>
 
 <div class="grid3"><div class="stat"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#book"></use></svg><b id="totalBooks">0</b><span>Total books</span></div><div class="stat"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg><b id="availableBooks">0</b><span>Available</span></div><div class="stat warning"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg><b id="borrowedBooks">0</b><span>On loan</span></div></div>
 <div id="overdueAlert" class="alert-banner" hidden><div style="display:flex;gap:9px;align-items:center"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#alert"></use></svg><div><strong id="overdueAlertTitle">Overdue loans</strong><p>Review loans that have passed their due date.</p></div></div><button id="overdueAlertAction" type="button">View loans →</button></div>
@@ -222,7 +222,7 @@ const scanHelper=window.LibraryScan;
 const SHEET_PREFIX="library_manager_user_sheets_v1:";
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);let session=null,books=[],loans=[],selectedLend=null,selectedReturn=null,busy=false,authMode="signin",authBusy=false,authGeneration=0,libraryOwnerId=null;
-function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}let toastTimer;function msg(t,c=""){ $("status").className="status "+c;$("status").textContent=t;const el=$("toast");if(!el)return;el.textContent=t;el.className="toast "+c;el.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{el.hidden=true},c==="err"?10000:4600)}function localISO(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-")}function today(){return localISO(new Date())}function plusDays(d,n){let x=new Date(d+"T12:00:00");x.setDate(x.getDate()+n);return localISO(x)}function isOverdue(l){return l.status==="Borrowed"&&l.due_date&&l.due_date<today()}function isDueSoon(l){return l.status==="Borrowed"&&!!l.due_date&&l.due_date>=today()&&l.due_date<=plusDays(today(),7)}function uuid(){return globalThis.crypto?.randomUUID?crypto.randomUUID():"b-"+Date.now()+"-"+Math.random().toString(36).slice(2)}function clean(v){return String(v||"").trim().replace(/^ISBN(?:-1[03])?:?\s*/i,"").replace(/[\s-]/g,"")}function normalizeIsbn(v){let x=clean(v).replace(/[\u0000-\u001f\u007f]/g,"").replace(/^\][A-Z0-9]{2}/i,"").toUpperCase();const supplement=x.match(/^(97[89]\d{10})(?:\d{2}|\d{5})$/);if(supplement)x=supplement[1];return x}function isISBN(v){return validIsbn(v)}function validIsbnCore(x){if(/^\d{9}[\dX]$/.test(x)){let n=0;for(let i=0;i<10;i++)n+=(10-i)*(x[i]==='X'?10:Number(x[i]));return n%11===0}if(/^97[89]\d{10}$/.test(x)){let n=0;for(let i=0;i<13;i++)n+=Number(x[i])*(i%2?3:1);return n%10===0}return false}function validIsbn(v){return validIsbnCore(normalizeIsbn(v))}function suggestIsbnCorrection(v){const x=normalizeIsbn(v);if(validIsbnCore(x))return"";if(/^97[89]\d{12}$/.test(x)){let sum=0;for(let i=0;i<12;i++)sum+=Number(x[i])*(i%2?3:1);const candidate=x.slice(0,12)+String((10-sum%10)%10);return validIsbnCore(candidate)?candidate:""}if(/^\d{9}[\dX]$/.test(x)){let sum=0;for(let i=0;i<9;i++)sum+=(10-i)*Number(x[i]);const check=(11-sum%11)%11,candidate=x.slice(0,9)+(check===10?"X":String(check));return validIsbnCore(candidate)?candidate:""}return""}function sameIsbn(a,b){a=normalizeIsbn(a);b=normalizeIsbn(b);if(!validIsbn(a)||!validIsbn(b))return false;if(a.length===13&&b.length===13)return a===b;function to13(s){if(s.length===13)return s;let t='978'+s.slice(0,9),n=0;for(let i=0;i<12;i++)n+=Number(t[i])*(i%2?3:1);return t+((10-n%10)%10)}return to13(a)===to13(b)}
+function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}let toastTimer;function msg(t,c=""){ $("status").className="status "+c;$("status").textContent=t;const el=$("toast");if(!el)return;el.textContent=t;el.className="toast "+c;el.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{el.hidden=true},c==="err"?10000:4600)}function localISO(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-")}function today(){return localISO(new Date())}function plusDays(d,n){let x=new Date(d+"T12:00:00");x.setDate(x.getDate()+n);return localISO(x)}function isOverdue(l){return l.status==="Borrowed"&&l.due_date&&l.due_date<today()}function isDueSoon(l){return l.status==="Borrowed"&&!!l.due_date&&l.due_date>=today()&&l.due_date<=plusDays(today(),7)}function uuid(){return globalThis.crypto?.randomUUID?crypto.randomUUID():"b-"+Date.now()+"-"+Math.random().toString(36).slice(2)}function clean(v){return String(v||"").trim().replace(/^ISBN(?:-1[03])?:?\s*/i,"").replace(/[\s-]/g,"")}function normalizeIsbn(v){let x=clean(v).replace(/[\u0000-\u001f\u007f]/g,"").replace(/^\][A-Z0-9]{2}/i,"").toUpperCase();const supplement=x.match(/^(97[89]\d{10})(?:\d{2}|\d{5})$/);if(supplement)x=supplement[1];return x}function isISBN(v){return validIsbn(v)}function validIsbnCore(x){if(/^\d{9}[\dX]$/.test(x)){let n=0;for(let i=0;i<10;i++)n+=(10-i)*(x[i]==='X'?10:Number(x[i]));return n%11===0}if(/^97[89]\d{10}$/.test(x)){let n=0;for(let i=0;i<13;i++)n+=Number(x[i])*(i%2?3:1);return n%10===0}return false}function validIsbn(v){return validIsbnCore(normalizeIsbn(v))}function suggestIsbnCorrection(v){const x=normalizeIsbn(v);if(validIsbnCore(x))return"";if(/^97[89]\d{10}$/.test(x)){let sum=0;for(let i=0;i<12;i++)sum+=Number(x[i])*(i%2?3:1);const candidate=x.slice(0,12)+String((10-sum%10)%10);return validIsbnCore(candidate)?candidate:""}if(/^\d{9}[\dX]$/.test(x)){let sum=0;for(let i=0;i<9;i++)sum+=(10-i)*Number(x[i]);const check=(11-sum%11)%11,candidate=x.slice(0,9)+(check===10?"X":String(check));return validIsbnCore(candidate)?candidate:""}return""}function sameIsbn(a,b){a=normalizeIsbn(a);b=normalizeIsbn(b);if(!validIsbn(a)||!validIsbn(b))return false;if(a.length===13&&b.length===13)return a===b;function to13(s){if(s.length===13)return s;let t='978'+s.slice(0,9),n=0;for(let i=0;i<12;i++)n+=Number(t[i])*(i%2?3:1);return t+((10-n%10)%10)}return to13(a)===to13(b)}
 function parseSheetId(u){let m=String(u||"").match(/\/spreadsheets\/d\/([A-Za-z0-9-_]+)/);return m?m[1]:""}
 function userSheetKey(){return session?.user?.id ? SHEET_PREFIX+session.user.id : ""}
 function sheetSettings(){try{return JSON.parse(localStorage.getItem(userSheetKey())||"{}")||{}}catch{return {}}}
@@ -366,7 +366,7 @@ async function lookupGoogleBooks(code){
 async function lookupOpenLibrarySearch(code){
  const f="title,author_name,publisher,first_publish_year,language,number_of_pages_median,subject,isbn";
  const d=await browserMetaRequest("https://openlibrary.org/search.json?isbn="+encodeURIComponent(code)+"&fields="+encodeURIComponent(f)+"&limit=4");const r=(d.docs||[]).find(x=>(x.isbn||[]).some(i=>sameIsbn(i,code)));if(!r)return null;
- return{title:r.title||"",authors:(r.author_name||[]).join("; "),publisher:(r.publisher||[]).slice(0,3).join("; "),publication_year:'',language:(r.language||[]).slice(0,5).join(", "),pages:String(r.number_of_pages_median||""),subject:(r.subject||[]).slice(0,6).join("; "),_source:"Open Library Search"}
+ return{title:r.title||"",authors:(r.author_name||[]).join("; "),publisher:'',publication_year:'',language:'',pages:'',subject:(r.subject||[]).slice(0,6).join("; "),_source:"Open Library Search"}
 }
 async function lookupOpenLibraryISBN(code){
  const d=await browserMetaRequest("https://openlibrary.org/isbn/"+encodeURIComponent(code)+".json");if(![...(d.isbn_13||[]),...(d.isbn_10||[])].some(i=>sameIsbn(i,code)))return null;
@@ -392,7 +392,7 @@ async function lookupISBN(code){
  const task=(async()=>{
   try{
    const response=await fetch('/api/book-lookup?isbn='+encodeURIComponent(code),{headers:{Accept:'application/json'}});
-   if(response.ok){const payload=await response.json();if(payload?.found&&payload.metadata?.title)return {...payload.metadata,_sources:payload.sources||[]};if(payload?.found===false)return null}
+   if(response.ok){const payload=await response.json();if(payload?.found&&payload.metadata?.title)return {...payload.metadata,_sources:payload.sources||[]};if(payload?.found===false && !(payload.checked||[]).some(x=>x.status==='unavailable'))return null}
    // If the backend is rate limiting or validation rejects the ISBN, don't create more upstream load.
    if(response.status===429){
     const seconds=Number(response.headers.get('Retry-After')),error=new Error('Book lookup rate limited');
@@ -405,7 +405,7 @@ async function lookupISBN(code){
   results.forEach(r=>{if(r.status==='fulfilled'&&r.value?.title){mergeMeta(combined,r.value);sources.push(r.value._source)}});
   if(!combined.title||!combined.publisher){try{const edition=await lookupOpenLibraryISBN(code);if(edition?.title){mergeMeta(combined,edition);sources.push(edition._source)}}catch{}}
   return combined.title?{...combined,_sources:sources}:null;
- })();metadataCache.set(code,task);task.catch(()=>metadataCache.delete(code));if(metadataCache.size>500)metadataCache.delete(metadataCache.keys().next().value);return task;
+ })();metadataCache.set(code,task);task.then(value=>{if(!value&&metadataCache.get(code)===task)metadataCache.delete(code)},()=>{if(metadataCache.get(code)===task)metadataCache.delete(code)});if(metadataCache.size>500)metadataCache.delete(metadataCache.keys().next().value);return task;
 }
 async function previewISBN(){
  const code=normalizeIsbn($("manualBarcode").value),panel=$("metadataPreview");panel.hidden=false;
@@ -480,7 +480,33 @@ $('bookEditorForm').onsubmit=async e=>{
   if(error)throw error;googleBook(data);closeBookEditor();await reloadAll();msg('Updated '+(data?.book_id||old?.book_id||'book')+' successfully.','ok');
  }catch(error){$('editorResults').textContent='Save failed: '+String(error.message||error)}finally{btn.disabled=false}
 };
-async function addBook(code){if(!session?.user)return msg("Sign in first.","warn");if(busy)return msg("Finish the current operation first.","warn");code=clean(code);if(!code)return msg("No barcode detected.","warn");const isbn=normalizeIsbn(code);if(validIsbn(isbn))code=isbn;else{const suggestion=suggestIsbnCorrection(isbn);if(suggestion&&confirm('The scanned ISBN check digit is invalid. Use '+suggestion+' instead? Only the check digit changes. Choose Cancel to keep the scanned value and add details manually.'))code=suggestion}busy=true;try{let n=new Date(),row={user_id:session.user.id,record_id:uuid(),scan_date:n.toLocaleDateString(),scan_time:n.toLocaleTimeString(),barcode:code,lookup_status:"Manual",book_status:"Available"};if(isISBN(code)){try{let info=await lookupISBN(code);if(info){let src=(info._sources||[]).join(" + ");delete info._sources;row={...row,...info,lookup_status:src?"Found: "+src:"Found"}}else row.lookup_status="Not found"}catch{row.lookup_status="Lookup error"}}let {data,error}=await sb.from(BOOKS).insert(row).select("*").single();if(error)return msg(error.message,"err");if(!data?.book_id)return msg('Supabase saved the book but did not return its Book ID. Refresh inventory and check before scanning again.','warn');googleBook(data);await reloadAll();msg(sheetLinked()?`Book ${data.book_id} saved to Supabase • Google request submitted (not verified).`:`Book ${data.book_id} saved to Supabase.`,"ok")}finally{busy=false}}
+async function addBook(code){
+ if(!session?.user)return msg("Sign in first.","warn");
+ if(busy)return msg("Finish the current operation first.","warn");
+ code=clean(code);
+ if(!code)return msg("Enter or scan an ISBN / barcode.","warn");
+ const manualShelf=$('manualShelf').value.trim(),manualTitle=$('manualTitle').value.trim();
+ const isbn=normalizeIsbn(code);
+ if(validIsbn(isbn))code=isbn;
+ else{const suggestion=suggestIsbnCorrection(isbn);if(suggestion&&confirm('The scanned ISBN check digit is invalid. Use '+suggestion+' instead? Only the check digit changes; verify the number printed on the book before accepting.'))code=suggestion}
+ busy=true;
+ try{
+  const n=new Date(),row={user_id:session.user.id,record_id:uuid(),scan_date:n.toLocaleDateString(),scan_time:n.toLocaleTimeString(),barcode:code,shelf_location:manualShelf||null,title:manualTitle||null,lookup_status:'Manual',book_status:'Available'};
+  if(isISBN(code)){
+   try{
+    const info=await lookupISBN(code);
+    if(info){const sources=(info._sources||[]).join(' + ');if(manualTitle&&info.title&&scanHelper.similarity(manualTitle,info.title)<.48){row.lookup_status='ISBN and entered title differ — verify in Inventory';}else{for(const k of ['title','authors','publisher','publication_year','language','pages','subject'])if(info[k]&&!row[k])row[k]=info[k];row.lookup_status=sources?'Found: '+sources:'Found'}}
+    else row.lookup_status='Not found';
+   }catch(e){row.lookup_status=e?.lookupRateLimited?'Lookup rate limited':'Lookup error';}
+  }
+  const {data,error}=await sb.from(BOOKS).insert(row).select('*').single();
+  if(error)return msg(error.message,'err');
+  if(!data?.book_id)return msg('Book saved, but Book ID was not returned. Refresh the inventory before retrying.','warn');
+  googleBook(data);await reloadAll();
+  const location=manualShelf?' · Shelf '+manualShelf:'';
+  msg((sheetLinked()?'Saved to Supabase; Google request submitted (not verified).':'Saved to Supabase.')+' Book '+data.book_id+location+(!data.title?' · Add title using Inventory → Needs attention.':''),'ok');
+ }finally{busy=false}
+}
 // Book selectors always use the exact inventory record_id, NOT an ISBN or a potentially repeated Book ID.
 const pickerIds={lend:{search:"lendBookSearch",select:"lendBookSelect",count:"lendBookCount"},return:{search:"returnBookSearch",select:"returnBookSelect",count:"returnBookCount"}};
 function bookIsEligible(b,mode){return mode==="lend"?(b.book_status||"Available")==="Available":b.book_status==="Borrowed"}
@@ -605,7 +631,7 @@ async function confirmReturn(){
  finally{btn.disabled=false}
 }
 function clearForms(){
- $("manualBarcode").value="";
+ $("manualBarcode").value="";$("manualShelf").value="";$("manualTitle").value="";
  ["inventoryPreview","lendPreview","returnPreview"].forEach(id=>{let x=$(id);if(x){x.src="";x.style.display="none"}});
  clearSelectedBook("lend");clearSelectedBook("return");$("borrowerName").value="";
  $("lendBookSearch").value="";$("returnBookSearch").value="";renderBookPicker("lend");renderBookPicker("return");
@@ -627,7 +653,7 @@ async function scanFile(file,mode,preview){
  try{
   let code=await decodeBatchBarcode(file);
   if(mode==='inventory'){
-   const row={file,fileName:file.name,path:file.name,shelf:$('batchDefaultShelf').value.trim()||'Unassigned',barcode:code,title:'',authors:'',publisher:'',publication_year:'',language:'',pages:'',subject:'',lookup_status:'Scanned photo',error:'',duplicate:false,selected:false,saved:false,matches:[],ocrText:''};
+   const row={file,fileName:file.name,path:file.name,shelf:$('manualShelf').value.trim()||$('batchDefaultShelf').value.trim()||'Unassigned',barcode:code,title:'',authors:'',publisher:'',publication_year:'',language:'',pages:'',subject:'',lookup_status:'Scanned photo',error:'',duplicate:false,selected:false,saved:false,matches:[],ocrText:''};
    if(code)await batchLookUp(row);
    if((!row.title||!row.barcode)&&$('batchUseOCR').checked)await enrichScanFromImage(row);
    row.duplicate=batchDuplicate(row.barcode,row);
@@ -813,7 +839,7 @@ async function findTitleCandidates(title,author=''){
    const payload=await browserMetaRequest('https://openlibrary.org/search.json?'+qs);
    return (payload.docs||[]).map(x=>({title:x.title,authors:(x.author_name||[]).slice(0,4).join(', '),publisher:(x.publisher||[])[0]||'',publication_year:String(x.first_publish_year||''),source:'Open Library'}))}
   catch{return []}
- })();scanTitleCache.set(key,task);if(scanTitleCache.size>200)scanTitleCache.delete(scanTitleCache.keys().next().value);return task;
+ })();scanTitleCache.set(key,task);task.then(result=>{if(!result?.length&&scanTitleCache.get(key)===task)scanTitleCache.delete(key)},()=>{if(scanTitleCache.get(key)===task)scanTitleCache.delete(key)});if(scanTitleCache.size>200)scanTitleCache.delete(scanTitleCache.keys().next().value);return task;
 }
 async function findOCRCatalogMatches(row){
  const titles=scanHelper.titleCandidates(row.ocrText);
@@ -906,8 +932,8 @@ async function batchLookUp(row){
   try{
    if(!batchMetadataCache.has(isbn))batchMetadataCache.set(isbn,lookupISBN(isbn));
    let info=await Promise.race([batchMetadataCache.get(isbn),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Lookup timed out')),18000))]);
-   if(info){['title','authors','publisher','publication_year','language','pages','subject'].forEach(k=>{if(info[k]&&!row[k])row[k]=String(info[k])});row.lookup_status='Found: '+(info._sources||[]).join(' + ')}
-   else row.lookup_status='Not found in book APIs';
+   if(info){if(row.title&&info.title&&scanHelper.similarity(row.title,info.title)<.48){row.lookup_status='ISBN/title mismatch — verify the ISBN and book photo';row.error='ISBN points to a different book title. Check the printed ISBN or correct the title.'}else{['title','authors','publisher','publication_year','language','pages','subject'].forEach(k=>{if(info[k]&&!row[k])row[k]=String(info[k])});row.lookup_status='Found: '+(info._sources||[]).join(' + ')}}
+   else{row.lookup_status='Not found in book APIs';batchMetadataCache.delete(isbn)}
    return
   }catch(error){
    if(!error?.lookupRateLimited||attempt===2){row.lookup_status=error?.lookupRateLimited?'Book API rate limit reached; try scanning this book again later':'Book information unavailable';return}

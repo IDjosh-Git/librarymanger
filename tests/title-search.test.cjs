@@ -12,9 +12,17 @@ test('title search combines catalogs and filters unrelated titles without invent
  };
  const result=await searchTitles('The Great Gatsby','',{fetchImpl});
  assert.ok(result.length);assert.equal(result[0].title,'The Great Gatsby');assert.equal(Object.hasOwn(result[0],'barcode'),false);
- assert.ok(result.every(x=>!x.title.includes('Cooking')));assert.equal(called.length,5);
+ assert.ok(result.every(x=>!x.title.includes('Cooking')));assert.equal(called.length,7);
 });
 test('title search degrades gracefully if providers are unavailable',async()=>{
  const found=await searchTitles('Invisible Cities','',{fetchImpl:async()=>{throw Error('network down')}});
  assert.deepEqual(found,[]);assert.deepEqual(await searchTitles('x'),[]);
+});
+
+test('Crossref and OpenAlex participate in title-page suggestions, not ISBN invention',async()=>{
+ const requested=[];const fetchImpl=async(url)=>{requested.push(url);let d={};
+ if(url.includes('crossref'))d={message:{items:[{title:['Practical Statistics'],type:'book',author:[{given:'James',family:'Lee'}],publisher:'Example Press'}]}};
+ if(url.includes('openalex'))d={results:[{type:'book',display_name:'Practical Statistics',authorships:[{author:{display_name:'James Lee'}}]},{type:'article',title:'Practical Statistics'}]};
+ return{ok:true,json:async()=>d}};
+ const result=await searchTitles('Practical Statistics','',{fetchImpl});assert.ok(requested.some(x=>x.includes('crossref')));assert.ok(requested.some(x=>x.includes('openalex')));assert.ok(result.some(x=>x.title==='Practical Statistics'));assert.ok(result.every(x=>!Object.hasOwn(x,'barcode')));
 });

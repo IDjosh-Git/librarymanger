@@ -46,10 +46,11 @@ async def main():
    await page.locator('#previewMetadata').click()
    await page.wait_for_function("document.getElementById('metadataPreview').textContent.includes('Matilda')")
    assert await page.locator('#totalBooks').inner_text()=='3','preview should not write a new book'
+   await page.locator('#manualShelf').fill('Shelf C-14')
    await page.locator('#addManual').click()
    await page.wait_for_function("document.getElementById('totalBooks').textContent==='4'")
    new=await page.evaluate("window.__db.data.library_books.find(b=>b.barcode==='9780140328721')")
-   assert new['title']=='Matilda' and new['publisher']=='Puffin' and new['book_id']=='LIB-000219'
+   assert new['title']=='Matilda' and new['publisher']=='Puffin' and new['book_id']=='LIB-000219' and new['shelf_location']=='Shelf C-14'
    assert 'LIB-000219' in await page.locator('#status').inner_text(), 'save should show assigned ID'
    # The generated ID appears in the inventory but is not editable; shelf remains editable.
    await page.locator('#viewTable').click()

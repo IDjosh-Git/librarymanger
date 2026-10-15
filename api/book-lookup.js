@@ -8,6 +8,6 @@ module.exports=async function handler(req,res){
  if(!validISBN(isbn))return res.status(400).json({error:'Enter a valid ISBN-10 or ISBN-13, including its check digit.'});
  const ip=(req.headers['x-vercel-forwarded-for']||req.headers['x-forwarded-for']||req.socket?.remoteAddress||'unknown').split(',')[0];
  if(limited(ip)){res.setHeader('Retry-After','60');return res.status(429).json({error:'Too many lookups from this address. Try again in a minute.'})}
- try{const data=await cachedLookup(isbn,{googleKey:process.env.GOOGLE_BOOKS_API_KEY||'',isbndbKey:process.env.ISBNDB_API_KEY||'',contact:process.env.BOOK_API_CONTACT||''});res.setHeader('Cache-Control',`public, s-maxage=${data.found?86400:300}, stale-while-revalidate=300`);return res.status(200).json(data)}
+ try{const data=await cachedLookup(isbn,{googleKey:process.env.GOOGLE_BOOKS_API_KEY||'',isbndbKey:process.env.ISBNDB_API_KEY||'',contact:process.env.BOOK_API_CONTACT||''});res.setHeader('Cache-Control',`public, s-maxage=${data.found?3600:30}, stale-while-revalidate=300`);return res.status(200).json(data)}
  catch{res.setHeader('Cache-Control','no-store');return res.status(503).json({error:'Book metadata providers are temporarily unavailable. Enter details manually.'})}
 };

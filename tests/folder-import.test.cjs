@@ -21,3 +21,11 @@ test('scan batch protects ZIP loading, keeps corrected metadata, and refuses mis
  assert.match(html,/if\(x\.barcode&&!x\.title\)await batchLookUp\(x\)/);
  assert.match(html,/else if\(!data\?\.book_id\)/);
 });
+
+test('top-of-inventory ISBN form includes shelf and optional title, and saves shelf with each new copy',()=>{
+ assert.match(html,/<input id="manualShelf"[^>]*aria-label="Shelf number or location"/);
+ assert.match(html,/<input id="manualTitle"[^>]*aria-label="Book title, optional"/);
+ assert.match(html,/shelf_location:manualShelf\|\|null/);
+ assert.match(html,/title:manualTitle\|\|null/);
+ assert.match(html,/\$\('manualShelf'\)\.value\.trim\(\)\|\|\$\('batchDefaultShelf'\)/);
+});

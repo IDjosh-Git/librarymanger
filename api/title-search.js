@@ -12,6 +12,6 @@ module.exports=async function handler(req,res){
  try{
   const candidates=await searchTitles(title,author,{googleKey:process.env.GOOGLE_BOOKS_API_KEY||''});
   res.setHeader('Cache-Control','public, s-maxage=300, stale-while-revalidate=600');
-  return res.status(200).json({candidates,sources:['Open Library','Google Books','Internet Archive','Library of Congress','Gutendex'],note:'Possible works/editions. Confirm a match against the image; ISBN is never assumed.'});
+  return res.status(200).json({candidates,sources:['Open Library','Google Books','Internet Archive','Library of Congress','Gutendex','Crossref','OpenAlex'],note:'Possible works/editions. Confirm a match against the image; ISBN is never assumed.'});
  }catch{return res.status(503).json({error:'Catalogs unavailable. Enter the title and author manually.'})}
 };
