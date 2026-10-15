@@ -1,3 +1,17 @@
+## ISBN and barcode lookup fix (October 2026)
+
+**The Inventory → Find missing details action no longer stops with “This barcode is not a valid ISBN-10 or ISBN-13.”** It now:
+
+1. Recognizes valid printed ISBN-10 (including X), ISBN-13 with 978/979 prefixes, ISBN labels with spaces/hyphens, scanner symbology prefixes, 2- or 5-digit price add-ons, zero-padded GTIN-14 book identifiers, and historical nine-digit SBNs.
+2. Tries the existing multi-source book catalogs for a verified ISBN. It only merges bibliographic details when the provider identifies the same edition/ISBN.
+3. Tries Google Books for **other barcodes** using an exact matching industry identifier. It does not treat an arbitrary UPC, EAN or internal library barcode as an ISBN or accept a loosely matching title.
+4. If no trustworthy match exists, opens the selected book in Inventory's editor. Use **Search by title & author**, choose a title suggestion, or manually fill the missing fields. The original barcode, shelf, copy ID and circulation status are preserved.
+5. Uses the same general identifier lookup for the top ISBN/Barcode box, batch Needs Attention cards and the book editor. ISBN check-digit corrections are only suggested, not silently applied.
+
+**Why some identifiers still need manual work:** ISBNs have *only two standardized lengths* (10 and 13 digits). UPC/EAN/GTIN, ISSN, and library accession numbers are different identifiers. Book catalogs may not index them, so no API can guarantee metadata from every barcode. Do not replace a non-ISBN code with a guessed ISBN. When a scan includes an unreadable identifier, use the title-page OCR and title search features added in the previous release.
+
+No additional Supabase migration is required for these lookup changes. Existing database uniqueness restrictions on duplicate ISBNs still require the earlier `allow_duplicate_isbn.sql` migration if that restriction applies to your project.
+
 # Library Manager 4.3 — Vercel edition
 
 ## October 2026 update — inventory detail filters and title-page scanner

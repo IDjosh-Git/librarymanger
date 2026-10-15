@@ -1,6 +1,6 @@
 'use strict';
 const test=require('node:test');const assert=require('node:assert/strict');
-const {lookup,validISBN,digitISBN,sameISBN,merge,metadata,sourceNames}=require('../lib/book-metadata.cjs');
+const {lookup,lookupIdentifier,identifierKind,barcodeMatches,validISBN,digitISBN,sameISBN,merge,metadata,sourceNames}=require('../lib/book-metadata.cjs');
 const handler=require('../api/book-lookup.js');
 const ISBN='9780140328721',DIFFERENT='9780061120084';
 const volume=(isbn=ISBN)=>({items:[{volumeInfo:{title:'Matilda',authors:['Roald Dahl'],publisher:'Puffin',publishedDate:'1988-01-01',industryIdentifiers:[{type:'ISBN_13',identifier:isbn}],pageCount:240,categories:['Fiction'],language:'en'}}]});
@@ -16,7 +16,7 @@ test('Open Library Books API enriches metadata only when identifiers match the r
 test('Wikidata fills missing metadata only for an exact ISBN match',async()=>{const {mock,calls}=makeFetch({google:{items:[{volumeInfo:{title:'Matilda',industryIdentifiers:[{identifier:ISBN}]}}]},openEdition:null,openSearch:{docs:[]},openBooks:{},hathi:{records:{}},crossref:{message:{items:[]}},internetArchive:{response:{docs:[]}},wikidata:{results:{bindings:[{isbn:{value:ISBN},bookLabel:{value:'Matilda'},authorLabel:{value:'Roald Dahl'},publisherLabel:{value:'Puffin'},publicationDate:{value:'1988-01-01T00:00:00Z'},languageLabel:{value:'English'},subjectLabel:{value:'Children’s literature'}}]}}});const d=await lookup(ISBN,{fetchImpl:mock});assert.equal(d.metadata.authors,'Roald Dahl');assert.equal(d.metadata.publisher,'Puffin');assert.equal(d.metadata.publication_year,'1988');assert.equal(d.metadata.language,'English');assert.ok(d.sources.includes('Wikidata'));assert.ok(calls.some(x=>x.key==='wikidata'&&x.url.includes('/sparql?')))});
 test('Wikidata mismatched ISBN results are ignored',async()=>{const {mock}=makeFetch({google:{items:[]},openEdition:null,openSearch:{docs:[]},openBooks:{},hathi:{records:{}},crossref:{message:{items:[]}},internetArchive:{response:{docs:[]}},wikidata:{results:{bindings:[{isbn:{value:DIFFERENT},bookLabel:{value:'Wrong title'}}]}}});const d=await lookup(ISBN,{fetchImpl:mock});assert.equal(d.found,false);assert.ok(d.checked.some(x=>x.source==='Wikidata'&&x.status==='no_match'))});
 test('isolates upstream errors; only matching LOC books can serve as last resort',async()=>{const {mock}=makeFetch({google:new Error('network down'),openSearch:{docs:[]},hathi:{records:{}},openEdition:null,crossref:null,internetArchive:{response:{docs:[{isbn:[DIFFERENT],title:'Different book'}]}},loc:{results:[{isbn:[DIFFERENT],title:'Different book'},{isbn:[ISBN],title:'Matilda',contributor:['Roald Dahl'],date:'1988'}]}});const d=await lookup(ISBN,{fetchImpl:mock});assert.equal(d.metadata.title,'Matilda');assert.deepEqual(d.sources,['Library of Congress']);assert.ok(d.checked.some(x=>x.source==='Google Books'&&x.status==='unavailable'));assert.ok(d.checked.some(x=>x.source==='Internet Archive'&&x.status==='no_match'))});
-test('serverless API validates, returns status without credentials, and handles methods',async()=>{function request(method,query){const req={method,query,headers:{'x-forwarded-for':'test-ip-'+Math.random()}};const res={statusCode:200,headers:{},setHeader(k,v){this.headers[k]=v;return this},status(n){this.statusCode=n;return this},json(data){this.data=data;return this}};return handler(req,res).then(()=>res)}let r=await request('GET',{});assert.equal(r.statusCode,200);assert.equal(r.data.status,'ready');assert.equal(r.data.sources.length,11);assert.ok(!JSON.stringify(r.data).includes('sb_secret_'));r=await request('GET',{isbn:'1234'});assert.equal(r.statusCode,400);r=await request('POST',{isbn:ISBN});assert.equal(r.statusCode,405)});
+test('serverless API validates, returns status without credentials, and handles methods',async()=>{function request(method,query){const req={method,query,headers:{'x-forwarded-for':'test-ip-'+Math.random()}};const res={statusCode:200,headers:{},setHeader(k,v){this.headers[k]=v;return this},status(n){this.statusCode=n;return this},json(data){this.data=data;return this}};return handler(req,res).then(()=>res)}let r=await request('GET',{});assert.equal(r.statusCode,200);assert.equal(r.data.status,'ready');assert.equal(r.data.sources.length,11);assert.ok(!JSON.stringify(r.data).includes('sb_secret_'));r=await request('GET',{isbn:'\u0000'});assert.equal(r.statusCode,400);r=await request('POST',{isbn:ISBN});assert.equal(r.statusCode,405)});
 
 test('DataCite uses only exact matching ISBN identifiers and never relies on text relevance',async()=>{
  const {mock,calls}=makeFetch({google:{items:[]},openEdition:null,hathi:{records:{}},openSearch:{docs:[]},openBooks:{},crossref:{message:{items:[]}},datacite:{data:[{attributes:{types:{resourceTypeGeneral:'Book'},titles:[{title:'Unrelated book'}],identifiers:[{identifier:DIFFERENT,identifierType:'ISBN'}]}},{attributes:{types:{resourceTypeGeneral:'Book'},titles:[{title:'Matilda'}],creators:[{name:'Roald Dahl'}],publisher:'Puffin',publicationYear:1988,identifiers:[{identifier:ISBN,identifierType:'ISBN'}]}}]}});
@@ -39,4 +39,42 @@ test('metadata from conflicting book titles does not get mixed between providers
  const value=merge(metadata({title:'Matilda'}),metadata({title:'Introduction to Engineering',authors:'Different author',publisher:'Bad publisher'}));
  assert.equal(value.title,'Matilda');assert.equal(value.publisher,'');assert.equal(value.authors,'');
  const good=merge(value,metadata({title:'Matilda: A Novel',authors:'Roald Dahl'}));assert.equal(good.authors,'Roald Dahl');
+});
+
+test('ISBN-13 book barcodes support 978 and 979, GTIN-14 zero padding, EAN price supplements and SBN-9',()=>{
+ assert.equal(digitISBN('0'+ISBN),ISBN);
+ assert.equal(digitISBN('0'+ISBN+'51299'),ISBN);
+ assert.equal(digitISBN(ISBN+'51299'),ISBN);
+ assert.equal(digitISBN(']E0 0'+ISBN),ISBN);
+ const modern979='9791234567896';// Valid check digit for this example is verified below.
+ const raw979=modern979.slice(0,12);let sum=0;for(let i=0;i<12;i++)sum+=Number(raw979[i])*(i%2?3:1);
+ const isbn979=raw979+((10-sum%10)%10);
+ assert.ok(validISBN(isbn979));assert.equal(digitISBN('0'+isbn979+'12'),isbn979);
+ assert.equal(digitISBN('SBN 140328726'),'0140328726');
+ assert.equal(digitISBN('ISBN 10: 0 14032872 6'),'0140328726');
+ assert.equal(digitISBN('ISBN 13: '+ISBN),ISBN);
+ assert.equal(identifierKind('012345678905').kind,'barcode');
+ assert.equal(identifierKind('0'+ISBN).kind,'isbn');
+ assert.equal(identifierKind('    ').kind,'unsupported');
+});
+test('UPC and other numeric/letter codes are searchable without treating them as ISBN',async()=>{
+ const code='012345678905';
+ const {mock,calls}=makeFetch({google:{items:[{volumeInfo:{title:'Not the same product',industryIdentifiers:[{identifier:'012345678999',type:'OTHER'}]}},{volumeInfo:{title:'A title with this exact barcode',authors:['Test Author'],industryIdentifiers:[{identifier:code,type:'OTHER'}]}}]}});
+ const result=await lookupIdentifier(code,{fetchImpl:mock});
+ assert.equal(result.found,true);assert.equal(result.metadata.title,'A title with this exact barcode');
+ assert.equal(result.identifierType,'barcode');assert.ok(result.sources[0].includes('exact barcode'));
+ assert.equal(calls.length,1);assert.ok(calls[0].url.includes('q='+code));
+ assert.equal(barcodeMatches(code,'0'+code),true);
+});
+test('non-ISBN barcode returns no match unless the provider has the exact identifier',async()=>{
+ const {mock}=makeFetch({google:{items:[{volumeInfo:{title:'Similar but unrelated book',industryIdentifiers:[{identifier:'412345678905',type:'OTHER'}]}}]}});
+ const result=await lookupIdentifier('012345678905',{fetchImpl:mock});
+ assert.equal(result.found,false);assert.equal(result.metadata.title,'');
+});
+test('invalid ISBN is never silently corrected; barcode lookup leaves user to verify it',async()=>{
+ const broken='9780140328722';
+ const {mock}=makeFetch({google:{items:[]}});
+ const result=await lookupIdentifier(broken,{fetchImpl:mock});
+ assert.equal(result.found,false);assert.equal(result.identifierType,'barcode');
+ assert.equal(identifierKind(broken).code,broken);
 });

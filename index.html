@@ -222,7 +222,7 @@ const scanHelper=window.LibraryScan;
 const SHEET_PREFIX="library_manager_user_sheets_v1:";
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);let session=null,books=[],loans=[],selectedLend=null,selectedReturn=null,busy=false,authMode="signin",authBusy=false,authGeneration=0,libraryOwnerId=null;
-function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}let toastTimer;function msg(t,c=""){ $("status").className="status "+c;$("status").textContent=t;const el=$("toast");if(!el)return;el.textContent=t;el.className="toast "+c;el.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{el.hidden=true},c==="err"?10000:4600)}function localISO(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-")}function today(){return localISO(new Date())}function plusDays(d,n){let x=new Date(d+"T12:00:00");x.setDate(x.getDate()+n);return localISO(x)}function isOverdue(l){return l.status==="Borrowed"&&l.due_date&&l.due_date<today()}function isDueSoon(l){return l.status==="Borrowed"&&!!l.due_date&&l.due_date>=today()&&l.due_date<=plusDays(today(),7)}function uuid(){return globalThis.crypto?.randomUUID?crypto.randomUUID():"b-"+Date.now()+"-"+Math.random().toString(36).slice(2)}function clean(v){return String(v||"").trim().replace(/^ISBN(?:-1[03])?:?\s*/i,"").replace(/[\s-]/g,"")}function normalizeIsbn(v){let x=clean(v).replace(/[\u0000-\u001f\u007f]/g,"").replace(/^\][A-Z0-9]{2}/i,"").toUpperCase();const supplement=x.match(/^(97[89]\d{10})(?:\d{2}|\d{5})$/);if(supplement)x=supplement[1];return x}function isISBN(v){return validIsbn(v)}function validIsbnCore(x){if(/^\d{9}[\dX]$/.test(x)){let n=0;for(let i=0;i<10;i++)n+=(10-i)*(x[i]==='X'?10:Number(x[i]));return n%11===0}if(/^97[89]\d{10}$/.test(x)){let n=0;for(let i=0;i<13;i++)n+=Number(x[i])*(i%2?3:1);return n%10===0}return false}function validIsbn(v){return validIsbnCore(normalizeIsbn(v))}function suggestIsbnCorrection(v){const x=normalizeIsbn(v);if(validIsbnCore(x))return"";if(/^97[89]\d{10}$/.test(x)){let sum=0;for(let i=0;i<12;i++)sum+=Number(x[i])*(i%2?3:1);const candidate=x.slice(0,12)+String((10-sum%10)%10);return validIsbnCore(candidate)?candidate:""}if(/^\d{9}[\dX]$/.test(x)){let sum=0;for(let i=0;i<9;i++)sum+=(10-i)*Number(x[i]);const check=(11-sum%11)%11,candidate=x.slice(0,9)+(check===10?"X":String(check));return validIsbnCore(candidate)?candidate:""}return""}function sameIsbn(a,b){a=normalizeIsbn(a);b=normalizeIsbn(b);if(!validIsbn(a)||!validIsbn(b))return false;if(a.length===13&&b.length===13)return a===b;function to13(s){if(s.length===13)return s;let t='978'+s.slice(0,9),n=0;for(let i=0;i<12;i++)n+=Number(t[i])*(i%2?3:1);return t+((10-n%10)%10)}return to13(a)===to13(b)}
+function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}let toastTimer;function msg(t,c=""){ $("status").className="status "+c;$("status").textContent=t;const el=$("toast");if(!el)return;el.textContent=t;el.className="toast "+c;el.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{el.hidden=true},c==="err"?10000:4600)}function localISO(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-")}function today(){return localISO(new Date())}function plusDays(d,n){let x=new Date(d+"T12:00:00");x.setDate(x.getDate()+n);return localISO(x)}function isOverdue(l){return l.status==="Borrowed"&&l.due_date&&l.due_date<today()}function isDueSoon(l){return l.status==="Borrowed"&&!!l.due_date&&l.due_date>=today()&&l.due_date<=plusDays(today(),7)}function uuid(){return globalThis.crypto?.randomUUID?crypto.randomUUID():"b-"+Date.now()+"-"+Math.random().toString(36).slice(2)}function clean(v){return String(v||"").trim().replace(/^ISBN(?:[\s-]*1[03])?\s*[:#]?\s*/i,"").replace(/[\s-]/g,"")}function normalizeIsbn(v){let x=clean(v).replace(/[\u0000-\u001f\u007f]/g,"").replace(/^\][A-Z0-9]{2}/i,"").toUpperCase();const padded=x.match(/^0(97[89]\d{10})(?:\d{2}|\d{5})?$/);if(padded)x=padded[1];const supplement=x.match(/^(97[89]\d{10})(?:\d{2}|\d{5})$/);if(supplement)x=supplement[1];if(/^SBN\d{9}$/.test(x))x='0'+x.slice(3);return x}function isISBN(v){return validIsbn(v)}function validIsbnCore(x){if(/^\d{9}[\dX]$/.test(x)){let n=0;for(let i=0;i<10;i++)n+=(10-i)*(x[i]==='X'?10:Number(x[i]));return n%11===0}if(/^97[89]\d{10}$/.test(x)){let n=0;for(let i=0;i<13;i++)n+=Number(x[i])*(i%2?3:1);return n%10===0}return false}function validIsbn(v){return validIsbnCore(normalizeIsbn(v))}function suggestIsbnCorrection(v){const x=normalizeIsbn(v);if(validIsbnCore(x))return"";if(/^97[89]\d{10}$/.test(x)){let sum=0;for(let i=0;i<12;i++)sum+=Number(x[i])*(i%2?3:1);const candidate=x.slice(0,12)+String((10-sum%10)%10);return validIsbnCore(candidate)?candidate:""}if(/^\d{9}[\dX]$/.test(x)){let sum=0;for(let i=0;i<9;i++)sum+=(10-i)*Number(x[i]);const check=(11-sum%11)%11,candidate=x.slice(0,9)+(check===10?"X":String(check));return validIsbnCore(candidate)?candidate:""}return""}function sameIsbn(a,b){a=normalizeIsbn(a);b=normalizeIsbn(b);if(!validIsbn(a)||!validIsbn(b))return false;if(a.length===13&&b.length===13)return a===b;function to13(s){if(s.length===13)return s;let t='978'+s.slice(0,9),n=0;for(let i=0;i<12;i++)n+=Number(t[i])*(i%2?3:1);return t+((10-n%10)%10)}return to13(a)===to13(b)}
 function parseSheetId(u){let m=String(u||"").match(/\/spreadsheets\/d\/([A-Za-z0-9-_]+)/);return m?m[1]:""}
 function userSheetKey(){return session?.user?.id ? SHEET_PREFIX+session.user.id : ""}
 function sheetSettings(){try{return JSON.parse(localStorage.getItem(userSheetKey())||"{}")||{}}catch{return {}}}
@@ -385,13 +385,21 @@ async function lookupWikidata(code){
  const values=key=>[...new Set(rows.map(x=>x[key]?.value).filter(Boolean))].join("; ");
  return{title:values("bookLabel"),authors:values("authorLabel"),publisher:values("publisherLabel"),publication_year:yearOnly(values("publicationDate")),language:values("languageLabel"),pages:"",subject:values("subjectLabel"),_source:"Wikidata"}
 }
+async function lookupOtherBarcodeDirect(code){
+ const u='https://www.googleapis.com/books/v1/volumes?q='+encodeURIComponent(code)+'&maxResults=20&printType=books';
+ const data=await browserMetaRequest(u);
+ const norm=v=>String(v||'').replace(/[\s-]/g,'').toUpperCase();
+ const matches=(a,b)=>{a=norm(a);b=norm(b);return !!a&&(a===b||/^\d{12}$/.test(a)&&b==='0'+a||/^\d{12}$/.test(b)&&a==='0'+b)};
+ const v=(data.items||[]).map(x=>x.volumeInfo).find(v=>v?.title&&(v.industryIdentifiers||[]).some(id=>matches(id.identifier,code)));
+ return v?{title:v.title,authors:(v.authors||[]).join('; '),publisher:v.publisher||'',publication_year:yearOnly(v.publishedDate),language:v.language||'',pages:String(v.pageCount||''),subject:joinSubjects(v.categories||[]),_sources:['Google Books (exact barcode)']}:null;
+}
 const metadataCache=new Map();
 async function lookupISBN(code){
- code=normalizeIsbn(code);if(!validIsbn(code))return null;
+ code=normalizeIsbn(code);if(!code)return null;
  if(metadataCache.has(code))return metadataCache.get(code);
  const task=(async()=>{
   try{
-   const response=await fetch('/api/book-lookup?isbn='+encodeURIComponent(code),{headers:{Accept:'application/json'}});
+   const response=await fetch('/api/book-lookup?code='+encodeURIComponent(code),{headers:{Accept:'application/json'}});
    if(response.ok){const payload=await response.json();if(payload?.found&&payload.metadata?.title)return {...payload.metadata,_sources:payload.sources||[]};if(payload?.found===false && !(payload.checked||[]).some(x=>x.status==='unavailable'))return null}
    // If the backend is rate limiting or validation rejects the ISBN, don't create more upstream load.
    if(response.status===429){
@@ -400,6 +408,11 @@ async function lookupISBN(code){
    }
    if(response.status===400)return null;
   }catch(error){if(error?.lookupRateLimited){metadataCache.delete(code);throw error}}
+  // Offline/static HTML fallback: never assign a book to a non-ISBN code
+  // unless a catalog explicitly returns that exact product identifier.
+  if(!validIsbn(code)){
+   try{return await lookupOtherBarcodeDirect(code)}catch{return null}
+  }
   // Local HTML preview or temporarily unavailable Vercel backend: retain working direct lookup.
   const results=await Promise.allSettled([lookupGoogleBooks(code),lookupOpenLibrarySearch(code),lookupOpenLibraryBooks(code),lookupWikidata(code)]),combined={},sources=[];
   results.forEach(r=>{if(r.status==='fulfilled'&&r.value?.title){mergeMeta(combined,r.value);sources.push(r.value._source)}});
@@ -408,18 +421,23 @@ async function lookupISBN(code){
  })();metadataCache.set(code,task);task.then(value=>{if(!value&&metadataCache.get(code)===task)metadataCache.delete(code)},()=>{if(metadataCache.get(code)===task)metadataCache.delete(code)});if(metadataCache.size>500)metadataCache.delete(metadataCache.keys().next().value);return task;
 }
 async function previewISBN(){
- const code=normalizeIsbn($("manualBarcode").value),panel=$("metadataPreview");panel.hidden=false;
- if(!validIsbn(code)){const suggestion=suggestIsbnCorrection(code);panel.replaceChildren();panel.append(document.createTextNode(suggestion?'ISBN check digit is invalid. A check-digit-only correction may be: '+suggestion+'. ':'This barcode is not a valid ISBN-10 or ISBN-13. '));if(suggestion){const button=document.createElement('button');button.type='button';button.className='light smallbtn';button.dataset.useIsbnSuggestion=suggestion;button.textContent='Use suggested ISBN';panel.append(button)}else panel.append(document.createTextNode('If it is an ISBN, rescan or enter the ISBN number; other barcodes can still be added with details entered manually.'));return}
- $("previewMetadata").disabled=true;panel.textContent='Checking available book catalogs…';
- try{const data=await lookupISBN(code);if(!data){panel.textContent='No matching book details found. You can still add the barcode and complete the title manually.';return}
- const bits=[data.title,data.authors,data.publisher,data.publication_year].filter(Boolean);panel.textContent=bits.join(' · ')+' | Matched: '+(data._sources||[]).join(', ')+'. Nothing has been saved yet.';
- }catch{panel.textContent='Lookup temporarily unavailable. Try again or enter the book details manually.'}
- finally{$("previewMetadata").disabled=false}
+ const code=normalizeIsbn($('manualBarcode').value),panel=$('metadataPreview');panel.hidden=false;panel.replaceChildren();
+ if(!code){panel.textContent='Enter a printed ISBN or book barcode, or use the title field to search by title.';return}
+ const suggestion=!validIsbn(code)?suggestIsbnCorrection(code):'';
+ if(suggestion){
+  const note=document.createElement('p');note.textContent='The check digit does not match. Verify the printed ISBN; a possible correction is '+suggestion+'.';panel.append(note);
+  const button=document.createElement('button');button.type='button';button.className='light smallbtn';button.dataset.useIsbnSuggestion=suggestion;button.textContent='Use verified correction';panel.append(button);
+ }
+ const status=document.createElement('p');status.textContent=validIsbn(code)?'Checking ISBN editions…':'Searching for an exact barcode match…';panel.append(status);
+ $('previewMetadata').disabled=true;
+ try{const data=await lookupISBN(code);status.textContent=data?.title?[data.title,data.authors,data.publisher,data.publication_year].filter(Boolean).join(' · ')+' | Matched: '+(data._sources||[]).join(', ')+'. Nothing saved yet.':validIsbn(code)?'No edition match found. Enter a title or use title-page scanning, then save the copy.':'No exact barcode match in the available catalogs. This can still be a valid inventory barcode: enter the title and shelf, or scan the title page.'}
+ catch{status.textContent='Catalogs temporarily unavailable. You can enter title and shelf details or use title-page scanning.'}
+ finally{$('previewMetadata').disabled=false}
 }
 async function enrichBook(recordId){
  if(!session?.user)return msg('Sign in first.','warn');if(busy)return msg('Finish the current operation first.','warn');
  const existing=books.find(b=>b.record_id===recordId);if(!existing)return msg('Book not found. Refresh the inventory.','warn');
- busy=true;try{let isbn=normalizeIsbn(existing.barcode);if(!validIsbn(isbn)){const suggestion=suggestIsbnCorrection(isbn);if(!suggestion)return msg('This barcode is not a valid ISBN-10 or ISBN-13. Only ISBNs can be searched in book catalogs; you can edit this book manually.','warn');if(!confirm('The ISBN check digit is invalid. Replace it with '+suggestion+'? Only the check digit changes; verify the printed barcode before accepting.'))return msg('No changes made.','warn');const {error}=await sb.from(BOOKS).update({barcode:suggestion,updated_at:new Date().toISOString()}).eq('record_id',recordId);if(error)return msg('Could not update the barcode: '+error.message,'err');existing.barcode=suggestion;isbn=suggestion}msg('Looking for missing details in book catalogs…');const info=await lookupISBN(isbn);if(!info?.title)return msg('No matching metadata found. Existing details were not changed.','warn');
+ busy=true;try{const code=normalizeIsbn(existing.barcode);msg('Looking up the printed ISBN or exact barcode…');const info=code?await lookupISBN(code):null;if(!info?.title){openBookEditor(recordId);$('editorResults').textContent='No exact identifier match found. Use Search by title & author below, or enter the details manually. Your barcode stays unchanged.';if(existing.title)$('editorFindTitle').click();return}
  const {data:current,error}=await sb.from(BOOKS).select('*').eq('record_id',recordId).single();if(error||!current)return msg('Could not load the latest copy. Nothing was changed.','err');
  const normalizeTitle=x=>String(x||'').toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();const currentTitle=normalizeTitle(current.title),foundTitle=normalizeTitle(info.title);
  if(currentTitle&&foundTitle&&currentTitle!==foundTitle&&!currentTitle.includes(foundTitle)&&!foundTitle.includes(currentTitle))return msg('This ISBN returned a different title ('+info.title+'). Verify the barcode or book title before filling details. Nothing changed.','warn');
@@ -448,12 +466,12 @@ $('closeBookEditor').onclick=closeBookEditor;
 $('bookEditorBackdrop').addEventListener('click',e=>{if(e.target===$('bookEditorBackdrop'))closeBookEditor()});
 $('editorFindISBN').onclick=async()=>{
  const isbn=normalizeIsbn(editorFormField('barcode').value);const target=$('editorResults');
- if(!validIsbn(isbn)){target.textContent='Enter a valid printed ISBN-10 or ISBN-13; alternatively search by title.';return}
- target.textContent='Searching matching ISBN editions…';
- try{const data=await lookupISBN(isbn);if(!data){target.textContent='No exact matching edition found. You can manually complete missing fields.';return}
+ if(!isbn){target.textContent='Enter an ISBN or barcode, or search by title.';return}
+ target.textContent='Searching for an exact ISBN / barcode match…';
+ try{const data=await lookupISBN(isbn);if(!data){target.textContent='No exact identifier match. Use Search by title & author below or complete the missing fields manually.';return}
   const found=String(data.title||'').toLowerCase().trim(),existing=editorFormField('title').value.toLowerCase().trim();
   if(existing&&found&&scanHelper.similarity(existing,found)<.55){target.textContent='This ISBN belongs to a different title: '+data.title+'. Check the photo before changing anything.';return}
-  editorFill(data,true);target.textContent='Matching ISBN metadata filled into empty fields. Review and click Save changes.';
+  editorFill(data,true);target.textContent='Matching identifier metadata filled into empty fields. Verify and click Save changes.';
  }catch{target.textContent='Book API unavailable. Manual corrections can still be saved.'}
 };
 $('editorFindTitle').onclick=async()=>{
@@ -492,10 +510,10 @@ async function addBook(code){
  busy=true;
  try{
   const n=new Date(),row={user_id:session.user.id,record_id:uuid(),scan_date:n.toLocaleDateString(),scan_time:n.toLocaleTimeString(),barcode:code,shelf_location:manualShelf||null,title:manualTitle||null,lookup_status:'Manual',book_status:'Available'};
-  if(isISBN(code)){
+  if(code){
    try{
     const info=await lookupISBN(code);
-    if(info){const sources=(info._sources||[]).join(' + ');if(manualTitle&&info.title&&scanHelper.similarity(manualTitle,info.title)<.48){row.lookup_status='ISBN and entered title differ — verify in Inventory';}else{for(const k of ['title','authors','publisher','publication_year','language','pages','subject'])if(info[k]&&!row[k])row[k]=info[k];row.lookup_status=sources?'Found: '+sources:'Found'}}
+    if(info){const sources=(info._sources||[]).join(' + ');if(manualTitle&&info.title&&scanHelper.similarity(manualTitle,info.title)<.48){row.lookup_status='Barcode and entered title differ — verify in Inventory';}else{for(const k of ['title','authors','publisher','publication_year','language','pages','subject'])if(info[k]&&!row[k])row[k]=info[k];row.lookup_status=sources?'Found: '+sources:'Found'}}
     else row.lookup_status='Not found';
    }catch(e){row.lookup_status=e?.lookupRateLimited?'Lookup rate limited':'Lookup error';}
   }
@@ -927,13 +945,13 @@ async function decodeBatchBarcode(file){
  return '';
 }
 async function batchLookUp(row){
- const isbn=normalizeIsbn(row.barcode);if(!isISBN(isbn)){const suggestion=suggestIsbnCorrection(isbn);row.lookup_status=suggestion?'Invalid ISBN; possible check digit: '+suggestion:'Barcode is not an ISBN';return}
+ const isbn=normalizeIsbn(row.barcode);if(!isbn){row.lookup_status='No barcode found; search by printed title or add an ISBN';return}
  for(let attempt=0;attempt<3;attempt++){
   try{
    if(!batchMetadataCache.has(isbn))batchMetadataCache.set(isbn,lookupISBN(isbn));
    let info=await Promise.race([batchMetadataCache.get(isbn),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Lookup timed out')),18000))]);
    if(info){if(row.title&&info.title&&scanHelper.similarity(row.title,info.title)<.48){row.lookup_status='ISBN/title mismatch — verify the ISBN and book photo';row.error='ISBN points to a different book title. Check the printed ISBN or correct the title.'}else{['title','authors','publisher','publication_year','language','pages','subject'].forEach(k=>{if(info[k]&&!row[k])row[k]=String(info[k])});row.lookup_status='Found: '+(info._sources||[]).join(' + ')}}
-   else{row.lookup_status='Not found in book APIs';batchMetadataCache.delete(isbn)}
+   else{row.lookup_status=isISBN(isbn)?'ISBN not found in catalogs — try title search':'No exact barcode match — try title search';batchMetadataCache.delete(isbn)}
    return
   }catch(error){
    if(!error?.lookupRateLimited||attempt===2){row.lookup_status=error?.lookupRateLimited?'Book API rate limit reached; try scanning this book again later':'Book information unavailable';return}
@@ -1055,7 +1073,7 @@ async function batchLookupInCard(index){
  // Read the editable ISBN directly from this card, without requiring the top form.
  const input=Array.from($("batchResults").querySelectorAll('[data-batch-field="barcode"]')).find(el=>Number(el.dataset.batchIndex)===index);
  if(input)x.barcode=clean(input.value);
- if(!x.barcode){x.error='Enter an ISBN, or search by the printed book title instead.';renderBatch();return}
+ if(!x.barcode){x.error='Enter an ISBN or barcode, or search by the printed book title instead.';renderBatch();return}
  x.error='';x.lookup_status='Looking up book details…';
  const button=$("batchResults").querySelector(`[data-batch-lookup="${index}"]`);
  if(button){button.disabled=true;button.textContent='Finding details…'}
