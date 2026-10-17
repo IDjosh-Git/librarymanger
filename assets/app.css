@@ -609,3 +609,58 @@ button:focus-visible,.tab:focus-visible,.filter-chip:focus-visible,.view-switch 
 .inventory-dashboard-grid{align-items:stretch}
 .inventory-command-card{display:flex;flex-direction:column;justify-content:center;min-height:100%}
 @media(max-width:1040px){.inventory-command-card{min-height:0}}
+
+/* Responsive containment and usable column widths (Windows, tablets and mobiles). */
+html,body{width:100%;min-width:0;max-width:100%;overflow-x:clip}
+main{max-width:1680px;width:100%;margin-left:auto;margin-right:auto;padding-inline:clamp(10px,1.8vw,28px)}
+.layout{width:100%;min-width:0;max-width:100%}
+.layout > *,#libraryArea,#libraryArea>.pad,.panel,.inventory-workspace-card,.inventory-command-card,
+.inventory-dashboard-grid,.inventory-side-stack,.dashboard-main-grid,.dashboard-analytics-grid,
+.dashboard-operations-grid,.dashboard-surface,.batch-box,.batch-body,.batch-excel-panel,
+.batch-book,.batch-book-content,.batch-book-fields,.batch-book-source,.batch-review,
+.tablewrap,.history-data-surface,.circulation-form-modern,.book-card,.hero-copy{min-width:0;max-width:100%}
+@media(min-width:900px){
+ .layout{grid-template-columns:minmax(215px,255px) minmax(0,1fr)}
+}
+.tablewrap{width:100%;max-width:100%;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+.inventory-workspace-card .toolbar,.history-data-surface .toolbar{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.inventory-toolbar .search-wrap,.history-data-surface .search-wrap{width:100%;min-width:0}
+.filter-row{min-width:0;max-width:100%;flex-wrap:wrap}
+.filter-chip{white-space:normal;max-width:100%;overflow-wrap:anywhere;text-align:center}
+.inventory-dashboard-grid,.manual-entry-fields,.book-editor-grid,.batch-book-fields,.circulation-form-modern{min-width:0}
+.inventory-dashboard-grid>*{min-width:0}
+.inventory-panel-heading>*{min-width:0}
+.manual-entry-section input,.search-wrap input,.select-control select,.batch-book input,
+.book-editor input,.circulation-form-modern input,.circulation-form-modern select{min-width:0;max-width:100%}
+.batch-book-source strong,.batch-path,.dashboard-ranked-name span,.book-card h3{overflow-wrap:anywhere}
+.batch-picker label,.batch-actions button,.batch-excel-actions button,.batch-excel-import{max-width:100%;min-width:0;overflow-wrap:anywhere;white-space:normal}
+.batch-excel-panel{width:100%;display:grid;grid-template-columns:minmax(0,1fr);gap:13px}
+.batch-excel-actions{display:flex;flex-wrap:wrap;gap:10px;max-width:100%}
+.batch-excel-actions button,.batch-excel-import{flex:1 1 190px;white-space:normal;min-height:42px}
+.review-export-status{font-size:.8rem;font-weight:750;color:var(--accent);margin:10px 0 0;line-height:1.6}
+.batch-review-toolbar{min-width:0;display:flex;flex-wrap:wrap;gap:12px}
+.dashboard-metric,.dashboard-insight,.stat{min-width:0;overflow-wrap:anywhere}
+@media(max-width:899px){.layout{display:block}}
+@media(max-width:650px){
+ main{padding-inline:9px}
+ .tablewrap{overflow-x:hidden}
+ .tablewrap td{min-width:0;max-width:100%;overflow-wrap:anywhere}
+ .tablewrap td>div{min-width:0;max-width:100%}
+ .tablewrap td:before{flex:0 0 34%;white-space:normal}
+ .batch-excel-actions{display:grid;grid-template-columns:minmax(0,1fr)}
+ .batch-book-content{min-width:0;max-width:100%}
+ .batch-book-fields{grid-template-columns:minmax(0,1fr)}
+ .quality-filters .filter-row,.inventory-toolbar .filter-row{display:flex;flex-wrap:wrap;gap:8px}
+ .filter-chip{font-size:.72rem}
+ .hero-library,.dashboard-hero,.circulation-hero{min-width:0;max-width:100%}
+ .dashboard-chart{min-width:0}
+ .dashboard-due-date{max-width:105px;white-space:normal;text-align:right}
+}
+@media(max-width:380px){
+ #libraryArea>.pad{padding:10px}
+ .dashboard-metric{padding:11px}
+ .dashboard-insight{padding:10px}
+ .dashboard-due-date{max-width:76px}
+ .batch-excel-panel{padding:12px}
+ .batch-book{padding:11px}
+}

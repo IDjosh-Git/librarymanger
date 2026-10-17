@@ -1,3 +1,57 @@
+# Library Manager — Responsive Review & Excel Fix (v5.2)
+
+This build preserves the modern dashboard, real library photographs, matching ISBN book covers,
+OCR scan workflows, grouped Inventory copy counts, lending/returns, and previous fixes.
+
+## Review versus saved Inventory
+
+- **Export review · Excel** exports *unsaved* scanned or imported review rows. It is
+  intentionally disabled if the unsaved count is zero; the status panel now tells you that.
+- **Export saved needs attention · Excel** exports copies *already saved* in Supabase
+  that have missing title, author, publisher, year, barcode or shelf information. This
+  button is enabled when any such saved books exist, even if the Review list is empty.
+- Keep the Review_Key on existing records. `Import_Action=UPDATE` corrects an existing
+  physical copy. `Import_Action=SAVE` inserts another physical copy. `SKIP` omits a row.
+- After importing a corrected file, click **Save selected to Supabase**. For UPDATE rows
+  this performs an update matched by immutable record ID (it never inserts that row),
+  while SAVE rows create new records with distinct Book IDs. User authentication and
+  existing Supabase Row Level Security continue to apply.
+- The app remembers **review metadata** per signed-in account in browser IndexedDB
+  when storage is available. The original full-size photos are not stored in IndexedDB.
+  You may need to reselect photos after a page reload for OCR, but exported metadata
+  and corrections can be recovered from this browser if storage is available.
+- Data that was **previously unsaved and lost before this version** cannot be
+  retroactively recovered; exported or saved records remain retrievable.
+- XLSX import/export uses the existing SheetJS library from the CDN. If the Excel
+  library is unavailable, the export buttons download an **Excel-compatible CSV**
+  instead; `.csv` import is also supported. Format ISBN/barcode columns as **Text** in
+  Excel to preserve leading zeros, and keep Review_Key unchanged.
+- Photos are **not embedded** in the exported workbook or CSV file.
+
+## Responsive layout
+
+- Wider desktop workspace and narrower fixed sidebar to avoid excessive blank space.
+- Tables remain inside their own horizontal scrolling area on desktop; mobile tables
+  use stacked cards. Filters, buttons, review cards and inputs wrap to viewport width.
+- Mobile bottom navigation, Dashboard, Inventory, Lending, Returns and Loan History
+  were checked in browser tests at widths 320, 360, 390, 430, 768, 820, 1024, 1366
+  and 1680 pixels.
+
+## Validation
+
+- `npm test` — 48 automated JavaScript tests passed, including UPDATE key protection.
+- `python tests/test_review_responsive.py` — passed in mocked Chromium across nine
+  viewport widths, including an existing-copy Excel UPDATE (no duplicate database
+  insertion), unsaved review export, and CSV fallback import/export.
+- `python tests/test_review_excel.py`, `python tests/test_inventory_quantities.py`,
+  `python tests/test_duplicate_save.py` and `python tests/test_dashboard_ui.py` passed
+  with in-memory Supabase data.
+- Some legacy browser tests can timeout in this sandbox and **live production Supabase,
+  browser persistence and external OCR/ISBN API behavior are not fully validated**.
+- No live Supabase records or Vercel deployment were changed by these modifications.
+
+---
+
 # Grouped Inventory — Copies Available (October 2026)
 
 **New column name: Available Copies.** Each distinct book is displayed as **one line** in Inventory, with these counts:

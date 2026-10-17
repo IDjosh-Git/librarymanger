@@ -11,7 +11,7 @@
   function exportRow(item, newId){
     const key = str(item.saveRecordId) || newId();
     item.saveRecordId=key;
-    const output={Review_Key:key, Photo_File:str(item.fileName), Folder:str(item.path), Lookup_Status:str(item.lookup_status||'Manual'), Import_Action:'SAVE'};
+    const output={Review_Key:key, Photo_File:str(item.fileName), Folder:str(item.path), Lookup_Status:str(item.lookup_status||'Manual'), Import_Action:str(item.importAction||'SAVE')};
     for(const [heading,field] of Object.entries(fields))output[heading]=str(item[field]);
     return Object.fromEntries(columns.map(k=>[k,output[k]??'']));
   }
@@ -30,10 +30,11 @@
       const hasContent=Object.keys(fields).some(h=>v(h))||v('Photo_File')||v('Folder');
       if(!hasContent)continue;
       if(action==='SKIP')continue;
-      if(action&&action!=='SAVE')throw Error(`Row ${i+1}: Import_Action must be SAVE or SKIP.`);
+      if(action&&action!=='SAVE'&&action!=='UPDATE')throw Error(`Row ${i+1}: Import_Action must be SAVE, UPDATE or SKIP.`);
+      if(action==='UPDATE'&&!key)throw Error(`Row ${i+1}: UPDATE requires the original Review_Key. It cannot create a new book.`);
       if(key&&seen.has(key))throw Error(`Row ${i+1}: Review_Key is repeated in this Excel file. Clear Review_Key on the additional physical copy to generate a separate record.`);
       if(key&&(!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(key)))throw Error(`Row ${i+1}: Review_Key was changed or damaged. Restore the original key, or clear it if this is a new copy.`);
-      const result={saveRecordId:key||newId(),fileName:v('Photo_File')||`Excel row ${i+1}`,path:v('Folder')||v('Photo_File')||`Excel row ${i+1}`,lookup_status:v('Lookup_Status')||'Excel review',selected:true,saved:false,error:'',saveError:'',duplicate:false};
+      const result={saveRecordId:key||newId(),fileName:v('Photo_File')||`Excel row ${i+1}`,path:v('Folder')||v('Photo_File')||`Excel row ${i+1}`,lookup_status:v('Lookup_Status')||'Excel review',importAction:action||'SAVE',selected:true,saved:false,error:'',saveError:'',duplicate:false};
       for(const [heading,field] of Object.entries(fields))result[field]=v(heading);
       seen.add(result.saveRecordId);results.push(result);
       if(results.length>maxRows)throw Error(`Excel file exceeds ${maxRows} review rows. Split it into smaller files.`);

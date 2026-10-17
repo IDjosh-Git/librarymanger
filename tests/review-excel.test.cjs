@@ -30,7 +30,7 @@ test('Skipped rows are omitted; invalid actions and duplicate review keys are re
  const r=fileRow(),skipped=fileRow({Import_Action:'SKIP'});
  assert.equal(excel.validateAndParse(matrix(r,skipped),key).length,1);
  assert.throws(()=>excel.validateAndParse(matrix(r,{...r,Photo_File:'duplicate copy.jpg'}),key),/Review_Key is repeated/);
- assert.throws(()=>excel.validateAndParse(matrix(fileRow({Import_Action:'DELETE'})),key),/Import_Action must be SAVE or SKIP/);
+ assert.throws(()=>excel.validateAndParse(matrix(fileRow({Import_Action:'DELETE'})),key),/Import_Action must be SAVE, UPDATE or SKIP/);
 });
 test('Invalid template, damaged key, and empty rows produce helpful errors',()=>{
  assert.throws(()=>excel.validateAndParse([['Title'],['x']],key),/Wrong Excel template/);
@@ -44,4 +44,17 @@ test('Added blank key rows are independent, not consolidated by repeated ISBN, a
  assert.deepEqual(rows.map(r=>r.title),['First copy','Second copy']);
  assert.equal(rows[0].barcode,'9780140328721');
  assert.notEqual(rows[0].saveRecordId,rows[1].saveRecordId);
+});
+
+test('UPDATE workbook rows preserve an existing record key and cannot invent a new copy', () => {
+  const knownId='d9a8b17d-4f42-4eba-85b5-a9d9e96bd67b';
+  const h=excel.columns;
+  const row=Object.fromEntries(h.map(k=>[k,'']));
+  row.Review_Key=knownId;row.ISBN_Barcode='0001234567890';row.Title='Corrected catalogue title';row.Import_Action='UPDATE';
+  const parsed=excel.validateAndParse([h,h.map(k=>row[k])],()=>{throw Error('No new ID expected')});
+  assert.equal(parsed[0].importAction,'UPDATE');
+  assert.equal(parsed[0].saveRecordId,knownId);
+  assert.equal(parsed[0].barcode,'0001234567890');
+  row.Review_Key='';
+  assert.throws(()=>excel.validateAndParse([h,h.map(k=>row[k])],()=>knownId),/UPDATE requires/);
 });
