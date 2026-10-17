@@ -346,3 +346,12 @@ Open **Inventory → Table view**, then click the filter icon next to a column s
 - The original text search, numeric minimum/maximum fields, and advanced status criteria remain available under **Advanced filters**; there is no database migration or query needed.
 
 This is a read-only UI feature: filtering never changes the underlying books, grouped copy counts, circulation status, persistent Review queue, or Excel exports.
+
+
+## Unified theme and appearance — v5.6
+
+- Light and dark modes now use consistent foreground, background, field, feedback, and heading colors throughout Dashboard, Inventory, Review, Lending, Returns and History.
+- Replaced remaining fixed light surfaces in inventory cards, review tools, bulk import panels, search fields, metrics and filter menus with theme-aware tokens. In dark mode headings now use a readable light color rather than the dark button background color.
+- Theme switch is accessible (`aria-pressed` and updated action label), updates native controls and the browser theme color, and persists the chosen mode in the current browser using `library_manager_theme_v2`.
+- Dark/light modes were checked at 1440, 800, 390, and 320 pixels using an isolated browser test with mocked database records.
+- This update is visual only: it does not modify book records, scanning, cloud review, export/import, circulation, database schema, or Supabase policies. No SQL migration is required.

@@ -760,3 +760,142 @@ main{max-width:1680px;width:100%;margin-left:auto;margin-right:auto;padding-inli
 .column-advanced-filters summary{font-size:.8rem;font-weight:750;color:var(--accent);cursor:pointer;padding:4px 0 12px}
 @media(max-width:900px){.column-value-options{grid-template-columns:minmax(0,1fr)} }
 @media(max-width:480px){.column-value-picker{padding:12px}.column-value-picker-heading{flex-direction:column}.column-value-picker-heading button{align-self:flex-start}.column-value-actions button{flex:1 1 auto}#columnValueCount{width:100%;margin:0}.column-picker-shortcuts button{flex:1 1 auto}}
+
+/* v5.6 — unified light/dark design tokens and theme consistency repairs.
+   Keep action backgrounds separate from heading colors: dark buttons need a
+   deep fill, while text on dark surfaces needs a light, readable foreground. */
+:root{
+ --heading:#1c3148;
+ --on-brand:#ffffff;
+ --panel-glass:rgba(255,253,250,.89);
+ --field-bg:#fffdfa;
+ --field-border:#c7ced4;
+ --soft-border:rgba(45,73,104,.16);
+ --accent-hover:rgba(45,73,104,.08);
+ --tip-bg:linear-gradient(125deg,#f0f1f0,#f5eee2);
+ --panel-gradient:linear-gradient(165deg,#fffdfa,#f7f2ea);
+ --hero-gradient:linear-gradient(120deg,#f7f2ea,#ece5d8);
+ --warning-panel:#fff5e8;
+ --positive-ink:#216448;
+ --warning-ink:#86591d;
+ --danger-ink:#a72c36;
+}
+:root[data-theme="dark"]{
+ --heading:#f1f4f9;
+ --on-brand:#ffffff;
+ --panel-glass:rgba(25,39,54,.93);
+ --field-bg:#172838;
+ --field-border:#4e657b;
+ --soft-border:rgba(153,183,212,.23);
+ --accent-hover:rgba(136,173,209,.16);
+ --tip-bg:linear-gradient(125deg,#26394b,#293643);
+ --panel-gradient:linear-gradient(165deg,#172536,#1b2938);
+ --hero-gradient:linear-gradient(120deg,#1b2b3b,#24374a);
+ --warning-panel:#443726;
+ --positive-ink:#a5e5c1;
+ --warning-ink:#f4c88d;
+ --danger-ink:#ffadb2;
+ --danger-bg:#43292f;
+ --success-bg:#1e4036;
+ --warn-bg:#483827;
+ --orange:#f2ba81;
+ --green:#9bdfb9;
+ --red:#ffa9af;
+ --muted:#afbfce;
+}
+
+/* Global form controls, menus, tooltips and feedback now follow the theme. */
+input,textarea,select{background:var(--field-bg);color:var(--ink);border-color:var(--field-border)}
+input::placeholder,textarea::placeholder{color:var(--muted);opacity:.86}
+option,optgroup{background:var(--surface);color:var(--ink)}
+button.light,.light{background:var(--soft);color:var(--ink);border-color:var(--line)}
+button.light:hover,.light:hover{background:var(--surface2)}
+button.green{background:#246b55;color:#fff}
+button.alt{background:#926435;color:#fff}
+:root[data-theme="dark"] button.green{background:#295e4d;color:#f7fffa}
+:root[data-theme="dark"] button.alt{background:#714b2a;color:#fff4e4}
+/* Prefer explicit original button foregrounds rather than low-contrast defaults. */
+:root[data-theme="dark"] .textbtn{color:var(--accent)}
+:root[data-theme="dark"] .auth-switch{background:var(--surface2)}
+:root[data-theme="dark"] .auth-switch button:not(.active){color:var(--muted);background:transparent}
+:root[data-theme="dark"] .auth-switch button.active{background:var(--brand);color:#fff}
+:root[data-theme="dark"] .recovery-panel{background:var(--surface2);border-color:var(--line)}
+:root[data-theme="dark"] .syncbox,
+:root[data-theme="dark"] .lookupbox{background:var(--surface2);border-color:var(--line)}
+:root[data-theme="dark"] .synchead,
+:root[data-theme="dark"] .lookuphead{background:var(--soft);color:var(--ink)}
+:root[data-theme="dark"] .batch-summary span{background:var(--soft);color:var(--ink)}
+:root[data-theme="dark"] .batch-picker label{background:var(--surface);border-color:var(--field-border);color:var(--ink)}
+:root[data-theme="dark"] .batch-head p,.batch-info,.batch-path{color:var(--muted)}
+:root[data-theme="dark"] .batch-table .batch-error{color:var(--danger-ink)}
+:root[data-theme="dark"] .tablewrap td[contenteditable]{background:var(--surface)}
+:root[data-theme="dark"] .tablewrap tbody{background:var(--surface2)}
+:root[data-theme="dark"] .tablewrap tr{background:var(--surface)}
+:root[data-theme="dark"] .tablewrap td:before{color:var(--muted)}
+
+/* Dark-mode headings must never inherit a dark button background token. */
+.hero-copy h2,.hero-floating-card strong,.inventory-panel-heading h3,
+.inventory-tip-card strong,.inventory-image-card strong,.inventory-stats-grid .stat b,
+.book-card h3,.inventory-command-card h3{color:var(--heading)}
+:root[data-theme="dark"] .workspace-nav .tab.active,
+:root[data-theme="dark"] .workspace-nav .tab[aria-current="page"]{color:var(--heading);background:var(--soft);border-color:var(--soft-border)}
+:root[data-theme="dark"] .workspace-nav .tab.active .app-icon{color:var(--accent)}
+
+/* Consistent page sections, instead of leftover white-on-white panels in dark mode. */
+.hero-library{background:var(--hero-gradient);border-color:var(--soft-border)}
+.hero-highlights span{background:var(--panel-glass);border-color:var(--soft-border);color:var(--ink)}
+.hero-floating-card{background:var(--panel-glass);border-color:var(--soft-border)}
+.inventory-command-card,.inventory-workspace-card,.inventory-image-card{background:var(--panel-gradient);border-color:var(--soft-border)}
+.inventory-tip-card{background:var(--tip-bg);border-color:var(--soft-border)}
+.inventory-stats-grid .stat{background:var(--panel-gradient);border-color:var(--soft-border)}
+.inventory-toolbar,.inventory-options{background:var(--panel-glass);border-color:var(--soft-border)}
+.quality-filters{background:var(--panel-gradient);border-color:var(--soft-border)}
+.select-control select,.manual-entry-section input,.search-wrap input,.book-editor-grid input,
+.circulation-form .book-picker select,.circulation-form .book-picker .search-wrap input{background:var(--field-bg);color:var(--ink);border-color:var(--field-border)}
+.select-control select:focus,.manual-entry-section input:focus,.search-wrap input:focus,
+.book-editor-grid input:focus,.circulation-form .book-picker select:focus{box-shadow:0 0 0 3px var(--accent-hover)}
+.view-switch{background:var(--soft);border-color:var(--soft-border)}
+.view-switch button[aria-pressed="true"]{background:var(--brand);color:var(--on-brand)}
+.tablewrap{background:var(--surface);border-color:var(--soft-border)}
+.tablewrap tbody tr:hover{background:var(--accent-hover)}
+.metadata-preview{background:var(--surface2);color:var(--ink);border-color:var(--soft-border)}
+.alert-banner{background:var(--warning-panel);border-color:var(--soft-border)}
+.batch-box,.book-card{background:var(--panel-gradient);border-color:var(--soft-border)}
+.batch-excel-panel{background:var(--surface);border-color:var(--soft-border)}
+.bottomnav{background:var(--panel-glass);border-color:var(--soft-border)}
+.inventory-copy-expand>summary,.inventory-quantity>div{background:var(--soft);border-color:var(--soft-border)}
+:root[data-theme="dark"] .book-monogram{background:linear-gradient(135deg,#304e70,#385b7b);color:#fff}
+:root[data-theme="dark"] .hero-library::after{background:radial-gradient(circle,rgba(136,173,209,.14),transparent 68%)}
+:root[data-theme="dark"] body{background:radial-gradient(circle at top right,var(--glow),transparent 28%),var(--bg)}
+
+/* High-contrast pills, warning badges, review messages and editable inputs. */
+.badge.ok,.pill.available,.status.ok{background:var(--success-bg);color:var(--positive-ink)}
+.badge.bad,.pill.overdue,.status.err{background:var(--danger-bg);color:var(--danger-ink)}
+.status.warn,.pill.borrowed{background:var(--warn-bg);color:var(--warning-ink)}
+.status{background:var(--surface2);color:var(--ink)}
+:root[data-theme="dark"] .batch-book-error{color:var(--danger-ink)}
+:root[data-theme="dark"] .batch-book-hint{color:var(--warning-ink)}
+:root[data-theme="dark"] .inventory-copy-identity [contenteditable]:focus{background:var(--surface2);color:var(--ink)}
+:root[data-theme="dark"] .book-editor,.column-value-picker,.column-filters-panel,
+:root[data-theme="dark"] .saved-review-panel{color:var(--ink)}
+
+/* Filter interactions retain the same selected-state contrast across modes. */
+.filter-chip.active,.filter-chip[aria-pressed="true"],
+.column-filter-toggle,.column-picker-shortcuts button.active,
+.column-picker-shortcuts button[aria-pressed="true"]{background:var(--brand);color:var(--on-brand);border-color:var(--brand)}
+:root[data-theme="dark"] .column-value-item:has(input:checked){border-color:var(--accent);background:var(--soft)}
+:root[data-theme="dark"] .column-value-item input[type="checkbox"]{accent-color:#9dbfdf}
+:root[data-theme="dark"] #columnValueSearch{background:var(--field-bg);color:var(--ink);border-color:var(--field-border)}
+
+/* Provide a consistent background and accessible hover for small/mobile nav. */
+:root[data-theme="dark"] .bottomnav button{color:var(--muted)}
+:root[data-theme="dark"] .bottomnav button.active{background:var(--brand);color:#fff}
+:root[data-theme="dark"] .bottomnav button:hover:not(.active){background:var(--soft);color:var(--ink)}
+:root[data-theme="dark"] .dashboard-link{color:var(--accent)}
+:root[data-theme="dark"] .dashboard-priority-actions button,
+:root[data-theme="dark"] .dashboard-shortcut-grid button{background:var(--surface2);color:var(--ink);border-color:var(--line)}
+:root[data-theme="dark"] .dashboard-shortcut-grid button:hover{background:var(--soft)}
+
+/* Respect reduced motion and browser-native colour controls. */
+:root{accent-color:var(--accent)}
+@media(prefers-reduced-motion:reduce){.theme-switch,.header-icon-button{transition:none}}
