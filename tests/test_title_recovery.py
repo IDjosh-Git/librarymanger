@@ -52,7 +52,7 @@ async def main():
      else:body={'found':False,'metadata':{},'sources':[]}
      await route.fulfill(status=200,content_type='application/json',body=json.dumps(body))
     await page.route('**/api/book-lookup?isbn=*',meta)
-    await page.set_content((ROOT/'index.html').read_text().replace('<script src="assets/inventory-grouping.js"></script>','<script>'+(ROOT/'assets/inventory-grouping.js').read_text()+'</script>').replace('<script src="assets/dashboard-metrics.js"></script>','<script>'+(ROOT/'assets/dashboard-metrics.js').read_text()+'</script>').replace('<head>','<head><base href="https://book-test.invalid/">',1),wait_until='domcontentloaded')
+    await page.set_content((ROOT/'index.html').read_text().replace('<script src="assets/inventory-grouping.js"></script>','<script>'+(ROOT/'assets/inventory-grouping.js').read_text()+'</script>').replace('<script src="assets/dashboard-metrics.js"></script>','<script>'+(ROOT/'assets/dashboard-metrics.js').read_text()+'</script>').replace('<script src="assets/inventory-column-filters.js"></script>','<script>'+(ROOT/'assets/inventory-column-filters.js').read_text()+'</script>').replace('<head>','<head><base href="https://book-test.invalid/">',1),wait_until='domcontentloaded')
     print("page loaded",flush=True)
     await page.add_style_tag(content=(ROOT/'assets/app.css').read_text())
     await page.wait_for_timeout(650)

@@ -11,6 +11,7 @@
 <script src="assets/scan-extraction.js"></script>
 <script src="assets/review-excel.js"></script>
 <script src="assets/inventory-grouping.js"></script>
+<script src="assets/inventory-column-filters.js"></script>
 <script src="assets/dashboard-metrics.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
@@ -255,7 +256,38 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
   <div class="inventory-panel-heading inventory-panel-heading-inline"><div><span class="eyebrow">Explore inventory</span><h3>Search, filter and manage books</h3></div><p>Browse a grouped, cleaner inventory view inspired by modern library software.</p></div>
   <div class="toolbar inventory-toolbar"><div class="search-wrap"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input id="bookSearch" type="search" placeholder="Search title, author, ISBN, ID, borrower or shelf…" aria-label="Search inventory"></div><div class="filter-row" role="group" aria-label="Filter books"><button class="filter-chip active" type="button" data-book-filter="all" aria-pressed="true">All books</button><button class="filter-chip" type="button" data-book-filter="available" aria-pressed="false">Available</button><button class="filter-chip" type="button" data-book-filter="borrowed" aria-pressed="false">On loan</button><button class="filter-chip" type="button" data-book-filter="overdue" aria-pressed="false">Overdue</button></div></div>
   <div class="quality-filters"><strong>Book details</strong><div class="filter-row" role="group" aria-label="Book details completeness"><button class="filter-chip active" type="button" data-quality-filter="all" aria-pressed="true">All details</button><button class="filter-chip" type="button" data-quality-filter="attention" aria-pressed="false">Needs attention <span id="attentionCount"></span></button><button class="filter-chip" type="button" data-quality-filter="no-title" aria-pressed="false">Without title <span id="noTitleCount"></span></button><button class="filter-chip" type="button" data-quality-filter="full" aria-pressed="false">Full details <span id="fullCount"></span></button></div><p class="quality-hint">Duplicate books are combined into one inventory line with <strong>Available Copies</strong> and <strong>Total Copies</strong>. Expand an entry to edit, lend, return or remove a specific physical copy. Books without ISBNs can be saved by title.</p></div>
-  <div class="inventory-options"><div class="select-control"><label for="bookSort">Sort by</label><select id="bookSort" aria-label="Sort inventory"><option value="newest">Recently added</option><option value="oldest">Oldest added</option><option value="title">Title A–Z</option><option value="shelf">Shelf A–Z</option><option value="due">Due date</option></select></div><div class="select-control"><label for="bookPageSize">Per page</label><select id="bookPageSize" aria-label="Books per page"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></div><div class="view-switch" role="group" aria-label="Inventory view"><button type="button" id="viewTable" aria-pressed="true" title="Table view" aria-label="Table view"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#list"></use></svg></button><button type="button" id="viewGrid" aria-pressed="false" title="Card view" aria-label="Card view"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg></button></div></div><div class="table-actions"><span id="bookTableMeta" class="table-meta" aria-live="polite">Newest books first</span><div class="row"><button id="clearFilters" type="button" class="light smallbtn">Clear filters</button><button id="exportBooks" type="button" class="light smallbtn"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export all · Excel</button></div></div><div id="bookTable" class="tablewrap"></div><div id="bookPager" class="pager" aria-label="Inventory pages"></div>
+  <div class="inventory-options"><div class="select-control"><label for="bookSort">Sort by</label><select id="bookSort" aria-label="Sort inventory"><option value="newest">Recently added</option><option value="oldest">Oldest added</option><option value="title">Title A–Z</option><option value="shelf">Shelf A–Z</option><option value="due">Due date</option></select></div><div class="select-control"><label for="bookPageSize">Per page</label><select id="bookPageSize" aria-label="Books per page"><option value="25">25</option><option value="50">50</option><option value="100">100</option></select></div><div class="view-switch" role="group" aria-label="Inventory view"><button type="button" id="viewTable" aria-pressed="true" title="Table view" aria-label="Table view"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#list"></use></svg></button><button type="button" id="viewGrid" aria-pressed="false" title="Card view" aria-label="Card view"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg></button></div></div><div class="column-filter-toolbar" role="group" aria-label="Inventory column filters">
+  <button id="toggleColumnFilters" type="button" class="light column-filter-toggle" aria-expanded="false" aria-controls="columnFiltersPanel"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#filter"></use></svg> Column filters <span id="columnFilterBadge" class="column-filter-badge" hidden>0</span><svg class="app-icon sm column-filter-chevron" aria-hidden="true"><use href="assets/icons.svg#chevron-down"></use></svg></button>
+  <button id="resetColumnFilters" type="button" class="light column-filter-reset" hidden>Clear column filters</button>
+  <span id="columnFilterSummary" class="column-filter-summary" role="status" aria-live="polite">Filter individual table columns</span>
+</div>
+<section id="columnFiltersPanel" class="column-filters-panel" aria-label="Filter individual Inventory columns" hidden>
+  <div class="column-filters-heading"><strong>Filter by column</strong><span>Click a column below to see the values currently in your inventory. You can select more than one.</span></div>
+  <div class="column-picker-shortcuts" role="group" aria-label="Choose a column to filter">
+    <button type="button" data-show-column-values="isbn">ISBN / Barcode</button>
+    <button type="button" data-show-column-values="title">Title</button>
+    <button type="button" data-show-column-values="authors">Authors</button>
+    <button type="button" data-show-column-values="available">Available Copies</button>
+    <button type="button" data-show-column-values="total">Total Copies</button>
+    <button type="button" data-show-column-values="loan">On Loan</button>
+    <button type="button" data-show-column-values="status">Status</button>
+    <button type="button" data-show-column-values="details">Details</button>
+    <button type="button" data-show-column-values="shelf">Shelf</button>
+  </div>
+  <div id="columnValuePicker" class="column-value-picker" aria-label="Choose values from a column" hidden>
+    <div class="column-value-picker-heading"><div><strong id="columnValueTitle">Choose values</strong><p id="columnValueHint">Select values to filter the inventory.</p></div><button id="closeColumnValuePicker" type="button" class="light smallbtn" aria-label="Close value options">Close</button></div>
+    <label for="columnValueSearch">Search values in this column</label>
+    <input id="columnValueSearch" type="search" placeholder="Search available values…" autocomplete="off">
+    <div class="column-value-actions"><button id="columnValueSelectAll" type="button" class="light smallbtn">Select all shown</button><button id="columnValueClear" type="button" class="light smallbtn">Clear selected values</button><span id="columnValueCount" aria-live="polite"></span></div>
+    <div id="columnValueOptions" class="column-value-options" role="group" aria-label="Values in selected column"></div>
+    <p id="columnValueMore" class="column-value-more" aria-live="polite"></p>
+  </div>
+  <details class="column-advanced-filters" open><summary>Advanced filters: type text, set quantity ranges or choose criteria</summary>
+  <div class="column-filters-grid"><div class="column-filter-field"><label for="column_isbn">ISBN / Barcode</label><input id="column_isbn" data-column-filter="isbn" type="search" placeholder="ISBN or barcode…" autocomplete="off"></div><div class="column-filter-field"><label for="column_title">Title</label><input id="column_title" data-column-filter="title" type="search" placeholder="Book title…" autocomplete="off"></div><div class="column-filter-field"><label for="column_authors">Authors</label><input id="column_authors" data-column-filter="authors" type="search" placeholder="Author name…" autocomplete="off"></div><div class="column-filter-field"><label for="column_shelf">Shelf</label><input id="column_shelf" data-column-filter="shelf" type="search" placeholder="Shelf number…" autocomplete="off"></div><div class="column-filter-field"><label>Available Copies</label><div class="column-filter-range"><input data-column-filter="availableMin" aria-label="Available Copies minimum" type="number" min="0" step="1" inputmode="numeric" placeholder="Min"><span>to</span><input data-column-filter="availableMax" aria-label="Available Copies maximum" type="number" min="0" step="1" inputmode="numeric" placeholder="Max"></div></div><div class="column-filter-field"><label>Total Copies</label><div class="column-filter-range"><input data-column-filter="totalMin" aria-label="Total Copies minimum" type="number" min="0" step="1" inputmode="numeric" placeholder="Min"><span>to</span><input data-column-filter="totalMax" aria-label="Total Copies maximum" type="number" min="0" step="1" inputmode="numeric" placeholder="Max"></div></div><div class="column-filter-field"><label>On Loan</label><div class="column-filter-range"><input data-column-filter="loanMin" aria-label="On Loan minimum" type="number" min="0" step="1" inputmode="numeric" placeholder="Min"><span>to</span><input data-column-filter="loanMax" aria-label="On Loan maximum" type="number" min="0" step="1" inputmode="numeric" placeholder="Max"></div></div><div class="column-filter-field"><label for="column_status">Status</label><select id="column_status" data-column-filter="status"><option value="">Any status</option><option value="available">At least one available</option><option value="borrowed">At least one on loan</option><option value="overdue">Has overdue copies</option><option value="fully-available">All copies available</option><option value="all-on-loan">All copies on loan</option><option value="mixed">Mixed: available and on loan</option></select></div><div class="column-filter-field"><label for="column_details">Details</label><select id="column_details" data-column-filter="details"><option value="">Any completeness</option><option value="full">Full details</option><option value="attention">Needs attention</option><option value="no-title">Without title</option></select></div></div>
+  </details>
+  <p class="column-filter-help">Click a filter icon in Table view, or choose a column above on mobile. The displayed values come from your complete inventory (not just the current page). Selected values within one column are combined; different columns are filtered together.</p>
+</section>
+<div class="table-actions"><span id="bookTableMeta" class="table-meta" aria-live="polite">Newest books first</span><div class="row"><button id="clearFilters" type="button" class="light smallbtn">Clear filters</button><button id="exportBooks" type="button" class="light smallbtn"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export all · Excel</button></div></div><div id="bookTable" class="tablewrap"></div><div id="bookPager" class="pager" aria-label="Inventory pages"></div>
 </section>
 <section class="batch-box" aria-labelledby="batchHeading">
  <div class="batch-head"><h3 id="batchHeading"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg> Import an entire shelf</h3><p>Choose folders larger than 1 GB (up to 4 GB of images), ZIP archives up to 2 GB, or photos. Title pages, covers and barcode photos are scanned. Images stay visible for ISBN or title corrections. OCR needs an internet connection to load the recognition engine; large imports depend on device memory.</p></div>
@@ -348,7 +380,7 @@ function sheetLinked(){return !!session?.user&&!!parseSheetId(sheetUrl())&&!!goo
 function updateSheetUI(){let linked=sheetLinked(),s=sheetSettings();$("sheetBadge").textContent=linked?"Linked • Sync enabled":"Not linked";$("sheetBadge").className=linked?"badge ok":"badge";$("sheetState").textContent=linked?"Your own Google Sheet is linked. Supabase is the shared main database.":"Optional: enter your OWN Google Sheet, deployed Apps Script /exec URL and matching token. Scanning does not require Google Sheets.";$("sheetUrl").value=s.sheet||"";$("connectorUrl").value=s.url||"";$("connectorToken").value=s.token||""}
 function authUI(){let signedIn=!!session?.user;$("authBadge").textContent=signedIn?"Signed in":"Own account required";$("authBadge").className=signedIn?"badge ok":"badge";$("loggedOut").hidden=signedIn;$("loggedIn").hidden=!signedIn;$("sheetBox").hidden=!signedIn;$("libraryArea").hidden=!signedIn;$("who").textContent=signedIn?session.user.email||"Signed in":"";updateSheetUI()}
 function setAuthMode(mode){authMode=mode;let creating=mode==="signup";$("signupFields").hidden=!creating;$("confirmPassword").required=creating;$("password").autocomplete=creating?"new-password":"current-password";$("password").minLength=creating?8:1;$("authSubmit").textContent=creating?"Create My Account":"Sign In";$("showSignIn").classList.toggle("active",!creating);$("showSignUp").classList.toggle("active",creating);$("showSignIn").setAttribute("aria-pressed",String(!creating));$("showSignUp").setAttribute("aria-pressed",String(creating));$("authIntro").textContent=creating?"Create your own login to scan into the shared library.":"Sign in with your own email and password."}
-function resetAccountState(){libraryOwnerId=null;books=[];loans=[];selectedLend=null;selectedReturn=null;$("lendCopyDetail").textContent="Select a copy to view its Book ID and shelf below.";$("returnCopyDetail").textContent="Select a borrowed copy to view its Book ID and borrower below.";$("lendBookSearch").value="";$("returnBookSearch").value="";$("lendBookDisplay").value="";$("lendBookId").value="";$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";batchStopRequested=true;batchQueue=[];batchExcelLoading=false;reviewDraftVersion++;reviewDraftLoadedFor=null;if(reviewSaveTimer)clearTimeout(reviewSaveTimer);reviewSaveTimer=null;reviewRemoteHashes.clear();reviewCloudStatus='loading';reviewCloudFailure='';releaseBatchPreviews();batchItems=[];batchMetadataCache.clear();$("batchProgress").value=0;bookSearch="";loanSearch="";bookFilter="all";qualityFilter="all";loanFilter="all";bookPage=1;loanPage=1;$("bookSearch").value="";$("loanSearch").value="";setPressed("book","all");setPressed("quality","all");setPressed("loan","all");renderBatch();renderAll()}
+function resetAccountState(){libraryOwnerId=null;books=[];loans=[];selectedLend=null;selectedReturn=null;$("lendCopyDetail").textContent="Select a copy to view its Book ID and shelf below.";$("returnCopyDetail").textContent="Select a borrowed copy to view its Book ID and borrower below.";$("lendBookSearch").value="";$("returnBookSearch").value="";$("lendBookDisplay").value="";$("lendBookId").value="";$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";batchStopRequested=true;batchQueue=[];batchExcelLoading=false;reviewDraftVersion++;reviewDraftLoadedFor=null;if(reviewSaveTimer)clearTimeout(reviewSaveTimer);reviewSaveTimer=null;reviewRemoteHashes.clear();reviewCloudStatus='loading';reviewCloudFailure='';releaseBatchPreviews();batchItems=[];batchMetadataCache.clear();$("batchProgress").value=0;bookSearch="";loanSearch="";columnFilters=LibraryInventoryColumnFilters.empty();selectedColumnValues={};resetColumnFilterInputs();bookFilter="all";qualityFilter="all";loanFilter="all";bookPage=1;loanPage=1;$("bookSearch").value="";$("loanSearch").value="";setPressed("book","all");setPressed("quality","all");setPressed("loan","all");renderBatch();renderAll()}
 function authRedirectOptions(){if(!/^https?:$/.test(location.protocol))return {};return {emailRedirectTo:location.origin+location.pathname}}
 function authError(e){let text=e?.message||"Authentication failed.";if(/rate limit|email rate/i.test(text))text+=" Try later; if emails are limited, the project owner must configure SMTP in Supabase.";return text}
 function tab(name){requestAnimationFrame(updatePageControls);document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===name));document.querySelectorAll("[data-tab]").forEach(x=>{let a=x.dataset.tab===name;x.classList.toggle("active",a);x.setAttribute("aria-pressed",String(a));x.setAttribute("aria-current",a?"page":"false")});document.querySelectorAll("[data-gotab]").forEach(x=>{let a=x.dataset.gotab===name;x.classList.toggle("active",a);x.setAttribute("aria-current",a?"page":"false")})}document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>tab(b.dataset.tab));document.querySelectorAll("[data-gotab]").forEach(b=>b.onclick=()=>tab(b.dataset.gotab));
@@ -423,11 +455,70 @@ async function reloadAll(){
  }catch(e){msg("Could not load shared library: "+(e?.message||e),"err")}
 }
 function renderAll(){renderBooks();renderLoans();renderBookPicker("lend");renderBookPicker("return");renderDashboard()}
-const PAGE_SIZE=25;let bookFilter="all",qualityFilter="all",bookSearch="",bookPage=1,loanFilter="all",loanSearch="",loanPage=1,bookView="grid",bookSort="newest",bookPageSize=25,loanPageSize=25;try{bookView=localStorage.getItem("library_manager_inventory_view_v2")==="table"?"table":"grid";bookSort=["newest","oldest","title","shelf","due"].includes(localStorage.getItem("library_manager_sort_v1"))?localStorage.getItem("library_manager_sort_v1"):"newest"}catch{}
+const PAGE_SIZE=25;let columnFilters=LibraryInventoryColumnFilters.empty();let selectedColumnValues={};let columnPickerKey=null;let bookFilter="all",qualityFilter="all",bookSearch="",bookPage=1,loanFilter="all",loanSearch="",loanPage=1,bookView="grid",bookSort="newest",bookPageSize=25,loanPageSize=25;try{bookView=localStorage.getItem("library_manager_inventory_view_v2")==="table"?"table":"grid";bookSort=["newest","oldest","title","shelf","due"].includes(localStorage.getItem("library_manager_sort_v1"))?localStorage.getItem("library_manager_sort_v1"):"newest"}catch{}
 const uiIcon=(name)=>`<svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#${name}"></use></svg>`;
 function statusPill(b){const state=b.book_status||"Available",late=state==="Borrowed"&&b.due_date&&b.due_date<today();return `<span class="pill ${late?"overdue":state==="Borrowed"?"borrowed":"available"}">${late?"Overdue":esc(state)}</span>`}
 function renderPager(target,page,max,onData){const el=$(target);if(!el)return;el.innerHTML=max<=1?"":`<button type="button" data-page="1" ${page===1?"disabled":""} aria-label="First page" title="First page">${uiIcon("chevrons-left")}</button><button type="button" data-page="${page-1}" ${page===1?"disabled":""} aria-label="Previous page">${uiIcon("chevron-left")} <span>Previous</span></button><span class="table-meta" aria-live="polite">Page ${page} / ${max}</span><button type="button" data-page="${page+1}" ${page===max?"disabled":""} aria-label="Next page"><span>Next</span> ${uiIcon("chevron-right")}</button><button type="button" data-page="${max}" ${page===max?"disabled":""} aria-label="Last page" title="Last page">${uiIcon("chevrons-right")}</button>`;el.querySelectorAll("[data-page]").forEach(b=>b.onclick=()=>onData(Number(b.dataset.page)))}
 function setPressed(type,value){document.querySelectorAll(`[data-${type}-filter]`).forEach(b=>{const on=b.dataset[type+"Filter"]===value;b.classList.toggle("active",on);b.setAttribute("aria-pressed",String(on))})}
+const columnPickerLabels={isbn:'ISBN / Barcode',title:'Title',authors:'Authors',available:'Available Copies',total:'Total Copies',loan:'On Loan',status:'Status',details:'Book Details',shelf:'Shelf'};
+function resetColumnFilterInputs(){document.querySelectorAll('[data-column-filter]').forEach(el=>{el.value=''});}
+function syncColumnFilterUI(){
+ const active=LibraryInventoryColumnFilters.active(columnFilters,selectedColumnValues),badge=$('columnFilterBadge'),reset=$('resetColumnFilters'),summary=$('columnFilterSummary');
+ if(!badge||!reset||!summary)return;
+ badge.textContent=active.length;badge.hidden=!active.length;reset.hidden=!active.length;
+ summary.textContent=active.length?`${active.length} column filter${active.length===1?'':'s'} active · combined with search and status filters`:'Click a column to select values from your inventory';
+}
+// The choice list is based on every matching inventory group, never just the
+// page currently visible. Ignore the column's own filters while calculating
+// its choices so previously selected values can always be deselected.
+function choicesForColumn(key){
+ const otherSelections={...selectedColumnValues};delete otherSelections[key];
+ const otherFilters={...columnFilters};
+ for(const f of ['available','total','loan'].includes(key)?[key+'Min',key+'Max']:[key])otherFilters[f]='';
+ return LibraryInventoryColumnFilters.choices(inventoryGroups().filter(g=>
+  passesGlobalInventoryFilters(g)&&LibraryInventoryColumnFilters.matches(g,otherFilters,inventoryGroupQuality(g),otherSelections)
+ ),key,inventoryGroupQuality);
+}
+function filteredPickerValues(){
+ if(!columnPickerKey)return [];
+ const search=$('columnValueSearch').value.trim().toLocaleLowerCase();
+ const selected=selectedColumnValues[columnPickerKey]||[];
+ const values=choicesForColumn(columnPickerKey);
+ const seen=new Set(values.map(x=>x.value.toLocaleLowerCase()));
+ for(const value of selected)if(!seen.has(value.toLocaleLowerCase()))values.push({value,count:0});
+ return values.filter(x=>x.value.toLocaleLowerCase().includes(search)).sort((a,b)=>
+  Number(selected.includes(b.value))-Number(selected.includes(a.value)));
+}
+function renderColumnPickerOptions(){
+ if(!columnPickerKey||$('columnValuePicker').hidden)return;
+ const values=filteredPickerValues(),shown=values.slice(0,150),selected=selectedColumnValues[columnPickerKey]||[];
+ $('columnValueOptions').innerHTML=shown.map(x=>`<label class="column-value-item"><input type="checkbox" data-column-choice="${esc(x.value)}" ${selected.some(v=>v.toLocaleLowerCase()===x.value.toLocaleLowerCase())?'checked':''}><span class="column-value-name" title="${esc(x.value)}">${esc(x.value)}</span><span class="column-value-qty">${x.count} ${x.count===1?'book':'books'}</span></label>`).join('')||'<p class="column-value-empty">No values match. Change your search or other filters.</p>';
+ $('columnValueCount').textContent=`${selected.length} selected · ${values.length} matching values`;
+ $('columnValueMore').textContent=values.length>shown.length?`Showing ${shown.length} of ${values.length} values. Search above to find more.`:'';
+ $('columnValueSelectAll').disabled=!shown.length;
+ $('columnValueClear').disabled=!selected.length;
+ document.querySelectorAll('[data-show-column-values]').forEach(b=>{b.classList.toggle('active',b.dataset.showColumnValues===columnPickerKey);b.setAttribute('aria-pressed',String(b.dataset.showColumnValues===columnPickerKey))});
+}
+function showColumnValuePicker(key){
+ if(!Object.hasOwn(columnPickerLabels,key))return;
+ columnPickerKey=key;$('columnValuePicker').hidden=false;
+ $('columnValueTitle').textContent=`${columnPickerLabels[key]} · select values`;
+ $('columnValueHint').textContent='Choose one or several values below. Options reflect other active filters, and counts refer to distinct books.';
+ $('columnValueSearch').value='';
+ renderColumnPickerOptions();
+}
+function setColumnFiltersOpen(open,focus){
+ const panel=$('columnFiltersPanel');panel.hidden=!open;
+ $('toggleColumnFilters').setAttribute('aria-expanded',String(open));
+ if(!open)return;
+ showColumnValuePicker(focus||columnPickerKey||'title');
+ if(focus){
+  $('columnValuePicker').scrollIntoView({block:'nearest',behavior:'smooth'});
+  const key=['available','total','loan'].includes(focus)?focus+'Min':focus;
+  const target=panel.querySelector(`[data-column-filter="${key}"]`);
+  if(target)target.focus({preventScroll:true});
+ }else panel.scrollIntoView({block:'nearest',behavior:'smooth'});
+}
 function bookQuality(b){
  // ISBN is optional for books identified from title pages; full-details includes a recorded code.
  const title=!!String(b.title||'').trim();
@@ -439,6 +530,13 @@ function inventoryGroupQuality(g){
  // A group needs attention when any physical copy lacks its catalog details.
  const qualities=g.copies.map(bookQuality);
  return {attention:qualities.some(q=>q.attention),noTitle:qualities.every(q=>q.noTitle),full:qualities.every(q=>q.full)};
+}
+function passesGlobalInventoryFilters(g){
+ const quality=inventoryGroupQuality(g),q=bookSearch.trim().toLocaleLowerCase();
+ const passesQuality=qualityFilter==='all'||qualityFilter==='attention'&&quality.attention||qualityFilter==='no-title'&&quality.noTitle||qualityFilter==='full'&&quality.full;
+ const passesStatus=bookFilter==='all'||bookFilter==='available'&&g.availableCopies>0||bookFilter==='borrowed'&&g.borrowedCopies>0||bookFilter==='overdue'&&g.overdueCopies>0;
+ const passesSearch=!q||g.copies.some(b=>[b.book_id,b.barcode,b.title,b.authors,b.publisher,b.shelf_location,b.borrower_name].some(v=>String(v||'').toLocaleLowerCase().includes(q)));
+ return passesQuality&&passesStatus&&passesSearch;
 }
 function copyManagement(g){
  const canDelete=copy=>copy.user_id===session?.user?.id||session?.user?.id===libraryOwnerId;
@@ -467,14 +565,7 @@ function renderBooks(){
  const late=loans.filter(isOverdue).length;$('overdueAlert').hidden=!late;$('overdueAlertTitle').textContent=late+' overdue '+(late===1?'loan needs':'loans need')+' attention';
  const counts=groups.reduce((a,g)=>{const q=inventoryGroupQuality(g);a.attention+=Number(q.attention);a.noTitle+=Number(q.noTitle);a.full+=Number(q.full);return a},{attention:0,noTitle:0,full:0});
  $('attentionCount').textContent=counts.attention;$('noTitleCount').textContent=counts.noTitle;$('fullCount').textContent=counts.full;
- const q=bookSearch.trim().toLocaleLowerCase();
- let visible=groups.filter(g=>{
-  const quality=inventoryGroupQuality(g);
-  const passesQuality=qualityFilter==='all'||qualityFilter==='attention'&&quality.attention||qualityFilter==='no-title'&&quality.noTitle||qualityFilter==='full'&&quality.full;
-  const passesStatus=bookFilter==='all'||bookFilter==='available'&&g.availableCopies>0||bookFilter==='borrowed'&&g.borrowedCopies>0||bookFilter==='overdue'&&g.overdueCopies>0;
-  const passesSearch=!q||g.copies.some(b=>[b.book_id,b.barcode,b.title,b.authors,b.publisher,b.shelf_location,b.borrower_name].some(v=>String(v||'').toLocaleLowerCase().includes(q)));
-  return passesQuality&&passesStatus&&passesSearch;
- });
+ let visible=groups.filter(g=>passesGlobalInventoryFilters(g)&&LibraryInventoryColumnFilters.matches(g,columnFilters,inventoryGroupQuality(g),selectedColumnValues));
  visible.sort((a,b)=>{
   const name=v=>String(v||''); const x=a.representative,y=b.representative;
   if(bookSort==='title')return name(x.title).localeCompare(name(y.title),undefined,{numeric:true,sensitivity:'base'})||a.key.localeCompare(b.key);
@@ -482,6 +573,7 @@ function renderBooks(){
   if(bookSort==='due')return (a.borrowedCopy?.due_date||'9999').localeCompare(b.borrowedCopy?.due_date||'9999');
   return bookSort==='oldest'?a.oldest-b.oldest:b.newest-a.newest;
  });
+ syncColumnFilterUI();renderColumnPickerOptions();
  const pages=Math.max(1,Math.ceil(visible.length/bookPageSize));bookPage=Math.max(1,Math.min(bookPage,pages));const start=(bookPage-1)*bookPageSize;
  $('bookTableMeta').textContent=`${visible.length} of ${groups.length} distinct books · ${books.length} physical copies · ${$('bookSort').selectedOptions[0].textContent.toLowerCase()} · expand a book to manage its copies`;
  if(!visible.length){$('bookTable').innerHTML=`<div class="empty">${uiIcon('search')}<strong>${books.length?'No matching books':'Your shelves are waiting'}</strong><p>${books.length?'Try a different search or clear the filters.':'Scan a barcode or add a book to get started.'}</p></div>`;renderPager('bookPager',1,1,()=>{});return}
@@ -496,7 +588,8 @@ function renderBooks(){
   }).join('')+'</div>';
  }else{
   $('bookTable').className='tablewrap';
-  let h='<table><thead><tr><th>No.</th><th>ISBN / Barcode</th><th>Title</th><th>Authors</th><th>Available Copies</th><th>Total Copies</th><th>On Loan</th><th>Status</th><th>Details</th><th>Shelf</th><th>Actions</th></tr></thead><tbody>';
+  const header=(label,key)=>{const on=LibraryInventoryColumnFilters.active(columnFilters,selectedColumnValues).includes(key);return `<th scope="col"><div class="inventory-th-label"><span>${label}</span><button type="button" class="column-header-filter ${on?'is-filtered':''}" data-column-focus="${key}" aria-label="Filter ${label}" title="Filter ${label}" aria-pressed="${on}">${uiIcon('filter')}</button></div></th>`};
+  let h='<table><thead><tr><th scope="col">No.</th>'+header('ISBN / Barcode','isbn')+header('Title','title')+header('Authors','authors')+header('Available Copies','available')+header('Total Copies','total')+header('On Loan','loan')+header('Status','status')+header('Details','details')+header('Shelf','shelf')+'<th scope="col">Actions</th></tr></thead><tbody>';
   pageGroups.forEach((g,i)=>{
    const b=g.representative,lend=g.availableCopy,ret=g.borrowedCopy;
    const shelf=g.shelves.length>1?'Multiple shelves':g.shelves[0]||'';
@@ -1704,10 +1797,34 @@ $("batchResults").addEventListener('change',async e=>{
 function applyTheme(mode){const dark=mode==="dark";document.documentElement.dataset.theme=dark?"dark":"light";$("themeLabel").textContent=dark?"Switch to light mode":"Switch to dark mode";$("themeToggle").setAttribute("aria-label",dark?"Switch to light mode":"Switch to dark mode");$("themeToggle").title=dark?"Switch to light mode":"Switch to dark mode";document.querySelector('meta[name="theme-color"]').content=dark?"#101924":"#182c44";try{localStorage.setItem("library_manager_theme_v2",dark?"dark":"light")}catch{}}
 applyTheme(document.documentElement.dataset.theme);$("themeToggle").onclick=()=>applyTheme(document.documentElement.dataset.theme==="dark"?"light":"dark");
 $("bookSearch").addEventListener("input",e=>{bookSearch=e.target.value;bookPage=1;renderBooks()});
+$("toggleColumnFilters").onclick=()=>setColumnFiltersOpen($('columnFiltersPanel').hidden);
+$("resetColumnFilters").onclick=()=>{columnFilters=LibraryInventoryColumnFilters.empty();selectedColumnValues={};resetColumnFilterInputs();bookPage=1;renderBooks()};
+$('columnFiltersPanel').addEventListener('input',e=>{const key=e.target.dataset.columnFilter;if(!key)return;columnFilters[key]=e.target.value;bookPage=1;renderBooks()});
+$('columnFiltersPanel').addEventListener('change',e=>{const key=e.target.dataset.columnFilter;if(!key)return;columnFilters[key]=e.target.value;bookPage=1;renderBooks()});
+$('bookTable').addEventListener('click',e=>{const el=e.target.closest('[data-column-focus]');if(el)setColumnFiltersOpen(true,el.dataset.columnFocus)});
+$('columnFiltersPanel').addEventListener('click',e=>{const button=e.target.closest('[data-show-column-values]');if(button)showColumnValuePicker(button.dataset.showColumnValues)});
+$('closeColumnValuePicker').onclick=()=>{$('columnValuePicker').hidden=true;columnPickerKey=null;document.querySelectorAll('[data-show-column-values]').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false')})};
+$('columnValueSearch').oninput=()=>renderColumnPickerOptions();
+$('columnValueOptions').addEventListener('change',e=>{
+ const box=e.target.closest('[data-column-choice]');if(!box||!columnPickerKey)return;
+ const key=columnPickerKey,value=box.dataset.columnChoice,selected=selectedColumnValues[key]||[];
+ const values=box.checked?[...selected.filter(v=>v.toLocaleLowerCase()!==value.toLocaleLowerCase()),value]:selected.filter(v=>v.toLocaleLowerCase()!==value.toLocaleLowerCase());
+ if(values.length)selectedColumnValues[key]=values;else delete selectedColumnValues[key];
+ bookPage=1;renderBooks();
+});
+$('columnValueSelectAll').onclick=()=>{
+ if(!columnPickerKey)return;
+ const shown=filteredPickerValues().slice(0,150).map(x=>x.value);
+ const selected=selectedColumnValues[columnPickerKey]||[];
+ selectedColumnValues[columnPickerKey]=[...new Map([...selected,...shown].map(v=>[v.toLocaleLowerCase(),v])).values()];
+ bookPage=1;renderBooks();
+};
+$('columnValueClear').onclick=()=>{if(!columnPickerKey)return;delete selectedColumnValues[columnPickerKey];bookPage=1;renderBooks()};
+
 function setBookView(view){bookView=view==="grid"?"grid":"table";$("viewTable").setAttribute("aria-pressed",String(bookView==="table"));$("viewGrid").setAttribute("aria-pressed",String(bookView==="grid"));try{localStorage.setItem("library_manager_inventory_view_v2",bookView)}catch{};if(session?.user)renderBooks()}
 $("viewTable").onclick=()=>setBookView("table");$("viewGrid").onclick=()=>setBookView("grid");$("bookSort").value=bookSort;$("bookSort").onchange=e=>{bookSort=e.target.value;bookPage=1;try{localStorage.setItem("library_manager_sort_v1",bookSort)}catch{};renderBooks()};$("bookPageSize").onchange=e=>{bookPageSize=Number(e.target.value)||25;bookPage=1;renderBooks()};$("loanPageSize").onchange=e=>{loanPageSize=Number(e.target.value)||25;loanPage=1;renderLoans()};setBookView(bookView);
 $("loanSearch").addEventListener("input",e=>{loanSearch=e.target.value;loanPage=1;renderLoans()});
-$("clearFilters").onclick=()=>{$("bookSearch").value="";bookSearch="";bookFilter="all";qualityFilter="all";bookPage=1;setPressed("book","all");setPressed("quality","all");renderBooks()};$("clearLoanFilters").onclick=()=>{$("loanSearch").value="";loanSearch="";loanFilter="all";loanPage=1;setPressed("loan","all");renderLoans()};
+$("clearFilters").onclick=()=>{$("bookSearch").value="";bookSearch="";bookFilter="all";qualityFilter="all";columnFilters=LibraryInventoryColumnFilters.empty();selectedColumnValues={};resetColumnFilterInputs();bookPage=1;setPressed("book","all");setPressed("quality","all");renderBooks()};$("clearLoanFilters").onclick=()=>{$("loanSearch").value="";loanSearch="";loanFilter="all";loanPage=1;setPressed("loan","all");renderLoans()};
 document.querySelectorAll("[data-book-filter]").forEach(b=>b.onclick=()=>{bookFilter=b.dataset.bookFilter;bookPage=1;setPressed("book",bookFilter);renderBooks()});
 document.querySelectorAll("[data-quality-filter]").forEach(b=>b.onclick=()=>{qualityFilter=b.dataset.qualityFilter;bookPage=1;setPressed("quality",qualityFilter);renderBooks()});
 document.querySelectorAll("[data-loan-filter]").forEach(b=>b.onclick=()=>{loanFilter=b.dataset.loanFilter;loanPage=1;setPressed("loan",loanFilter);renderLoans()});

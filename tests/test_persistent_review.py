@@ -29,7 +29,7 @@ async def main():
   await page.route('https://cdn.jsdelivr.net/**',lambda route:route.fulfill(status=200,content_type='application/javascript',body=''))
   await page.evaluate(QUEUE_MOCK)
   html=(ROOT/'index.html').read_text()
-  for asset in ['inventory-grouping.js','dashboard-metrics.js','review-excel.js']:
+  for asset in ['inventory-grouping.js','inventory-column-filters.js','dashboard-metrics.js','review-excel.js']:
    html=html.replace(f'<script src="assets/{asset}"></script>', '<script>'+(ROOT/'assets'/asset).read_text()+'</script>')
   html=html.replace('\n})();\n</script>','\nwindow.__seedReview=rows=>{batchItems=rows;renderBatch()};window.__readReview=()=>batchItems.map(x=>({key:x.saveRecordId,title:x.title,saved:x.saved,thumb:!!x.thumbnailData}));window.__resetReview=()=>{batchItems=[];renderBatch()};\n})();\n</script>',1)
   await page.set_content(html,wait_until='domcontentloaded')

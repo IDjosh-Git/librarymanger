@@ -37,4 +37,4 @@
 <symbol id="x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
 <symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
 <symbol id="pencil" viewBox="0 0 24 24"><path d="m16 4 4 4-12 12-5 1 1-5L16 4ZM14 6l4 4"/></symbol>
-</defs></svg>
+<symbol id="filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol><symbol id="filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol></defs></svg>

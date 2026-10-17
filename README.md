@@ -317,3 +317,32 @@ up to six shelf labels. The dashboard has responsive layouts and dark mode.
 7. **Clear scan selection** only clears the file picker and scan queue; it does not erase review records. **Remove selected from review** deliberately removes selected *unsaved* pending rows from the cloud queue after confirmation; it never deletes Inventory books.
 
 The queue is scoped to the signed-in user. Different library accounts can see the shared Inventory but only their own unfinished Review scans. Page controls show 40 Review entries at a time to avoid freezing the browser during large reviews. Local browser storage and cloud connectivity are subject to their respective quotas and availability; the sync status visibly reports failures instead of claiming that an unsynced item is safely stored.
+
+
+## Inventory column filters — v5.4
+
+In **Inventory → Search, filter and manage books**, select **Table view**, then use the small filter button next to any data column heading. This opens the persistent **Column filters** panel and focuses that field. The panel is also available from the **Column filters** button in **Card view and on mobile devices**, where table column headings are hidden for readability.
+
+- **ISBN / Barcode, Title, Authors and Shelf** support case-insensitive, partial-text searches. Shelf checks all shelves attached to a grouped book, not just the representative copy.
+- **Available Copies, Total Copies and On Loan** support inclusive **Min** and **Max** numeric filters. Counts are for physical copies, even though the Inventory displays one row per book.
+- **Status** supports at least one available, at least one on loan, overdue copies, all available, all on loan, and mixed groups.
+- **Details** supports full details, needs attention and without title.
+- Filters are combined with each other and with the existing general search, status and completeness tabs. The filtered result count is computed before pagination. The book's individual physical copies and Book IDs are unchanged.
+- **Clear column filters** clears only these per-column filters; **Clear filters** clears every Inventory search/status/completeness/column filter together. Data rows are never modified by filtering.
+
+The **No.** field is a display position, not stored book information, and **Actions** contains controls, so neither has a data filter. Excel export retains the previous **Export all** behavior rather than silently exporting only currently visible rows.
+
+No database migration or new environment variable is necessary for this version. For a quick check after deployment, select Table view, filter by a title, enter `2` under Available Copies minimum, and verify that the table shows only books with at least two available copies. Return to Card view to confirm the same results, and click Clear filters to restore the full catalog.
+
+
+## Click-to-select inventory column filters — v5.5
+
+Open **Inventory → Table view**, then click the filter icon next to a column such as **Title**, **ISBN / Barcode**, **Authors**, **Available Copies**, **Total Copies**, **On Loan**, **Status**, **Details**, or **Shelf**. The **Column filters** panel opens with a searchable, Excel-style checklist containing the distinct values actually found in that column, with counts of distinct book entries. On mobile or in Card view, open **Column filters** and tap the column name. Values are taken from the entire inventory, not only the current page.
+
+- Tick **one or several values**. Several values within a column act as **OR**; filters from different columns, global search, and availability filters act as **AND**.
+- Each option shows the count of distinct book entries with that value. Counts account for grouped copies and consider other filters, not the current column's own selections. For example, the Shelf picker includes the shelves of **all physical copies** in a grouped entry.
+- **Search values** narrows the list without changing the selected books. Very large lists show the first 150 options and can be searched to find any remaining value.
+- **Select all shown** selects the values currently listed; **Clear selected values** clears just that column. **Clear column filters** clears all column criteria; **Clear filters** also resets the general Inventory search and status controls.
+- The original text search, numeric minimum/maximum fields, and advanced status criteria remain available under **Advanced filters**; there is no database migration or query needed.
+
+This is a read-only UI feature: filtering never changes the underlying books, grouped copy counts, circulation status, persistent Review queue, or Excel exports.

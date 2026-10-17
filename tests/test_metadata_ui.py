@@ -24,7 +24,7 @@ async def main():
       return
     await route.fulfill(status=200,content_type='application/json',body='{"found":true,"metadata":{"title":"Matilda","authors":"Roald Dahl","publisher":"Puffin","publication_year":"1988","language":"eng","pages":"240","subject":"Fiction"},"sources":["Google Books","Open Library Search","HathiTrust"]}')
    await page.route('https://book-test.invalid/api/book-lookup*',api)
-   html=(ROOT/'index.html').read_text().replace('<script src="assets/inventory-grouping.js"></script>','<script>'+(ROOT/'assets/inventory-grouping.js').read_text()+'</script>').replace('<script src="assets/dashboard-metrics.js"></script>','<script>'+(ROOT/'assets/dashboard-metrics.js').read_text()+'</script>').replace('<head>','<head><base href="https://book-test.invalid/">',1)
+   html=(ROOT/'index.html').read_text().replace('<script src="assets/inventory-grouping.js"></script>','<script>'+(ROOT/'assets/inventory-grouping.js').read_text()+'</script>').replace('<script src="assets/dashboard-metrics.js"></script>','<script>'+(ROOT/'assets/dashboard-metrics.js').read_text()+'</script>').replace('<script src="assets/inventory-column-filters.js"></script>','<script>'+(ROOT/'assets/inventory-column-filters.js').read_text()+'</script>').replace('<head>','<head><base href="https://book-test.invalid/">',1)
    html=html.replace('\n})();\n</script>','\nwindow.__seedBatchForTest=rows=>{batchItems=rows;renderBatch()};window.__getBatchForTest=()=>batchItems;window.__normalizeIsbnForTest=normalizeIsbn;window.__suggestIsbnCorrectionForTest=suggestIsbnCorrection;window.__batchLookupForTest=batchLookUp;\n})();\n</script>',1)
    await page.set_content(html,wait_until='domcontentloaded')
    await page.add_style_tag(content=(ROOT/'assets/app.css').read_text())

@@ -59,7 +59,7 @@ async def check(page,width,height):
   page.on('pageerror',lambda error:issues.append(str(error)))
   await page.set_viewport_size({'width':width,'height':height})
   await page.evaluate(MOCK)
-  await page.set_content((ROOT/'index.html').read_text().replace('<script src="assets/inventory-grouping.js"></script>','<script>'+(ROOT/'assets/inventory-grouping.js').read_text()+'</script>').replace('<script src="assets/dashboard-metrics.js"></script>','<script>'+(ROOT/'assets/dashboard-metrics.js').read_text()+'</script>'),wait_until='domcontentloaded')
+  await page.set_content((ROOT/'index.html').read_text().replace('<script src="assets/inventory-grouping.js"></script>','<script>'+(ROOT/'assets/inventory-grouping.js').read_text()+'</script>').replace('<script src="assets/dashboard-metrics.js"></script>','<script>'+(ROOT/'assets/dashboard-metrics.js').read_text()+'</script>').replace('<script src="assets/inventory-column-filters.js"></script>','<script>'+(ROOT/'assets/inventory-column-filters.js').read_text()+'</script>'),wait_until='domcontentloaded')
   await page.add_style_tag(content=(ROOT/'assets/app.css').read_text())
   await page.wait_for_timeout(800)
   print("DEBUG",width,"errors",issues,"status",await page.locator("#status").inner_text(),"total",await page.locator("#totalBooks").inner_text(),"supabase",await page.evaluate("typeof window.supabase"),flush=True)
