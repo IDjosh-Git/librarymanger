@@ -231,9 +231,26 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 </div>
 
 <div class="inventory-dashboard-grid">
-  <section class="section manual-entry-section inventory-command-card">
-    <div class="inventory-panel-heading"><div><span class="eyebrow">Quick add</span><h3>Add or identify a book</h3></div><p>Use a barcode, ISBN, or title to add books faster.</p></div>
-    <div class="manual-entry-fields"><div><label for="manualBarcode">Book barcode or ISBN</label><input id="manualBarcode" aria-label="Book barcode or ISBN" placeholder="Scan or type barcode / ISBN" autocomplete="off"></div><div><label for="manualShelf">Shelf number / location</label><input id="manualShelf" aria-label="Shelf number or location" maxlength="120" placeholder="e.g. A-04 or Shelf 12" autocomplete="off"></div><div><label for="manualTitle">Title (optional if lookup fails)</label><input id="manualTitle" aria-label="Book title, optional" maxlength="350" placeholder="Optional manual title"></div></div><div class="row manual-form-actions" style="margin-top:10px"><button id="addManual" class="alt"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#book"></use></svg> Add book</button><button id="previewMetadata" type="button" class="light">Find details</button><button id="clearForm" class="light">Clear</button></div><p class="quality-hint">Your shelf number is saved with the book and also prefilled when you scan a single photo. If no catalog finds the ISBN, enter its title here and save the book for later review.</p><div id="metadataPreview" class="metadata-preview" role="status" aria-live="polite" hidden></div>
+  <section class="section manual-entry-section inventory-command-card" aria-labelledby="quickAddHeading">
+    <div class="quickadd-heading">
+      <div class="quickadd-heading-main">
+        <span class="quickadd-icon" aria-hidden="true">+</span>
+        <div><span class="eyebrow">Quick add</span><h3 id="quickAddHeading">Add a book</h3></div>
+      </div>
+      <p>Enter an ISBN or barcode, assign its shelf, then save.</p>
+    </div>
+    <div class="quickadd-form-content">
+      <div class="manual-entry-fields">
+        <div class="quickadd-field quickadd-field-code"><label for="manualBarcode">Barcode / ISBN</label><input id="manualBarcode" aria-label="Book barcode or ISBN" placeholder="Scan or enter an identifier" autocomplete="off"></div>
+        <div class="quickadd-field quickadd-field-shelf"><label for="manualShelf">Shelf location</label><input id="manualShelf" aria-label="Shelf number or location" maxlength="120" placeholder="e.g. A-04" autocomplete="off"></div>
+        <div class="quickadd-field quickadd-field-title"><label for="manualTitle">Book title <span class="quickadd-optional">optional</span></label><input id="manualTitle" aria-label="Book title, optional" maxlength="350" placeholder="Add a title if lookup finds no match"></div>
+      </div>
+      <div class="quickadd-footer">
+        <p class="quickadd-help"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg> Shelf location is saved with each copy. Missing details can be completed later.</p>
+        <div class="row manual-form-actions"><button id="addManual" class="alt"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#plus"></use></svg> Add book</button><button id="previewMetadata" type="button" class="light"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg> Find details</button><button id="clearForm" type="button" class="light">Clear</button></div>
+      </div>
+      <div id="metadataPreview" class="metadata-preview" role="status" aria-live="polite" hidden></div>
+    </div>
   </section>
 
   <aside class="inventory-side-stack">

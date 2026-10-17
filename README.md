@@ -1,3 +1,12 @@
+## Version 5.9 — Quick Add responsive redesign
+
+- Quick Add no longer stretches to match the height of the adjacent image and tip panels. Its fields start near the heading, with compact, intentional spacing above and below the controls.
+- Barcode/ISBN and shelf are side by side on wider screens; the optional title occupies its own row. On mobile, fields stack vertically and Add book / Find details remain prominent.
+- The photo and tip area is more compact on large desktops and is omitted below 1100px to prioritize the actual form and Inventory content.
+- Existing form element IDs and handlers are unchanged: book save, metadata lookup, shelf assignment, input reset, and theme switching continue to use the original logic.
+- Added `tests/test_quick_add_responsive.py` for visual/layout and Clear-action checks at eight viewport widths, including Light and Dark Mode screenshots. Run `python tests/test_quick_add_responsive.py` in the project folder with Playwright and Chromium installed. The test uses a local in-memory database mock; it does not touch production.
+- No Supabase migration or additional queries are required.
+
 # Library Manager — Responsive Review & Excel Fix (v5.2)
 
 This build preserves the modern dashboard, real library photographs, matching ISBN book covers,
