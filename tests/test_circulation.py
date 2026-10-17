@@ -47,12 +47,19 @@ MOCK = r'''(() => {
   window.supabase={createClient(){return {auth:{onAuthStateChange(){return {}},async getSession(){return {data:{session},error:null}},async signOut(){return {error:null}}},from(table){return new Query(table)}}}};
 })()'''.replace('BOOKS_LITERAL',json.dumps(BOOKS)).replace('LOANS_LITERAL',json.dumps(LOANS))
 
+async def click_physical_copy(page, selector):
+  """Grouped inventory displays per-copy actions inside an expandable details panel."""
+  target=page.locator(selector).first
+  if not await target.is_visible():
+    await target.evaluate("element => { const parent=element.closest('details'); if(parent)parent.open=true; }")
+  await target.click()
+
 async def check(page,width,height):
   issues=[]
   page.on('pageerror',lambda error:issues.append(str(error)))
   await page.set_viewport_size({'width':width,'height':height})
   await page.evaluate(MOCK)
-  await page.set_content((ROOT/'index.html').read_text(),wait_until='domcontentloaded')
+  await page.set_content((ROOT/'index.html').read_text().replace('<script src="assets/inventory-grouping.js"></script>','<script>'+(ROOT/'assets/inventory-grouping.js').read_text()+'</script>').replace('<script src="assets/dashboard-metrics.js"></script>','<script>'+(ROOT/'assets/dashboard-metrics.js').read_text()+'</script>'),wait_until='domcontentloaded')
   await page.add_style_tag(content=(ROOT/'assets/app.css').read_text())
   await page.wait_for_timeout(800)
   print("DEBUG",width,"errors",issues,"status",await page.locator("#status").inner_text(),"total",await page.locator("#totalBooks").inner_text(),"supabase",await page.evaluate("typeof window.supabase"),flush=True)
@@ -81,7 +88,7 @@ async def check(page,width,height):
   assert all('Book ID:' not in label and 'Shelf:' not in label and 'ISBN:' not in label for label in labels)
   assert await page.locator('#returnBookSelect option').nth(1).inner_text()=='Everyday Excel'
   # Click inventory Lend on a copy with no book_id: this used to fail because UUID was normalized.
-  await page.locator('[data-lend-book="11111111-1111-4111-8111-111111111111"]').click()
+  await click_physical_copy(page,'[data-lend-book="11111111-1111-4111-8111-111111111111"]')
   assert await page.locator('#lend').get_attribute('class')=='panel active'
   assert await page.locator('#lendBookId').input_value()==BOOKS[0]['record_id'], 'fallback displays internal record reference'
   assert await page.locator('#lendBookSelect').input_value()==BOOKS[0]['record_id']
@@ -115,7 +122,7 @@ async def check(page,width,height):
   assert returned['book_status']=='Available' and returned['borrower_name'] is None
   # Inventory Return button selects an exact borrowed copy and fills its ID.
   await page.locator('[data-gotab="inventory"]').click() if width<900 else await page.locator('[data-tab="inventory"]').click()
-  await page.locator('[data-return-book="33333333-3333-4333-8333-333333333333"]').click()
+  await click_physical_copy(page,'[data-return-book="33333333-3333-4333-8333-333333333333"]')
   assert await page.locator('#returnBookId').input_value()=='BK-003'
   assert await page.locator('#returnBookSelect').input_value()==BOOKS[2]['record_id']
   # User can clear a return selection and pick from the loan-history action.
@@ -126,7 +133,7 @@ async def check(page,width,height):
   assert await page.locator('#returnBookId').input_value()=='BK-003'
   # A stale browser must not create another loan after a copy is borrowed elsewhere.
   await page.locator('[data-gotab="inventory"]').click() if width<900 else await page.locator('[data-tab="inventory"]').click()
-  await page.locator('[data-lend-book="11111111-1111-4111-8111-111111111111"]').click()
+  await click_physical_copy(page,'[data-lend-book="11111111-1111-4111-8111-111111111111"]')
   await page.locator('#borrowerName').fill('Second librarian')
   await page.evaluate("window.__db.data.library_books.find(b=>b.record_id==='11111111-1111-4111-8111-111111111111').book_status='Borrowed'")
   await page.locator('#confirmLend').click()

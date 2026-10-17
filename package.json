@@ -1,6 +1,6 @@
 {
   "name": "library-manager-multi-api",
-  "version": "4.5.0",
+  "version": "5.0.0",
   "private": true,
   "scripts": {
     "test": "node --test tests/*.test.cjs"

@@ -15,11 +15,13 @@ test('folder shelf detection preserves nested folders and supports default root 
  assert.equal(batchShelf('Shelf B/Book.jpg','','ZIP'),'Shelf B');
  assert.equal(batchShelf('Archive\\Shelf C\\Book.jpg','','ZIP'),'Shelf C');
 });
-test('scan batch protects ZIP loading, keeps corrected metadata, and refuses missing book IDs',()=>{
+test('scan batch preserves corrected details and permits incomplete duplicate saves',()=>{
  assert.match(html,/batchZipLoading=true/);
  assert.match(html,/finally\{batchZipLoading=false/);
  assert.match(html,/if\(x\.barcode&&!x\.title\)await batchLookUp\(x\)/);
- assert.match(html,/else if\(!data\?\.book_id\)/);
+ assert.match(html,/record_id:x\.saveRecordId\|\|\(x\.saveRecordId=uuid\(\)\)/);
+ assert.match(html,/barcode:clean\(x\.barcode\),title:nullable\(x\.title\)/);
+ assert.doesNotMatch(html,/Complete the title and shelf details for/);
 });
 
 test('top-of-inventory ISBN form includes shelf and optional title, and saves shelf with each new copy',()=>{

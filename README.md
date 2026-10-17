@@ -1,3 +1,35 @@
+# Grouped Inventory — Copies Available (October 2026)
+
+**New column name: Available Copies.** Each distinct book is displayed as **one line** in Inventory, with these counts:
+
+- **Available Copies** — copies currently on the shelf, not loaned out.
+- **Total Copies** — all physical copies owned, including those borrowed.
+- **On Loan** — number currently borrowed (Total Copies minus Available Copies).
+
+For example, scanning five physical copies of the same ISBN produces one visible Inventory book entry: **Total Copies 5**, **Available Copies 5**. Lending two reduces **Available Copies to 3** and raises **On Loan to 2**, while the Total Copies count remains 5. These quantities are also shown in card view and in the **Export all · Excel** inventory workbook.
+
+The application **preserves individual physical-copy records in Supabase** for correct Book IDs, shelving, borrowing, returns, deletion, audit history, and stable Excel Review Keys. The app automatically consolidates these into one visible Inventory entry using the identifier: valid equivalent ISBN-10/ISBN-13 values are grouped, other matching barcodes are grouped, and genuinely unnumbered books are grouped only if title, author, publisher, publication year and language match. Unidentified photographs are not silently grouped. Separate ISBN editions remain separate books. This approach avoids destructive database merging and requires **no SQL migration**.
+
+**Manage individual copies:** Use **View and manage N individual copies** beneath a grouped item to access each copy’s unique Book ID, shelf location, lending/return, edit, and delete actions. When selecting a group to lend or return, the app chooses an eligible individual copy; use the expanded list or circulation picker to select an exact copy. Inventory search and filters apply to the grouped items; a book can appear in both Available and On Loan if it has copies in both states. Quality/attention filtering includes a group if any underlying copy needs bibliographic correction.
+
+**No production database modification was performed.** 43 automated JavaScript tests (including six quantity aggregation checks), and a grouped-Inventory browser smoke test passed with mocked book and loan records. Duplicate-save browser smoke tests also passed using simulated database responses. Re-test live lending/returns and Excel exports after deployment.
+
+---
+
+## Version 4.6.0 — save duplicate copies as scanned (October 16, 2026)
+
+**Fix:** In **Inventory → Import an entire shelf**, click **Select duplicates**, then **Save selected to Supabase**. All selected photos are inserted as **separate physical copies**, even if they have the same ISBN/barcode or missing title, author, shelf, or failed catalog/OCR lookup. They are saved with the details currently shown — no forced corrections and no extra duplicate-confirmation dialog. Existing books are not merged, updated or deleted.
+
+Each selected row receives a **distinct, stable `record_id`**; Supabase assigns the next unique immutable `book_id`. New rows are inserted, never upserted by ISBN/barcode. Repeating Save after a network interruption reuses the row's record ID and checks for a previously inserted copy, reducing accidental extra copies. An unsuccessful save keeps its checkbox selected, shows the database error on that photo card, and can be retried. Editing incomplete duplicate details no longer unticks an already selected row. Successfully saved books are still available through **Inventory → Needs attention** for later completion.
+
+**Database compatibility:** The linked DataLearning Supabase `library_books` schema was checked. `barcode` is **NOT NULL** but is **not unique**; `title` and `shelf_location` permit NULL; each copy gets a unique Book ID via the existing trigger. The app therefore saves an image with no readable code as an empty barcode string (not SQL `NULL`), and uses SQL `NULL` for empty optional details. **No SQL migration or changes to existing Supabase data were necessary.** Do **not** run `allow_duplicate_isbn.sql` for this linked project; it already permits duplicate barcodes.
+
+**Testing:** `npm test` passed all 32 automated tests; `python tests/test_duplicate_save.py` passed browser tests with simulated Supabase for repeated ISBNs, missing titles/shelves, photos without barcodes, preserved selection, separate permanent book IDs, and no duplicate-confirmation dialog. The deployed website and real account writes have **not** been tested. A pre-existing metadata browser test asserting retry behavior for rate-limited requests did not pass in this environment; it does not cover duplicate saving.
+
+To deploy, extract the ZIP, commit the contents of the `librarymanger` folder into the root of your existing GitHub/Vercel project, deploy, and hard refresh. After signing in, try **Select duplicates → Save selected to Supabase** on two known physical copies before a large batch. If a save still fails, copy the exact database error shown on that photo's card.
+
+---
+
 ## ISBN and barcode lookup fix (October 2026)
 
 **The Inventory → Find missing details action no longer stops with “This barcode is not a valid ISBN-10 or ISBN-13.”** It now:
@@ -80,7 +112,7 @@ These updates keep the existing Supabase URL, publishable key, database tables a
 
 In **Inventory → Import an entire shelf**, scan a folder, ZIP or photos and review the vertical list. **Select all** selects every unsaved row, including flagged duplicates and incomplete rows. **Select duplicates** selects all unsaved rows flagged as repeated barcodes/ISBNs (including records already in the library). **Select non-duplicates** selects complete rows that are not flagged; **Clear selection** unticks everything. The checkbox above the vertical list selects all unsaved rows, too.
 
-To remove unwanted duplicate photos, click **Select duplicates → Remove selected from review** and confirm. This removes only the unsaved photos in that batch, **not any existing Supabase records or Google Sheets rows**. If duplicates are legitimate separate physical copies, use **Save selected to Supabase**, which asks for explicit confirmation before creating additional records. If two photos show the same *single* physical copy, avoid saving both. Incomplete rows can be bulk-selected and removed from review, but must be corrected before saving. Saved rows cannot be removed from the review list individually.
+To remove unwanted duplicate photos, click **Select duplicates → Remove selected from review** and confirm. This removes only the unsaved photos in that batch, **not any existing Supabase records or Google Sheets rows**. If duplicates are legitimate separate physical copies, use **Save selected to Supabase**, which inserts independent copies without a further dialog. If two photos show the same *single* physical copy, avoid saving both. Incomplete rows can be saved as they are and edited later under Inventory → Needs attention. Saved rows cannot be removed from the review list individually.
 
 This update is frontend-only. Keep your existing Supabase tables and Google Apps Script. Sign in and verify the workflow on your deployed Vercel address before bulk importing real books.
 
@@ -154,3 +186,64 @@ On every photo card, type or correct the ISBN in **Barcode / ISBN** and press **
 **Deployment:** Replace the files in the existing GitHub repository and deploy on Vercel with repository root containing `index.html`, `assets/`, `lib/` and `api/`. The public APIs require **no new environment variables**. Optionally set `GOOGLE_BOOKS_API_KEY`, `ISBNDB_API_KEY` (paid), `BOOK_API_CONTACT` per earlier instructions. No SQL change is needed for the shelf field in the existing schema; it uses the existing `shelf_location` column. No Supabase records are modified merely by deploying the ZIP.
 
 **Verification:** Run `npm test` or `node --test tests/*.test.cjs`; tests use mocked provider responses and do not establish real provider uptime. `python tests/test_metadata_ui.py` and `python tests/test_circulation.py` exercise the UI against an in-memory mock, not production Supabase. After deployment, test an ISBN known to be in your catalog, a rare ISBN, an unrecognized barcode with manually entered title and shelf, and two physical copies sharing the same ISBN. Recheck lookup API diagnostics using `/api/book-lookup?isbn=...`.
+
+## 4.7 — Excel round-trip for scanned books in Review (October 2026)
+
+The **Inventory → Import an entire shelf → Review** area now includes **Export review · Excel** and **Import corrected Excel**. This supports bringing a scanned batch into Excel for proofreading, adding missing ISBNs, titles, authors, publication details or shelves, and then saving corrected rows back to the same Supabase `library_books` inventory. You can also add additional physical copies by adding rows to the exported workbook, or by using the included `Library_Manager_Review_Excel_Template.xlsx` for a fresh spreadsheet-only batch.
+
+### Workflow
+
+1. Scan books using **Upload folder**, **Upload ZIP**, or **Select photos**. The review cards retain the original images in the current browser session.
+2. Choose **Export review · Excel**. This downloads an `.xlsx` workbook containing **every not-yet-saved book in the batch review** (not just currently selected books, so no missing-titles are excluded). A separate Instructions sheet explains each column.
+3. Open **Books to Review** in Excel, correct `ISBN_Barcode`, `Title`, `Authors`, `Publisher`, `Publication_Year`, `Language`, `Pages`, `Subject`, and `Shelf_Number` as required. Keep headers unchanged. Keep ISBN_Barcode cells as **Text**, especially ISBN-10s with leading zeros. Excel numeric formatting can permanently destroy leading zeroes, so do not rely on Excel to restore them.
+4. **Do not change `Review_Key`** for an exported row. It is a stable, unique physical-copy key, not a barcode. Rows may share an identical ISBN but must have different Review Keys. To add another physical copy, append another row and leave its `Review_Key` empty. To ignore a row, write `SKIP` in `Import_Action`; otherwise choose `SAVE`.
+5. Back in the same app choose **Import corrected Excel**. Existing review cards are updated (and keep their photographs in the current session). A new keyed row is created for each newly entered physical copy. Imported unsaved rows are selected automatically. The status line shows corrected, added and already-saved counts, but **importing alone does not write to Supabase**.
+6. Click **Save selected to Supabase**. Each row is inserted with its own record UUID and a database-assigned `book_id`. Duplicate ISBN/barcodes, missing titles and shelves are permitted; rows that fail to save remain selected for retry. Refresh the inventory to see the new total.
+
+### Duplicate protection and limitations
+
+- The same `Review_Key` imported again is matched against the open review and the already-loaded shared database. If a matching physical copy has already been saved, it will be **skipped**, not inserted again. Network retry logic also checks unique record IDs in Supabase before treating an insert timeout as a new copy. No `upsert` is performed by ISBN.
+- **Blank `Review_Key` means new physical copy each import.** If you add Excel rows with blank keys and subsequently re-import the *same* unkeyed sheet, those rows will be treated as additional new copies. To keep a stable key, import once and then use **Export review · Excel** again before saving or leaving the page.
+- The exported workbook contains bibliographic text and filenames, **not the images themselves**. Pictures remain in the current browser review session; a re-import after refresh can still save the spreadsheet's book details but cannot restore original photographs from the workbook alone.
+- The Excel uploader accepts `.xlsx`/`.xls` files up to **25 MB** and validates the expected **Books to Review** sheet, headers, actions, duplicate keys and maximum row count. Wrong templates or damaged Review Keys stop import before the review list is modified. Importing a workbook does not automatically alter or delete Supabase records; saving requires the explicit **Save selected** action.
+- The new Excel round-trip is for **not-yet-saved scanned review rows and spreadsheet-added copies**. Existing books already stored in Supabase, including Inventory → Needs Attention, can still be corrected in place using **Edit details**; this review importer does not overwrite their saved records.
+- Excel operations depend on the existing SheetJS client library from jsDelivr. If offline, the library may not load; make sure the browser can reach it.
+
+**Tests:** `node --test tests/*.test.cjs` includes round-trip key validation, leading zero preservation (for cells stored as Text), duplicate-ISBN separation, `SKIP`, invalid key detection and template checks. `python tests/test_review_excel.py` performs mocked browser testing for exporting, correcting, adding new copies, importing, bulk Supabase saving and re-importing already-saved keys; no production records are inserted. `python tests/test_duplicate_save.py` verifies the existing duplicate-saving flow.
+
+## Modern library dashboard (v5 design)
+
+After signing in, Dashboard is the first workspace page. It reads the same
+Supabase-backed inventory and lending/return records as Inventory and Loan History;
+all charts and counts recalculate after data reloads and after successful saves.
+
+- **Collection:** distinct grouped catalog entries, physical copies, available
+  copies and copies currently on loan.
+- **Performance:** complete catalog percentage, availability percentage, new
+  physical copies in the last 30 days and recorded loans in that interval.
+- **Circulation:** lending and returns by day for the last 7 days, a watchlist of
+  active loans sorted by due date, and historically most borrowed books.
+- **Catalog:** mutually exclusive complete/partial/untitled catalog categories,
+  and shelf-location distribution calculated from individual physical copies.
+- **Actions:** direct links to scanning, shelf import, loan, return, Inventory,
+  Needs Attention, overdue records and loan history.
+
+Distinct books are grouped using the same inventory identity rules as the main
+Inventory page; **Total Copies** counts each physical record. Historical loans
+are transactions rather than unique physical copies. The due-date watchlist
+shows at most six active loans with recorded due dates, and the shelf chart shows
+up to six shelf labels. The dashboard has responsive layouts and dark mode.
+
+---
+
+## v5.1 — Real library photography, edition covers and UI fixes (October 2026)
+
+**Photographs instead of illustrations:** The dashboard, inventory hero, feature illustration and book-shelf image now use real Unsplash library and stacked-book photography. The user interface includes local JPEG fallbacks, so a failed connection to Unsplash does not leave an empty decorative panel. Source attribution is documented in `PHOTO_CREDITS.md`. Online photos require an internet connection to load.
+
+**Actual book-cover artwork:** The Inventory table and cards fetch artwork by *validated edition ISBN* from Open Library Covers. If the ISBN is missing, invalid, or a cover is unavailable, the app shows a neutral book icon, rather than displaying a cover for an unrelated book. Stock photos are used only for the dashboard and decorative app images, not as fake book covers.
+
+**Corrections:** Removed an accidental duplicated CSS class on the inventory hero photo, added loading-error handling and lightweight local fallback images, improved decorative panel spacing, and corrected the ISBN lookup rate-limit handling: missing or blank `Retry-After` headers no longer get parsed as an immediate retry. `Retry-After: 0` is still honored.
+
+**Verification:** The JavaScript unit suite passes (47 tests). Browser smoke tests pass for the dashboard at desktop/mobile sizes, exact-copy circulation at 1440/390/360px, grouped inventory, duplicate saving, Excel review round trips, and real-photo/ISBN-cover fallbacks. Some older scripts (`test_title_recovery.py`, `test_metadata_ui.py`) reference superseded controls or API mock assumptions and should not be treated as current acceptance tests. Catalog availability, external photography hosting, and live Supabase permissions cannot be guaranteed by a local mock test.
+
+**Deployment:** Extract the ZIP, commit the contents of its `librarymanger/` folder at the repository root, push to GitHub, then deploy that commit to Vercel. No database migration is required for this visual release. Your current Supabase data remains unchanged until you use the deployed app.

@@ -17,14 +17,14 @@ async def main():
    await page.route('https://cdn.jsdelivr.net/**',lambda route:route.fulfill(status=200,content_type='application/javascript',body=''))
    async def api(route):
     nonlocal retry_calls
-    if 'isbn=9780061120084' in route.request.url:
+    if 'code=9780061120084' in route.request.url:
      retry_calls+=1
      if retry_calls==1:
       await route.fulfill(status=429,headers={'Retry-After':'0'},content_type='application/json',body='{"error":"Too many lookups"}')
       return
     await route.fulfill(status=200,content_type='application/json',body='{"found":true,"metadata":{"title":"Matilda","authors":"Roald Dahl","publisher":"Puffin","publication_year":"1988","language":"eng","pages":"240","subject":"Fiction"},"sources":["Google Books","Open Library Search","HathiTrust"]}')
    await page.route('https://book-test.invalid/api/book-lookup*',api)
-   html=(ROOT/'index.html').read_text().replace('<head>','<head><base href="https://book-test.invalid/">',1)
+   html=(ROOT/'index.html').read_text().replace('<script src="assets/inventory-grouping.js"></script>','<script>'+(ROOT/'assets/inventory-grouping.js').read_text()+'</script>').replace('<script src="assets/dashboard-metrics.js"></script>','<script>'+(ROOT/'assets/dashboard-metrics.js').read_text()+'</script>').replace('<head>','<head><base href="https://book-test.invalid/">',1)
    html=html.replace('\n})();\n</script>','\nwindow.__seedBatchForTest=rows=>{batchItems=rows;renderBatch()};window.__getBatchForTest=()=>batchItems;window.__normalizeIsbnForTest=normalizeIsbn;window.__suggestIsbnCorrectionForTest=suggestIsbnCorrection;window.__batchLookupForTest=batchLookUp;\n})();\n</script>',1)
    await page.set_content(html,wait_until='domcontentloaded')
    await page.add_style_tag(content=(ROOT/'assets/app.css').read_text())
@@ -39,7 +39,7 @@ async def main():
    assert retry_row['title']=='Matilda' and retry_row['lookup_status'].startswith('Found:')
    await page.locator('#manualBarcode').fill('9780140328722')
    await page.locator('#previewMetadata').click()
-   assert await page.locator('[data-use-isbn-suggestion]').inner_text()=='Use suggested ISBN'
+   assert await page.locator('[data-use-isbn-suggestion]').inner_text()=='Use verified correction'
    await page.locator('[data-use-isbn-suggestion]').click()
    await page.wait_for_function("document.getElementById('metadataPreview').textContent.includes('Matilda')")
    await page.locator('#manualBarcode').fill(SCANNED_ISBN)
