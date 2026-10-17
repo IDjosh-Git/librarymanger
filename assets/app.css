@@ -664,3 +664,29 @@ main{max-width:1680px;width:100%;margin-left:auto;margin-right:auto;padding-inli
  .batch-excel-panel{padding:12px}
  .batch-book{padding:11px}
 }
+
+/* Persistent Review queue and saved-books attention panel */
+.review-sync-status{font-size:.76rem;margin:5px 0 0;line-height:1.55;color:var(--muted)}
+.review-sync-status.ok{color:var(--accent)}
+.review-sync-status.error{color:var(--orange)}
+.saved-review-panel{margin-top:18px;padding:17px;border:1px solid var(--line);background:var(--surface2);border-radius:18px;min-width:0}
+.saved-review-heading{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+.saved-review-heading h3{font-size:1rem;margin:0;color:var(--ink)}
+.saved-review-heading h3 span{font-size:.75rem;color:var(--muted);padding:3px 9px;background:var(--surface);border-radius:999px}
+.saved-review-heading p{font-size:.78rem;color:var(--muted);margin:0;line-height:1.5;max-width:58ch}
+.saved-review-list{max-height:460px;overflow:auto;display:grid;gap:8px}
+.saved-review-book{display:flex;align-items:center;gap:11px;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:12px;min-width:0}
+.saved-review-icon{width:40px;height:44px;display:grid;place-items:center;flex-shrink:0;color:var(--accent);background:var(--soft);border-radius:10px}
+.saved-review-detail{min-width:0;flex:1;display:grid;gap:4px}
+.saved-review-detail strong{font-size:.81rem;overflow-wrap:anywhere;color:var(--ink)}
+.saved-review-detail small,.saved-review-detail span{font-size:.72rem;line-height:1.4;color:var(--muted);overflow-wrap:anywhere}
+.saved-review-book button{flex:0 0 auto}
+.review-pager{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;margin:14px 0}
+.review-pager span{font-size:.8rem;color:var(--muted);font-weight:750}
+@media(max-width:560px){
+ .saved-review-book{flex-wrap:wrap;gap:8px}
+ .saved-review-book button{width:100%}
+ .saved-review-list{max-height:520px}
+ .saved-review-heading{display:block}
+ .saved-review-heading p{margin-top:8px}
+}

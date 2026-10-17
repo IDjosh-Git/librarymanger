@@ -301,3 +301,19 @@ up to six shelf labels. The dashboard has responsive layouts and dark mode.
 **Verification:** The JavaScript unit suite passes (47 tests). Browser smoke tests pass for the dashboard at desktop/mobile sizes, exact-copy circulation at 1440/390/360px, grouped inventory, duplicate saving, Excel review round trips, and real-photo/ISBN-cover fallbacks. Some older scripts (`test_title_recovery.py`, `test_metadata_ui.py`) reference superseded controls or API mock assumptions and should not be treated as current acceptance tests. Catalog availability, external photography hosting, and live Supabase permissions cannot be guaranteed by a local mock test.
 
 **Deployment:** Extract the ZIP, commit the contents of its `librarymanger/` folder at the repository root, push to GitHub, then deploy that commit to Vercel. No database migration is required for this visual release. Your current Supabase data remains unchanged until you use the deployed app.
+
+## v5.3 — Persistent Review queue for unfinished book scans
+
+**Important:** The new server-side queue is available in the connected Supabase project (`library_review_queue`, deployed with row-level security). If deploying to a different Supabase project, run the included `persistent_review_queue.sql` in the Supabase SQL Editor before using Review. The app shows a **cloud sync status** message. If offline or the table is unavailable, it falls back to browser IndexedDB, but those rows will not transfer between devices until cloud sync succeeds.
+
+### Review behavior
+
+1. Scan a folder, ZIP or photos. Every scanned copy is appended to Review rather than replacing an earlier batch. Images that could not be identified remain editable.
+2. Review rows (including missing-title books and other incomplete metadata) sync to Supabase with their original Review_Key. Browser IndexedDB remains an offline backup.
+3. Small compressed book-photo previews are kept in the queue. Full-resolution photos are **not** backed up. Reopen Review later on the same account, on another device, or after reloading and select **Refresh review** if necessary.
+4. Use **Export review · Excel** to export all unsaved rows, even if only a page of 40 is displayed. Correct the workbook, preserving Review_Key, then **Import corrected Excel** and **Save selected to Supabase**.
+5. Incomplete copies already saved to the database appear in **Saved books needing attention**, below the unsaved queue. They can be exported separately with **Export saved needs attention · Excel**; importing their UPDATE rows modifies the *same* book copy rather than inserting a duplicate.
+6. After successful save, an unsaved review item is removed from the cloud pending queue. If that saved copy still has missing fields, the saved Inventory copy appears in the saved Needs Attention section until its details are complete.
+7. **Clear scan selection** only clears the file picker and scan queue; it does not erase review records. **Remove selected from review** deliberately removes selected *unsaved* pending rows from the cloud queue after confirmation; it never deletes Inventory books.
+
+The queue is scoped to the signed-in user. Different library accounts can see the shared Inventory but only their own unfinished Review scans. Page controls show 40 Review entries at a time to avoid freezing the browser during large reviews. Local browser storage and cloud connectivity are subject to their respective quotas and availability; the sync status visibly reports failures instead of claiming that an unsynced item is safely stored.
