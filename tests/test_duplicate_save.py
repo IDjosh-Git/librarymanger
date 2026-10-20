@@ -1,5 +1,5 @@
 """Check copy-level duplicate saves with mocked Supabase; does not modify live inventory."""
-import asyncio,sys
+import asyncio,sys,os
 from pathlib import Path
 from playwright.async_api import async_playwright
 sys.path.insert(0,str(Path(__file__).resolve().parent))
@@ -7,11 +7,14 @@ from test_circulation import ROOT,MOCK
 
 async def main():
  async with async_playwright() as p:
-  browser=await p.chromium.launch(headless=True, executable_path='/usr/bin/chromium',args=['--no-sandbox'])
+  browser=await p.chromium.launch(headless=True, executable_path=os.environ.get('TEST_BROWSER_PATH','/usr/bin/chromium'),args=['--no-sandbox'])
   page=await browser.new_page(viewport={'width':1200,'height':850})
   issues=[];dialog_count=[]
   page.on('pageerror',lambda e:issues.append(str(e)))
-  page.on('dialog',lambda d:dialog_count.append(d.message)) # unexpected dialogs auto-dismiss
+  async def accept_dialog(d):
+   dialog_count.append(d.message)
+   await d.accept()
+  page.on('dialog',accept_dialog)
   await page.evaluate(MOCK)
   await page.route('https://cdn.jsdelivr.net/**',lambda route:route.fulfill(status=200,content_type='application/javascript',body=''))
   html=(ROOT/'index.html').read_text().replace('<script src="assets/inventory-grouping.js"></script>','<script>'+(ROOT/'assets/inventory-grouping.js').read_text()+'</script>').replace('<script src="assets/dashboard-metrics.js"></script>','<script>'+(ROOT/'assets/dashboard-metrics.js').read_text()+'</script>').replace('<script src="assets/inventory-column-filters.js"></script>','<script>'+(ROOT/'assets/inventory-column-filters.js').read_text()+'</script>').replace('<head>','<head><base href="https://book-test.invalid/">',1)
@@ -34,9 +37,15 @@ async def main():
   await page.locator('[data-batch-field="authors"][data-batch-index="1"]').fill('')
   await page.locator('[data-batch-field="authors"][data-batch-index="1"]').blur()
   assert await page.evaluate('window.__getBatchForTest()[1].selected') is True
+  await page.locator('[data-batch-approve="0"]').check()
   await page.locator('#batchSave').click()
+  await page.wait_for_function('window.__getBatchForTest()[0].saved')
+  assert await page.evaluate('window.__getBatchForTest()[1].saved') is False
+  assert 'Shelf A: 1' in dialog_count[0]
+  await page.locator('#batchSaveIncomplete').click()
   await page.wait_for_function('window.__getBatchForTest().filter(x=>x.saved).length===2',timeout=10000)
-  assert dialog_count==[],f'Duplicate saving unexpectedly blocked by confirmation: {dialog_count}'
+  assert len(dialog_count)==2,dialog_count
+  assert 'incomplete details' in dialog_count[1]
   saved=await page.evaluate('''() => window.__getBatchForTest().filter(x=>x.saved).map(x=>({barcode:x.barcode,book_id:x.book_id,record_id:x.saveRecordId}))''')
   assert len(saved)==2 and len(set(x['book_id'] for x in saved))==2 and len(set(x['record_id'] for x in saved))==2,saved
   db=await page.evaluate('''() => window.__db.data.library_books.filter(b=>b.barcode==='9781234567897')''')
@@ -54,6 +63,6 @@ async def main():
   assert len(await page.evaluate('window.__db.data.library_books'))==6
   assert not issues,issues
   await browser.close()
-  print('PASS duplicate ISBN rows saved unchanged; incomplete and barcode-free rows saved; separate IDs; no selection loss or confirmation')
+  print('PASS duplicate ISBN rows saved unchanged; incomplete and barcode-free rows saved; separate IDs; ready-only save and explicit shelf/incomplete confirmation')
 
 if __name__=='__main__':asyncio.run(main())
