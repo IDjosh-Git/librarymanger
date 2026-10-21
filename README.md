@@ -1,3 +1,11 @@
+## Inventory responsiveness (October 2026)
+
+Inventory and dashboard render as soon as their data arrives; Review restores independently. Background Review restoration preserves newly scanned rows, current edits and removals, and rejects responses from an earlier login. Main inventory still loads the complete books/loans datasets; this change is not server-side pagination.
+
+Inventory and dashboard reuse the same copy groups until the books array or local calendar date changes. In-place inventory edits must replace the books array (the shelf edit handler does so) to invalidate this cache. Inventory and column-filter typing wait for a 180 ms pause before rendering; explicit filter changes and page navigation still render immediately.
+
+Validation: 72 Node tests pass, including grouping invalidation, search bursts and Review/account races. A synthetic local benchmark of 30 grouping reads over 5,000 copies measured 843 ms before and 28 ms after (one calculation rather than 30). This is not a browser, network, mobile or production latency measurement. Browser and staging checks remain required before deployment.
+
 ## Version 5.9 — Quick Add responsive redesign
 
 - Quick Add no longer stretches to match the height of the adjacent image and tip panels. Its fields start near the heading, with compact, intentional spacing above and below the controls.
@@ -92,6 +100,12 @@ Each selected row receives a **distinct, stable `record_id`**; Supabase assigns 
 To deploy, extract the ZIP, commit the contents of the `librarymanger` folder into the root of your existing GitHub/Vercel project, deploy, and hard refresh. After signing in, try **Select duplicates → Save selected to Supabase** on two known physical copies before a large batch. If a save still fails, copy the exact database error shown on that photo's card.
 
 ---
+
+## Refresh performance (October 2026)
+
+Switching back to the browser tab reuses a successful inventory/history snapshot for up to 30 seconds. Manual Reload and refreshes after saved changes always request fresh data. Overlapping refreshes share one loading job; a requested refresh after a change queues a further read before the job completes. Failed reads retain the previous displayed data, and responses from a previous signed-in account cannot replace the current account's view. Paged reads use a unique ID as a secondary sort key.
+
+This reduces redundant requests but does not implement server-side UI pagination: search, totals, exports and copy selection still use the full loaded dataset. No database migration is required. Run `node --test tests/*.test.cjs` for the mock-based regression suite, including refresh races and account changes; these checks do not establish production permissions or provider availability.
 
 ## ISBN and barcode lookup fix (October 2026)
 
@@ -364,3 +378,11 @@ This is a read-only UI feature: filtering never changes the underlying books, gr
 - Theme switch is accessible (`aria-pressed` and updated action label), updates native controls and the browser theme color, and persists the chosen mode in the current browser using `library_manager_theme_v2`.
 - Dark/light modes were checked at 1440, 800, 390, and 320 pixels using an isolated browser test with mocked database records.
 - This update is visual only: it does not modify book records, scanning, cloud review, export/import, circulation, database schema, or Supabase policies. No SQL migration is required.
+
+### Review confirmation and ISBN retry
+
+Review now requires a human check of title/edition, physical copy and shelf before **Save ready books** includes a row. The confirmation dialog lists counts per shelf and separates new copies from existing-record updates. Unconfirmed rows remain in Review; a separate incomplete-details action preserves the intentional save-for-later workflow. Editing identifying details or shelf invalidates confirmation. Confirmation is retained in local/cloud review drafts, but is not inferred from Excel imports.
+
+Shelf selection uses known shelf names with an explicit add-shelf option. Replace photo / retry ISBN keeps the row identity, manual metadata and shelf. Barcode detection continues past unrelated codes to seek a valid ISBN, invalid ISBN check digits are explained, and failed lookup promises are evicted for retry. Real-photo recognition quality still requires device testing.
+
+Review photos now offer **Crop / zoom ISBN**. Drag over the barcode/printed number or use the keyboard-accessible position/size sliders, inspect the enlarged preview, and scan. The crop is processed from the original resolution when available and does not replace the original photo. Restored thumbnail-only rows show a warning to select the original for sharper results. Different detected barcodes require confirmation; shelf and record identity are preserved.

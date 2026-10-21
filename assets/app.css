@@ -1354,3 +1354,16 @@ button.alt{background:#926435;color:#fff}
 }
 
 #inventory .quickadd-icon{font-size:1.55rem;font-weight:550;line-height:1;color:var(--accent)}
+
+/* Touch and keyboard accessible ISBN crop dialog */
+.isbn-crop-dialog{width:min(720px,94vw);max-height:92dvh;overflow:auto;border:1px solid #a8b4c4;border-radius:16px;padding:20px;background:var(--card,#fff);color:var(--text,#17212f)}
+.isbn-crop-dialog::backdrop{background:rgba(0,0,0,.65)}
+.isbn-crop-dialog canvas{display:block;max-width:100%;height:auto;margin:10px auto;background:#fff}
+.isbn-crop-source{touch-action:none;cursor:crosshair}
+.isbn-crop-sliders{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.isbn-crop-sliders label{display:flex;flex-direction:column;gap:4px;font-size:.85rem}
+.isbn-crop-sliders input{width:100%;min-height:40px}
+.isbn-crop-actions{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.isbn-crop-actions button{min-height:44px}
+.isbn-crop-note,.isbn-crop-status{font-size:.9rem}
+@media(max-width:480px){.isbn-crop-dialog{padding:12px}.isbn-crop-actions button{flex:1 1 45%}}
