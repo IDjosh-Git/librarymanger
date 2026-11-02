@@ -27,9 +27,6 @@
   "functions": {
     "api/book-lookup.js": {
       "maxDuration": 30
-    },
-    "api/admin-invite.js": {
-      "maxDuration": 20
     }
   }
 }
