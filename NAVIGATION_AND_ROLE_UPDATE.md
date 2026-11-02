@@ -22,3 +22,14 @@
 - Free registration without a private code is supported only for ordinary users; allowing every visitor to self-assign Admin would expose and compromise your library data.
 - Client-side design checks performed for role switching and responsive navigation. The live Supabase instance, Vercel deployment and real login writes were not tested in this environment.
 - Other library workflows (scanning, Excel, history, notifications, Google Sheets integrations) were retained without database-schema changes in this UI revision.
+
+## Sidebar refinement (2 November 2026)
+- Signed-in desktop sidebar is wider: 332–390px depending on available viewport space.
+- Main content remains flexible and avoids horizontal overflow.
+- A dedicated signed-in identity card groups email and role; roomier primary navigation uses 60px rows with clearly separated icon tiles and active states.
+- Library tools and account/access actions remain expandable, separate from core destinations.
+- Mobile keeps role-specific shortcuts in an evenly spaced, centered bottom navigation dock.
+- `assets/navigation-refinement.css` is loaded after the earlier styles so these changes reliably override old narrow-sidebar rules.
+- No changes to Supabase authorization, role selection logic, database migrations, or API endpoints.
+
+- Rebalanced active navigation and primary action gradients for white-label readability; improved sidebar label sizes, focus rings, and the mobile active-state contrast.

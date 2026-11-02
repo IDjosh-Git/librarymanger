@@ -70,3 +70,68 @@ body[data-role="user"] .workspace-tools,body[data-role="pending"] .workspace-too
 }
 @media(max-width:370px){.access-role-choice{padding:8px;gap:5px}.access-role-choice small{font-size:.6rem}}
 @media(prefers-reduced-motion:reduce){.access-role-choice,.workspace-tools>summary .tools-chevron{transition:none}}
+
+
+/* 2 Nov 2026: registration-only choice with a clearly visible selected state. */
+.access-role-control[hidden],.signup-admin-invite[hidden]{display:none!important}
+body[data-account="out"] .access-role-control{
+  padding:17px;margin:18px 0 10px;border-radius:18px;
+  border:1px solid var(--line);background:var(--surface2);
+}
+body[data-account="out"] .access-role-heading{
+  font-size:.9rem;font-weight:850;letter-spacing:-.015em;margin-bottom:11px;color:var(--ink);
+}
+body[data-account="out"] .access-role-switch{gap:12px}
+body[data-account="out"] .access-role-choice{
+  position:relative;min-height:84px;gap:12px;padding:14px 12px;
+  border-radius:15px;border:2px solid var(--line);background:var(--surface);
+  color:var(--ink);box-shadow:0 2px 5px rgba(10,31,55,.04)!important;
+  transition:border-color .16s,background-color .16s,box-shadow .16s,transform .16s;
+}
+body[data-account="out"] .access-role-choice .app-icon{width:22px;height:22px;flex:0 0 22px;color:var(--accent)}
+body[data-account="out"] .access-role-choice>span:not(.role-choice-check){font-size:.94rem;font-weight:820;line-height:1.4;flex:1}
+body[data-account="out"] .access-role-choice small{font-size:.73rem;font-weight:570;margin-top:3px;color:var(--muted);line-height:1.35}
+body[data-account="out"] .access-role-choice .role-choice-check{
+  display:grid;place-items:center;flex:0 0 20px;width:20px;height:20px;border:2px solid var(--line);
+  border-radius:50%;color:transparent;background:transparent;font-size:.73rem;font-weight:900;
+}
+body[data-account="out"] .access-role-choice.is-selected,
+body[data-account="out"] .access-role-choice[aria-pressed="true"]{
+  color:#fff!important;background:linear-gradient(118deg,#233b7e 0%,#175277 55%,#12616a 100%)!important;
+  border-color:#224d8a!important;box-shadow:0 9px 24px rgba(21,72,107,.24)!important;
+}
+body[data-account="out"] .access-role-choice.is-selected .app-icon,
+body[data-account="out"] .access-role-choice[aria-pressed="true"] .app-icon{color:#fff!important}
+body[data-account="out"] .access-role-choice.is-selected small,
+body[data-account="out"] .access-role-choice[aria-pressed="true"] small{color:#e1f0f7!important}
+body[data-account="out"] .access-role-choice.is-selected .role-choice-check,
+body[data-account="out"] .access-role-choice[aria-pressed="true"] .role-choice-check{
+  border-color:#fff;color:#194772;background:#fff;
+}
+body[data-account="out"] .access-role-choice:not(.is-selected):hover{
+  border-color:#4182a6;background:var(--soft);color:var(--ink);
+}
+body[data-account="out"] .access-role-choice:focus-visible{
+  outline:3px solid var(--ring)!important;outline-offset:3px;
+}
+@media(max-width:420px){
+ body[data-account="out"] .access-role-control{padding:12px}
+ body[data-account="out"] .access-role-switch{gap:9px}
+ body[data-account="out"] .access-role-choice{min-height:78px;gap:8px;padding:11px 9px}
+ body[data-account="out"] .access-role-choice>span:not(.role-choice-check){font-size:.82rem}
+ body[data-account="out"] .access-role-choice small{font-size:.66rem}
+ body[data-account="out"] .access-role-choice .app-icon{width:19px;height:19px;flex-basis:19px}
+ body[data-account="out"] .role-choice-check{width:17px;height:17px;flex-basis:17px}
+}
+@media(prefers-reduced-motion:reduce){body[data-account="out"] .access-role-choice{transition:none}}
+/* The global vibrant button theme has high-specificity selectors; unselected
+   account roles must remain neutral, not look like another active gradient. */
+body[data-account="out"] .access-role-choice:not(.is-selected){
+  background:var(--surface)!important;color:var(--ink)!important;
+  border-color:var(--line)!important;box-shadow:0 2px 5px rgba(10,31,55,.04)!important;
+}
+body[data-account="out"] .access-role-choice:not(.is-selected):hover{
+  background:var(--soft)!important;border-color:#4182a6!important;
+}
+body[data-account="out"] .access-role-choice:not(.is-selected) .app-icon{color:var(--accent)!important}
+body[data-account="out"] .access-role-choice:not(.is-selected) small{color:var(--muted)!important}

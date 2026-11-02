@@ -1,0 +1,127 @@
+/* November 2026: roomy, intentional workspace navigation.
+   This is an additive presentation layer; Supabase roles and app actions are unchanged. */
+body[data-account="in"] .sidebar-title{align-items:center;gap:12px;margin-bottom:16px}
+body[data-account="in"] .sidebar-title strong{font-size:1.02rem;font-weight:800;letter-spacing:-.025em;display:flex;align-items:center;gap:8px}
+body[data-account="in"] .sidebar-title .badge{max-width:46%;font-size:.68rem;line-height:1.3;text-align:center;white-space:normal}
+body[data-account="in"] .auth{border-radius:24px;border-color:var(--soft-border,var(--line));box-shadow:0 15px 50px rgba(15,43,68,.08)}
+body[data-account="in"] .auth .pad.auth-content{padding:clamp(20px,2vw,27px)}
+
+/* Signed-in identity stays together rather than looking like loose text above a menu. */
+.workspace-account{display:flex;align-items:center;gap:13px;min-width:0;padding:15px 14px;border:1px solid var(--soft-border,var(--line));border-radius:17px;background:linear-gradient(115deg,var(--surface),var(--surface2));}
+.workspace-account-avatar{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;border-radius:14px;background:linear-gradient(145deg,rgba(28,136,152,.16),rgba(85,105,205,.11));color:var(--accent);}
+.workspace-account-avatar .app-icon{width:22px;height:22px}
+.workspace-account-details{min-width:0;flex:1}
+.workspace-account-caption{font-size:.7rem;font-weight:800;letter-spacing:.085em;color:var(--muted)}
+body[data-account="in"] #who{margin:4px 0 6px!important;color:var(--ink)!important;font-size:.91rem!important;font-weight:800;line-height:1.35;overflow-wrap:anywhere;word-break:break-word}
+.workspace-account .member-role-pill{display:inline-flex;align-items:center;max-width:100%;padding:5px 9px;border:1px solid var(--soft-border,var(--line));border-radius:999px;background:var(--soft);color:var(--accent);font-size:.7rem;font-weight:830;letter-spacing:.045em;line-height:1.2}
+
+/* Clear group header and comfortable primary navigation items. */
+body[data-account="in"] .workspace-nav{display:block;margin:20px 0 17px;padding:17px 0 4px;border-top:1px solid var(--soft-border,var(--line))}
+.workspace-nav-header{display:flex;flex-direction:column;gap:4px;margin:0 0 17px;padding:0 8px}
+.workspace-nav-eyebrow{font-size:.72rem;letter-spacing:.12em;font-weight:900;color:var(--accent)}
+.workspace-nav-header strong{font-size:1.14rem;letter-spacing:-.025em;color:var(--ink);line-height:1.4}
+body[data-account="in"] .workspace-nav-section{gap:10px}
+body[data-account="in"] .workspace-nav-section .workspace-nav-label{margin:0 0 5px 9px;font-size:.71rem;font-weight:850;letter-spacing:.105em;color:var(--muted)}
+body[data-account="in"] .workspace-nav-section .tab{
+  min-width:0;min-height:60px;padding:8px 13px;gap:14px;border-radius:15px;
+  font-size:.97rem;font-weight:760;line-height:1.3;letter-spacing:-.012em;
+  background:transparent;color:var(--ink);border:1px solid transparent;
+  text-align:left;justify-content:flex-start;white-space:normal;box-shadow:none!important;
+}
+body[data-account="in"] .workspace-nav-section .tab>span:not(.notification-nav-count){min-width:0;flex:1;overflow-wrap:break-word}
+body[data-account="in"] .workspace-nav-section .tab>.app-icon{
+  width:39px;height:39px;flex:0 0 39px;padding:10px;border-radius:12px;
+  background:var(--soft);color:var(--accent);transition:background-color .17s ease,color .17s ease;
+}
+body[data-account="in"] .workspace-nav-section .tab.active,
+body[data-account="in"] .workspace-nav-section .tab[aria-current="page"]{
+  background:linear-gradient(112deg,#2e3b9c 0%,#22538f 58%,#12606c 100%)!important;
+  color:#fff!important;border-color:transparent!important;
+  box-shadow:0 9px 24px rgba(43,91,160,.18)!important;
+}
+body[data-account="in"] .workspace-nav-section .tab.active>.app-icon,
+body[data-account="in"] .workspace-nav-section .tab[aria-current="page"]>.app-icon{
+  background:rgba(255,255,255,.19);color:#fff!important;
+}
+body[data-account="in"] .workspace-nav-section .tab:not(.active):hover{
+  transform:none;background:var(--soft);color:var(--ink);border-color:var(--soft-border,var(--line));
+}
+body[data-account="in"] .workspace-nav-section .tab:not(.active):hover>.app-icon{background:var(--surface)}
+.workspace-nav-section .notification-nav-count{flex:0 0 auto;margin-left:auto}
+
+/* Utilities are secondary destinations, never competing with primary navigation. */
+body[data-account="in"] .workspace-tools,body[data-account="in"] .account-tools{
+  margin:11px 0 0;border:1px solid var(--soft-border,var(--line));
+  border-radius:15px;background:var(--surface);box-shadow:none;
+}
+body[data-account="in"] .workspace-tools>summary,body[data-account="in"] .account-tools>summary{
+  display:flex;align-items:center;gap:12px;min-height:56px;padding:13px 15px;
+  font-size:.9rem;font-weight:780;color:var(--ink);line-height:1.3;
+}
+body[data-account="in"] .workspace-tools>summary .app-icon,
+body[data-account="in"] .account-tools>summary .app-icon{width:20px;height:20px;flex:0 0 20px;color:var(--accent)}
+body[data-account="in"] .account-tools-label{min-width:0;flex:1}
+body[data-account="in"] .account-tools-chevron{flex:0 0 auto;margin-left:auto;color:var(--muted);font-size:1.15rem;transition:transform .18s ease}
+body[data-account="in"] .account-tools[open] .account-tools-chevron{transform:rotate(180deg)}
+body[data-account="in"] .workspace-tools>summary .tools-chevron{color:var(--muted);font-size:1.15rem}
+body[data-account="in"] .workspace-tools[open]>summary,
+body[data-account="in"] .account-tools[open]>summary{color:var(--ink);background:var(--surface2)}
+body[data-account="in"] .account-tools-body>.row{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+body[data-account="in"] .account-tools-body>.row>button{font-size:.82rem;line-height:1.4;padding:12px 10px;min-height:48px;white-space:normal}
+body[data-account="in"] #status{margin-top:15px;padding:12px 14px;font-size:.84rem;line-height:1.55}
+
+@media(min-width:900px){
+  body[data-account="in"] main{max-width:1610px}
+  body[data-account="in"] .layout{
+    display:grid;grid-template-columns:clamp(332px,28vw,390px) minmax(0,1fr);
+    gap:clamp(18px,2vw,28px);align-items:start;
+  }
+  body[data-account="in"] .layout>.auth{grid-column:1/2;top:16px;max-height:calc(100dvh - 32px);overflow-y:auto;overflow-x:hidden;scrollbar-width:thin;scrollbar-color:var(--soft-border,var(--line)) transparent}
+  body[data-account="in"] .layout>#libraryArea{grid-column:2/3;min-width:0}
+}
+/* On tablet and mobile, keep the working area wide and use a clean dock. */
+@media(max-width:899px){
+  body[data-account="in"] .layout{gap:18px}
+  body[data-account="in"] .workspace-nav{display:none!important}
+  body[data-account="in"] .auth .pad.auth-content{padding:20px}
+  body[data-account="in"] .sidebar-title{margin-bottom:13px}
+  body[data-account="in"] .workspace-account{padding:14px}
+  body[data-account="in"] .bottomnav{left:50%;right:auto;width:calc(100% - 22px);max-width:580px;transform:translateX(-50%);padding:7px;gap:5px;border-radius:21px;box-shadow:0 18px 44px rgba(11,35,61,.19)}
+  body[data-account="in"] .bottomnav button{min-width:0;min-height:58px;gap:4px;border-radius:14px;white-space:nowrap;font-size:.71rem;font-weight:750;padding:7px 2px}
+  body[data-account="in"] .bottomnav button .app-icon{width:21px;height:21px;flex:0 0 21px}
+}
+@media(max-width:390px){
+  body[data-account="in"] .auth .pad.auth-content{padding:15px}
+  body[data-account="in"] .bottomnav{width:calc(100% - 14px);padding:5px;gap:2px}
+  body[data-account="in"] .bottomnav button{min-height:54px;padding:5px 1px;font-size:.66rem;gap:3px}
+  body[data-account="in"] .bottomnav button .app-icon{width:19px;height:19px;flex-basis:19px}
+}
+@media(prefers-reduced-motion:reduce){.workspace-nav-section .tab>.app-icon,.account-tools-chevron{transition:none!important}}
+
+/* Accessible colour hierarchy: dark blue/teal instead of light cyan under white text.
+   The text/background contrast of each gradient stop is >= 4.5:1 (WCAG AA
+   for normal text); apply to both themes and the primary action palette. */
+:root, :root[data-theme="dark"] {
+  --bright-gradient:linear-gradient(115deg,#293b99 0%,#22548e 54%,#145c68 100%);
+  --experience-button:linear-gradient(115deg,#293b99,#1e527e 58%,#145c68);
+}
+body[data-account="in"] .workspace-nav-section .tab{color:var(--ink)!important}
+body[data-account="in"] .workspace-nav-section .tab.active,
+body[data-account="in"] .workspace-nav-section .tab[aria-current="page"]{color:#fff!important}
+body[data-account="in"] .workspace-nav-section .tab.active .app-icon,
+body[data-account="in"] .workspace-nav-section .tab[aria-current="page"] .app-icon{color:#fff!important}
+body[data-account="in"] .workspace-nav-section .tab:not(.active):focus-visible,
+body[data-account="in"] .workspace-tools>summary:focus-visible,
+body[data-account="in"] .account-tools>summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+body[data-account="in"] .workspace-account-caption,
+body[data-account="in"] .workspace-nav-label{color:var(--muted)}
+body[data-account="in"] .workspace-tools>summary:hover,
+body[data-account="in"] .account-tools>summary:hover{background:var(--soft)}
+body[data-account="in"] .member-role-pill{background:var(--surface2);color:var(--ink);border-color:var(--line)}
+body[data-account="in"] .bottomnav button.active,
+body[data-account="in"] .bottomnav button[aria-current="page"]{background:var(--bright-gradient)!important;color:#fff!important}
+body[data-account="in"] .bottomnav button:not(.active){color:var(--ink)!important;background:var(--surface2)!important}
+/* Accessible white-label action colours in both themes. */
+button.green{background:linear-gradient(125deg,#0b6756,#076970 67%,#205c83)!important;color:#fff!important}
+button.alt,.circulation-submit{background:linear-gradient(125deg,#a0371b,#9b461e 66%,#855515)!important;color:#fff!important}
+button.danger{background:linear-gradient(125deg,#982448,#a62d43)!important;color:#fff!important}

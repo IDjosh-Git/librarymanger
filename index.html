@@ -82,6 +82,7 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 <link rel="stylesheet" href="assets/scanned-books.css">
 <link rel="stylesheet" href="assets/admin-invitations.css">
 <link rel="stylesheet" href="assets/role-navigation.css">
+<link rel="stylesheet" href="assets/navigation-refinement.css">
 <script>try{document.documentElement.dataset.theme=localStorage.getItem("library_manager_theme_v2")==="dark"?"dark":"light"}catch{document.documentElement.dataset.theme="light"}</script>
 </head>
 <body data-account="out">
@@ -121,11 +122,11 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
     <div id="signupFields" hidden>
       <label for="confirmPassword">Confirm password</label><input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Repeat your password">
     </div>
-    <div class="access-role-control">
-      <span id="accessRoleLabel" class="access-role-heading">Choose your workspace</span>
-      <div class="access-role-switch" role="group" aria-labelledby="accessRoleLabel">
-        <button type="button" class="access-role-choice is-selected" data-select-role="user" aria-pressed="true"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span>User<small>Lend &amp; return</small></span></button>
-        <button type="button" class="access-role-choice" data-select-role="admin" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg><span>Admin<small>Manage library</small></span></button>
+    <div class="access-role-control" id="accessRoleControl" hidden>
+      <span id="accessRoleLabel" class="access-role-heading">Choose your account type</span>
+      <div class="access-role-switch" role="group" aria-labelledby="accessRoleLabel" aria-describedby="signupRoleDescription">
+        <button type="button" class="access-role-choice is-selected" data-select-role="user" aria-pressed="true"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span>User<small>Lend &amp; return</small></span><span class="role-choice-check" aria-hidden="true">✓</span></button>
+        <button type="button" class="access-role-choice" data-select-role="admin" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg><span>Admin<small>Manage library</small></span><span class="role-choice-check" aria-hidden="true">✓</span></button>
       </div>
       <label for="signupAccessRole" class="sr-only">Selected workspace role</label>
       <select id="signupAccessRole" hidden aria-describedby="signupRoleDescription"><option value="user">Library user</option><option value="admin">Administrator</option></select>
@@ -143,7 +144,17 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 </div>
 <div id="recoveryPanel" hidden class="recovery-panel"><strong>Set a new password</strong><p class="auth-hint">Enter a new password for your account.</p><input id="newPassword" type="password" autocomplete="new-password" placeholder="New password (at least 8 characters)"><button id="updatePassword" type="button" class="green" style="width:100%;margin-top:8px">Update Password</button></div>
 <div id="roleGate" class="role-gate" role="status" aria-live="polite" hidden><p id="roleGateText">Checking account permissions…</p><button id="roleGateSignOut" type="button" class="light">Sign out / change account</button></div>
-<div id="loggedIn" hidden><div id="who" style="margin:9px 0;font-weight:700"></div><span id="memberRolePill" class="member-role-pill"></span><nav class="workspace-nav" aria-label="Library workspace">
+<div id="loggedIn" hidden>
+<div class="workspace-account" aria-label="Current account">
+  <span class="workspace-account-avatar" aria-hidden="true"><svg class="app-icon"><use href="assets/icons.svg#user"></use></svg></span>
+  <div class="workspace-account-details">
+    <span class="workspace-account-caption">SIGNED IN AS</span>
+    <div id="who"></div>
+    <span id="memberRolePill" class="member-role-pill"></span>
+  </div>
+</div>
+<nav class="workspace-nav" aria-label="Library workspace">
+  <div class="workspace-nav-header"><span class="workspace-nav-eyebrow">NAVIGATION</span><strong>Your workspace</strong></div>
   <div class="workspace-nav-section nav-admin-only">
     <p class="workspace-nav-label">MY LIBRARY</p>
     <button class="tab active" type="button" data-tab="dashboard" aria-pressed="true" aria-current="page"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg><span>Dashboard</span></button>
@@ -159,11 +170,10 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
   </div>
 </nav>
 <details class="workspace-tools nav-admin-only"><summary><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg><span>Library tools</span><span class="tools-chevron" aria-hidden="true">⌄</span></summary><div class="workspace-tools-body"><button id="navImportShelf" class="workspace-nav-action" type="button"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg><span>Import a shelf</span></button><p>Import shelf photos or book records.</p></div></details>
-<details class="account-tools"><summary>Account &amp; access settings <span aria-hidden="true">⌄</span></summary><div class="account-tools-body"><div class="row"><button id="reload" class="green">Reload Database</button><button id="signOut" class="light">Sign Out</button></div>
+<details class="account-tools"><summary><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span class="account-tools-label">Account &amp; access</span><span class="account-tools-chevron" aria-hidden="true">⌄</span></summary><div class="account-tools-body"><div class="row"><button id="reload" class="green">Reload Database</button><button id="signOut" class="light">Sign Out</button></div>
 <details id="adminInvitePanel" class="admin-invite-panel" hidden>
   <summary>Administrator registration code <span aria-hidden="true">+</span></summary>
   <div class="admin-invite-panel-body">
-    <p>Generate a strong, private registration code and share it only with trusted administrators. Replacing it invalidates the previous code. No email service is required.</p>
     <button id="createAdminInvite" type="button" class="green">Generate / rotate admin code</button>
     <div id="createdAdminInvite" hidden class="admin-invite-result" role="status"><strong>New administrator code — copy it now</strong><p id="adminInviteDeliveryStatus">This code is displayed once. Save it securely.</p><code id="adminAccessCodeResult" class="admin-access-result"></code><button id="copyAdminAccessCode" class="light" type="button">Copy access code</button></div>
   </div>
@@ -519,15 +529,24 @@ async function ensureMemberRole(){
 }
 
 function setAuthMode(mode){
+ // If an existing user entered a valid-looking admin code in Create Account before
+ // switching to Sign In, retain it only for this browser session. The database
+ // still verifies the code and user's confirmed email before granting access.
+ if(authMode==='signup'&&mode==='signin'&&$('signupAccessRole').value==='admin'){
+   const email=$('email').value.trim(),code=$('signupInviteCode').value.trim();
+   if(/^\S+@\S+\.\S+$/.test(email)&&code)savePendingAdminAccess(email,code);
+ }
  authMode=mode;const creating=mode==="signup";
  document.querySelector(".auth-form-heading h2").innerHTML=creating?'Create an account<span class="auth-heading-dot">.</span>':'Welcome back<span class="auth-heading-dot">.</span>';
  document.querySelector('.auth-form-heading p').textContent=creating?'Create your library account in minutes.':'Sign in to your library workspace.';
  $('signupFields').hidden=!creating;$('confirmPassword').required=creating;
+ // Roles are chosen only at registration. Sign-in uses the verified Supabase role.
+ $('accessRoleControl').hidden=!creating;
  $('password').autocomplete=creating?'new-password':'current-password';$('password').minLength=creating?8:1;
  $('authSubmit').textContent=creating?'Create My Account':'Sign In';
  $('showSignIn').classList.toggle('active',!creating);$('showSignUp').classList.toggle('active',creating);
  $('showSignIn').setAttribute('aria-pressed',String(!creating));$('showSignUp').setAttribute('aria-pressed',String(creating));
- $('authIntro').textContent=creating?'Pick User or Administrator. Administrator registration uses a private code, not an email invitation.':'Sign in as a library user or activate administrator access with a private code.';
+ $('authIntro').textContent=creating?'Choose User or Admin below. Admin registration requires a private access code.':'Enter your email and password. We will open your account’s assigned workspace automatically.';
  updateSignupRole();
 }
 function updateSignupRole(){
@@ -541,7 +560,7 @@ function updateSignupRole(){
  if(!admin)clearPendingAdminAccess();
  const pending=readPendingAdminInvite();
  const linked=admin&&!!pending&&pending.email===$('email').value.trim().toLowerCase()&&pending.code===$('signupInviteCode').value;
- $('signupAdminInvite').hidden=!admin;
+ $('signupAdminInvite').hidden=!admin||authMode!=='signup';
  $('signupInviteLinked').hidden=!linked;
  $('signupInviteCodeLabel').hidden=linked;
  $('signupInviteCode').type=linked?'hidden':'password';
@@ -628,18 +647,15 @@ function syncExisting(){if(!session?.user)return msg("Sign in to Supabase first.
 async function signIn(){
  if(authBusy)return;let email=$("email").value.trim(),password=$("password").value;
  if(!email||!password)return msg("Enter your email and password.","warn");
- const requestingAdmin=$('signupAccessRole').value==='admin',accessCode=$('signupInviteCode').value.trim();
- if(requestingAdmin&&accessCode){savePendingAdminAccess(email,accessCode)}
+ // No workspace choice on sign-in: the database role determines navigation.
+ // Pending registration codes (from a previous sign-up) are verified server-side by ensureMemberRole().
  authBusy=true;$("authSubmit").disabled=true;msg("Signing in...");
  try{
   let {data,error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;
   if(!data?.session)throw new Error("No session was created. Confirm your email if required.");
   session=data.session;authUI();await reloadAll();
   if(memberRole){
-    if(requestingAdmin&&memberRole!=='admin'){
-      $('activateAdminPanel').open=true;
-      msg('Signed in as Library user. Enter a valid administrator access code in Account & access settings to activate Admin.','warn');
-    }else msg('Signed in. Your '+(isAdmin()?'administrator':'library user')+' workspace is ready.','ok');
+    msg('Signed in. Your '+(isAdmin()?'administrator':'library user')+' workspace is ready.','ok');
   }
  }catch(e){msg(authError(e),"err");if(/confirm/i.test(String(e?.message||"")))$("resendConfirmation").hidden=false}
  finally{authBusy=false;$("authSubmit").disabled=false}
