@@ -1,0 +1,29 @@
+/* Dedicated sign-up and admin invitation controls. */
+
+.signup-role-select{width:100%;min-height:46px;margin-top:7px;font-weight:750;border-radius:13px}
+.signup-admin-invite{margin:13px 0 9px;padding:14px 15px;border-radius:16px;border:1px solid rgba(87,112,218,.22);background:linear-gradient(136deg,rgba(89,102,231,.105),rgba(17,174,183,.085))}
+.signup-admin-invite input{width:100%;margin-top:5px;font-variant-ligatures:none;letter-spacing:.015em}
+.admin-invite-panel,.activate-admin-panel{margin-top:18px;border:1px solid var(--line,rgba(72,108,147,.18));border-radius:18px;box-shadow:0 12px 28px rgba(24,47,99,.055);background:linear-gradient(130deg,var(--surface, #fff),var(--surface2,#f4f7ff))}
+.admin-invite-panel summary{list-style:none;cursor:pointer;padding:14px 15px;font-weight:800;display:flex;align-items:center;justify-content:space-between;gap:12px;line-height:1.4}
+.admin-invite-panel summary::-webkit-details-marker{display:none}
+.admin-invite-panel summary span{font-size:21px;color:var(--ink,#1d344f);transition:transform .18s}
+.admin-invite-panel[open] summary span{transform:rotate(45deg)}
+.admin-invite-panel-body,.activate-admin-panel{padding:16px}
+.admin-invite-panel-body{border-top:1px solid var(--line,rgba(72,108,147,.18))}
+.admin-invite-panel-body p,.activate-admin-panel p{font-size:.82rem;line-height:1.55;opacity:.82;margin:0 0 12px}
+.admin-invite-panel-body label,.activate-admin-panel label{display:block;font-size:.82rem;font-weight:750;margin-bottom:5px}
+.admin-invite-panel-body input,.activate-admin-panel input{width:100%;min-width:0;min-height:46px}
+.admin-invite-panel-body button,.activate-admin-panel button{width:100%;margin-top:10px;min-height:45px;border-radius:13px}
+.admin-invite-result{margin-top:14px;padding:14px;border-radius:14px;background:linear-gradient(130deg,rgba(47,184,167,.12),rgba(72,94,219,.10));border:1px solid rgba(77,150,166,.2)}
+.admin-invite-result input{font-size:.79rem;letter-spacing:.01em;overflow-wrap:anywhere}
+.admin-invite-result p{margin-top:10px;margin-bottom:0}
+.activate-admin-panel>strong{display:block;margin-bottom:6px}
+:where(.admin-invite-panel,.activate-admin-panel) :is(button,input,summary):focus-visible{outline:3px solid #3daee9;outline-offset:3px}
+@media(max-width:480px){.signup-admin-invite,.admin-invite-panel-body,.activate-admin-panel{padding:12px}.admin-invite-panel summary{padding:12px}}
+@media(prefers-reduced-motion:reduce){.admin-invite-panel summary span{transition:none}}
+
+/* Email invitation link: show a verified-origin indication without exposing token in a text field. */
+.invite-link-status{display:flex;align-items:center;gap:9px;font-weight:750;line-height:1.5;color:var(--ink,#1d344f);margin:2px 0 4px;padding:10px 13px;border:1px solid rgba(22,174,138,.28);background:linear-gradient(125deg,rgba(29,194,150,.12),rgba(95,97,231,.09));border-radius:12px}
+.invite-link-status>span{display:inline-grid;place-items:center;flex:none;width:25px;height:25px;border-radius:50%;color:#fff;background:linear-gradient(145deg,#15b18e,#5c63e5)}
+.signup-admin-invite input[type="hidden"],.invite-link-status[hidden]{display:none!important}
+.admin-invite-result>strong{display:block;margin-bottom:5px;color:var(--ink,#1d344f)}

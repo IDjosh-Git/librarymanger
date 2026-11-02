@@ -11,9 +11,11 @@
 <script src="assets/scan-extraction.js"></script>
 <script src="assets/isbn-crop.js"></script>
 <script src="assets/review-excel.js"></script>
+<script src="assets/scanned-books.js"></script>
 <script src="assets/inventory-grouping.js"></script>
 <script src="assets/inventory-column-filters.js"></script>
 <script src="assets/dashboard-metrics.js"></script>
+<script src="assets/overdue-notifications.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.115.0/dist/umd/supabase.min.js"></script>
@@ -29,7 +31,7 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 .syncbox{margin-top:12px;border:1px solid #d9e6ed;border-radius:17px;background:#f8fbfd;overflow:hidden}.synchead{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:12px 13px;background:#eef5f8}.syncbody{padding:12px}.syncgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}.syncnote{font-size:.74rem;color:var(--muted);line-height:1.4;margin:6px 0 10px}.syncstate{font-size:.75rem;font-weight:700;margin-top:8px;color:var(--muted)}
 .tabs{display:flex;gap:6px;overflow:auto;padding:8px;background:#eef3f6;border-radius:15px;margin:12px 0}.tab{flex:1 0 auto;background:transparent;color:#526676;box-shadow:none}.tab.active{background:white;color:var(--navy);box-shadow:0 4px 14px rgba(23,59,86,.08)}
 .panel{display:none}.panel.active{display:block}.hero{padding:15px;background:linear-gradient(135deg,#F8FBFD,#EEF5F8);border:1px solid var(--line);border-radius:17px}.hero h2{margin:0 0 5px;color:var(--navy)}.hero p{margin:0 0 12px;color:var(--muted);font-size:.82rem}
-.scanbtn{width:100%;min-height:76px;text-align:left;background:linear-gradient(135deg,var(--navy3),var(--navy2))}.scanbtn:before{content:"📷";margin-right:9px;font-size:20px}
+.scanbtn{width:100%;min-height:76px;text-align:left;background:linear-gradient(135deg,var(--navy3),var(--navy2))}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.stat{border:1px solid var(--line);border-radius:14px;padding:11px;background:#f8fafb}.stat b{display:block;color:var(--navy);font-size:1.2rem}.stat span{font-size:.7rem;color:var(--muted)}
 .section{margin-top:14px}.section h3{margin:0 0 8px;color:var(--navy);font-size:1rem}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.full{grid-column:1/-1}label{font-size:.74rem;font-weight:700;color:#526676}
 .tablewrap{overflow:auto;margin-top:12px;border-top:1px solid var(--line)}table{border-collapse:collapse;width:100%;min-width:1200px}th,td{padding:9px;border-bottom:1px solid #e8edf1;text-align:left;font-size:12px}th{background:#f2f6f8;position:sticky;top:0;z-index:1;color:#526676}td[contenteditable]{background:#fffdf8}.pill{padding:4px 8px;border-radius:999px;font-size:11px;font-weight:800}.available{background:#eaf7f0;color:#17603f}.borrowed{background:#fff1e7;color:#9a4d14}.overdue{background:#fff0ee;color:#962d22}
@@ -51,11 +53,11 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 
 /* Self-service account access */
 [hidden]{display:none!important}
-.auth-form{max-width:560px;margin:14px auto 0}.auth-form label{display:block;margin:11px 0 5px}.auth-form input{margin:0}
-.auth-switch{display:grid;grid-template-columns:1fr 1fr;gap:5px;background:#edf3f6;border-radius:14px;padding:5px}
-.auth-switch button{background:transparent;color:#526676;min-height:42px}.auth-switch button.active{background:var(--navy);color:#fff}
-.auth-intro,.auth-hint{font-size:.83rem;color:var(--muted);line-height:1.5;margin:10px 0}
-.auth-links{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}.textbtn{min-height:36px;background:transparent;color:var(--navy);text-decoration:underline;padding:0;font-size:.8rem}
+
+
+
+
+
 .recovery-panel{max-width:560px;margin:12px auto;padding:15px;border:1px solid var(--line);border-radius:16px;background:#f7fafb}
 .auth input:focus-visible,.auth button:focus-visible{outline:3px solid #7fbbf5;outline-offset:2px}
 
@@ -74,14 +76,38 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 
 </style>
 <link rel="stylesheet" href="assets/app.css">
+<link rel="stylesheet" href="assets/experience.css">
+<link rel="stylesheet" href="assets/vibrant-workspace.css">
+<link rel="stylesheet" href="assets/overdue-notifications.css">
+<link rel="stylesheet" href="assets/scanned-books.css">
+<link rel="stylesheet" href="assets/admin-invitations.css">
 <script>try{document.documentElement.dataset.theme=localStorage.getItem("library_manager_theme_v2")==="dark"?"dark":"light"}catch{document.documentElement.dataset.theme="light"}</script>
 </head>
-<body>
-<header><div class="head"><div class="brand"><div class="logo" aria-hidden="true"><svg class="app-icon lg" aria-hidden="true"><use href="assets/icons.svg#library"></use></svg></div><div><h1>Library Manager<span class="sr-only"> · Your library workspace</span></h1><p>Every book in its place. Every loan in view.</p></div></div><div class="head-actions"><span class="header-tag"><span class="status-dot"></span>Shared library workspace</span><button type="button" id="themeToggle" class="theme-switch" aria-label="Switch to dark mode" aria-pressed="false" title="Switch color theme"><svg class="app-icon moon-icon" aria-hidden="true"><use href="assets/icons.svg#moon"></use></svg><svg class="app-icon sun-icon" aria-hidden="true"><use href="assets/icons.svg#sun"></use></svg><span id="themeLabel" class="sr-only">Dark mode</span></button><button type="button" id="commandOpen" class="header-icon-button" aria-label="Open quick actions" aria-haspopup="dialog" aria-controls="commandBackdrop" title="Quick actions (Ctrl+K)"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#command"></use></svg></button></div></div></header>
+<body data-account="out">
+<div class="page-progress" id="pageProgress" aria-hidden="true"></div>
+<script>document.addEventListener("DOMContentLoaded",()=>{const bar=document.getElementById("pageProgress");if(bar)requestAnimationFrame(()=>bar.classList.add("is-complete"));},{once:true})</script>
+<header><div class="head"><div class="brand"><div class="logo" aria-hidden="true"><img src="assets/book-logo.svg" alt="" class="brand-logo-image"></div><div><h1>Library Manager<span class="sr-only"> · Your library workspace</span></h1><p>Every book in its place. Every loan in view.</p></div></div><div class="head-actions"><button type="button" id="notificationBell" class="notification-bell" hidden aria-label="Open overdue notifications" aria-controls="notifications" title="Overdue notifications"><svg viewBox="0 0 24 24" width="21" height="21" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg><span id="notificationCount" class="notification-count" hidden>0</span></button><span class="header-tag"><span class="status-dot"></span>Shared library workspace</span><button type="button" id="themeToggle" class="theme-switch" aria-label="Switch to dark mode" aria-pressed="false" title="Switch color theme"><span class="mode-symbol mode-moon" aria-hidden="true">☾</span><span class="mode-symbol mode-sun" aria-hidden="true">☀</span><span id="themeLabel" class="sr-only">Dark mode</span></button><button type="button" id="commandOpen" class="header-icon-button" aria-label="Open quick actions" aria-haspopup="dialog" aria-controls="commandBackdrop" title="Quick actions (Ctrl+K)"><span class="header-command-symbol" aria-hidden="true">⌘</span></button></div></div></header>
 <main><div class="layout">
 
-<section class="card auth"><div class="pad">
-<div class="sidebar-title"><strong><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg> &nbsp; Your workspace</strong><span id="authBadge" class="badge">Sign in</span></div><p class="sidebar-lead">Secure access to your shared collection and personal integrations.</p>
+<section class="card auth" id="accountCard" aria-label="Library account and navigation">
+  <div class="auth-showcase">
+    <div class="auth-showcase-inner">
+      <div class="auth-showcase-brand"><span class="auth-brand-symbol" aria-hidden="true"><img src="assets/book-logo.svg" alt="" class="brand-logo-image auth-logo-image"></span><span>YOUR LIBRARY, BEAUTIFULLY ORGANIZED</span></div>
+      <div class="auth-showcase-copy">
+        <span class="auth-eyebrow"><span class="auth-live-dot"></span> A calmer way to manage your books</span>
+        <h2>Every book in place.<br><em>Every story in reach.</em></h2>
+        <p>Your shared collection, lending records and everyday library tasks, together in one thoughtful workspace.</p>
+      </div>
+      <div class="auth-showcase-features" aria-label="Library features">
+        <span><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#book"></use></svg> Collection</span>
+        <span><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg> Insights</span>
+        <span><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#history"></use></svg> Circulation</span>
+      </div>
+    </div>
+  </div>
+  <div class="pad auth-content">
+<div class="sidebar-title"><strong><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg> &nbsp; Your workspace</strong><span id="authBadge" class="badge">Sign in</span></div>
+<div class="auth-form-heading"><span class="auth-form-eyebrow">SECURE ACCOUNT ACCESS</span><h2>Welcome back<span class="auth-heading-dot">.</span></h2><p>Sign in to pick up where you left off.</p></div><p class="sidebar-lead">Secure access to your shared collection and personal integrations.</p>
 <div id="loggedOut" class="auth-form">
   <div class="auth-switch" role="group" aria-label="Account access">
     <button type="button" id="showSignIn" class="active" aria-pressed="true">Sign In</button>
@@ -90,22 +116,47 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
   <p id="authIntro" class="auth-intro">Sign in using your own email and password.</p>
   <form id="accountForm" autocomplete="on">
     <label for="email">Email address</label><input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
-    <label for="password">Password</label><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Password" required minlength="8">
+    <label for="password">Password</label><div class="auth-password-wrap"><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required minlength="8"><button class="auth-reveal" type="button" id="passwordReveal" aria-label="Show password" aria-pressed="false">Show</button></div>
     <div id="signupFields" hidden>
       <label for="confirmPassword">Confirm password</label><input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Repeat your password">
-      <p class="auth-hint">Use at least 8 characters. All registered users share one inventory and borrowing history.</p>
+      <label for="signupAccessRole">Account type</label>
+      <select id="signupAccessRole" class="signup-role-select" aria-describedby="signupRoleDescription"><option value="user">Library user — lend and return</option><option value="admin">Administrator — invitation by email</option></select>
+      <div id="signupAdminInvite" class="signup-admin-invite" hidden>
+        <p id="signupInviteLinked" class="invite-link-status" hidden><span aria-hidden="true">✓</span> Email invitation attached. You can complete registration below.</p>
+        <label id="signupInviteCodeLabel" for="signupInviteCode">Administrator invitation code</label>
+        <input id="signupInviteCode" type="text" inputmode="text" spellcheck="false" autocomplete="off" maxlength="160" placeholder="Filled from your email invitation link">
+        <p class="auth-hint">Open the link in your administrator invitation email and this field will be filled for you. Confirm your email before admin access activates.</p>
+      </div>
+      <p id="signupRoleDescription" class="auth-hint">Use at least 8 characters. Library users access Lending and Returns; administrators register through a secure email invitation.</p>
     </div>
-    <button id="authSubmit" type="submit" style="width:100%;margin-top:11px">Sign In</button>
+    <button id="authSubmit" type="submit">Sign In</button>
   </form>
   <div class="auth-links"><button type="button" id="forgotPassword" class="textbtn">Forgot password?</button><button type="button" id="resendConfirmation" class="textbtn" hidden>Resend confirmation email</button></div>
 </div>
 <div id="recoveryPanel" hidden class="recovery-panel"><strong>Set a new password</strong><p class="auth-hint">Enter a new password for your account.</p><input id="newPassword" type="password" autocomplete="new-password" placeholder="New password (at least 8 characters)"><button id="updatePassword" type="button" class="green" style="width:100%;margin-top:8px">Update Password</button></div>
-<div id="loggedIn" hidden><div id="who" style="margin:9px 0;font-weight:700"></div><div class="row"><button id="reload" class="green">Reload Database</button><button id="signOut" class="light">Sign Out</button></div>
+<div id="roleGate" class="role-gate" role="status" aria-live="polite" hidden><p id="roleGateText">Checking account permissions…</p><button id="roleGateSignOut" type="button" class="light">Sign out / change account</button></div>
+<div id="loggedIn" hidden><div id="who" style="margin:9px 0;font-weight:700"></div><span id="memberRolePill" class="member-role-pill"></span><div class="row"><button id="reload" class="green">Reload Database</button><button id="signOut" class="light">Sign Out</button></div>
+<details id="adminInvitePanel" class="admin-invite-panel" hidden>
+  <summary>Invite a new administrator <span aria-hidden="true">+</span></summary>
+  <div class="admin-invite-panel-body"><p>Enter your colleague’s email to send a secure registration link automatically. The invitation is valid for 48 hours and can only be used by that email.</p>
+    <label for="inviteAdminEmail">New administrator email</label><input id="inviteAdminEmail" type="email" autocomplete="off" placeholder="colleague@example.com">
+    <button id="createAdminInvite" type="button" class="green">Send administrator invitation</button>
+    <div id="createdAdminInvite" hidden class="admin-invite-result" role="status"><strong>Email invitation sent</strong><p id="adminInviteDeliveryStatus">The invited administrator can open their email and follow the private registration link.</p></div>
+  </div>
+</details>
+<div id="activateAdminPanel" class="activate-admin-panel" hidden>
+  <strong>Have an administrator invitation?</strong>
+  <p>Already have an account? Open your administrator invitation email while signed in to activate access. You may also paste a code below if needed.</p>
+  <label for="existingAdminInviteCode">Invitation code</label><input id="existingAdminInviteCode" autocomplete="off" spellcheck="false" placeholder="Enter your invitation code">
+  <button id="activateAdminInvite" type="button" class="light">Activate administrator access</button>
+</div>
 <nav class="workspace-nav" aria-label="Library workspace">
   <p class="workspace-nav-label">OVERVIEW</p>
   <button class="tab active" type="button" data-tab="dashboard" aria-pressed="true" aria-current="page"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg><span>Dashboard</span></button>
+  <button class="tab notification-tab" type="button" data-tab="notifications" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#alert"></use></svg><span>Notifications</span><span id="notificationNavCount" class="notification-nav-count" hidden>0</span></button>
   <p class="workspace-nav-label workspace-nav-spaced">COLLECTION</p>
   <button class="tab" type="button" data-tab="inventory" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#book"></use></svg><span>Inventory</span></button>
+  <button class="tab" type="button" data-tab="scanned" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg><span>Scanned books</span></button>
   <button id="navImportShelf" class="workspace-nav-action" type="button"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg><span>Import a shelf</span></button>
   <p class="workspace-nav-label workspace-nav-spaced">CIRCULATION</p>
   <button class="tab" type="button" data-tab="lend" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg><span>Lend a book</span></button>
@@ -215,7 +266,7 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
     <h2>Manage your shelves with clarity.</h2>
     <p>Scan a barcode, enter an ISBN, or import an entire shelf. Repeated ISBNs are combined into one elegant inventory entry with copy counts, while each physical copy can still be lent separately.</p>
     <div class="hero-actions"><button id="scanInventory" class="scanbtn"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg> Scan a book</button><button type="button" id="jumpBatch" class="light">
-<svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg> Import a shelf</button></div>
+<svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg> Scanned books & review</button></div>
     <div class="hero-highlights" aria-label="Library workspace highlights"><span><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg> Grouped copy counts</span><span><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#sparkles"></use></svg> OCR title-page recovery</span><span><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Excel review workflow</span></div>
   </div>
   <div class="hero-visual">
@@ -262,7 +313,7 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
     </section>
     <section class="inventory-tip-card">
       <div class="tip-icon"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#sparkles"></use></svg></div>
-      <div><strong>Helpful tip</strong><p>Need to clean up incomplete records? Use <b>Needs attention</b> or export review books to Excel, correct them, and import them back.</p></div>
+      <div><strong>Helpful tip</strong><p>Need to clean up incomplete records? Select <b>Needs attention</b>, then use <b>Fill missing book details</b> to apply verified ISBN metadata. Excel review is still available for unusual books.</p></div>
     </section>
   </aside>
 </div>
@@ -273,7 +324,9 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 <section class="inventory-workspace-card">
   <div class="inventory-panel-heading inventory-panel-heading-inline"><div><span class="eyebrow">Explore inventory</span><h3>Search, filter and manage books</h3></div><p>Browse a grouped, cleaner inventory view inspired by modern library software.</p></div>
   <div class="toolbar inventory-toolbar"><div class="search-wrap"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input id="bookSearch" type="search" placeholder="Search title, author, ISBN, ID, borrower or shelf…" aria-label="Search inventory"></div><div class="filter-row" role="group" aria-label="Filter books"><button class="filter-chip active" type="button" data-book-filter="all" aria-pressed="true">All books</button><button class="filter-chip" type="button" data-book-filter="available" aria-pressed="false">Available</button><button class="filter-chip" type="button" data-book-filter="borrowed" aria-pressed="false">On loan</button><button class="filter-chip" type="button" data-book-filter="overdue" aria-pressed="false">Overdue</button></div></div>
-  <div class="quality-filters"><strong>Book details</strong><div class="filter-row" role="group" aria-label="Book details completeness"><button class="filter-chip active" type="button" data-quality-filter="all" aria-pressed="true">All details</button><button class="filter-chip" type="button" data-quality-filter="attention" aria-pressed="false">Needs attention <span id="attentionCount"></span></button><button class="filter-chip" type="button" data-quality-filter="no-title" aria-pressed="false">Without title <span id="noTitleCount"></span></button><button class="filter-chip" type="button" data-quality-filter="full" aria-pressed="false">Full details <span id="fullCount"></span></button></div><p class="quality-hint">Duplicate books are combined into one inventory line with <strong>Available Copies</strong> and <strong>Total Copies</strong>. Expand an entry to edit, lend, return or remove a specific physical copy. Books without ISBNs can be saved by title.</p></div>
+  <div class="quality-filters"><div class="quality-head"><strong>Book details</strong><button type="button" id="smartFillBooks" class="smart-fill-action" aria-describedby="smartFillNote">✦ Fill missing book details now</button></div>
+ <label class="auto-fill-control" for="autoFillVerified"><input type="checkbox" id="autoFillVerified" checked><span class="auto-fill-switch" aria-hidden="true"></span><span class="auto-fill-copy"><strong>Automatically complete verified missing details</strong><small>Runs quietly when you open Inventory. Only fills blanks for confident catalog matches; never replaces existing data. Turn off at any time.</small></span></label>
+ <p class="smart-fill-note" id="smartFillNote">Uses free book catalogs and valid ISBNs or exact title-and-author matches. Uncertain books stay in Needs attention for review. Excel Export and Import remain available.</p><div class="smart-fill-progress" id="smartFillProgress" role="status" aria-live="polite" hidden></div><div class="filter-row" role="group" aria-label="Book details completeness"><button class="filter-chip active" type="button" data-quality-filter="all" aria-pressed="true">All details</button><button class="filter-chip" type="button" data-quality-filter="attention" aria-pressed="false">Needs attention <span id="attentionCount"></span></button><button class="filter-chip" type="button" data-quality-filter="no-title" aria-pressed="false">Without title <span id="noTitleCount"></span></button><button class="filter-chip" type="button" data-quality-filter="full" aria-pressed="false">Full details <span id="fullCount"></span></button></div><p class="quality-hint">Duplicate books are combined into one inventory line with <strong>Available Copies</strong> and <strong>Total Copies</strong>. Expand an entry to edit, lend, return or remove a specific physical copy. Books without ISBNs can be saved by title.</p></div>
   <div class="inventory-options"><div class="select-control"><label for="bookSort">Sort by</label><select id="bookSort" aria-label="Sort inventory"><option value="newest">Recently added</option><option value="oldest">Oldest added</option><option value="title">Title A–Z</option><option value="shelf">Shelf A–Z</option><option value="due">Due date</option></select></div><div class="select-control"><label for="bookPageSize">Per page</label><select id="bookPageSize" aria-label="Books per page"><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="40">40</option><option value="50">50</option><option value="100">100</option></select></div><div class="view-switch" role="group" aria-label="Inventory view"><button type="button" id="viewTable" aria-pressed="true" title="Table view" aria-label="Table view"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#list"></use></svg></button><button type="button" id="viewGrid" aria-pressed="false" title="Card view" aria-label="Card view"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg></button></div></div><div class="column-filter-toolbar" role="group" aria-label="Inventory column filters">
   <button id="toggleColumnFilters" type="button" class="light column-filter-toggle" aria-expanded="false" aria-controls="columnFiltersPanel"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#filter"></use></svg> Column filters <span id="columnFilterBadge" class="column-filter-badge" hidden>0</span><svg class="app-icon sm column-filter-chevron" aria-hidden="true"><use href="assets/icons.svg#chevron-down"></use></svg></button>
   <button id="resetColumnFilters" type="button" class="light column-filter-reset" hidden>Clear column filters</button>
@@ -305,17 +358,20 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
   </details>
   <p class="column-filter-help">Click a filter icon in Table view, or choose a column above on mobile. The displayed values come from your complete inventory (not just the current page). Selected values within one column are combined; different columns are filtered together.</p>
 </section>
+<div class="inventory-scanned-link"><div><strong>Completed Scanned Books</strong><span>View completed scanned books. Unfinished scans remain in Inventory Review.</span></div><button id="viewScannedBooks" type="button">View scanned books →</button></div>
 <div class="table-actions"><span id="bookTableMeta" class="table-meta" aria-live="polite">Newest books first</span><div class="row"><button id="clearFilters" type="button" class="light smallbtn">Clear filters</button><button id="exportBooks" type="button" class="light smallbtn"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export all · Excel</button></div></div><div id="bookTable" class="tablewrap"></div><div id="bookPager" class="pager" aria-label="Inventory pages"></div>
 </section>
+<section class="scanned-review-section" aria-label="Inventory book scanning and review">
 <section class="batch-box" aria-labelledby="batchHeading">
- <div class="batch-head"><h3 id="batchHeading"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg> Import an entire shelf</h3><p>Choose folders larger than 1 GB (up to 4 GB of images), ZIP archives up to 2 GB, or photos. Title pages, covers and barcode photos are scanned. Images stay visible for ISBN or title corrections. OCR needs an internet connection to load the recognition engine; large imports depend on device memory.</p></div>
+ <div class="batch-head"><h3 id="batchHeading"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg> Scan and review an entire shelf</h3><p>Choose folders larger than 1 GB (up to 4 GB of images), ZIP archives up to 2 GB, or photos. Title pages, covers and barcode photos are scanned. Images stay visible for ISBN or title corrections. OCR needs an internet connection to load the recognition engine; large imports depend on device memory.</p></div>
  <div class="batch-body">
   <div class="batch-picker">
     <label><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg> Upload folder<input id="batchFolder" aria-label="Upload barcode folder" type="file" accept="image/*" webkitdirectory directory multiple></label>
     <label><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#archive"></use></svg> Upload ZIP<input id="batchZip" aria-label="Upload ZIP containing shelf folders" type="file" accept=".zip,application/zip,application/x-zip-compressed"></label>
     <label><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#image"></use></svg> Select photos<input id="batchPhotos" aria-label="Select multiple barcode photos" type="file" accept="image/*,.heic,.heif,.avif" multiple></label>
   </div>
-  <label class="scan-ocr-setting"><input id="batchUseOCR" type="checkbox" checked> <span><strong>Read title pages and covers with text recognition (OCR)</strong><small>Checks printed ISBN, title and author when a barcode is missing. Slower for large batches; turn off for barcode-only shelves.</small></span></label>
+  <label class="scan-ocr-setting"><input id="batchUseAI" type="checkbox"><span><strong>AI-assisted cover reading (optional)</strong><small>When Gemini is configured on the server, analyze hard-to-read photos first. Images are sent to the configured AI provider only when enabled. Verify suggestions before saving.</small></span></label>
+  <label class="scan-ocr-setting"><input id="batchUseOCR" type="checkbox" checked> <span><strong>Fast local OCR for covers and title pages</strong><small>Preloads the recognition engine when photos are selected, reuses it between books and skips unnecessary rotations. Very large or unclear photos still take longer; disable for barcode-only shelves.</small></span></label>
 <div class="batch-details"><div><label for="batchDefaultShelf">Shelf for loose photos (optional for folders)</label><input id="batchDefaultShelf" maxlength="120" placeholder="Example: Shelf A01"></div><button id="batchStart" class="alt" disabled>Scan selected images</button></div>
   <div class="batch-progress" aria-live="polite"><span id="batchStatus">Choose a folder, ZIP, or photos to begin.</span><progress id="batchProgress" max="100" value="0" aria-label="Batch scanning progress"></progress></div>
   <div id="batchSummary" class="batch-summary" aria-live="polite"></div>
@@ -325,12 +381,19 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
     <button id="batchSelectReady" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check"></use></svg> Select ready books</button>
     <button id="batchDeselectAll" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#x"></use></svg> Clear selection</button>
   </div>
-  <div class="batch-excel-panel"><div><strong>Persistent Review · correct books in Excel</strong><p>All unfinished scans stay in your Review queue, even after you close the app or scan another shelf. Saved Inventory books with missing information are shown below too. Export either list, correct ISBNs and titles in Excel, import the workbook, then click <b>Save selected to Supabase</b>.</p><p class="review-export-status" id="reviewExportStatus" role="status" aria-live="polite">Loading review queue…</p><p class="review-sync-status" id="reviewSyncStatus" role="status" aria-live="polite">Preparing cloud review sync…</p></div><div class="batch-excel-actions"><button id="batchExportExcel" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export review · Excel</button><button id="savedAttentionExport" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export saved needs attention · Excel</button><button id="refreshReviewCloud" type="button" class="light">Refresh review</button><label for="batchExcelFile" class="batch-excel-import">Import corrected Excel<input id="batchExcelFile" type="file" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv" hidden></label></div><p class="batch-excel-note">Keep the <b>Review_Key</b> column unchanged for existing copies. Leave it empty only when adding a new book row. To omit a row, write <b>SKIP</b> under Import_Action. Use Import_Action = SAVE for new copies, UPDATE for existing saved copies, or SKIP to omit a row. Unfinished scans and small photo previews are synced to Supabase when the review table is installed and you are online. Local browser storage is the backup; full-resolution images are not retained. Do not remove Review rows until they are saved or corrected.</p></div>
+  <div class="batch-excel-panel"><div><strong>Books awaiting details · Inventory Review</strong><p>Unfinished scans and saved books with missing details remain here in Inventory until corrected. Completed scanned records appear in Scanned Books. Use <b>Fill missing book details</b> in Inventory for verified catalog matches, or edit a book here. Excel is optional for bulk manual correction.</p><p class="review-export-status" id="reviewExportStatus" role="status" aria-live="polite">Loading review queue…</p><p class="review-sync-status" id="reviewSyncStatus" role="status" aria-live="polite">Preparing cloud review sync…</p></div><div class="batch-excel-actions"><button id="batchExportExcel" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export review · Excel</button><button id="savedAttentionExport" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export saved needs attention · Excel</button><button id="refreshReviewCloud" type="button" class="light">Refresh review</button><label for="batchExcelFile" class="batch-excel-import">Import corrected Excel<input id="batchExcelFile" type="file" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv" hidden></label></div><p class="batch-excel-note">Keep the <b>Review_Key</b> column unchanged for existing copies. Leave it empty only when adding a new book row. To omit a row, write <b>SKIP</b> under Import_Action. Use Import_Action = SAVE for new copies, UPDATE for existing saved copies, or SKIP to omit a row. Unfinished scans and small photo previews are synced to Supabase when the review table is installed and you are online. Local browser storage is the backup; full-resolution images are not retained. Do not remove Review rows until they are saved or corrected.</p></div>
   <div class="batch-actions batch-actions-secondary"><button id="batchSave" type="button" class="green" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#upload"></use></svg> Save ready books</button><button id="batchSaveIncomplete" type="button" class="light" disabled>Save selected with incomplete details…</button><button id="batchRemoveSelected" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#trash"></use></svg> Remove selected from review</button><button id="batchStop" type="button" class="light" disabled>Stop scanning</button><button id="batchClear" type="button" class="light" disabled>Clear scan selection</button></div>
   <div class="batch-info">Check each book’s title and edition, physical copy, and shelf, then tick its confirmation box. <strong>Save ready books</strong> saves selected, confirmed books after showing a shelf summary. Other books remain in Review. Books without ISBNs can be confirmed manually. Use the separate incomplete-details action only when you intentionally want unfinished records in Inventory.</div><input id="batchRetakeFile" type="file" accept="image/*" hidden>
   <div id="batchResults" class="batch-review" aria-live="polite"><div class="empty">Loading your Review queue…</div></div><div id="savedReviewResults" class="saved-review-panel" aria-live="polite"></div>
  </div>
-</section></div>
+</section>
+</section>
+</div>
+
+<div id="scanned" class="panel scanned-page" aria-labelledby="scannedPageTitle">
+<section class="scanned-hero"><div><span class="eyebrow">COLLECTION · SCANNED RECORDS</span><h2 id="scannedPageTitle">Completed scans, beautifully organized.</h2><p>Only fully detailed scanned books appear here. Unfinished and incomplete records remain in Inventory Review until corrected.</p><div class="scanned-hero-actions"><button type="button" id="scannedBackInventory" class="light">← Back to Inventory</button><button type="button" id="scannedJumpReview">Open Inventory Review →</button></div></div><div class="scanned-hero-mark" aria-hidden="true">▥</div></section>
+<section class="scanned-data-card" aria-labelledby="scannedTableTitle"><div class="scanned-data-heading"><div><span class="eyebrow">SAVED LIBRARY RECORDS</span><h3 id="scannedTableTitle">Completed scanned books</h3><p>Only scanned or imported books with all required details are listed here. Incomplete records remain in Inventory Review.</p></div><span id="scannedCount" class="scanned-count">0 records</span></div><div class="scanned-filters"><label>Search books <input id="scannedSearch" type="search" placeholder="Title, author, Book ID or ISBN…" autocomplete="off"></label><label>Condition <select id="scannedStatus"><option value="all">All statuses</option><option value="available">Available</option><option value="borrowed">On loan</option></select></label><label>Shelf <select id="scannedShelf"><option value="all">Every shelf</option></select></label><button id="scannedClear" type="button" class="light">Reset filters</button></div><div id="scannedTable" class="scanned-table-wrap" aria-live="polite"></div><div class="scanned-table-bottom"><p id="scannedTableMeta">Showing saved scanned records</p><div id="scannedPager" class="pager"></div></div></section>
+</div>
 
 <div id="lend" class="panel">
 <div class="hero circulation-hero lend-hero"><span class="eyebrow">Circulation · lending</span><h2>Keep every loan on track.</h2><p>Scan an available copy or select it from inventory, then add the borrower and due date.</p><button id="scanLend" class="scanbtn"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg> Scan to lend</button><input id="lendCamera" type="file" accept="image/*" capture="environment" hidden><img id="lendPreview" class="preview"></div>
@@ -369,13 +432,24 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
  <div class="full"><button id="confirmReturn" class="green circulation-submit" type="button" style="width:100%">Confirm return</button></div>
 </div></div>
 
+<div id="notifications" class="panel notifications-panel" aria-labelledby="notificationsHeading">
+ <section class="notification-hero">
+  <div class="notification-hero-copy"><span class="eyebrow">CIRCULATION · IMPORTANT UPDATES</span><h2 id="notificationsHeading">Overdue return notifications</h2><p>Keep track of borrowers whose books have passed the return date. These alerts automatically clear once a return is recorded.</p>
+  <div class="notification-hero-actions"><button id="notificationRefresh" type="button" class="notification-refresh"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#refresh"></use></svg> Refresh notifications</button><button id="notificationViewHistory" type="button" class="light">View loan history</button></div></div>
+  <div class="notification-hero-counter"><span>Currently overdue</span><strong id="notificationTotal">0</strong><small>active loan records</small></div>
+ </section>
+ <div class="notification-controls"><div class="notification-search-wrap"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input id="notificationSearch" type="search" placeholder="Search borrower, loan ID, book, ISBN…" autocomplete="off" aria-label="Search overdue notifications"></div><label class="notification-sort-label" for="notificationSort">Sort by <select id="notificationSort"><option value="oldest">Most overdue first</option><option value="recent">Recently overdue first</option><option value="borrower">Borrower name</option></select></label></div>
+ <div class="notification-section-title"><div><h3>Borrowers to follow up</h3><p id="notificationSummary" role="status" aria-live="polite">Loading overdue records…</p></div><span class="notification-live-indicator"><span></span>Synced with loans</span></div>
+ <div id="notificationList" class="notification-list" aria-live="polite"><div class="notification-empty">No overdue records loaded yet.</div></div>
+</div>
+
 <div id="history" class="panel">
 <div class="hero circulation-hero history-hero"><span class="eyebrow">Circulation · loan history</span><h2>Know what's out. Know what's back.</h2><p>Track every loan, due date and return across the shared library.</p></div><div class="grid3 history-stats"><div class="stat"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg><b id="activeLoans">0</b><span>Active loans</span></div><div class="stat warning"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#alert"></use></svg><b id="overdueLoans">0</b><span>Overdue</span></div><div class="stat"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg><b id="returnedLoans">0</b><span>Returned</span></div><div class="stat"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#calendar"></use></svg><b id="dueSoonLoans">0</b><span>Due within 7 days</span></div></div>
 <div class="history-data-surface"><div class="dashboard-card-heading"><div><span class="eyebrow">YOUR RECORDS</span><h3>Loan activity register</h3></div></div><div class="toolbar"><div class="search-wrap"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input id="loanSearch" type="search" placeholder="Search book, borrower or ID…" aria-label="Search loan history"></div><div class="filter-row" role="group" aria-label="Filter loans"><button class="filter-chip active" type="button" data-loan-filter="all" aria-pressed="true">All</button><button class="filter-chip" type="button" data-loan-filter="active" aria-pressed="false">Active</button><button class="filter-chip" type="button" data-loan-filter="overdue" aria-pressed="false">Overdue</button><button class="filter-chip" type="button" data-loan-filter="due-soon" aria-pressed="false">Due soon</button><button class="filter-chip" type="button" data-loan-filter="returned" aria-pressed="false">Returned</button></div></div>
 <div class="inventory-options loan-options"><div class="select-control"><label for="loanPageSize">Per page</label><select id="loanPageSize" aria-label="Loans per page"><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="40">40</option><option value="50">50</option><option value="100">100</option></select></div></div><div class="table-actions"><span id="loanTableMeta" class="table-meta" aria-live="polite">Newest loans first</span><div class="row"><button id="clearLoanFilters" type="button" class="light smallbtn"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#x"></use></svg> Clear filters</button><button id="reloadLoans" type="button" class="light smallbtn"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#refresh"></use></svg> Reload</button><button id="exportLoans" type="button" class="light smallbtn"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export all · Excel</button></div></div><div id="loanTable" class="tablewrap"></div><div id="loanPager" class="pager" aria-label="Loan history pages"></div></div></div>
 </div></section></div></main>
 
-<nav class="bottomnav" aria-label="Mobile library navigation"><button class="active" type="button" data-gotab="dashboard"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg>Home</button><button type="button" data-gotab="inventory"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#book"></use></svg>Inventory</button><button type="button" data-gotab="lend"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg>Lend</button><button type="button" data-gotab="return"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#arrow-down-left"></use></svg>Return</button><button type="button" data-gotab="history"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#history"></use></svg>History</button></nav>
+<nav class="bottomnav" aria-label="Mobile library navigation"><button class="active" type="button" data-gotab="dashboard"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg>Home</button><button type="button" data-gotab="inventory"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#book"></use></svg>Inventory</button><button type="button" data-gotab="lend"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg>Lend</button><button type="button" data-gotab="return"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#arrow-down-left"></use></svg>Return</button><button type="button" data-gotab="scanned">Scans</button><button type="button" data-gotab="history"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#history"></use></svg>History</button></nav>
 <div class="scroll-controls" aria-label="Page navigation"><button id="pageUp" type="button" title="Go to the top" aria-label="Go to the top"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#chevrons-up"></use></svg></button><button id="pageDown" type="button" title="Go to the bottom" aria-label="Go to the bottom"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#chevrons-down"></use></svg></button></div><div id="commandBackdrop" class="command-backdrop" hidden><section class="command-dialog" role="dialog" aria-modal="true" aria-labelledby="commandTitle"><div class="command-head"><div><span class="eyebrow">Workspace shortcuts</span><h2 id="commandTitle">Quick actions</h2></div><button type="button" class="command-close icon-btn" id="commandClose" aria-label="Close quick actions"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#x"></use></svg></button></div><label class="sr-only" for="commandSearch">Find an action</label><div class="search-wrap command-search"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input id="commandSearch" type="search" placeholder="Search actions…" autocomplete="off"></div><div class="command-items" id="commandList"><button type="button" data-command="dashboard" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg><span><strong>Dashboard</strong><small>View library statistics</small></span></button><button type="button" data-command="find" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><span><strong>Find a book</strong><small>Search the shared collection</small></span><kbd>/</kbd></button><button type="button" data-command="scan" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg><span><strong>Scan a barcode</strong><small>Add a book using your camera</small></span></button><button type="button" data-command="add" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#plus"></use></svg><span><strong>Add by ISBN</strong><small>Enter a barcode manually</small></span></button><button type="button" data-command="lend" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg><span><strong>Lend a book</strong><small>Record a borrower and due date</small></span></button><button type="button" data-command="return" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-down-left"></use></svg><span><strong>Process a return</strong><small>Close an active loan</small></span></button><button type="button" data-command="overdue" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#alert"></use></svg><span><strong>Overdue loans</strong><small>See books past their due date</small></span></button><button type="button" data-command="import" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg><span><strong>Import a shelf</strong><small>Upload photos, a folder or a ZIP</small></span></button><button type="button" data-command="export" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg><span><strong>Export inventory</strong><small>Download the Excel workbook</small></span></button><button type="button" data-command="signin" data-guest-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span><strong>Sign in</strong><small>Access the library workspace</small></span></button><button type="button" data-command="theme"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#sun"></use></svg><span><strong>Switch theme</strong><small>Light and dark appearance</small></span></button></div><p id="commandEmpty" class="empty" hidden>No matching actions.</p><div class="command-footer">Press <kbd>Ctrl</kbd> + <kbd>K</kbd> to open · <kbd>Esc</kbd> to close</div></section></div><div id="toast" class="toast" role="status" aria-live="polite" hidden></div><div id="bookEditorBackdrop" class="book-editor-backdrop" hidden><section class="book-editor" role="dialog" aria-modal="true" aria-labelledby="bookEditorTitle"><div class="book-editor-head"><h2 id="bookEditorTitle">Edit book details</h2><button type="button" id="closeBookEditor" class="light">Close</button></div><form id="bookEditorForm"><div class="book-editor-grid"><label>ISBN / barcode <input name="barcode" maxlength="80" autocomplete="off"></label><label>Title <input name="title" maxlength="350" autocomplete="off"></label><label>Author(s) <input name="authors" maxlength="350"></label><label>Publisher <input name="publisher" maxlength="250"></label><label>Publication year <input name="publication_year" maxlength="20"></label><label>Shelf / location <input name="shelf_location" maxlength="120"></label><label>Language <input name="language" maxlength="100"></label><label>Pages <input name="pages" maxlength="20"></label><label class="wide">Subjects <input name="subject" maxlength="500"></label></div><div class="book-editor-actions"><button type="button" id="editorFindISBN" class="light">Find using ISBN</button><button type="button" id="editorFindTitle" class="light">Search title & author</button><button type="submit" class="green">Save book changes</button></div><div id="editorResults" role="status" aria-live="polite"></div></form></section></div><div id="decoder" aria-hidden="true" style="position:fixed;left:-9999px;top:0;width:360px;height:360px;opacity:0;pointer-events:none"></div><div id="postTargets" style="display:none"></div>
 
 <footer class="footer"><span><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#library"></use></svg> &nbsp; Library Manager · A calm home for every collection.</span><span>Shared Supabase inventory · Optional personal Google Sheets mirror</span></footer>
@@ -384,9 +458,11 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 const SUPABASE_URL="https://hotysnqorkqbiconjskl.supabase.co", SUPABASE_KEY="sb_publishable_OL7r2hmR6n7OOWY5m-3bRw_Peft2X9q", BOOKS="library_books", LOANS="library_loans", REVIEW_QUEUE="library_review_queue";
 const GOOGLE_BOOKS_KEY="library_manager_google_books_api_key_v1";
 const scanHelper=window.LibraryScan;
+const overdueHelper=window.LibraryOverdueNotifications;
 const SHEET_PREFIX="library_manager_user_sheets_v1:";
+const PENDING_ADMIN_INVITE_KEY="library_manager_pending_admin_invite_v1";
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
-const $=id=>document.getElementById(id);let session=null,books=[],loans=[],selectedLend=null,selectedReturn=null,busy=false,authMode="signin",authBusy=false,authGeneration=0,libraryOwnerId=null;
+const $=id=>document.getElementById(id);let session=null,books=[],loans=[],selectedLend=null,selectedReturn=null,busy=false,authMode="signin",authBusy=false,authGeneration=0,libraryOwnerId=null,memberRole=null,memberRolePromise=null;
 function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}let toastTimer;function msg(t,c=""){ $("status").className="status "+c;$("status").textContent=t;const el=$("toast");if(!el)return;el.textContent=t;el.className="toast "+c;el.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{el.hidden=true},c==="err"?10000:4600)}function localISO(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-")}function today(){return localISO(new Date())}function plusDays(d,n){let x=new Date(d+"T12:00:00");x.setDate(x.getDate()+n);return localISO(x)}function isOverdue(l){return l.status==="Borrowed"&&l.due_date&&l.due_date<today()}function isDueSoon(l){return l.status==="Borrowed"&&!!l.due_date&&l.due_date>=today()&&l.due_date<=plusDays(today(),7)}function uuid(){if(globalThis.crypto?.randomUUID)return crypto.randomUUID();const b=new Uint8Array(16);if(globalThis.crypto?.getRandomValues)crypto.getRandomValues(b);else for(let i=0;i<16;i++)b[i]=Math.floor(Math.random()*256);b[6]=(b[6]&15)|64;b[8]=(b[8]&63)|128;const h=Array.from(b,v=>v.toString(16).padStart(2,'0')).join('');return [h.slice(0,8),h.slice(8,12),h.slice(12,16),h.slice(16,20),h.slice(20)].join('-')}function clean(v){return String(v||"").trim().replace(/^ISBN(?:[\s-]*1[03])?\s*[:#]?\s*/i,"").replace(/[\s-]/g,"")}function normalizeIsbn(v){let x=clean(v).replace(/[\u0000-\u001f\u007f]/g,"").replace(/^\][A-Z0-9]{2}/i,"").toUpperCase();const padded=x.match(/^0(97[89]\d{10})(?:\d{2}|\d{5})?$/);if(padded)x=padded[1];const supplement=x.match(/^(97[89]\d{10})(?:\d{2}|\d{5})$/);if(supplement)x=supplement[1];if(/^SBN\d{9}$/.test(x))x='0'+x.slice(3);return x}function isISBN(v){return validIsbn(v)}function validIsbnCore(x){if(/^\d{9}[\dX]$/.test(x)){let n=0;for(let i=0;i<10;i++)n+=(10-i)*(x[i]==='X'?10:Number(x[i]));return n%11===0}if(/^97[89]\d{10}$/.test(x)){let n=0;for(let i=0;i<13;i++)n+=Number(x[i])*(i%2?3:1);return n%10===0}return false}function validIsbn(v){return validIsbnCore(normalizeIsbn(v))}function suggestIsbnCorrection(v){const x=normalizeIsbn(v);if(validIsbnCore(x))return"";if(/^97[89]\d{10}$/.test(x)){let sum=0;for(let i=0;i<12;i++)sum+=Number(x[i])*(i%2?3:1);const candidate=x.slice(0,12)+String((10-sum%10)%10);return validIsbnCore(candidate)?candidate:""}if(/^\d{9}[\dX]$/.test(x)){let sum=0;for(let i=0;i<9;i++)sum+=(10-i)*Number(x[i]);const check=(11-sum%11)%11,candidate=x.slice(0,9)+(check===10?"X":String(check));return validIsbnCore(candidate)?candidate:""}return""}function sameIsbn(a,b){a=normalizeIsbn(a);b=normalizeIsbn(b);if(!validIsbn(a)||!validIsbn(b))return false;if(a.length===13&&b.length===13)return a===b;function to13(s){if(s.length===13)return s;let t='978'+s.slice(0,9),n=0;for(let i=0;i<12;i++)n+=Number(t[i])*(i%2?3:1);return t+((10-n%10)%10)}return to13(a)===to13(b)}
 function parseSheetId(u){let m=String(u||"").match(/\/spreadsheets\/d\/([A-Za-z0-9-_]+)/);return m?m[1]:""}
 function userSheetKey(){return session?.user?.id ? SHEET_PREFIX+session.user.id : ""}
@@ -396,12 +472,113 @@ function connectorUrl(){let raw=String(sheetSettings().url||"").trim();try{let u
 function googleToken(){let st=sheetSettings();if(st.token)return String(st.token).trim();try{return new URL(st.url).searchParams.get("token")||""}catch{return ""}}
 function sheetLinked(){return !!session?.user&&!!parseSheetId(sheetUrl())&&!!googleToken()&&/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/i.test(connectorUrl())}
 function updateSheetUI(){let linked=sheetLinked(),s=sheetSettings();$("sheetBadge").textContent=linked?"Linked • Sync enabled":"Not linked";$("sheetBadge").className=linked?"badge ok":"badge";$("sheetState").textContent=linked?"Your own Google Sheet is linked. Supabase is the shared main database.":"Optional: enter your OWN Google Sheet, deployed Apps Script /exec URL and matching token. Scanning does not require Google Sheets.";$("sheetUrl").value=s.sheet||"";$("connectorUrl").value=s.url||"";$("connectorToken").value=s.token||""}
-function authUI(){let signedIn=!!session?.user;$("authBadge").textContent=signedIn?"Signed in":"Own account required";$("authBadge").className=signedIn?"badge ok":"badge";$("loggedOut").hidden=signedIn;$("loggedIn").hidden=!signedIn;$("sheetBox").hidden=!signedIn;$("libraryArea").hidden=!signedIn;$("who").textContent=signedIn?session.user.email||"Signed in":"";updateSheetUI()}
-function setAuthMode(mode){authMode=mode;let creating=mode==="signup";$("signupFields").hidden=!creating;$("confirmPassword").required=creating;$("password").autocomplete=creating?"new-password":"current-password";$("password").minLength=creating?8:1;$("authSubmit").textContent=creating?"Create My Account":"Sign In";$("showSignIn").classList.toggle("active",!creating);$("showSignUp").classList.toggle("active",creating);$("showSignIn").setAttribute("aria-pressed",String(!creating));$("showSignUp").setAttribute("aria-pressed",String(creating));$("authIntro").textContent=creating?"Create your own login to scan into the shared library.":"Sign in with your own email and password."}
-function resetAccountState(){libraryOwnerId=null;books=[];loans=[];selectedLend=null;selectedReturn=null;$("lendCopyDetail").textContent="Select a copy to view its Book ID and shelf below.";$("returnCopyDetail").textContent="Select a borrowed copy to view its Book ID and borrower below.";$("lendBookSearch").value="";$("returnBookSearch").value="";$("lendBookDisplay").value="";$("lendBookId").value="";$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";batchStopRequested=true;batchQueue=[];batchExcelLoading=false;reviewDraftVersion++;reviewDraftLoadedFor=null;if(reviewSaveTimer)clearTimeout(reviewSaveTimer);reviewSaveTimer=null;reviewRemoteHashes.clear();reviewCloudStatus='loading';reviewCloudFailure='';releaseBatchPreviews();batchItems=[];batchMetadataCache.clear();$("batchProgress").value=0;bookSearch="";loanSearch="";columnFilters=LibraryInventoryColumnFilters.empty();selectedColumnValues={};resetColumnFilterInputs();bookFilter="all";qualityFilter="all";loanFilter="all";bookPage=1;loanPage=1;$("bookSearch").value="";$("loanSearch").value="";setPressed("book","all");setPressed("quality","all");setPressed("loan","all");renderBatch();renderAll()}
+const ADMIN_PAGES=new Set(["dashboard","inventory","scanned","notifications","history"]);
+const USER_PAGES=new Set(["lend","return"]);
+function canAccess(page,role=memberRole){return role==='admin'?ADMIN_PAGES.has(page):role==='user'?USER_PAGES.has(page):false}
+function isAdmin(){return memberRole==='admin'}
+function isCirculationUser(){return memberRole==='user'}
+function roleLanding(){return isAdmin()?'dashboard':'lend'}
+function authUI(){const signedIn=!!session?.user,ready=signedIn&&(memberRole==='admin'||memberRole==='user');document.body.dataset.account=signedIn?'in':'out';document.body.dataset.role=memberRole||'pending';$('authBadge').textContent=ready?(isAdmin()?'Administrator':'Library user'):signedIn?'Checking access':'Own account required';$('authBadge').className=ready?'badge ok':'badge';$('loggedOut').hidden=signedIn;$('loggedIn').hidden=!ready;$('sheetBox').hidden=!isAdmin()||!ready;$('libraryArea').hidden=!ready;$('notificationBell').hidden=!ready||!isAdmin();$('who').textContent=ready?session.user.email||'Signed in':'';$('memberRolePill').textContent=isAdmin()?'ADMIN WORKSPACE':'LEND & RETURN';$('roleGate').hidden=!signedIn||ready;$('adminInvitePanel').hidden=!ready||!isAdmin();$('activateAdminPanel').hidden=!ready||isAdmin();$('roleGateText').textContent=signedIn&&!ready?'Checking account permissions…':'';
+ document.querySelectorAll('[data-tab],[data-gotab]').forEach(b=>{b.hidden=!canAccess(b.dataset.tab||b.dataset.gotab)});
+ $('navImportShelf').hidden=!isAdmin();
+ document.querySelectorAll('[data-dashboard-action="lend"],[data-dashboard-action="return"],[data-history-return],[data-lend-book],[data-return-book]').forEach(b=>{b.hidden=isAdmin()});
+ if(ready&&document.querySelector('.panel.active')&&!canAccess(document.querySelector('.panel.active').id))tab(roleLanding());
+ updateSheetUI();}
+async function ensureMemberRole(){
+ if(!session?.user)return false;
+ if(memberRole==='admin'||memberRole==='user')return true;
+ if(memberRolePromise)return memberRolePromise;
+ const uid=session.user.id,generation=authGeneration;
+ memberRolePromise=(async()=>{
+  try{
+   // Verify an emailed invitation only after authentication. Never trust a client-supplied role.
+   await redeemPendingAdminInvite(uid);
+   const {data,error}=await sb.from('library_member_roles').select('role').eq('user_id',uid).single();
+   if(error)throw error;
+   if(uid!==session?.user?.id||generation!==authGeneration)return false;
+   if(!['admin','user'].includes(data?.role))throw Error('No valid library role is assigned to this account.');
+   memberRole=data.role;authUI();tab(roleLanding());return true;
+  }catch(e){if(uid===session?.user?.id){$('roleGate').hidden=false;$('roleGateText').textContent='Account permissions could not be verified: '+(e.message||String(e))+'. An administrator must install library_roles_and_circulation.sql and assign your role.';msg('Library role verification required. '+(e.message||e),'err')}return false}
+  finally{memberRolePromise=null}
+ })();return memberRolePromise;
+}
+
+function setAuthMode(mode){
+ authMode=mode;const creating=mode==="signup";
+ document.querySelector(".auth-form-heading h2").innerHTML=creating?'Create an account<span class="auth-heading-dot">.</span>':'Welcome back<span class="auth-heading-dot">.</span>';
+ document.querySelector('.auth-form-heading p').textContent=creating?'Register with your assigned library access.':'Sign in to pick up where you left off.';
+ $('signupFields').hidden=!creating;$('confirmPassword').required=creating;
+ $('password').autocomplete=creating?'new-password':'current-password';$('password').minLength=creating?8:1;
+ $('authSubmit').textContent=creating?'Create My Account':'Sign In';
+ $('showSignIn').classList.toggle('active',!creating);$('showSignUp').classList.toggle('active',creating);
+ $('showSignIn').setAttribute('aria-pressed',String(!creating));$('showSignUp').setAttribute('aria-pressed',String(creating));
+ $('authIntro').textContent=creating?'Choose a library-user account or follow your administrator email invitation.':'Sign in with your email and password to open your assigned workspace.';
+ if(creating)updateSignupRole();
+}
+function updateSignupRole(){
+ const admin=$('signupAccessRole').value==='admin';
+ const pending=readPendingAdminInvite();
+ const linked=admin&&!!pending&&pending.email===$('email').value.trim().toLowerCase()&&pending.code===$('signupInviteCode').value;
+ $('signupAdminInvite').hidden=!admin;
+ $('signupInviteLinked').hidden=!linked;
+ $('signupInviteCodeLabel').hidden=linked;
+ $('signupInviteCode').type=linked?'hidden':'text';
+ $('signupInviteCode').required=admin&&authMode==='signup'&&!linked;
+ $('signupRoleDescription').textContent=admin?'Use the link emailed by your library administrator. Invites are single-use and valid for 48 hours.':'Library users can lend and return books. Passwords need at least 8 characters.';
+}
+function readPendingAdminInvite(){try{return JSON.parse(sessionStorage.getItem(PENDING_ADMIN_INVITE_KEY)||'null')}catch{return null}}
+function savePendingAdminInvite(email,code){try{sessionStorage.setItem(PENDING_ADMIN_INVITE_KEY,JSON.stringify({email:email.toLowerCase(),code,createdAt:Date.now()}))}catch{}}
+function clearPendingAdminInvite(){try{sessionStorage.removeItem(PENDING_ADMIN_INVITE_KEY)}catch{}}
+async function redeemPendingAdminInvite(uid){
+ const pending=readPendingAdminInvite();if(!pending||!session?.user||session.user.id!==uid)return false;
+ if(pending.email!==String(session.user.email||'').toLowerCase()||Date.now()-(pending.createdAt||0)>48*3600000){clearPendingAdminInvite();return false}
+ const {error}=await sb.rpc('library_redeem_admin_invite',{p_code:pending.code});
+ if(error){msg('Your invitation was not activated: '+authError(error)+'. You can enter a new code in your workspace after confirming your email.','warn');return false}
+ clearPendingAdminInvite();msg('Administrator invitation accepted. Your admin workspace is now available.','ok');return true;
+}
+async function activateAdminInvite(){
+ if(!session?.user||isAdmin())return;
+ const code=$('existingAdminInviteCode').value.trim();if(!code)return msg('Enter an administrator invitation code.','warn');
+ const button=$('activateAdminInvite');button.disabled=true;
+ try{
+   const {error}=await sb.rpc('library_redeem_admin_invite',{p_code:code});if(error)throw error;
+   clearPendingAdminInvite();$('existingAdminInviteCode').value='';memberRole=null;authUI();
+   await ensureMemberRole();if(!isAdmin())throw Error('Role change could not be verified; sign in again.');
+   await reloadAll();msg('Administrator access activated.','ok');
+ }catch(e){msg('Could not activate administrator: '+authError(e),'err')}
+ finally{button.disabled=false}
+}
+async function createAdminInvite(){
+ if(!session?.user||!isAdmin())return msg('Only an administrator can invite another administrator.','err');
+ const email=$('inviteAdminEmail').value.trim().toLowerCase();if(!$('inviteAdminEmail').checkValidity()||!email)return msg('Enter a valid invitation email address.','warn');
+ const button=$('createAdminInvite');button.disabled=true;$('createdAdminInvite').hidden=true;
+ try{
+   const {data:{session:latestSession},error:sessionError}=await sb.auth.getSession();
+   if(sessionError||!latestSession?.access_token)throw Error('Your session has expired. Sign in again.');
+   const resp=await fetch('/api/admin-invite',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+latestSession.access_token},body:JSON.stringify({email})});
+   let data={};try{data=await resp.json()}catch{}
+   if(!resp.ok||!data.ok)throw Error(data.error||'Email invitation could not be sent.');
+   $('adminInviteDeliveryStatus').textContent='Invitation sent to '+email+'. The link expires in 48 hours. Ask the recipient to check their inbox and spam folder.';
+   $('createdAdminInvite').hidden=false;msg('Administrator invitation email sent to '+email+'.','ok');
+ }catch(e){msg('Could not send administrator invitation: '+authError(e),'err')}
+ finally{button.disabled=false}
+}
+// Invite token stays in the URL fragment (not an HTTP query or path). Import once, then remove it from the address bar.
+function receiveAdminInvitationLink(){
+ const hash=String(location.hash||'').replace(/^#/,'');
+ if(!hash.startsWith('admin-invite='))return false;
+ const params=new URLSearchParams(hash),code=params.get('admin-invite')||'',email=(params.get('email')||'').trim().toLowerCase();
+ try{history.replaceState(null,'',location.pathname+location.search)}catch{}
+ if(!/^[0-9a-f]{64}$/i.test(code)||!email||!/^\S+@\S+\.\S+$/.test(email)){msg('This administrator invitation link is invalid. Ask the administrator to send a new invitation.','err');return false}
+ savePendingAdminInvite(email,code);$('email').value=email;$('signupAccessRole').value='admin';$('signupInviteCode').value=code;updateSignupRole();
+ if(!session?.user){setAuthMode('signup');msg('Administrator invitation ready for '+email+'. Create your account or sign in if you already have one.','ok')}
+ else if(String(session.user.email||'').toLowerCase()!==email)msg('This invitation is for '+email+'. Sign out and use the invited account.','warn');
+ return true;
+}
+function resetAccountState(){memberRole=null;memberRolePromise=null;libraryOwnerId=null;books=[];loans=[];selectedLend=null;selectedReturn=null;$("lendCopyDetail").textContent="Select a copy to view its Book ID and shelf below.";$("returnCopyDetail").textContent="Select a borrowed copy to view its Book ID and borrower below.";$("lendBookSearch").value="";$("returnBookSearch").value="";$("lendBookDisplay").value="";$("lendBookId").value="";$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";batchStopRequested=true;batchQueue=[];batchExcelLoading=false;reviewDraftVersion++;reviewDraftLoadedFor=null;if(reviewSaveTimer)clearTimeout(reviewSaveTimer);reviewSaveTimer=null;reviewRemoteHashes.clear();reviewCloudStatus='loading';reviewCloudFailure='';releaseBatchPreviews();batchItems=[];batchMetadataCache.clear();$("batchProgress").value=0;bookSearch="";loanSearch="";columnFilters=LibraryInventoryColumnFilters.empty();selectedColumnValues={};resetColumnFilterInputs();bookFilter="all";qualityFilter="all";loanFilter="all";bookPage=1;loanPage=1;$("bookSearch").value="";$("loanSearch").value="";setPressed("book","all");setPressed("quality","all");setPressed("loan","all");notificationQuery="";$("notificationSearch").value="";renderBatch();renderAll()}
 function authRedirectOptions(){if(!/^https?:$/.test(location.protocol))return {};return {emailRedirectTo:location.origin+location.pathname}}
 function authError(e){let text=e?.message||"Authentication failed.";if(/rate limit|email rate/i.test(text))text+=" Try later; if emails are limited, the project owner must configure SMTP in Supabase.";return text}
-function tab(name){requestAnimationFrame(updatePageControls);document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===name));document.querySelectorAll("[data-tab]").forEach(x=>{let a=x.dataset.tab===name;x.classList.toggle("active",a);x.setAttribute("aria-pressed",String(a));x.setAttribute("aria-current",a?"page":"false")});document.querySelectorAll("[data-gotab]").forEach(x=>{let a=x.dataset.gotab===name;x.classList.toggle("active",a);x.setAttribute("aria-current",a?"page":"false")})}document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>tab(b.dataset.tab));document.querySelectorAll("[data-gotab]").forEach(b=>b.onclick=()=>tab(b.dataset.gotab));
+function tab(name){if(!canAccess(name)){if(memberRole)msg('Your account does not have access to that page.','warn');return}requestAnimationFrame(updatePageControls);document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===name));document.querySelectorAll("[data-tab]").forEach(x=>{let a=x.dataset.tab===name;x.classList.toggle("active",a);x.setAttribute("aria-pressed",String(a));x.setAttribute("aria-current",a?"page":"false")});document.querySelectorAll("[data-gotab]").forEach(x=>{let a=x.dataset.gotab===name;x.classList.toggle("active",a);x.setAttribute("aria-current",a?"page":"false")});if(name==='inventory')scheduleAutomaticMetadataCheck();if(name==='notifications')renderNotifications();if(name==='scanned')renderScannedBooks()}document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>tab(b.dataset.tab));document.querySelectorAll("[data-gotab]").forEach(b=>b.onclick=()=>tab(b.dataset.gotab));
 
 function googlePost(action,payload={}){
  if(!sheetLinked())return false;
@@ -425,7 +602,7 @@ async function signIn(){
  try{
   let {data,error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;
   if(!data?.session)throw new Error("No session was created. Confirm your email if required.");
-  session=data.session;authUI();await reloadAll();tab("dashboard");msg("Signed in. The shared library is ready.","ok");
+  session=data.session;authUI();await reloadAll();if(memberRole)msg("Signed in. Your library workspace is ready.","ok");
  }catch(e){msg(authError(e),"err");if(/confirm/i.test(String(e?.message||"")))$("resendConfirmation").hidden=false}
  finally{authBusy=false;$("authSubmit").disabled=false}
 }
@@ -434,15 +611,18 @@ async function signUp(){
  if(!email||!$("email").checkValidity())return msg("Enter a valid email address.","warn");
  if(password.length<8)return msg("Use a password with at least 8 characters.","warn");
  if(password!==confirm)return msg("Your passwords do not match.","warn");
+ const creatingAdmin=$('signupAccessRole').value==='admin',inviteCode=$('signupInviteCode').value.trim();
+ if(creatingAdmin&&!inviteCode)return msg('Open your administrator invitation email to register, or paste its invitation code.','warn');
  authBusy=true;$("authSubmit").disabled=true;msg("Creating your personal account...");
  try{
+  if(creatingAdmin)savePendingAdminInvite(email,inviteCode);
   const options=authRedirectOptions();let {data,error}=await sb.auth.signUp({email,password,options});if(error)throw error;
-  if(data?.session){session=data.session;authUI();await reloadAll();tab("dashboard");msg("Your account is ready. You can scan books now.","ok")}
+  if(data?.session){session=data.session;authUI();await reloadAll();if(memberRole)msg(isAdmin()?"Administrator account activated.":"Account created. Confirm your email and activate your invitation if necessary.","ok")}
   else{
    $("resendConfirmation").hidden=false;
-   msg("If registration succeeded, check "+email+" for a confirmation link (including spam). After confirming, return here and sign in. If the link opens another site, ask the owner to set the correct Supabase Auth Site URL.","ok");
+   msg("If registration succeeded, check "+email+" for a confirmation link (including spam). "+(creatingAdmin?"After confirmation, sign in here to activate your invitation. If the browser loses the invitation, reopen the link from your email.":"After confirming, return here and sign in."),"ok");
   }
- }catch(e){msg(authError(e),"err")}
+ }catch(e){if(creatingAdmin)clearPendingAdminInvite();msg(authError(e),"err")}
  finally{authBusy=false;$("authSubmit").disabled=false}
 }
 async function resendConfirmation(){let email=$("email").value.trim();if(!email)return msg("Enter your email address first.","warn");
@@ -467,6 +647,7 @@ const BACKGROUND_REFRESH_MS=30000;
 let reloadJob=null,lastRefresh=null;
 async function reloadAll({background=false}={}){
  if(!session?.user)return;
+ if(typeof ensureMemberRole==='function'&&memberRole!=='admin'&&memberRole!=='user'&&!(await ensureMemberRole()))return;
  const uid=session.user.id,generation=authGeneration;
  if(reloadJob?.uid===uid&&reloadJob.generation===generation){
   // A mutation/manual reload must read again after the current snapshot finishes.
@@ -491,7 +672,8 @@ async function reloadAll({background=false}={}){
     libraryOwnerId=books.find(x=>x.user_id)?.user_id||null;
 
     lastRefresh={uid,generation,at:Date.now()};
-    renderAll();renderBatch();requestAnimationFrame(updatePageControls);
+    renderAll();renderBatch();if(typeof renderScannedBooks==='function')renderScannedBooks();requestAnimationFrame(updatePageControls);
+    if(!background&&typeof document!=='undefined'&&document.getElementById('inventory')?.classList.contains('active')&&typeof scheduleAutomaticMetadataCheck==='function')scheduleAutomaticMetadataCheck();
     if(!background)msg("Shared library loaded: "+books.length+" books.","ok");
     // Review has its own loading state and must not block inventory.
     void restoreReviewDraft().catch(e=>{if(isCurrent())reviewStatus("Review could not be restored: "+(e?.message||e),"error")});
@@ -501,7 +683,60 @@ async function reloadAll({background=false}={}){
  })();
  return job.promise;
 }
-function renderAll(){renderBooks();renderLoans();renderBookPicker("lend");renderBookPicker("return");renderDashboard()}
+function renderAll(){renderBooks();renderLoans();renderBookPicker("lend");renderBookPicker("return");renderDashboard();renderNotifications()}
+let scannedPage=1;
+function renderScannedBooks(){
+ const table=$('scannedTable');if(!table)return;
+ if(!isAdmin()){table.textContent='Only administrators can view scanned inventory records.';return}
+ const rows=books.filter(b=>(b.scan_date||b.scan_time)&&bookQuality(b).full).slice();
+ const select=$('scannedShelf'),previous=select.value;
+ const shelves=[...new Set(rows.map(b=>String(b.shelf_location||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b));
+ select.replaceChildren(new Option('Every shelf','all'),...shelves.map(x=>new Option(x,x)));select.value=shelves.includes(previous)?previous:'all';
+ const options={query:$('scannedSearch').value,status:$('scannedStatus').value,quality:'full',shelf:select.value};
+ const filtered=LibraryScannedBooks.filter(rows,options, b=>bookQuality(b).full);
+ const limit=15,pages=Math.max(1,Math.ceil(filtered.length/limit));scannedPage=Math.min(Math.max(1,scannedPage),pages);
+ $('scannedCount').textContent=filtered.length+' of '+rows.length+' completed records';$('scannedTableMeta').textContent=filtered.length?`Showing ${((scannedPage-1)*limit)+1}–${Math.min(filtered.length,scannedPage*limit)} of ${filtered.length} scanned records`:'No completed scanned records match your filters';
+ const cells=filtered.slice((scannedPage-1)*limit,scannedPage*limit).map(b=>`<tr><td data-label="Book ID"><strong>${esc(b.book_id||'—')}</strong></td><td data-label="Title">${esc(b.title||'Untitled')}</td><td data-label="Author">${esc(b.authors||'—')}</td><td data-label="ISBN / barcode">${esc(b.barcode||'—')}</td><td data-label="Shelf">${esc(b.shelf_location||'—')}</td><td data-label="Scanned">${esc(b.scan_date||'—')}</td><td data-label="Status"><span class="scanned-status">${esc(b.book_status||'Available')}</span></td><td data-label="Details">Complete</td><td data-label="Action"><button type="button" class="scanned-edit" data-scanned-edit="${esc(b.record_id)}">Edit</button></td></tr>`).join('');
+ table.innerHTML=filtered.length?`<table><thead><tr><th>Book ID</th><th>Title</th><th>Author</th><th>ISBN / barcode</th><th>Shelf</th><th>Scan date</th><th>Status</th><th>Details</th><th>Action</th></tr></thead><tbody>${cells}</tbody></table>`:'<div class="scanned-empty">No completed scanned books match these filters. Incomplete scans remain in Inventory Review.</div>';
+ renderPager('scannedPager',scannedPage,pages,p=>{scannedPage=p;renderScannedBooks()});
+}
+['scannedSearch','scannedStatus','scannedShelf'].forEach(id=>$(id).addEventListener('input',()=>{scannedPage=1;renderScannedBooks()}));
+$('scannedClear').onclick=()=>{$('scannedSearch').value='';$('scannedStatus').value='all';$('scannedShelf').value='all';scannedPage=1;renderScannedBooks()};
+$('scannedTable').onclick=e=>{if(!isAdmin())return;const id=e.target.closest('[data-scanned-edit]')?.dataset.scannedEdit;if(id)openBookEditor(id)};
+
+
+/* Overdue notifications are derived from shared, active Supabase loans.
+   They do not create duplicate records or require a schema migration. */
+let notificationQuery="",notificationOrder="oldest";
+function overdueRecords(){return overdueHelper.list(loans,today(),notificationQuery,notificationOrder)}
+function updateNotificationBadge(total){
+ const bell=$("notificationBell"),count=$("notificationCount"),nav=$("notificationNavCount"),label=`Open overdue notifications, ${total} ${total===1?"loan":"loans"} overdue`;
+ bell.setAttribute("aria-label",label);bell.title=label;
+ count.hidden=total===0;nav.hidden=total===0;
+ count.textContent=overdueHelper.formatCount(total);nav.textContent=overdueHelper.formatCount(total);
+ bell.classList.toggle("has-overdue",total>0);
+}
+function renderNotifications(){
+ const all=overdueHelper.list(loans,today());
+ updateNotificationBadge(session?.user?all.length:0);
+ const total=$("notificationTotal"),summary=$("notificationSummary"),list=$("notificationList");
+ total.textContent=String(all.length);
+ const entries=overdueRecords();
+ summary.textContent=all.length===0?"No overdue loans — every active return is on time.":`${entries.length} shown of ${all.length} overdue ${all.length===1?"loan":"loans"}`;
+ if(!session?.user||!all.length){list.innerHTML='<div class="notification-empty"><span class="notification-empty-icon">✓</span><strong>All caught up</strong><p>No active loans have passed their due date.</p></div>';return}
+ if(!entries.length){list.innerHTML='<div class="notification-empty"><strong>No matching borrowers</strong><p>Try another name, Book ID, or loan number.</p></div>';return}
+ list.innerHTML=entries.map(l=>{
+  const loanId=l.loanId||"Not recorded",bookId=l.bookId||"Not recorded",borrower=l.borrower||"Not recorded";
+  const hasCopy=books.some(b=>String(b.record_id)===String(l.bookRecordId)&&b.book_status==="Borrowed");
+  return `<article class="notification-item" data-notification-loan="${esc(l.loanId)}">
+   <div class="notification-item-top"><span class="notification-status"><span class="notification-pulse"></span>Overdue return</span><span class="notification-days">${l.daysOverdue} ${l.daysOverdue===1?"day":"days"} late</span></div>
+   <div class="notification-item-main"><div class="notification-borrower-avatar" aria-hidden="true">${esc(borrower.slice(0,1).toUpperCase())}</div><div class="notification-primary"><h4>${esc(borrower)}</h4><p>${esc(l.title||"Book title not recorded")}</p></div></div>
+   <dl class="notification-details"><div><dt>Loan ID</dt><dd title="${esc(loanId)}">${esc(loanId)}</dd></div><div><dt>Book ID</dt><dd>${esc(bookId)}</dd></div><div><dt>ISBN / barcode</dt><dd>${esc(l.barcode||"Not recorded")}</dd></div><div><dt>Borrowed on</dt><dd>${esc(l.borrowedDate||"Not recorded")}</dd></div><div><dt>Due date</dt><dd class="notification-due">${esc(l.dueDate)}</dd></div>${l.borrowerId?`<div><dt>Borrower ID</dt><dd>${esc(l.borrowerId)}</dd></div>`:""}</dl>
+   <div class="notification-item-actions"><button type="button" class="notification-prepare" data-prepare-return="${esc(l.bookRecordId)}" ${hasCopy&&isCirculationUser()?"":"disabled"}>${uiIcon("arrow-down-left")} Prepare return</button><button type="button" class="notification-view" data-view-loan="${esc(l.loanId)}">View loan history ${uiIcon("chevron-right")}</button></div>
+  </article>`
+ }).join("");
+}
+
 const PAGE_SIZE=5;let columnFilters=LibraryInventoryColumnFilters.empty();let selectedColumnValues={};let columnPickerKey=null;let bookFilter="all",qualityFilter="all",bookSearch="",bookPage=1,loanFilter="all",loanSearch="",loanPage=1,bookView="grid",bookSort="newest",bookPageSize=PAGE_SIZE,loanPageSize=PAGE_SIZE;try{bookView=localStorage.getItem("library_manager_inventory_view_v2")==="table"?"table":"grid";bookSort=["newest","oldest","title","shelf","due"].includes(localStorage.getItem("library_manager_sort_v1"))?localStorage.getItem("library_manager_sort_v1"):"newest"}catch{}
 const uiIcon=(name)=>`<svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#${name}"></use></svg>`;
 function statusPill(b){const state=b.book_status||"Available",late=state==="Borrowed"&&b.due_date&&b.due_date<today();return `<span class="pill ${late?"overdue":state==="Borrowed"?"borrowed":"available"}">${late?"Overdue":esc(state)}</span>`}
@@ -647,7 +882,7 @@ function renderBooks(){
    const b=g.representative,lend=g.availableCopy,ret=g.borrowedCopy;
    const quality=inventoryGroupQuality(g);
    const shelf=g.shelves.length>1?'Multiple shelves':g.shelves[0]||'Not assigned';
-   return `<article class="book-card"><div class="book-card-top">${editionCoverMarkup(b)}${inventoryGroupStatus(g)} <span class="pill ${quality.full?'available':'borrowed'}">${quality.full?'Full details':'Needs details'}</span></div><h3 title="${esc(b.title||'Untitled book')}">${esc(b.title||'Untitled book')}</h3><p class="book-author">${esc(b.authors||'Author not listed')}</p><div class="inventory-quantity"><div><b>${g.availableCopies}</b><span>Available Copies</span></div><div><b>${g.totalCopies}</b><span>Total Copies</span></div></div><dl><div><dt>ISBN / barcode</dt><dd>${esc(b.barcode||'Not set')}</dd></div><div><dt>Shelf</dt><dd>${esc(shelf)}</dd></div></dl><div class="book-card-actions">${lend?`<button type="button" class="card-primary" data-lend-book="${esc(lend.record_id)}">${uiIcon('arrow-up-right')} Lend copy</button>`:''}${ret?`<button type="button" class="card-primary" data-return-book="${esc(ret.record_id)}">${uiIcon('arrow-down-left')} Return copy</button>`:''}${g.totalCopies===1?`<button type="button" class="icon-btn" data-edit-book="${esc(b.record_id)}" title="Edit book" aria-label="Edit book">${uiIcon('pencil')}</button>`:''}<button type="button" class="icon-btn" data-enrich-book="${esc(b.record_id)}" aria-label="Find missing book details">${uiIcon('refresh')}</button></div>${copyExpand(g)}</article>`;
+   return `<article class="book-card"><div class="book-card-top">${editionCoverMarkup(b)}${inventoryGroupStatus(g)} <span class="pill ${quality.full?'available':'borrowed'}">${quality.full?'Full details':'Needs details'}</span></div><h3 title="${esc(b.title||'Untitled book')}">${esc(b.title||'Untitled book')}</h3><p class="book-author">${esc(b.authors||'Author not listed')}</p><div class="inventory-quantity"><div><b>${g.availableCopies}</b><span>Available Copies</span></div><div><b>${g.totalCopies}</b><span>Total Copies</span></div></div><dl><div><dt>ISBN / barcode</dt><dd>${esc(b.barcode||'Not set')}</dd></div><div><dt>Shelf</dt><dd>${esc(shelf)}</dd></div></dl><div class="book-card-actions">${lend&&isCirculationUser()?`<button type="button" class="card-primary" data-lend-book="${esc(lend.record_id)}">${uiIcon('arrow-up-right')} Lend copy</button>`:''}${ret&&isCirculationUser()?`<button type="button" class="card-primary" data-return-book="${esc(ret.record_id)}">${uiIcon('arrow-down-left')} Return copy</button>`:''}${g.totalCopies===1?`<button type="button" class="icon-btn" data-edit-book="${esc(b.record_id)}" title="Edit book" aria-label="Edit book">${uiIcon('pencil')}</button>`:''}<button type="button" class="icon-btn" data-enrich-book="${esc(b.record_id)}" aria-label="Find missing book details">${uiIcon('refresh')}</button></div>${copyExpand(g)}</article>`;
   }).join('')+'</div>';
  }else{
   $('bookTable').className='tablewrap';
@@ -656,7 +891,7 @@ function renderBooks(){
   pageGroups.forEach((g,i)=>{
    const b=g.representative,lend=g.availableCopy,ret=g.borrowedCopy;
    const shelf=g.shelves.length>1?'Multiple shelves':g.shelves[0]||'';
-   h+=`<tr><td data-label="No.">${start+i+1}</td><td data-label="ISBN / Barcode">${esc(b.barcode||'')}</td><td data-label="Title"><div class="inventory-title-with-cover">${editionCoverMarkup(b)}<span>${esc(b.title||'Untitled book')}</span></div></td><td data-label="Authors">${esc(b.authors||'')}</td><td data-label="Available Copies" class="inventory-count-cell">${g.availableCopies}</td><td data-label="Total Copies" class="inventory-count-cell">${g.totalCopies}</td><td data-label="On Loan">${g.borrowedCopies}</td><td data-label="Status">${inventoryGroupStatus(g)}</td><td data-label="Details">${inventoryGroupQuality(g).full?'Full details':'Needs attention'}</td><td data-label="Shelf">${esc(shelf)}</td><td data-label="Actions"><div class="action-cell">${lend?`<button type="button" class="icon-btn" title="Lend one available copy" data-lend-book="${esc(lend.record_id)}">${uiIcon('arrow-up-right')}</button>`:''}${ret?`<button type="button" class="icon-btn" title="Return a borrowed copy" data-return-book="${esc(ret.record_id)}">${uiIcon('arrow-down-left')}</button>`:''}${g.totalCopies===1?`<button type="button" class="icon-btn" title="Edit this copy" data-edit-book="${esc(b.record_id)}">${uiIcon('pencil')}</button>`:''}<button type="button" class="icon-btn" title="Find missing details" data-enrich-book="${esc(b.record_id)}">${uiIcon('refresh')}</button></div></td></tr>`;
+   h+=`<tr><td data-label="No.">${start+i+1}</td><td data-label="ISBN / Barcode">${esc(b.barcode||'')}</td><td data-label="Title"><div class="inventory-title-with-cover">${editionCoverMarkup(b)}<span>${esc(b.title||'Untitled book')}</span></div></td><td data-label="Authors">${esc(b.authors||'')}</td><td data-label="Available Copies" class="inventory-count-cell">${g.availableCopies}</td><td data-label="Total Copies" class="inventory-count-cell">${g.totalCopies}</td><td data-label="On Loan">${g.borrowedCopies}</td><td data-label="Status">${inventoryGroupStatus(g)}</td><td data-label="Details">${inventoryGroupQuality(g).full?'Full details':'Needs attention'}</td><td data-label="Shelf">${esc(shelf)}</td><td data-label="Actions"><div class="action-cell">${lend&&isCirculationUser()?`<button type="button" class="icon-btn" title="Lend one available copy" data-lend-book="${esc(lend.record_id)}">${uiIcon('arrow-up-right')}</button>`:''}${ret&&isCirculationUser()?`<button type="button" class="icon-btn" title="Return a borrowed copy" data-return-book="${esc(ret.record_id)}">${uiIcon('arrow-down-left')}</button>`:''}${g.totalCopies===1?`<button type="button" class="icon-btn" title="Edit this copy" data-edit-book="${esc(b.record_id)}">${uiIcon('pencil')}</button>`:''}<button type="button" class="icon-btn" title="Find missing details" data-enrich-book="${esc(b.record_id)}">${uiIcon('refresh')}</button></div></td></tr>`;
    if(g.totalCopies>1)h+=`<tr class="inventory-copy-subrow"><td colspan="11">${copyExpand(g)}</td></tr>`;
   });
   h+='</tbody></table>';$('bookTable').innerHTML=h;
@@ -716,7 +951,7 @@ function renderLoans(){
  $("loanTableMeta").textContent=`${visible.length} of ${loans.length} loans · newest first`;
  if(!visible.length){$("loanTable").innerHTML=`<div class="empty">${uiIcon("history")}<strong>${loans.length?"No matching loans":"No loan history yet"}</strong><p>${loans.length?"Change the filters to see more loans.":"Lend a book to start tracking it here."}</p></div>`;renderPager("loanPager",1,1,()=>{});return}
  let h='<table><thead><tr><th>Book</th><th>Book ID</th><th>Borrower</th><th>Borrowed</th><th>Due</th><th>Returned</th><th>Status</th><th>Action</th></tr></thead><tbody>';
- visible.slice(start,start+loanPageSize).forEach(l=>{let cls=isOverdue(l)?"overdue":l.status==="Returned"?"available":"borrowed",label=isOverdue(l)?"Overdue":isDueSoon(l)?"Due soon":l.status;h+=`<tr><td data-label="Book">${esc(l.book_title||l.barcode||"")}</td><td data-label="Book ID">${esc(l.book_id||"")}</td><td data-label="Borrower">${esc(l.borrower_name||"")}</td><td data-label="Borrowed">${esc(l.date_borrowed||"")}</td><td data-label="Due">${esc(l.due_date||"")}</td><td data-label="Returned">${esc(l.return_date||"")}</td><td data-label="Status"><span class="pill ${cls}">${esc(label)}</span></td><td data-label="Action">${l.status==="Borrowed"&&books.some(b=>b.record_id===l.book_record_id&&b.book_status==="Borrowed")?`<button type="button" class="light smallbtn history-return" data-history-return="${esc(l.book_record_id)}">${uiIcon("arrow-down-left")} Return</button>`:"—"}</td></tr>`});h+='</tbody></table>';$("loanTable").innerHTML=h;renderPager("loanPager",loanPage,pages,p=>{loanPage=p;renderLoans();$("loanTable").scrollIntoView({block:"start",behavior:"smooth"})})
+ visible.slice(start,start+loanPageSize).forEach(l=>{let cls=isOverdue(l)?"overdue":l.status==="Returned"?"available":"borrowed",label=isOverdue(l)?"Overdue":isDueSoon(l)?"Due soon":l.status;h+=`<tr><td data-label="Book">${esc(l.book_title||l.barcode||"")}</td><td data-label="Book ID">${esc(l.book_id||"")}</td><td data-label="Borrower">${esc(l.borrower_name||"")}</td><td data-label="Borrowed">${esc(l.date_borrowed||"")}</td><td data-label="Due">${esc(l.due_date||"")}</td><td data-label="Returned">${esc(l.return_date||"")}</td><td data-label="Status"><span class="pill ${cls}">${esc(label)}</span></td><td data-label="Action">${isCirculationUser()&&l.status==="Borrowed"&&books.some(b=>b.record_id===l.book_record_id&&b.book_status==="Borrowed")?`<button type="button" class="light smallbtn history-return" data-history-return="${esc(l.book_record_id)}">${uiIcon("arrow-down-left")} Return</button>`:"—"}</td></tr>`});h+='</tbody></table>';$("loanTable").innerHTML=h;renderPager("loanPager",loanPage,pages,p=>{loanPage=p;renderLoans();$("loanTable").scrollIntoView({block:"start",behavior:"smooth"})})
 }
 
 function yearOnly(v){let m=String(v||"").match(/\b(1[5-9]\d{2}|20\d{2}|21\d{2})\b/);return m?m[1]:""}
@@ -818,6 +1053,92 @@ async function enrichBook(recordId){
  googleBook(updated);await reloadAll();msg('Missing book details filled. Existing information was preserved.','ok');
  }catch(e){msg('Book lookup failed. No book data was changed: '+String(e?.message||e),'err')}finally{busy=false}
 }
+// Safe, small-batch catalog-based auto-enrichment. Excel Export/Import remains independent.
+let smartFillRunning=false,autoFillTimer=null;
+const AUTO_FILL_PREF='library_auto_metadata_v1';
+const autoFillBox=$('autoFillVerified');
+try{autoFillBox.checked=localStorage.getItem(AUTO_FILL_PREF)!=='off'}catch{autoFillBox.checked=true}
+function autoMetadataChecks(){
+ const key='library_metadata_attempts_v1_'+session?.user?.id;
+ try{return {key,items:JSON.parse(localStorage.getItem(key)||'{}')||{}}}catch{return {key,items:{}}}
+}
+function markMetadataAttempt(checks,recordId){
+ checks.items[recordId]=Date.now();
+ // Keep a bounded cache, so opening Inventory never rechecks the same hard cases repeatedly.
+ const entries=Object.entries(checks.items).sort((a,b)=>b[1]-a[1]).slice(0,300);
+ try{localStorage.setItem(checks.key,JSON.stringify(Object.fromEntries(entries)))}catch{}
+}
+function smartFillPatch(current,info){
+ if(!info?.title)return {};
+ const norm=x=>String(x||'').toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
+ const a=norm(current.title),b=norm(info.title);
+ if(a&&b&&a!==b&&!a.includes(b)&&!b.includes(a))return {};
+ const patch={};for(const k of ['title','authors','publisher','publication_year','language','pages','subject'])if(!String(current[k]||'').trim()&&String(info[k]||'').trim())patch[k]=String(info[k]).trim();
+ return patch;
+}
+function exactCatalogTitleAuthor(book,options){
+ const norm=x=>String(x||'').toLocaleLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').trim();
+ const title=norm(book.title),authors=norm(book.authors);
+ if(!title||!authors||authors.length<5)return null;
+ return options.find(o=>norm(o.title)===title&&norm(o.authors).split(',').some(person=>person===authors||(person.split(' ').filter(Boolean).length>1&&person.split(' ').filter(Boolean).every(word=>authors.split(' ').includes(word)))))||null;
+}
+function scheduleAutomaticMetadataCheck(){
+ clearTimeout(autoFillTimer);
+ if(!session?.user||!autoFillBox.checked)return;
+ autoFillTimer=setTimeout(()=>{if($('inventory').classList.contains('active')&&session?.user&&autoFillBox.checked&&!smartFillRunning&&!batchActive&&!batchSaving)void smartFillAttention({automatic:true})},350);
+}
+autoFillBox.addEventListener('change',()=>{
+ try{localStorage.setItem(AUTO_FILL_PREF,autoFillBox.checked?'on':'off')}catch{}
+ if(!autoFillBox.checked){clearTimeout(autoFillTimer);$('smartFillNote').textContent='Automatic checking paused. You can still fill missing details manually or use Excel Export / Import.';return}
+ $('smartFillNote').textContent='Automatic checking is on. Verified empty fields are filled directly, and uncertain books remain for review. Excel Export / Import remain available.';
+ scheduleAutomaticMetadataCheck();
+});
+async function smartFillAttention({automatic=false}={}){
+ if(smartFillRunning||busy||batchActive||batchSaving)return;
+ if(!session?.user){if(!automatic)msg('Sign in first.','warn');return}
+ const checks=autoMetadataChecks(),minimumInterval=12*60*60*1000;
+ const eligible=books.filter(b=>bookQuality(b).attention&&(validIsbn(b.barcode)||(String(b.title||'').trim().length>3&&String(b.authors||'').trim().length>3)))
+  .filter(b=>!automatic||Date.now()-Number(checks.items[b.record_id]||0)>minimumInterval).slice(0,automatic?6:12);
+ if(!eligible.length){if(!automatic)msg('No eligible saved books remain for a verified catalog lookup. Use Edit for the rest.','warn');return}
+ if(!automatic&&!confirm(`Search free catalogs and fill empty fields for up to ${eligible.length} book copies?\n\nExisting values, shelf and loan records will stay unchanged. Excel Export/Import will remain available.`))return;
+ smartFillRunning=true;
+ const button=$('smartFillBooks'),progress=$('smartFillProgress');button.disabled=true;progress.hidden=false;
+ let updated=0,skipped=0,failed=0;const owner=session.user.id;
+ try{
+  for(let i=0;i<eligible.length;i++){
+   if(session?.user?.id!==owner){progress.textContent='Account changed; automatic check stopped.';break}
+   if(automatic&&(!autoFillBox.checked||!$('inventory').classList.contains('active'))){progress.textContent='Automatic check paused.';break}
+   const book=eligible[i];progress.textContent=`${automatic?'Checking automatically':'Checking'} ${i+1}/${eligible.length}: ${book.title||book.barcode} · ${updated} updated`;
+   if(automatic)markMetadataAttempt(checks,book.record_id);
+   try{
+    let info;
+    if(validIsbn(book.barcode))info=await lookupISBN(book.barcode);
+    else info=exactCatalogTitleAuthor(book,await findTitleCandidates(book.title,book.authors));
+    if(!info?.title){skipped++;continue}
+    if(automatic&&(!autoFillBox.checked||!$('inventory').classList.contains('active')))break;
+    const {data:current,error:readError}=await sb.from(BOOKS).select('*').eq('record_id',book.record_id).single();
+    if(readError||!current||(validIsbn(book.barcode)?!sameIsbn(current.barcode,book.barcode):current.title!==book.title||current.authors!==book.authors)){skipped++;continue}
+    if(automatic&&(!autoFillBox.checked||!$('inventory').classList.contains('active')))break;
+    const patch=smartFillPatch(current,info);
+    if(automatic&&!validIsbn(book.barcode)){for(const key of Object.keys(patch))if(key!=='subject')delete patch[key]}
+    if(!Object.keys(patch).length){skipped++;continue}
+    patch.lookup_status='Verified catalog: '+(info._sources||[info.source||'catalog']).join(' + ');patch.updated_at=new Date().toISOString();
+    let request=sb.from(BOOKS).update(patch).eq('record_id',book.record_id);
+    // Avoid overwriting concurrent editing by another librarian if a version timestamp is stored.
+    if(current.updated_at)request=request.eq('updated_at',current.updated_at);
+    const {data:record,error}=await request.select('*').maybeSingle();
+    if(error||!record){failed++;continue}googleBook(record);updated++;
+   }catch(error){if(error?.lookupRateLimited){progress.textContent='Catalog is rate-limited. Paused without further requests.';break}failed++}
+   // Open Library asks clients to avoid bulk/high-frequency requests.
+   if(i<eligible.length-1)await new Promise(resolve=>setTimeout(resolve,1100));
+  }
+  await reloadAll({background:automatic});
+  progress.textContent=`${automatic?'Automatic check':'Catalog check'}: ${updated} updated · ${skipped} need review · ${failed} failed. Excel tools remain available.`;
+  if(!automatic)msg(progress.textContent,failed?'warn':'ok');
+ }finally{smartFillRunning=false;button.disabled=false}
+}
+$('smartFillBooks').addEventListener('click',()=>smartFillAttention());
+
 let editingRecordId=null,editorCandidates=[];
 function editorFormField(name){return $('bookEditorForm').elements.namedItem(name)}
 function openBookEditor(recordId){
@@ -934,7 +1255,7 @@ function renderBookPicker(mode){
  select.disabled=!eligible.length;
  count.textContent=eligible.length?`${eligible.length} ${mode==="lend"?"available":"borrowed"} ${eligible.length===1?"copy":"copies"} · ${matches.length} match${matches.length===1?"":"es"}${matches.length>shown.length?" · Showing first 200; search to narrow":""}. If several copies share a title, search its Book ID or shelf to identify the copy. Details appear after selection.`:`No ${mode==="lend"?"available":"borrowed"} books right now. ${mode==="lend"?"Add books to inventory first.":"Lend a book first."}`;
 }
-function setSelectedBook(mode,b){
+function setSelectedBook(mode,b){if(!isCirculationUser())return msg("Lending and returns are user-only.","warn");
  if(!session?.user)return msg("Sign in first.","warn");
  if(!b)return msg("That book is no longer in the shared inventory. Reload and try again.","warn");
  if(!bookIsEligible(b,mode))return msg(mode==="lend"?"This copy is already on loan. Choose an available copy.":"This copy is not currently on loan. Choose a borrowed copy.","warn");
@@ -970,6 +1291,7 @@ function findBookByCode(code,mode="any"){
 }
 function selectLend(code){const b=findBookByCode(code,"lend");if(b)setSelectedBook("lend",b)}
 async function confirmLend(){
+ if(!isCirculationUser())return msg("Lending is available only to library users.","err");
  const btn=$("confirmLend");if(btn.disabled)return;
  if(!session?.user)return msg("Sign in first.","warn");
  if(!selectedLend)return msg("Choose an available book from the dropdown or scan it first.","warn");
@@ -1000,6 +1322,7 @@ async function confirmLend(){
 }
 function selectReturn(code){const b=findBookByCode(code,"return");if(b)setSelectedBook("return",b)}
 async function confirmReturn(){
+ if(!isCirculationUser())return msg("Returns are available only to library users.","err");
  const btn=$("confirmReturn");if(btn.disabled)return;
  if(!session?.user)return msg("Sign in first.","warn");
  if(!selectedReturn)return msg("Choose a borrowed book from the dropdown or scan it first.","warn");
@@ -1036,9 +1359,11 @@ async function deleteBookRecord(recordId){
 }
 async function scanFile(file,mode,preview){
  if(!file)return;
+ if(mode==="inventory"&&!isAdmin()||mode!=="inventory"&&!isCirculationUser())return msg("This scanner is not available for your role.","err");
  const url=URL.createObjectURL(file);preview.src=url;preview.style.display='block';msg('Reading image…');
  try{
   if(mode==='inventory'){
+   if($('batchUseOCR').checked)void warmupOCR();
    const row={file,saveRecordId:uuid(),thumbnailData:await reviewThumbnail(file),reviewUpdatedAt:Date.now(),fileName:file.name,path:file.name,shelf:$('manualShelf').value.trim()||$('batchDefaultShelf').value.trim()||'',barcode:'',title:'',authors:'',publisher:'',publication_year:'',language:'',pages:'',subject:'',lookup_status:'Scanned photo',error:'',duplicate:false,selected:false,saved:false,matches:[],ocrText:''};
    try{
     row.barcode=await decodeBatchBarcode(file);
@@ -1048,7 +1373,7 @@ async function scanFile(file,mode,preview){
     row.error=row.title?'':'Title not found yet. You can correct it in Review or export to Excel.';
    }catch(err){row.error='Could not read this image automatically. Complete the details in Review or export to Excel. '+String(err?.message||err)}
    row.selected=batchValid(row);batchItems.unshift(row);reviewPage=1;renderBatch();
-   $('batchHeading').scrollIntoView({behavior:'smooth',block:'start'});
+   tab('inventory');requestAnimationFrame(()=>$('batchHeading').scrollIntoView({behavior:'smooth',block:'start'}));
    return msg(row.title?'Photo analyzed and retained in Review.':'This photo is retained in Review for correction.','ok');
   }
   let code=await decodeBatchBarcode(file);
@@ -1280,14 +1605,14 @@ function batchCandidateMarkup(row,index){
 function renderSavedAttentionReview(){
  const el=$('savedReviewResults');if(!el)return;
  const attention=books.filter(b=>bookQuality(b).attention);
- if(!attention.length){el.innerHTML='<div class="saved-review-heading"><h3>Saved books needing attention <span>0</span></h3><p>All saved inventory copies have the required details.</p></div>';return}
- const cards=attention.map(b=>`<article class="saved-review-book"><div class="saved-review-icon">${uiIcon('book')}</div><div class="saved-review-detail"><strong>${esc(b.title||'Title missing')}</strong><small>${esc(b.barcode||'ISBN missing')} · ${esc(b.book_id||'Copy')} · ${esc(b.shelf_location||'Shelf missing')}</small><span>${!b.title?'Add title · ':''}${!b.authors?'Add author · ':''}${!b.publisher?'Add publisher · ':''}${!b.publication_year?'Add year · ':''}${!b.barcode?'Add ISBN · ':''}${!b.shelf_location?'Add shelf · ':''}Ready for Excel correction</span></div><button type="button" class="light smallbtn" data-edit-book="${esc(b.record_id)}">Edit</button></article>`).join('');
- el.innerHTML=`<div class="saved-review-heading"><h3>Saved books needing attention <span>${attention.length}</span></h3><p>These books are already in Inventory and stay in Review until their details are complete. Export them above to correct in Excel, then import and update the same copies.</p></div><div class="saved-review-list">${cards}</div>`;
+ if(!attention.length){el.innerHTML='<div class="saved-review-heading"><h3>Saved books awaiting details <span>0</span></h3><p>All saved inventory copies have the required details.</p></div>';return}
+ const cards=attention.map(b=>`<article class="saved-review-book"><div class="saved-review-icon">${uiIcon('book')}</div><div class="saved-review-detail"><strong>${esc(b.title||'Title missing')}</strong><small>${esc(b.barcode||'ISBN missing')} · ${esc(b.book_id||'Copy')} · ${esc(b.shelf_location||'Shelf missing')}</small><span>${!b.title?'Add title · ':''}${!b.authors?'Add author · ':''}${!b.publisher?'Add publisher · ':''}${!b.publication_year?'Add year · ':''}${!b.barcode?'Add ISBN · ':''}${!b.shelf_location?'Add shelf · ':''}Review details in the app</span></div><button type="button" class="light smallbtn" data-edit-book="${esc(b.record_id)}">Edit</button></article>`).join('');
+ el.innerHTML=`<div class="saved-review-heading"><h3>Saved books awaiting details <span>${attention.length}</span></h3><p>These saved books stay in Inventory Review until their missing details are filled. Use automatic catalog lookup above or edit them here; after completion, scanned books appear in the Scanned Books register. Excel remains optional.</p></div><div class="saved-review-list">${cards}</div>`;
 }
 function renderBatch(){
  batchSummary();
  renderSavedAttentionReview();
- if(!batchItems.length){$("batchResults").innerHTML='<div class="empty"><strong>No unsaved scanned books need review right now.</strong><p>Your saved Inventory books needing attention are listed below. Scan photos or import corrected Excel to add more rows.</p></div>';scheduleReviewDraftSave();return}
+ if(!batchItems.length){$("batchResults").innerHTML='<div class="empty"><strong>No unsaved scanned books need review right now.</strong><p>Saved Inventory books needing attention are listed below. Scan photos or import corrected Excel to add more rows.</p></div>';scheduleReviewDraftSave();return}
  const locked=batchActive||batchSaving||batchZipLoading||batchExcelLoading;
  const unsaved=batchItems.filter(x=>!x.saved);
  const rows=batchItems.map((x,i)=>({x,i})).filter(({x})=>!batchAttentionOnly||(!x.saved&&!batchValid(x)));
@@ -1328,6 +1653,7 @@ function setBatchQueue(files,source){
  batchStopRequested=false;
  $("batchProgress").max=batchQueue.length;$("batchProgress").value=0;
  batchOutput(`${batchQueue.length} photos selected. Press “Scan selected images”.`);
+ if($('batchUseOCR').checked)void warmupOCR();
  renderBatch()
 }
 async function batchZipFiles(file){
@@ -1358,7 +1684,7 @@ async function batchZipFiles(file){
 }
 function batchMime(path){const ext=String(path).split('.').pop().toLowerCase();return ({png:'image/png',webp:'image/webp',gif:'image/gif',bmp:'image/bmp',tif:'image/tiff',tiff:'image/tiff',avif:'image/avif',heic:'image/heic',heif:'image/heif'})[ext]||'image/jpeg'}
 // Text recognition happens in the browser. Images are not uploaded to an OCR server.
-let ocrEngineReady;
+let ocrEngineReady,ocrWorkerPromise;
 function loadOCR(){
  if(window.Tesseract)return Promise.resolve(window.Tesseract);
  if(!ocrEngineReady)ocrEngineReady=new Promise((resolve,reject)=>{
@@ -1369,10 +1695,19 @@ function loadOCR(){
  }).catch(error=>{ocrEngineReady=null;throw error});
  return ocrEngineReady;
 }
+// Load the OCR worker while photos are being selected, not during the first recognition.
+async function warmupOCR(){
+ try{
+  const tesseract=await loadOCR();
+  if(!ocrWorkerPromise&&tesseract.createWorker)ocrWorkerPromise=tesseract.createWorker('eng').catch(e=>{ocrWorkerPromise=null;throw e});
+  if(ocrWorkerPromise)await ocrWorkerPromise;
+ }catch{/* The manual correction form remains available if the CDN is offline. */}
+}
+$('batchUseOCR').addEventListener('change',e=>{if(e.target.checked)void warmupOCR()});
 async function preparedOCRImage(file,angle=0){
  const bitmap=await createImageBitmap(file);try{
   const rotated=angle===90||angle===270;
-  const scale=Math.min(2,2800/Math.max(bitmap.width,bitmap.height));
+  const scale=Math.min(1,1280/Math.max(bitmap.width,bitmap.height));
   const w=Math.max(1,Math.round(bitmap.width*scale)),h=Math.max(1,Math.round(bitmap.height*scale));
   const canvas=document.createElement('canvas');canvas.width=rotated?h:w;canvas.height=rotated?w:h;
   const ctx=canvas.getContext('2d');ctx.translate(canvas.width/2,canvas.height/2);ctx.rotate(angle*Math.PI/180);
@@ -1381,16 +1716,19 @@ async function preparedOCRImage(file,angle=0){
 }
 async function ocrText(file){
  const tesseract=await loadOCR();
- const texts=[];
- // Upright scan first; check side-rotated pages only when little text is legible.
- for(const angle of [0,90,270]){
+ if(!ocrWorkerPromise&&tesseract.createWorker)ocrWorkerPromise=tesseract.createWorker('eng').catch(e=>{ocrWorkerPromise=null;throw e});
+ const worker=ocrWorkerPromise?await ocrWorkerPromise:null,texts=[];
+ // Reuse the worker and only rotate once if the first pass cannot identify text.
+ for(const angle of [0,90]){
   const image=typeof createImageBitmap==='function'?await preparedOCRImage(file,angle):file;
-  const result=await tesseract.recognize(image,'eng');
+  const result=await (worker?worker.recognize(image):tesseract.recognize(image,'eng'));
   const text=String(result?.data?.text||'').trim();if(text)texts.push(text);
-  if(text.length>75&&scanHelper.titleCandidates(text).length)break;
+  // ISBN or plausible title on the first pass is enough. Avoid an expensive second rotation.
+  if(scanHelper.isbnFromText(text).length||text.length>=36&&scanHelper.titleCandidates(text).length||text.length>=110)break;
  }
  return texts.sort((a,b)=>b.length-a.length)[0]||'';
 }
+
 const scanTitleCache=new Map();
 async function findTitleCandidates(title,author=''){
  title=String(title||'').trim().slice(0,150);author=String(author||'').trim().slice(0,100);
@@ -1420,7 +1758,28 @@ async function findOCRCatalogMatches(row){
  const unique=new Map();for(const book of candidates){const key=String(book.title+'|'+book.authors).toLowerCase();if(!unique.has(key))unique.set(key,book)}
  return scanHelper.scoreCandidates([...unique.values()],row.ocrText,row.title,row.authors).filter(m=>m.score>=.40).slice(0,8);
 }
+async function imageForAI(file){
+ const image=await createImageBitmap(file);
+ try{const ratio=Math.min(1,1200/Math.max(image.width,image.height)),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.width*ratio));canvas.height=Math.max(1,Math.round(image.height*ratio));canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height);return canvas.toDataURL('image/jpeg',.74).split(',')[1]}
+ finally{image.close?.()}
+}
+async function readCoverWithAI(row){
+ if(!$('batchUseAI')?.checked||!session?.access_token)return false;
+ row.lookup_status='Reading book cover with optional AI…';
+ try{
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12500);
+  let response;try{response=await fetch('/api/book-vision',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({image:await imageForAI(row.file)}),signal:controller.signal})}finally{clearTimeout(timer)}
+  if(!response.ok){if(response.status===501||response.status===404){row.lookup_status='AI not configured; using local OCR.';return false}throw new Error('AI lookup unavailable')}
+  const result=await response.json(),info=result.metadata||{};
+  if(info.isbn&&validIsbn(info.isbn)&&!row.barcode){row.barcode=normalizeIsbn(info.isbn);await batchLookUp(row)}
+  if(info.title&&!row.title)row.title=String(info.title).slice(0,350);
+  if(info.authors&&!row.authors)row.authors=String(info.authors).slice(0,350);
+  if(info.title||info.isbn){row.lookup_status='AI extracted visible details. Verify title and edition before saving.';row.error='Verify AI suggestions against the book image before saving.';return !!row.title}
+  return false;
+ }catch{row.lookup_status='AI unavailable; trying local OCR.';return false}
+}
 async function enrichScanFromImage(row){
+ if(await readCoverWithAI(row))return;
  row.lookup_status='Reading title-page and printed ISBN text…';
  try{
   row.ocrText=await ocrText(row.file);
@@ -1504,13 +1863,13 @@ async function batchLookUpDetails(row){
  for(let attempt=0;attempt<3;attempt++){
   try{
    if(!batchMetadataCache.has(isbn))batchMetadataCache.set(isbn,lookupISBN(isbn));
-   let info=await Promise.race([batchMetadataCache.get(isbn),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Lookup timed out')),18000))]);
+   let info=await Promise.race([batchMetadataCache.get(isbn),new Promise((_,reject)=>setTimeout(()=>reject(new Error('Lookup timed out')),7500))]);
    if(info){if(row.title&&info.title&&scanHelper.similarity(row.title,info.title)<.48){row.lookup_status='ISBN/title mismatch — verify the ISBN and book photo';row.error='ISBN points to a different book title. Check the printed ISBN or correct the title.'}else{['title','authors','publisher','publication_year','language','pages','subject'].forEach(k=>{if(info[k]&&!row[k])row[k]=String(info[k])});row.lookup_status='Found: '+(info._sources||[]).join(' + ')}}
    else{row.lookup_status=isISBN(isbn)?'ISBN not found in catalogs — try title search':'No exact barcode match — try title search';batchMetadataCache.delete(isbn)}
    return
   }catch(error){
    batchMetadataCache.delete(isbn);
-   if(!error?.lookupRateLimited||attempt===2){row.lookup_status=error?.lookupRateLimited?'Book API rate limit reached; try scanning this book again later':'Book information unavailable';return}
+   if(!error?.lookupRateLimited||attempt===2||batchActive){row.lookup_status=error?.lookupRateLimited?'Catalog rate-limited. Kept in Review for later retry.':'Book lookup took too long; kept in Review for later retry.';return}
    const wait=Math.max(0,Math.min(Number.isFinite(error.retryAfterMs)?error.retryAfterMs:60000,120000)),until=Date.now()+wait;
    batchOutput(`Book lookup limit reached. Retrying this ISBN in ${Math.ceil(wait/1000)} seconds…`);
    while(Date.now()<until&&!batchStopRequested)await new Promise(resolve=>setTimeout(resolve,Math.min(250,until-Date.now())));
@@ -1983,12 +2342,23 @@ $('dashboard').addEventListener('click',e=>{
   qualityFilter='attention';bookPage=1;setPressed('quality','attention');renderBooks();
   return requestAnimationFrame(()=>$('bookSearch').scrollIntoView({behavior:'smooth',block:'center'}));
  }
- if(action==='import')return requestAnimationFrame(()=>$('batchHeading').scrollIntoView({behavior:'smooth',block:'start'}));
+ if(action==='import'){tab('inventory');return requestAnimationFrame(()=>$('batchHeading').scrollIntoView({behavior:'smooth',block:'start'}));}
  if(action==='add')return $('manualBarcode').focus();
  if(action==='scan')return $('scanInventory').click();
  if(action==='inventory')return requestAnimationFrame(()=>$('bookSearch').scrollIntoView({behavior:'smooth',block:'center'}));
 });
-$("jumpBatch").onclick=()=>$("batchHeading").scrollIntoView({behavior:"smooth",block:"start"});$("navImportShelf").onclick=()=>{tab("inventory");$("batchHeading").scrollIntoView({behavior:"smooth",block:"start"})};
+$("notificationBell").onclick=()=>{if(!session?.user)return;tab("notifications");$("libraryArea").scrollIntoView({block:"start",behavior:"smooth"});void reloadAll({background:true})};
+$("notificationRefresh").onclick=()=>reloadAll();
+$("notificationViewHistory").onclick=()=>{loanFilter="overdue";loanPage=1;setPressed("loan","overdue");renderLoans();tab("history")};
+$("notificationSearch").addEventListener("input",e=>{notificationQuery=e.target.value;renderNotifications()});
+$("notificationSort").addEventListener("change",e=>{notificationOrder=e.target.value;renderNotifications()});
+$("notificationList").addEventListener("click",e=>{
+ const prepare=e.target.closest("[data-prepare-return]");
+ if(prepare){const b=books.find(b=>String(b.record_id)===prepare.dataset.prepareReturn&&b.book_status==="Borrowed");if(b)setSelectedBook("return",b);else msg("This loan's copy is unavailable for return. Refresh the library.","warn");return}
+ const view=e.target.closest("[data-view-loan]");
+ if(view){loanFilter="overdue";loanPage=1;loanSearch="";$("loanSearch").value="";setPressed("loan","overdue");renderLoans();tab("history");$("loanTable").scrollIntoView({block:"start",behavior:"smooth"})}
+});
+$("jumpBatch").onclick=()=>{tab("inventory");requestAnimationFrame(()=>$("batchHeading").scrollIntoView({behavior:"smooth",block:"start"}))};$("viewScannedBooks").onclick=()=>tab("scanned");$("scannedBackInventory").onclick=()=>tab("inventory");$("scannedJumpReview").onclick=()=>{tab("inventory");requestAnimationFrame(()=>$("batchHeading").scrollIntoView({behavior:"smooth",block:"start"}))};$("navImportShelf").onclick=()=>{tab("inventory");requestAnimationFrame(()=>$('batchHeading').scrollIntoView({behavior:"smooth",block:"start"}))};
 $("overdueAlertAction").onclick=()=>{loanFilter="overdue";loanPage=1;setPressed("loan","overdue");renderLoans();tab("history");$("libraryArea").scrollIntoView({behavior:"smooth",block:"start"})};
 document.addEventListener("keydown",e=>{if(e.key==="/"&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement?.tagName)&&!document.activeElement?.isContentEditable&&session?.user){e.preventDefault();tab("inventory");$("bookSearch").focus()}});
 $("pageUp").onclick=()=>window.scrollTo({top:0,behavior:"instant"});
@@ -1998,9 +2368,9 @@ window.addEventListener("scroll",updatePageControls,{passive:true});window.addEv
 let commandReturnFocus=null;
 function openCommands(){commandReturnFocus=document.activeElement;$("commandBackdrop").hidden=false;$("commandSearch").value="";filterCommands();$("commandSearch").focus()}
 function closeCommands(){if($("commandBackdrop").hidden)return;$("commandBackdrop").hidden=true;commandReturnFocus?.focus?.()}
-function filterCommands(){const q=$("commandSearch").value.trim().toLowerCase();let n=0;$("commandList").querySelectorAll("[data-command]").forEach(b=>{const guest=b.hasAttribute("data-guest-only"),auth=b.hasAttribute("data-auth-only");b.hidden=(guest&&!!session?.user)||(auth&&!session?.user)||!b.textContent.toLowerCase().includes(q);if(!b.hidden)n++});$("commandEmpty").hidden=!!n}
+function filterCommands(){const q=$("commandSearch").value.trim().toLowerCase();let n=0;$("commandList").querySelectorAll("[data-command]").forEach(b=>{const guest=b.hasAttribute("data-guest-only"),auth=b.hasAttribute("data-auth-only");b.hidden=(guest&&!!session?.user)||(auth&&(!session?.user||!canAccess(b.dataset.command==='lend'?'lend':b.dataset.command==='return'?'return':['find','scan','add','import','export'].includes(b.dataset.command)?'inventory':b.dataset.command==='overdue'?'notifications':b.dataset.command)))||!b.textContent.toLowerCase().includes(q);if(!b.hidden)n++});$("commandEmpty").hidden=!!n}
 $("commandOpen").onclick=openCommands;$("commandClose").onclick=closeCommands;$("commandBackdrop").onclick=e=>{if(e.target===$("commandBackdrop"))closeCommands()};$("commandSearch").oninput=filterCommands;
-$("commandList").onclick=e=>{const action=e.target.closest("[data-command]");if(!action||action.hidden)return;const type=action.dataset.command;closeCommands();if(type==="theme")return $("themeToggle").click();if(type==="signin")return $("email").focus();if(!session?.user)return;switch(type){case "dashboard":tab("dashboard");break;case "find":tab("inventory");$("bookSearch").focus();break;case "scan":tab("inventory");$("scanInventory").click();break;case "add":tab("inventory");$("manualBarcode").focus();break;case "lend":tab("lend");$("borrowerName").focus();break;case "return":tab("return");$("scanReturn").focus();break;case "overdue":$("overdueAlertAction").click();break;case "import":tab("inventory");$("batchHeading").scrollIntoView({behavior:"smooth",block:"start"});break;case "export":$("exportBooks").click();break;}}
+$("commandList").onclick=e=>{const action=e.target.closest("[data-command]");if(!action||action.hidden)return;const type=action.dataset.command;closeCommands();if(type==="theme")return $("themeToggle").click();if(type==="signin")return $("email").focus();if(!session?.user)return;if(!canAccess(type==='find'||type==='scan'||type==='add'||type==='import'||type==='export'?'inventory':type==='overdue'?'notifications':type==='lend'?'lend':type==='return'?'return':type))return msg('Action not permitted for this account.','warn');switch(type){case "dashboard":tab("dashboard");break;case "find":tab("inventory");$("bookSearch").focus();break;case "scan":tab("inventory");$("scanInventory").click();break;case "add":tab("inventory");$("manualBarcode").focus();break;case "lend":tab("lend");$("borrowerName").focus();break;case "return":tab("return");$("scanReturn").focus();break;case "overdue":tab("notifications");break;case "import":tab("inventory");$("batchHeading").scrollIntoView({behavior:"smooth",block:"start"});break;case "export":$("exportBooks").click();break;}}
 $("commandBackdrop").onkeydown=e=>{if(e.key==="Escape"){e.preventDefault();closeCommands()}else if(e.key==="Tab"){const items=[...$("commandBackdrop").querySelectorAll("button:not([hidden]):not([disabled]),input:not([hidden])")].filter(x=>x.getClientRects().length);if(!items.length)return;if(e.shiftKey&&document.activeElement===items[0]){e.preventDefault();items.at(-1).focus()}else if(!e.shiftKey&&document.activeElement===items.at(-1)){e.preventDefault();items[0].focus()}}};document.addEventListener("keydown",e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="k"){e.preventDefault();$("commandBackdrop").hidden?openCommands():closeCommands()}else if(e.key==="Escape"&&!$("commandBackdrop").hidden){closeCommands()}});
 $("clearForm").onclick=()=>{$("metadataPreview").hidden=true;clearForms()};$("previewMetadata").onclick=previewISBN;$("metadataPreview").addEventListener("click",e=>{const button=e.target.closest("[data-use-isbn-suggestion]");if(!button)return;$("manualBarcode").value=button.dataset.useIsbnSuggestion;previewISBN()});
 $("clearLendBook").onclick=()=>{clearSelectedBook("lend");$("lendBookSearch").value="";renderBookPicker("lend");msg("Lending selection cleared.","ok")};
@@ -2031,20 +2401,26 @@ $("bookTable").addEventListener("click",async e=>{
  const copy=e.target.closest("[data-copy-book]");if(copy){const b=books.find(x=>x.record_id===copy.dataset.copyBook);if(!b)return;const text=b.book_id||b.record_id;try{await navigator.clipboard.writeText(text);msg("Book ID copied to clipboard.","ok")}catch{msg("Copy not available here. Book ID: "+text,"warn")}}
 });
 $("showSignIn").onclick=()=>setAuthMode("signin");$("showSignUp").onclick=()=>setAuthMode("signup");
+$('signupAccessRole').addEventListener('change',updateSignupRole);$('email').addEventListener('input',()=>{if(authMode==='signup')updateSignupRole()});
+$('createAdminInvite').onclick=createAdminInvite;$('activateAdminInvite').onclick=activateAdminInvite;
+
+$("passwordReveal").onclick=()=>{const field=$("password"),revealed=field.type==="text";field.type=revealed?"password":"text";$("passwordReveal").textContent=revealed?"Show":"Hide";$("passwordReveal").setAttribute("aria-label",revealed?"Show password":"Hide password");$("passwordReveal").setAttribute("aria-pressed",String(!revealed));};
 $("accountForm").onsubmit=e=>{e.preventDefault();authMode==="signup"?signUp():signIn()};
 $("forgotPassword").onclick=forgotPassword;$("resendConfirmation").onclick=resendConfirmation;$("updatePassword").onclick=updatePassword;
-$("signOut").onclick=signOut;$("reload").onclick=reloadAll;$("reloadLoans").onclick=reloadAll;
+$("signOut").onclick=signOut;$("roleGateSignOut").onclick=signOut;$("reload").onclick=reloadAll;$("reloadLoans").onclick=reloadAll;
 $("saveSheet").onclick=()=>{if(!session?.user)return msg("Sign in first.","warn");let s=$("sheetUrl").value.trim(),c=$("connectorUrl").value.trim(),t=$("connectorToken").value.trim();if(!parseSheetId(s))return msg("Enter a valid Google Sheet URL that you own.","warn");if(!/^https:\/\/script\.google\.com\/macros\/s\/[^/]+\/exec(?:\?.*)?$/i.test(c))return msg("Enter your deployed Apps Script URL ending in /exec.","warn");try{let u=new URL(c);t=t||u.searchParams.get("token")||""}catch{}if(!t)return msg("Add the token from your Code.gs in the token field, or append ?token=YOUR_TOKEN to the /exec link.","warn");localStorage.setItem(userSheetKey(),JSON.stringify({sheet:s,url:c,token:t}));updateSheetUI();msg("Your Google Sheet settings are saved on this device. Test Connection before using sync.","ok")};$("testSheet").onclick=googlePing;$("syncExisting").onclick=syncExisting;
 $("scanInventory").onclick=()=>$("inventoryCamera").click();$("scanLend").onclick=()=>$("lendCamera").click();$("scanReturn").onclick=()=>$("returnCamera").click();$("inventoryCamera").onchange=e=>scanFile(e.target.files?.[0],"inventory",$("inventoryPreview"));$("lendCamera").onchange=e=>scanFile(e.target.files?.[0],"lend",$("lendPreview"));$("returnCamera").onchange=e=>scanFile(e.target.files?.[0],"return",$("returnPreview"));$("addManual").onclick=()=>addBook($("manualBarcode").value);$("manualBarcode").onkeydown=e=>{if(e.key==="Enter")addBook($("manualBarcode").value)};$("confirmLend").onclick=confirmLend;$("confirmReturn").onclick=confirmReturn;$("dateBorrowed").value=today();$("dueDate").value=plusDays(today(),14);$("returnDate").value=today();
 $("bookTable").addEventListener("focusout",async e=>{let c=e.target.closest('[contenteditable][data-field="shelf_location"]');if(!c||!session?.user)return;let val=c.innerText.trim();let upd={shelf_location:val||null,updated_at:new Date().toISOString()};let {data,error}=await sb.from(BOOKS).update(upd).eq("record_id",c.dataset.book).select("*").single();if(error)msg(error.message,"err");else{let b=books.find(x=>x.record_id===c.dataset.book);if(b)books=books.map(x=>x.record_id===b.record_id?{...x,[c.dataset.field]:val}:x);googleBook(data);msg(sheetLinked()?"Book updated in Supabase • Google request submitted (not verified).":"Book updated in Supabase.","ok")}});
+setInterval(()=>{if(session?.user&&!document.hidden)renderNotifications()},60_000);
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&session?.user){if(reviewSaveTimer)clearTimeout(reviewSaveTimer);reviewSaveTimer=null;persistReviewDraft(session.user.id,reviewDraftVersion)}else if(session?.user)reloadAll({background:true})});$("exportBooks").onclick=()=>exportRows(inventoryGroups().map(g=>{const b=g.representative;return {Barcode:b.barcode,Title:b.title,Authors:b.authors,Publisher:b.publisher,Year:b.publication_year,Available_Copies:g.availableCopies,Total_Copies:g.totalCopies,On_Loan:g.borrowedCopies,Shelves:g.shelves.join("; "),Book_IDs:g.copies.map(c=>c.book_id||"").join("; "),Details_Complete:inventoryGroupQuality(g).full?"Yes":"No"}}),"Library_Books");
 $("exportLoans").onclick=()=>exportRows(loans.map(l=>({Book:l.book_title,Book_ID:l.book_id,Barcode:l.barcode,Borrower:l.borrower_name,Date_Borrowed:l.date_borrowed,Due_Date:l.due_date,Return_Date:l.return_date,Status:isOverdue(l)?"Overdue":l.status})),"Loan_History");
 (async()=>{
  $("googleBooksKey").value=localStorage.getItem(GOOGLE_BOOKS_KEY)||"";
  setAuthMode("signin");
+ receiveAdminInvitationLink();
  sb.auth.onAuthStateChange((event,next)=>{
   const previous=session?.user?.id||null,following=next?.user?.id||null;
-  if(previous!==following){authGeneration++;resetAccountState()}
+  if(previous!==following){authGeneration++;resetAccountState();$("createdAdminInvite").hidden=true}
   session=next;authUI();
   if(event==="PASSWORD_RECOVERY"){$("recoveryPanel").hidden=false;msg("Enter your new password below.","ok")}
   if(event==="SIGNED_IN"&&next?.user&&previous!==following){setTimeout(()=>reloadAll(),0)}

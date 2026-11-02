@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">Library Manager book logo</title>
+  <desc id="desc">A realistic open book illustration on a colorful gradient background.</desc>
+  <defs>
+    <linearGradient id="bg" x1="8" y1="6" x2="58" y2="58" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF2D0"/>
+      <stop offset="0.48" stop-color="#86E3F2"/>
+      <stop offset="1" stop-color="#8F79FF"/>
+    </linearGradient>
+    <linearGradient id="coverL" x1="18" y1="20" x2="35" y2="47" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#3A5F8B"/>
+      <stop offset="1" stop-color="#18344C"/>
+    </linearGradient>
+    <linearGradient id="coverR" x1="29" y1="18" x2="46" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2A8A7A"/>
+      <stop offset="1" stop-color="#145548"/>
+    </linearGradient>
+    <linearGradient id="page" x1="14" y1="17" x2="39" y2="42" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFDF9"/>
+      <stop offset="1" stop-color="#F5EBDD"/>
+    </linearGradient>
+    <filter id="shadow" x="7" y="8" width="50" height="48" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="7" stdDeviation="4.5" flood-color="#071C2D" flood-opacity="0.26"/>
+    </filter>
+  </defs>
+  <rect x="3" y="3" width="58" height="58" rx="18" fill="url(#bg)"/>
+  <circle cx="48.5" cy="15.5" r="7.5" fill="#FFFFFF" fill-opacity="0.18"/>
+  <path d="M13 47.5c10.2-5.2 27.8-5.2 38 0" stroke="#FFFFFF" stroke-opacity="0.28" stroke-width="2" stroke-linecap="round"/>
+  <g filter="url(#shadow)">
+    <path d="M17.5 18.5c4.8-1.8 9.8-1.5 14.5 1.5v24.3c-4.4-2.8-9.5-3.4-14.5-1.8V18.5Z" fill="url(#page)"/>
+    <path d="M46.5 18.5c-4.8-1.8-9.8-1.5-14.5 1.5v24.3c4.4-2.8 9.5-3.4 14.5-1.8V18.5Z" fill="url(#page)"/>
+    <path d="M17.5 18.5c4.8-1.8 9.8-1.5 14.5 1.5v3.6c-4.8-2.9-9.7-3.3-14.5-1.2v-3.9Z" fill="url(#coverL)"/>
+    <path d="M46.5 18.5c-4.8-1.8-9.8-1.5-14.5 1.5v3.6c4.8-2.9 9.7-3.3 14.5-1.2v-3.9Z" fill="url(#coverR)"/>
+    <path d="M31.7 20.1h.6v24.8h-.6c-.8 0-1.4-.6-1.4-1.4V21.5c0-.8.6-1.4 1.4-1.4Z" fill="#E5D8C6"/>
+    <path d="M20.5 26h8" stroke="#DFCDB7" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M20.5 29.7h7" stroke="#E3D2BE" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M20.5 33.4h6.2" stroke="#E7D7C4" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M35.5 26h8" stroke="#DFCDB7" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M36.5 29.7h7" stroke="#E3D2BE" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M37.3 33.4h6.2" stroke="#E7D7C4" stroke-width="1.2" stroke-linecap="round"/>
+    <path d="M17.5 42.5c5-1.6 10.1-1 14.5 1.8" stroke="#CBB69D" stroke-width="1.15" stroke-linecap="round"/>
+    <path d="M46.5 42.5c-5-1.6-10.1-1-14.5 1.8" stroke="#CBB69D" stroke-width="1.15" stroke-linecap="round"/>
+  </g>
+</svg>

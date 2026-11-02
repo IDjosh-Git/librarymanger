@@ -1,1 +1,19 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="16" fill="#0c5559"/><g fill="none" stroke="#c6fcf1" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 53V15a4 4 0 0 1 4-4h29a4 4 0 0 1 4 4v38H18a4 4 0 0 1 0-8h33M23 23h20M23 32h14"/></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="6" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFF0C5"/>
+      <stop offset="0.46" stop-color="#8CE4EE"/>
+      <stop offset="1" stop-color="#8D7CFF"/>
+    </linearGradient>
+    <linearGradient id="book" x1="18" y1="18" x2="46" y2="46" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#23567D"/>
+      <stop offset="1" stop-color="#1A7A67"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="18" fill="url(#bg)"/>
+  <path d="M18 20.5c4.5-1.7 9.5-1.4 14 1.5v21.5c-4.3-2.4-8.8-2.9-14-1.4v-21.6Z" fill="#FFF8EE"/>
+  <path d="M46 20.5c-4.5-1.7-9.5-1.4-14 1.5v21.5c4.3-2.4 8.8-2.9 14-1.4v-21.6Z" fill="#FFF8EE"/>
+  <path d="M18 20.5c4.5-1.7 9.5-1.4 14 1.5v3.1c-4.4-2.3-9-2.5-14-.8v-3.8Z" fill="url(#book)"/>
+  <path d="M46 20.5c-4.5-1.7-9.5-1.4-14 1.5v3.1c4.4-2.3 9-2.5 14-.8v-3.8Z" fill="url(#book)"/>
+  <path d="M31.6 22h.8v21.8h-.8z" fill="#D9C4A8"/>
+</svg>
