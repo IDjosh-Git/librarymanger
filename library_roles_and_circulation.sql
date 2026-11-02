@@ -1,4 +1,6 @@
 -- REQUIRED: apply in Supabase SQL Editor after reviewing existing access policies.
+-- Select/run this ENTIRE file together (not just a highlighted fragment).
+-- Corrected PL/pgSQL block terminators in this revision.
 -- Admin: dashboard, inventory, scans, notifications, history, imports & exports.
 -- User: lending and returns only (with read access to book and loan records needed to operate).
 -- Existing wide-open RLS policies on library_books/library_loans are REPLACED deliberately.
@@ -18,7 +20,8 @@ DO $$ DECLARE pol record; BEGIN
  FOR pol IN SELECT policyname FROM pg_policies WHERE schemaname='public' AND tablename='library_member_roles' LOOP
    EXECUTE format('DROP POLICY %I ON public.library_member_roles',pol.policyname);
  END LOOP;
-END $$;
+END;
+$$;
 CREATE POLICY library_member_self_read ON public.library_member_roles FOR SELECT TO authenticated
  USING (user_id=(select auth.uid()));
 
@@ -30,7 +33,8 @@ RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
 BEGIN
  INSERT INTO public.library_member_roles(user_id,role) VALUES(NEW.id,'user') ON CONFLICT(user_id) DO NOTHING;
  RETURN NEW;
-END $$;
+END;
+$$;
 REVOKE ALL ON FUNCTION private.library_assign_user_role() FROM PUBLIC, anon, authenticated;
 DROP TRIGGER IF EXISTS library_member_signup_role ON auth.users;
 CREATE TRIGGER library_member_signup_role AFTER INSERT ON auth.users
@@ -52,7 +56,8 @@ DO $$ DECLARE p record; BEGIN
     WHERE schemaname='public' AND tablename IN ('library_books','library_loans') LOOP
    EXECUTE format('DROP POLICY %I ON public.%I',p.policyname,p.tablename);
  END LOOP;
-END $$;
+END;
+$$;
 ALTER TABLE public.library_books ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.library_loans ENABLE ROW LEVEL SECURITY;
 REVOKE ALL ON public.library_books,public.library_loans FROM PUBLIC,anon,authenticated;
@@ -98,7 +103,8 @@ BEGIN
    THEN RAISE EXCEPTION 'Invalid book circulation transition'; END IF;
  ELSE RAISE EXCEPTION 'Library role is required'; END IF;
  RETURN NEW;
-END $$;
+END;
+$$;
 DROP TRIGGER IF EXISTS library_book_write_guard ON public.library_books;
 CREATE TRIGGER library_book_write_guard BEFORE UPDATE ON public.library_books
  FOR EACH ROW EXECUTE FUNCTION private.library_book_write_guard();
@@ -122,7 +128,8 @@ BEGIN
    END IF;
  END IF;
  RETURN NEW;
-END $$;
+END;
+$$;
 DROP TRIGGER IF EXISTS library_loan_write_guard ON public.library_loans;
 CREATE TRIGGER library_loan_write_guard BEFORE INSERT OR UPDATE ON public.library_loans
  FOR EACH ROW EXECUTE FUNCTION private.library_loan_write_guard();
@@ -141,7 +148,8 @@ DO $$ DECLARE pol record; BEGIN
   EXECUTE 'CREATE POLICY library_review_admin_update ON public.library_review_queue FOR UPDATE TO authenticated USING (private.library_has_role(''admin'') AND user_id=(select auth.uid())) WITH CHECK (private.library_has_role(''admin'') AND user_id=(select auth.uid()))';
   EXECUTE 'CREATE POLICY library_review_admin_delete ON public.library_review_queue FOR DELETE TO authenticated USING (private.library_has_role(''admin'') AND user_id=(select auth.uid()))';
  END IF;
-END $$;
+END;
+$$;
 COMMIT;
 
 -- IMPORTANT: After this script runs, PROMOTE your real administrator account

@@ -81,6 +81,7 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 <link rel="stylesheet" href="assets/overdue-notifications.css">
 <link rel="stylesheet" href="assets/scanned-books.css">
 <link rel="stylesheet" href="assets/admin-invitations.css">
+<link rel="stylesheet" href="assets/role-navigation.css">
 <script>try{document.documentElement.dataset.theme=localStorage.getItem("library_manager_theme_v2")==="dark"?"dark":"light"}catch{document.documentElement.dataset.theme="light"}</script>
 </head>
 <body data-account="out">
@@ -119,15 +120,22 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
     <label for="password">Password</label><div class="auth-password-wrap"><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Enter your password" required minlength="8"><button class="auth-reveal" type="button" id="passwordReveal" aria-label="Show password" aria-pressed="false">Show</button></div>
     <div id="signupFields" hidden>
       <label for="confirmPassword">Confirm password</label><input id="confirmPassword" name="confirmPassword" type="password" autocomplete="new-password" placeholder="Repeat your password">
-      <label for="signupAccessRole">Account type</label>
-      <select id="signupAccessRole" class="signup-role-select" aria-describedby="signupRoleDescription"><option value="user">Library user — lend and return</option><option value="admin">Administrator — invitation by email</option></select>
-      <div id="signupAdminInvite" class="signup-admin-invite" hidden>
-        <p id="signupInviteLinked" class="invite-link-status" hidden><span aria-hidden="true">✓</span> Email invitation attached. You can complete registration below.</p>
-        <label id="signupInviteCodeLabel" for="signupInviteCode">Administrator invitation code</label>
-        <input id="signupInviteCode" type="text" inputmode="text" spellcheck="false" autocomplete="off" maxlength="160" placeholder="Filled from your email invitation link">
-        <p class="auth-hint">Open the link in your administrator invitation email and this field will be filled for you. Confirm your email before admin access activates.</p>
+    </div>
+    <div class="access-role-control">
+      <span id="accessRoleLabel" class="access-role-heading">Choose your workspace</span>
+      <div class="access-role-switch" role="group" aria-labelledby="accessRoleLabel">
+        <button type="button" class="access-role-choice is-selected" data-select-role="user" aria-pressed="true"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span>User<small>Lend &amp; return</small></span></button>
+        <button type="button" class="access-role-choice" data-select-role="admin" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg><span>Admin<small>Manage library</small></span></button>
       </div>
-      <p id="signupRoleDescription" class="auth-hint">Use at least 8 characters. Library users access Lending and Returns; administrators register through a secure email invitation.</p>
+      <label for="signupAccessRole" class="sr-only">Selected workspace role</label>
+      <select id="signupAccessRole" hidden aria-describedby="signupRoleDescription"><option value="user">Library user</option><option value="admin">Administrator</option></select>
+      <p id="signupRoleDescription" class="auth-hint">Library users can register normally. Administrator access requires a private access code.</p>
+    </div>
+    <div id="signupAdminInvite" class="signup-admin-invite" hidden>
+      <p id="signupInviteLinked" class="invite-link-status" hidden><span aria-hidden="true">✓</span> Secure invitation link detected.</p>
+      <label id="signupInviteCodeLabel" for="signupInviteCode">Administrator access code</label>
+      <input id="signupInviteCode" type="password" spellcheck="false" autocomplete="off" maxlength="160" placeholder="Enter the private code from your administrator">
+      <p class="auth-hint">The server validates this code after sign-in and email verification. Selecting Administrator alone never grants access.</p>
     </div>
     <button id="authSubmit" type="submit">Sign In</button>
   </form>
@@ -135,34 +143,39 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 </div>
 <div id="recoveryPanel" hidden class="recovery-panel"><strong>Set a new password</strong><p class="auth-hint">Enter a new password for your account.</p><input id="newPassword" type="password" autocomplete="new-password" placeholder="New password (at least 8 characters)"><button id="updatePassword" type="button" class="green" style="width:100%;margin-top:8px">Update Password</button></div>
 <div id="roleGate" class="role-gate" role="status" aria-live="polite" hidden><p id="roleGateText">Checking account permissions…</p><button id="roleGateSignOut" type="button" class="light">Sign out / change account</button></div>
-<div id="loggedIn" hidden><div id="who" style="margin:9px 0;font-weight:700"></div><span id="memberRolePill" class="member-role-pill"></span><div class="row"><button id="reload" class="green">Reload Database</button><button id="signOut" class="light">Sign Out</button></div>
+<div id="loggedIn" hidden><div id="who" style="margin:9px 0;font-weight:700"></div><span id="memberRolePill" class="member-role-pill"></span><nav class="workspace-nav" aria-label="Library workspace">
+  <div class="workspace-nav-section nav-admin-only">
+    <p class="workspace-nav-label">MY LIBRARY</p>
+    <button class="tab active" type="button" data-tab="dashboard" aria-pressed="true" aria-current="page"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg><span>Dashboard</span></button>
+    <button class="tab" type="button" data-tab="inventory" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#book"></use></svg><span>Inventory</span></button>
+    <button class="tab" type="button" data-tab="scanned" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg><span>Scanned books</span></button>
+    <button class="tab notification-tab" type="button" data-tab="notifications" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#alert"></use></svg><span>Notifications</span><span id="notificationNavCount" class="notification-nav-count" hidden>0</span></button>
+    <button class="tab" type="button" data-tab="history" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#history"></use></svg><span>Loan history</span></button>
+  </div>
+  <div class="workspace-nav-section nav-user-only">
+    <p class="workspace-nav-label">CIRCULATION</p>
+    <button class="tab" type="button" data-tab="lend" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg><span>Lend a book</span></button>
+    <button class="tab" type="button" data-tab="return" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-down-left"></use></svg><span>Return a book</span></button>
+  </div>
+</nav>
+<details class="workspace-tools nav-admin-only"><summary><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg><span>Library tools</span><span class="tools-chevron" aria-hidden="true">⌄</span></summary><div class="workspace-tools-body"><button id="navImportShelf" class="workspace-nav-action" type="button"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg><span>Import a shelf</span></button><p>Import shelf photos or book records.</p></div></details>
+<details class="account-tools"><summary>Account &amp; access settings <span aria-hidden="true">⌄</span></summary><div class="account-tools-body"><div class="row"><button id="reload" class="green">Reload Database</button><button id="signOut" class="light">Sign Out</button></div>
 <details id="adminInvitePanel" class="admin-invite-panel" hidden>
-  <summary>Invite a new administrator <span aria-hidden="true">+</span></summary>
-  <div class="admin-invite-panel-body"><p>Enter your colleague’s email to send a secure registration link automatically. The invitation is valid for 48 hours and can only be used by that email.</p>
-    <label for="inviteAdminEmail">New administrator email</label><input id="inviteAdminEmail" type="email" autocomplete="off" placeholder="colleague@example.com">
-    <button id="createAdminInvite" type="button" class="green">Send administrator invitation</button>
-    <div id="createdAdminInvite" hidden class="admin-invite-result" role="status"><strong>Email invitation sent</strong><p id="adminInviteDeliveryStatus">The invited administrator can open their email and follow the private registration link.</p></div>
+  <summary>Administrator registration code <span aria-hidden="true">+</span></summary>
+  <div class="admin-invite-panel-body">
+    <p>Generate a strong, private registration code and share it only with trusted administrators. Replacing it invalidates the previous code. No email service is required.</p>
+    <button id="createAdminInvite" type="button" class="green">Generate / rotate admin code</button>
+    <div id="createdAdminInvite" hidden class="admin-invite-result" role="status"><strong>New administrator code — copy it now</strong><p id="adminInviteDeliveryStatus">This code is displayed once. Save it securely.</p><code id="adminAccessCodeResult" class="admin-access-result"></code><button id="copyAdminAccessCode" class="light" type="button">Copy access code</button></div>
   </div>
 </details>
-<div id="activateAdminPanel" class="activate-admin-panel" hidden>
-  <strong>Have an administrator invitation?</strong>
-  <p>Already have an account? Open your administrator invitation email while signed in to activate access. You may also paste a code below if needed.</p>
-  <label for="existingAdminInviteCode">Invitation code</label><input id="existingAdminInviteCode" autocomplete="off" spellcheck="false" placeholder="Enter your invitation code">
-  <button id="activateAdminInvite" type="button" class="light">Activate administrator access</button>
-</div>
-<nav class="workspace-nav" aria-label="Library workspace">
-  <p class="workspace-nav-label">OVERVIEW</p>
-  <button class="tab active" type="button" data-tab="dashboard" aria-pressed="true" aria-current="page"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg><span>Dashboard</span></button>
-  <button class="tab notification-tab" type="button" data-tab="notifications" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#alert"></use></svg><span>Notifications</span><span id="notificationNavCount" class="notification-nav-count" hidden>0</span></button>
-  <p class="workspace-nav-label workspace-nav-spaced">COLLECTION</p>
-  <button class="tab" type="button" data-tab="inventory" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#book"></use></svg><span>Inventory</span></button>
-  <button class="tab" type="button" data-tab="scanned" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg><span>Scanned books</span></button>
-  <button id="navImportShelf" class="workspace-nav-action" type="button"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg><span>Import a shelf</span></button>
-  <p class="workspace-nav-label workspace-nav-spaced">CIRCULATION</p>
-  <button class="tab" type="button" data-tab="lend" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg><span>Lend a book</span></button>
-  <button class="tab" type="button" data-tab="return" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-down-left"></use></svg><span>Returns</span></button>
-  <button class="tab" type="button" data-tab="history" aria-pressed="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#history"></use></svg><span>Loan history</span></button>
-</nav>
+<details id="activateAdminPanel" class="admin-invite-panel" hidden>
+  <summary>Activate administrator access <span aria-hidden="true">+</span></summary>
+  <div class="admin-invite-panel-body"><p>Have a private administrator registration code? Enter it to upgrade your signed-in, email-verified account.</p>
+    <label for="existingAdminInviteCode">Administrator access code</label><input id="existingAdminInviteCode" type="password" autocomplete="off" spellcheck="false" placeholder="Enter private code">
+    <button id="activateAdminInvite" type="button" class="light">Verify and activate</button>
+  </div>
+</details>
+</div></details>
 </div>
 <div id="status" class="status">Ready.</div>
 
@@ -449,7 +462,7 @@ main{max-width:1250px;margin:-44px auto 0;padding:0 12px 100px}.card{background:
 <div class="inventory-options loan-options"><div class="select-control"><label for="loanPageSize">Per page</label><select id="loanPageSize" aria-label="Loans per page"><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="40">40</option><option value="50">50</option><option value="100">100</option></select></div></div><div class="table-actions"><span id="loanTableMeta" class="table-meta" aria-live="polite">Newest loans first</span><div class="row"><button id="clearLoanFilters" type="button" class="light smallbtn"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#x"></use></svg> Clear filters</button><button id="reloadLoans" type="button" class="light smallbtn"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#refresh"></use></svg> Reload</button><button id="exportLoans" type="button" class="light smallbtn"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export all · Excel</button></div></div><div id="loanTable" class="tablewrap"></div><div id="loanPager" class="pager" aria-label="Loan history pages"></div></div></div>
 </div></section></div></main>
 
-<nav class="bottomnav" aria-label="Mobile library navigation"><button class="active" type="button" data-gotab="dashboard"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg>Home</button><button type="button" data-gotab="inventory"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#book"></use></svg>Inventory</button><button type="button" data-gotab="lend"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg>Lend</button><button type="button" data-gotab="return"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#arrow-down-left"></use></svg>Return</button><button type="button" data-gotab="scanned">Scans</button><button type="button" data-gotab="history"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#history"></use></svg>History</button></nav>
+<nav class="bottomnav" aria-label="Mobile library navigation"><button class="active" type="button" data-gotab="dashboard"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg>Home</button><button type="button" data-gotab="inventory"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#book"></use></svg>Inventory</button><button type="button" data-gotab="lend"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg>Lend</button><button type="button" data-gotab="return"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#arrow-down-left"></use></svg>Return</button><button type="button" data-gotab="scanned"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg>Scans</button><button type="button" data-gotab="notifications"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#alert"></use></svg>Alerts</button><button type="button" data-gotab="history"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#history"></use></svg>History</button></nav>
 <div class="scroll-controls" aria-label="Page navigation"><button id="pageUp" type="button" title="Go to the top" aria-label="Go to the top"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#chevrons-up"></use></svg></button><button id="pageDown" type="button" title="Go to the bottom" aria-label="Go to the bottom"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#chevrons-down"></use></svg></button></div><div id="commandBackdrop" class="command-backdrop" hidden><section class="command-dialog" role="dialog" aria-modal="true" aria-labelledby="commandTitle"><div class="command-head"><div><span class="eyebrow">Workspace shortcuts</span><h2 id="commandTitle">Quick actions</h2></div><button type="button" class="command-close icon-btn" id="commandClose" aria-label="Close quick actions"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#x"></use></svg></button></div><label class="sr-only" for="commandSearch">Find an action</label><div class="search-wrap command-search"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input id="commandSearch" type="search" placeholder="Search actions…" autocomplete="off"></div><div class="command-items" id="commandList"><button type="button" data-command="dashboard" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg><span><strong>Dashboard</strong><small>View library statistics</small></span></button><button type="button" data-command="find" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><span><strong>Find a book</strong><small>Search the shared collection</small></span><kbd>/</kbd></button><button type="button" data-command="scan" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg><span><strong>Scan a barcode</strong><small>Add a book using your camera</small></span></button><button type="button" data-command="add" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#plus"></use></svg><span><strong>Add by ISBN</strong><small>Enter a barcode manually</small></span></button><button type="button" data-command="lend" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg><span><strong>Lend a book</strong><small>Record a borrower and due date</small></span></button><button type="button" data-command="return" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-down-left"></use></svg><span><strong>Process a return</strong><small>Close an active loan</small></span></button><button type="button" data-command="overdue" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#alert"></use></svg><span><strong>Overdue loans</strong><small>See books past their due date</small></span></button><button type="button" data-command="import" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg><span><strong>Import a shelf</strong><small>Upload photos, a folder or a ZIP</small></span></button><button type="button" data-command="export" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg><span><strong>Export inventory</strong><small>Download the Excel workbook</small></span></button><button type="button" data-command="signin" data-guest-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span><strong>Sign in</strong><small>Access the library workspace</small></span></button><button type="button" data-command="theme"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#sun"></use></svg><span><strong>Switch theme</strong><small>Light and dark appearance</small></span></button></div><p id="commandEmpty" class="empty" hidden>No matching actions.</p><div class="command-footer">Press <kbd>Ctrl</kbd> + <kbd>K</kbd> to open · <kbd>Esc</kbd> to close</div></section></div><div id="toast" class="toast" role="status" aria-live="polite" hidden></div><div id="bookEditorBackdrop" class="book-editor-backdrop" hidden><section class="book-editor" role="dialog" aria-modal="true" aria-labelledby="bookEditorTitle"><div class="book-editor-head"><h2 id="bookEditorTitle">Edit book details</h2><button type="button" id="closeBookEditor" class="light">Close</button></div><form id="bookEditorForm"><div class="book-editor-grid"><label>ISBN / barcode <input name="barcode" maxlength="80" autocomplete="off"></label><label>Title <input name="title" maxlength="350" autocomplete="off"></label><label>Author(s) <input name="authors" maxlength="350"></label><label>Publisher <input name="publisher" maxlength="250"></label><label>Publication year <input name="publication_year" maxlength="20"></label><label>Shelf / location <input name="shelf_location" maxlength="120"></label><label>Language <input name="language" maxlength="100"></label><label>Pages <input name="pages" maxlength="20"></label><label class="wide">Subjects <input name="subject" maxlength="500"></label></div><div class="book-editor-actions"><button type="button" id="editorFindISBN" class="light">Find using ISBN</button><button type="button" id="editorFindTitle" class="light">Search title & author</button><button type="submit" class="green">Save book changes</button></div><div id="editorResults" role="status" aria-live="polite"></div></form></section></div><div id="decoder" aria-hidden="true" style="position:fixed;left:-9999px;top:0;width:360px;height:360px;opacity:0;pointer-events:none"></div><div id="postTargets" style="display:none"></div>
 
 <footer class="footer"><span><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#library"></use></svg> &nbsp; Library Manager · A calm home for every collection.</span><span>Shared Supabase inventory · Optional personal Google Sheets mirror</span></footer>
@@ -461,6 +474,7 @@ const scanHelper=window.LibraryScan;
 const overdueHelper=window.LibraryOverdueNotifications;
 const SHEET_PREFIX="library_manager_user_sheets_v1:";
 const PENDING_ADMIN_INVITE_KEY="library_manager_pending_admin_invite_v1";
+const PENDING_ADMIN_ACCESS_KEY="library_manager_pending_admin_access_v1";
 const sb=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}});
 const $=id=>document.getElementById(id);let session=null,books=[],loans=[],selectedLend=null,selectedReturn=null,busy=false,authMode="signin",authBusy=false,authGeneration=0,libraryOwnerId=null,memberRole=null,memberRolePromise=null;
 function esc(v){return String(v??"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;").replace(/'/g,"&#39;")}let toastTimer;function msg(t,c=""){ $("status").className="status "+c;$("status").textContent=t;const el=$("toast");if(!el)return;el.textContent=t;el.className="toast "+c;el.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>{el.hidden=true},c==="err"?10000:4600)}function localISO(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-")}function today(){return localISO(new Date())}function plusDays(d,n){let x=new Date(d+"T12:00:00");x.setDate(x.getDate()+n);return localISO(x)}function isOverdue(l){return l.status==="Borrowed"&&l.due_date&&l.due_date<today()}function isDueSoon(l){return l.status==="Borrowed"&&!!l.due_date&&l.due_date>=today()&&l.due_date<=plusDays(today(),7)}function uuid(){if(globalThis.crypto?.randomUUID)return crypto.randomUUID();const b=new Uint8Array(16);if(globalThis.crypto?.getRandomValues)crypto.getRandomValues(b);else for(let i=0;i<16;i++)b[i]=Math.floor(Math.random()*256);b[6]=(b[6]&15)|64;b[8]=(b[8]&63)|128;const h=Array.from(b,v=>v.toString(16).padStart(2,'0')).join('');return [h.slice(0,8),h.slice(8,12),h.slice(12,16),h.slice(16,20),h.slice(20)].join('-')}function clean(v){return String(v||"").trim().replace(/^ISBN(?:[\s-]*1[03])?\s*[:#]?\s*/i,"").replace(/[\s-]/g,"")}function normalizeIsbn(v){let x=clean(v).replace(/[\u0000-\u001f\u007f]/g,"").replace(/^\][A-Z0-9]{2}/i,"").toUpperCase();const padded=x.match(/^0(97[89]\d{10})(?:\d{2}|\d{5})?$/);if(padded)x=padded[1];const supplement=x.match(/^(97[89]\d{10})(?:\d{2}|\d{5})$/);if(supplement)x=supplement[1];if(/^SBN\d{9}$/.test(x))x='0'+x.slice(3);return x}function isISBN(v){return validIsbn(v)}function validIsbnCore(x){if(/^\d{9}[\dX]$/.test(x)){let n=0;for(let i=0;i<10;i++)n+=(10-i)*(x[i]==='X'?10:Number(x[i]));return n%11===0}if(/^97[89]\d{10}$/.test(x)){let n=0;for(let i=0;i<13;i++)n+=Number(x[i])*(i%2?3:1);return n%10===0}return false}function validIsbn(v){return validIsbnCore(normalizeIsbn(v))}function suggestIsbnCorrection(v){const x=normalizeIsbn(v);if(validIsbnCore(x))return"";if(/^97[89]\d{10}$/.test(x)){let sum=0;for(let i=0;i<12;i++)sum+=Number(x[i])*(i%2?3:1);const candidate=x.slice(0,12)+String((10-sum%10)%10);return validIsbnCore(candidate)?candidate:""}if(/^\d{9}[\dX]$/.test(x)){let sum=0;for(let i=0;i<9;i++)sum+=(10-i)*Number(x[i]);const check=(11-sum%11)%11,candidate=x.slice(0,9)+(check===10?"X":String(check));return validIsbnCore(candidate)?candidate:""}return""}function sameIsbn(a,b){a=normalizeIsbn(a);b=normalizeIsbn(b);if(!validIsbn(a)||!validIsbn(b))return false;if(a.length===13&&b.length===13)return a===b;function to13(s){if(s.length===13)return s;let t='978'+s.slice(0,9),n=0;for(let i=0;i<12;i++)n+=Number(t[i])*(i%2?3:1);return t+((10-n%10)%10)}return to13(a)===to13(b)}
@@ -493,12 +507,13 @@ async function ensureMemberRole(){
   try{
    // Verify an emailed invitation only after authentication. Never trust a client-supplied role.
    await redeemPendingAdminInvite(uid);
+   await claimPendingAdminAccess(uid);
    const {data,error}=await sb.from('library_member_roles').select('role').eq('user_id',uid).single();
    if(error)throw error;
    if(uid!==session?.user?.id||generation!==authGeneration)return false;
    if(!['admin','user'].includes(data?.role))throw Error('No valid library role is assigned to this account.');
    memberRole=data.role;authUI();tab(roleLanding());return true;
-  }catch(e){if(uid===session?.user?.id){$('roleGate').hidden=false;$('roleGateText').textContent='Account permissions could not be verified: '+(e.message||String(e))+'. An administrator must install library_roles_and_circulation.sql and assign your role.';msg('Library role verification required. '+(e.message||e),'err')}return false}
+  }catch(e){if(uid===session?.user?.id){$('roleGate').hidden=false;$('roleGateText').textContent='Account permissions could not be verified: '+(e.message||String(e))+'. Check that the Supabase roles setup is installed and your account has a role.';msg('Library role verification required. '+(e.message||e),'err')}return false}
   finally{memberRolePromise=null}
  })();return memberRolePromise;
 }
@@ -506,25 +521,42 @@ async function ensureMemberRole(){
 function setAuthMode(mode){
  authMode=mode;const creating=mode==="signup";
  document.querySelector(".auth-form-heading h2").innerHTML=creating?'Create an account<span class="auth-heading-dot">.</span>':'Welcome back<span class="auth-heading-dot">.</span>';
- document.querySelector('.auth-form-heading p').textContent=creating?'Register with your assigned library access.':'Sign in to pick up where you left off.';
+ document.querySelector('.auth-form-heading p').textContent=creating?'Create your library account in minutes.':'Sign in to your library workspace.';
  $('signupFields').hidden=!creating;$('confirmPassword').required=creating;
  $('password').autocomplete=creating?'new-password':'current-password';$('password').minLength=creating?8:1;
  $('authSubmit').textContent=creating?'Create My Account':'Sign In';
  $('showSignIn').classList.toggle('active',!creating);$('showSignUp').classList.toggle('active',creating);
  $('showSignIn').setAttribute('aria-pressed',String(!creating));$('showSignUp').setAttribute('aria-pressed',String(creating));
- $('authIntro').textContent=creating?'Choose a library-user account or follow your administrator email invitation.':'Sign in with your email and password to open your assigned workspace.';
- if(creating)updateSignupRole();
+ $('authIntro').textContent=creating?'Pick User or Administrator. Administrator registration uses a private code, not an email invitation.':'Sign in as a library user or activate administrator access with a private code.';
+ updateSignupRole();
 }
 function updateSignupRole(){
  const admin=$('signupAccessRole').value==='admin';
+ document.querySelectorAll('[data-select-role]').forEach(button=>{
+   const selected=button.dataset.selectRole===(admin?'admin':'user');
+   button.classList.toggle('is-selected',selected);
+   button.setAttribute('aria-pressed',String(selected));
+ });
+ // Choosing the ordinary user role must not reuse a previously entered admin code.
+ if(!admin)clearPendingAdminAccess();
  const pending=readPendingAdminInvite();
  const linked=admin&&!!pending&&pending.email===$('email').value.trim().toLowerCase()&&pending.code===$('signupInviteCode').value;
  $('signupAdminInvite').hidden=!admin;
  $('signupInviteLinked').hidden=!linked;
  $('signupInviteCodeLabel').hidden=linked;
- $('signupInviteCode').type=linked?'hidden':'text';
+ $('signupInviteCode').type=linked?'hidden':'password';
  $('signupInviteCode').required=admin&&authMode==='signup'&&!linked;
- $('signupRoleDescription').textContent=admin?'Use the link emailed by your library administrator. Invites are single-use and valid for 48 hours.':'Library users can lend and return books. Passwords need at least 8 characters.';
+ $('signupRoleDescription').textContent=admin?'Administrator access requires a private code supplied by an existing administrator. Code validation happens in Supabase after email verification.':'Library users can register freely and use only Lend and Return. Existing admin privileges are never removed by this selection.';
+}
+function readPendingAdminAccess(){try{return JSON.parse(sessionStorage.getItem(PENDING_ADMIN_ACCESS_KEY)||'null')}catch{return null}}
+function savePendingAdminAccess(email,code){try{sessionStorage.setItem(PENDING_ADMIN_ACCESS_KEY,JSON.stringify({email:email.toLowerCase(),code,createdAt:Date.now()}))}catch{}}
+function clearPendingAdminAccess(){try{sessionStorage.removeItem(PENDING_ADMIN_ACCESS_KEY)}catch{}}
+async function claimPendingAdminAccess(uid){
+ const pending=readPendingAdminAccess();if(!pending||!session?.user||session.user.id!==uid)return false;
+ if(pending.email!==String(session.user.email||'').toLowerCase()||Date.now()-(pending.createdAt||0)>24*3600000){clearPendingAdminAccess();return false}
+ const {data,error}=await sb.rpc('library_claim_admin_access_code',{p_code:pending.code});
+ if(error||data!==true){clearPendingAdminAccess();msg('Administrator access was not activated. Check your registration code and email confirmation. '+(error?authError(error):''),'warn');return false}
+ clearPendingAdminAccess();msg('Administrator access verified. Welcome to the administration workspace.','ok');return true;
 }
 function readPendingAdminInvite(){try{return JSON.parse(sessionStorage.getItem(PENDING_ADMIN_INVITE_KEY)||'null')}catch{return null}}
 function savePendingAdminInvite(email,code){try{sessionStorage.setItem(PENDING_ADMIN_INVITE_KEY,JSON.stringify({email:email.toLowerCase(),code,createdAt:Date.now()}))}catch{}}
@@ -538,29 +570,27 @@ async function redeemPendingAdminInvite(uid){
 }
 async function activateAdminInvite(){
  if(!session?.user||isAdmin())return;
- const code=$('existingAdminInviteCode').value.trim();if(!code)return msg('Enter an administrator invitation code.','warn');
+ const code=$('existingAdminInviteCode').value.trim();if(!code)return msg('Enter the private administrator access code.','warn');
  const button=$('activateAdminInvite');button.disabled=true;
  try{
-   const {error}=await sb.rpc('library_redeem_admin_invite',{p_code:code});if(error)throw error;
-   clearPendingAdminInvite();$('existingAdminInviteCode').value='';memberRole=null;authUI();
-   await ensureMemberRole();if(!isAdmin())throw Error('Role change could not be verified; sign in again.');
+   const {data,error}=await sb.rpc('library_claim_admin_access_code',{p_code:code});if(error)throw error;
+   if(data!==true)throw Error('Code invalid, administrator setup incomplete, or too many attempts. Ask your administrator for a current code.');
+   clearPendingAdminAccess();$('existingAdminInviteCode').value='';memberRole=null;authUI();
+   await ensureMemberRole();if(!isAdmin())throw Error('Role change could not be verified. Sign in again.');
    await reloadAll();msg('Administrator access activated.','ok');
- }catch(e){msg('Could not activate administrator: '+authError(e),'err')}
+ }catch(e){msg('Administrator activation failed: '+authError(e),'err')}
  finally{button.disabled=false}
 }
 async function createAdminInvite(){
- if(!session?.user||!isAdmin())return msg('Only an administrator can invite another administrator.','err');
- const email=$('inviteAdminEmail').value.trim().toLowerCase();if(!$('inviteAdminEmail').checkValidity()||!email)return msg('Enter a valid invitation email address.','warn');
+ if(!session?.user||!isAdmin())return msg('Only an existing administrator can generate the registration code.','err');
  const button=$('createAdminInvite');button.disabled=true;$('createdAdminInvite').hidden=true;
  try{
-   const {data:{session:latestSession},error:sessionError}=await sb.auth.getSession();
-   if(sessionError||!latestSession?.access_token)throw Error('Your session has expired. Sign in again.');
-   const resp=await fetch('/api/admin-invite',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+latestSession.access_token},body:JSON.stringify({email})});
-   let data={};try{data=await resp.json()}catch{}
-   if(!resp.ok||!data.ok)throw Error(data.error||'Email invitation could not be sent.');
-   $('adminInviteDeliveryStatus').textContent='Invitation sent to '+email+'. The link expires in 48 hours. Ask the recipient to check their inbox and spam folder.';
-   $('createdAdminInvite').hidden=false;msg('Administrator invitation email sent to '+email+'.','ok');
- }catch(e){msg('Could not send administrator invitation: '+authError(e),'err')}
+   const {data,error}=await sb.rpc('library_rotate_admin_access_code');if(error)throw error;
+   if(!/^[0-9a-f]{64}$/i.test(String(data||'')))throw Error('The server did not return a valid access code.');
+   $('adminAccessCodeResult').textContent=data;
+   $('adminInviteDeliveryStatus').textContent='Share securely with trusted admins. Previous codes have been disabled. This code cannot be viewed again after you close the page.';
+   $('createdAdminInvite').hidden=false;msg('New administrator registration code generated. Copy it now.','ok');
+ }catch(e){msg('Could not generate admin code: '+authError(e)+'. Apply the included one-time SQL upgrade first.','err')}
  finally{button.disabled=false}
 }
 // Invite token stays in the URL fragment (not an HTTP query or path). Import once, then remove it from the address bar.
@@ -598,11 +628,19 @@ function syncExisting(){if(!session?.user)return msg("Sign in to Supabase first.
 async function signIn(){
  if(authBusy)return;let email=$("email").value.trim(),password=$("password").value;
  if(!email||!password)return msg("Enter your email and password.","warn");
+ const requestingAdmin=$('signupAccessRole').value==='admin',accessCode=$('signupInviteCode').value.trim();
+ if(requestingAdmin&&accessCode){savePendingAdminAccess(email,accessCode)}
  authBusy=true;$("authSubmit").disabled=true;msg("Signing in...");
  try{
   let {data,error}=await sb.auth.signInWithPassword({email,password});if(error)throw error;
   if(!data?.session)throw new Error("No session was created. Confirm your email if required.");
-  session=data.session;authUI();await reloadAll();if(memberRole)msg("Signed in. Your library workspace is ready.","ok");
+  session=data.session;authUI();await reloadAll();
+  if(memberRole){
+    if(requestingAdmin&&memberRole!=='admin'){
+      $('activateAdminPanel').open=true;
+      msg('Signed in as Library user. Enter a valid administrator access code in Account & access settings to activate Admin.','warn');
+    }else msg('Signed in. Your '+(isAdmin()?'administrator':'library user')+' workspace is ready.','ok');
+  }
  }catch(e){msg(authError(e),"err");if(/confirm/i.test(String(e?.message||"")))$("resendConfirmation").hidden=false}
  finally{authBusy=false;$("authSubmit").disabled=false}
 }
@@ -612,17 +650,22 @@ async function signUp(){
  if(password.length<8)return msg("Use a password with at least 8 characters.","warn");
  if(password!==confirm)return msg("Your passwords do not match.","warn");
  const creatingAdmin=$('signupAccessRole').value==='admin',inviteCode=$('signupInviteCode').value.trim();
- if(creatingAdmin&&!inviteCode)return msg('Open your administrator invitation email to register, or paste its invitation code.','warn');
+ if(!creatingAdmin)clearPendingAdminAccess();
+ if(creatingAdmin&&!inviteCode)return msg('Enter the private administrator access code before creating an admin account.','warn');
  authBusy=true;$("authSubmit").disabled=true;msg("Creating your personal account...");
  try{
-  if(creatingAdmin)savePendingAdminInvite(email,inviteCode);
+  if(creatingAdmin){
+    const linked=readPendingAdminInvite();
+    if(linked&&linked.email===email&&linked.code===inviteCode)savePendingAdminInvite(email,inviteCode);
+    else savePendingAdminAccess(email,inviteCode);
+  }
   const options=authRedirectOptions();let {data,error}=await sb.auth.signUp({email,password,options});if(error)throw error;
   if(data?.session){session=data.session;authUI();await reloadAll();if(memberRole)msg(isAdmin()?"Administrator account activated.":"Account created. Confirm your email and activate your invitation if necessary.","ok")}
   else{
    $("resendConfirmation").hidden=false;
-   msg("If registration succeeded, check "+email+" for a confirmation link (including spam). "+(creatingAdmin?"After confirmation, sign in here to activate your invitation. If the browser loses the invitation, reopen the link from your email.":"After confirming, return here and sign in."),"ok");
+   msg("If registration succeeded, check "+email+" for a confirmation link (including spam). "+(creatingAdmin?"After confirmation, return and sign in. Your admin code activates your role; you may need to enter it again on another device.":"After confirming, return here and sign in."),"ok");
   }
- }catch(e){if(creatingAdmin)clearPendingAdminInvite();msg(authError(e),"err")}
+ }catch(e){if(creatingAdmin){clearPendingAdminInvite();clearPendingAdminAccess()}msg(authError(e),"err")}
  finally{authBusy=false;$("authSubmit").disabled=false}
 }
 async function resendConfirmation(){let email=$("email").value.trim();if(!email)return msg("Enter your email address first.","warn");
@@ -2401,8 +2444,9 @@ $("bookTable").addEventListener("click",async e=>{
  const copy=e.target.closest("[data-copy-book]");if(copy){const b=books.find(x=>x.record_id===copy.dataset.copyBook);if(!b)return;const text=b.book_id||b.record_id;try{await navigator.clipboard.writeText(text);msg("Book ID copied to clipboard.","ok")}catch{msg("Copy not available here. Book ID: "+text,"warn")}}
 });
 $("showSignIn").onclick=()=>setAuthMode("signin");$("showSignUp").onclick=()=>setAuthMode("signup");
-$('signupAccessRole').addEventListener('change',updateSignupRole);$('email').addEventListener('input',()=>{if(authMode==='signup')updateSignupRole()});
+document.querySelectorAll('[data-select-role]').forEach(button=>button.addEventListener('click',()=>{$('signupAccessRole').value=button.dataset.selectRole;updateSignupRole()}));$('signupAccessRole').addEventListener('change',updateSignupRole);$('email').addEventListener('input',()=>{if(authMode==='signup')updateSignupRole()});
 $('createAdminInvite').onclick=createAdminInvite;$('activateAdminInvite').onclick=activateAdminInvite;
+$('copyAdminAccessCode').onclick=async()=>{const code=$('adminAccessCodeResult').textContent;try{await navigator.clipboard.writeText(code);msg('Administrator code copied. Share it privately.','ok')}catch{msg('Clipboard unavailable. Select and copy the displayed code.','warn')}};
 
 $("passwordReveal").onclick=()=>{const field=$("password"),revealed=field.type==="text";field.type=revealed?"password":"text";$("passwordReveal").textContent=revealed?"Show":"Hide";$("passwordReveal").setAttribute("aria-label",revealed?"Show password":"Hide password");$("passwordReveal").setAttribute("aria-pressed",String(!revealed));};
 $("accountForm").onsubmit=e=>{e.preventDefault();authMode==="signup"?signUp():signIn()};

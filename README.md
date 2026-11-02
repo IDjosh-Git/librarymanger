@@ -1,3 +1,7 @@
+# Library Manager — Compact Role Workspaces
+
+For Admin/User registration and the new navigation, start with [ADMIN_USER_REGISTRATION_SETUP.md](ADMIN_USER_REGISTRATION_SETUP.md). **Apply the one-time `library_admin_access_code_upgrade.sql` before using direct admin registration.** Administrator selection by itself never grants privileges.
+
 # Library Manager — Clean deployment source
 
 This is the cleaned, production-focused edition of the Library Manager, based on the automatic administrator email invitation release and updated book logo. It retains Inventory and its review queue, Scanned Books, OCR, optional AI image reading, catalog metadata completion, Excel import/export, lending, returns, overdue notifications, administrator invitations, and optional Google Sheets synchronization.
