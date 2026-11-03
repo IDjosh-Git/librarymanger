@@ -3993,3 +3993,234 @@ body[data-account="in"] .workspace-nav .workspace-nav-section .workspace-nav-act
 
 /* Inventory grid mode is not a horizontally scrollable table. */
 #inventoryTableScrollHelp:has(+ #bookTable.grid-wrap){display:none!important;}
+
+/* === November 2026 · White workspace navigation / contained scrolling ===
+   Intentional final navigation layer. The public sign-in experience, catalogue
+   tables, and role/visibility logic are unaffected. The enclosing sidebar clips
+   the interior scrollbar to its own rounded silhouette. */
+body[data-account="in"] .layout > .auth {
+  box-sizing:border-box;
+  min-width:0;
+  border:1px solid #e3ebf1!important;
+  border-radius:23px!important;
+  background:#fff!important;
+  background-image:none!important;
+  box-shadow:0 10px 35px rgba(22,52,78,.08)!important;
+  color:#20364d;
+  isolation:isolate;
+}
+body[data-account="in"] .auth .pad.auth-content {
+  box-sizing:border-box;
+  min-width:0;
+  background:#fff!important;
+  color:#20364d;
+}
+/* White means white in dark mode too: legibility does not depend on theme tokens. */
+body[data-account="in"] .auth .sidebar-title strong,
+body[data-account="in"] .auth .workspace-nav-header strong,
+body[data-account="in"] .auth .workspace-account-caption,
+body[data-account="in"] .auth #who {color:#183650!important;}
+body[data-account="in"] .auth .sidebar-title .badge {
+  background:#edf5fa!important;color:#315b77!important;
+  border:1px solid #dce8f0!important;
+}
+body[data-account="in"] .auth .workspace-account {
+  display:flex;align-items:center;min-width:0;
+  border:1px solid #e4ecf3!important;border-radius:16px!important;
+  background:#f8fbfe!important;background-image:none!important;
+  box-shadow:none!important;
+}
+body[data-account="in"] .auth .workspace-account-avatar {
+  color:#216585!important;background:#e7f2f8!important;
+  box-shadow:none!important;
+}
+body[data-account="in"] .auth .workspace-account-caption {color:#647f91!important;}
+body[data-account="in"] .auth .workspace-account .member-role-pill {
+  background:#e7f5f1!important;color:#12685c!important;
+  border:1px solid #cce9e0!important;
+}
+/* The menu itself is an open, unboxed white surface, not a second dark card. */
+body[data-account="in"] .auth .workspace-nav {
+  position:relative;
+  isolation:auto;
+  overflow:visible;
+  color:#243e54!important;
+  background:#fff!important;
+  background-image:none!important;
+  background-size:auto!important;
+  animation:none!important;
+  box-shadow:none!important;
+  border:0!important;
+  border-top:1px solid #e5edf2!important;
+  border-radius:0!important;
+  padding:19px 0 6px!important;
+  margin:18px 0 14px!important;
+}
+body[data-account="in"] .auth .workspace-nav::before,
+body[data-account="in"] .auth .workspace-nav::after {
+  content:none!important;display:none!important;animation:none!important;
+}
+body[data-account="in"] .auth .workspace-nav-header {
+  margin:0 0 18px!important;
+  padding:0 8px 13px!important;
+  border-bottom:1px solid #edf2f6!important;
+}
+body[data-account="in"] .auth .workspace-nav-header .workspace-nav-eyebrow {
+  color:#2b7893!important;letter-spacing:.13em!important;
+}
+body[data-account="in"] .auth .workspace-nav-header strong {font-size:1.13rem!important;}
+body[data-account="in"] .auth .workspace-nav-header p {
+  color:#687f91!important;font-size:.77rem!important;line-height:1.5;
+}
+body[data-account="in"] .auth .workspace-nav-section {
+  margin:0 0 14px!important;gap:4px!important;
+}
+body[data-account="in"] .auth .workspace-nav-section .workspace-nav-label {
+  padding:0 8px!important;margin:0 0 5px 3px!important;
+  color:#5d7488!important;font-weight:850!important;
+  letter-spacing:.105em!important;font-size:.65rem!important;
+}
+body[data-account="in"] .auth .workspace-nav-section :is(.tab,.workspace-nav-action) {
+  min-height:50px!important;
+  width:100%;min-width:0;
+  display:flex;align-items:center;gap:12px!important;
+  padding:8px 11px!important;
+  border-radius:12px!important;
+  border:1px solid transparent!important;
+  background:#fff!important;background-image:none!important;
+  color:#274158!important;
+  font-size:.86rem!important;line-height:1.35!important;
+  font-weight:720;text-align:left;
+  box-shadow:none!important;
+  transform:none!important;
+  transition:background-color .17s ease,border-color .17s ease,color .17s ease!important;
+}
+body[data-account="in"] .auth .workspace-nav-section :is(.tab,.workspace-nav-action) > span:not(.notification-nav-count) {
+  min-width:0;color:inherit!important;overflow-wrap:normal!important;
+  word-break:normal!important;
+}
+body[data-account="in"] .auth .workspace-nav-section :is(.tab,.workspace-nav-action) > .app-icon {
+  box-sizing:border-box!important;width:36px!important;height:36px!important;
+  flex:0 0 36px!important;padding:9px!important;
+  border-radius:10px!important;
+  color:#28617d!important;background:#edf4f9!important;
+}
+body[data-account="in"] .auth .workspace-nav-section :is(.tab,.workspace-nav-action):hover:not(.active):not([aria-current="page"]) {
+  background:#f1f7fa!important;border-color:#e2edf3!important;color:#154e70!important;
+  transform:none!important;
+}
+body[data-account="in"] .auth .workspace-nav-section .tab:is(.active,[aria-current="page"]) {
+  background:#15547a!important;background-image:none!important;
+  border-color:#15547a!important;
+  color:#fff!important;box-shadow:0 4px 11px rgba(11,61,95,.13)!important;
+}
+body[data-account="in"] .auth .workspace-nav-section .tab:is(.active,[aria-current="page"]) > .app-icon {
+  color:#fff!important;background:rgba(255,255,255,.17)!important;
+}
+body[data-account="in"] .auth .workspace-nav-section .tab:is(.active,[aria-current="page"]) > span {color:#fff!important;}
+body[data-account="in"] .auth .nav-quick-section,
+body[data-account="in"] .auth .nav-discovery-section {
+  border-top:1px solid #e9eff4!important;padding-top:15px!important;
+}
+body[data-account="in"] .auth .nav-quick-section .workspace-nav-action {
+  background:#f8fbfd!important;border:1px solid #e4edf3!important;
+  color:#31566e!important;
+}
+body[data-account="in"] .auth .nav-quick-section .workspace-nav-action:hover {
+  background:#eaf4f8!important;color:#154e70!important;
+}
+body[data-account="in"] .auth .workspace-spotlight-link {
+  min-height:76px!important;
+  border:1px solid #e3edf3!important;
+  border-radius:14px!important;
+  background:#f8fbfe!important;background-image:none!important;
+  color:#1c455f!important;
+  box-shadow:none!important;
+}
+body[data-account="in"] .auth .workspace-spotlight-link:hover {
+  background:#eef7fa!important;background-image:none!important;
+  transform:none!important;
+}
+body[data-account="in"] .auth .workspace-spotlight-link > span:nth-child(2),
+body[data-account="in"] .auth .workspace-spotlight-link .app-icon {color:#1c455f!important;}
+body[data-account="in"] .auth .workspace-spotlight-link small {color:#637d90!important;}
+body[data-account="in"] .auth .workspace-spotlight-link .spotlight-nav-mark {
+  background:#fff1d5!important;background-image:none!important;color:#975a08!important;
+}
+body[data-account="in"] .auth .account-tools,
+body[data-account="in"] .auth .lookupbox {
+  background:#fff!important;background-image:none!important;
+  border:1px solid #e1eaf0!important;border-radius:15px!important;
+  box-shadow:none!important;
+}
+body[data-account="in"] .auth .account-tools > summary,
+body[data-account="in"] .auth .lookupbox > .lookuphead {
+  background:#fff!important;color:#24455e!important;
+}
+body[data-account="in"] .auth :is(.account-tools,.lookupbox) > summary:hover {
+  background:#f5f9fc!important;
+}
+body[data-account="in"] .auth .lookuphead-copy strong {color:#1d425b!important;}
+body[data-account="in"] .auth .lookuphead-copy small,
+body[data-account="in"] .auth .lookupnote {color:#5e798d!important;}
+body[data-account="in"] .auth .lookupbody,
+body[data-account="in"] .auth .account-tools-body {background:#fff!important;color:#24455e;}
+body[data-account="in"] .auth :is(.account-tools,.lookupbox) summary:focus-visible,
+body[data-account="in"] .auth .workspace-nav :is(.tab,.workspace-nav-action,.workspace-spotlight-link):focus-visible {
+  outline:3px solid #1692a6!important;outline-offset:2px!important;
+}
+/* Desktop: outer card cannot scroll beyond rounded edges; only the inner surface
+   scrolls. Inset margins leave space for the scroll thumb and bottom breathing room. */
+@media (min-width:900px) {
+  body[data-account="in"] .layout > .auth {
+    position:sticky!important;top:14px!important;
+    max-height:calc(100dvh - 28px)!important;
+    overflow:hidden!important;
+    scrollbar-width:none!important;
+    scrollbar-gutter:auto!important;
+  }
+  body[data-account="in"] .auth .pad.auth-content {
+    min-height:0;max-height:calc(100dvh - 50px)!important;
+    overflow-y:auto!important;overflow-x:hidden!important;
+    overscroll-behavior-y:contain;
+    margin:10px 7px 10px 9px!important;
+    padding:11px 14px 15px 12px!important;
+    scrollbar-gutter:stable;
+    scrollbar-width:thin;
+    scrollbar-color:#adc2d0 transparent;
+    border-radius:16px;
+  }
+  body[data-account="in"] .auth .pad.auth-content::-webkit-scrollbar {width:9px;}
+  body[data-account="in"] .auth .pad.auth-content::-webkit-scrollbar-track {background:#fff;border-radius:12px;}
+  body[data-account="in"] .auth .pad.auth-content::-webkit-scrollbar-thumb {
+    background:#afc4d0;border-radius:12px;border:2px solid #fff;
+  }
+  body[data-account="in"] .auth .pad.auth-content::-webkit-scrollbar-thumb:hover {background:#7f9fb1;}
+}
+/* Mobile/tablet: sidebar account area remains a normal in-flow card; no nested scrolling. */
+@media (max-width:899px) {
+  body[data-account="in"] .layout > .auth {height:auto!important;max-height:none!important;overflow:hidden!important;}
+  body[data-account="in"] .auth .pad.auth-content {
+    height:auto!important;max-height:none!important;
+    overflow:visible!important;margin:0!important;
+    padding:17px!important;
+  }
+}
+@media (prefers-reduced-motion:reduce) {
+  body[data-account="in"] .auth .workspace-nav-section :is(.tab,.workspace-nav-action),
+  body[data-account="in"] .auth .workspace-spotlight-link {transition:none!important;}
+}
+/* Outrank the previous dark-gradient text reset. It had an extra :not() selector
+   that otherwise left inactive labels nearly white on this white sidebar. */
+body[data-account="in"] .auth .workspace-nav .workspace-nav-section .tab:not(.active):not([aria-current="page"]),
+body[data-account="in"] .auth .workspace-nav .workspace-nav-section .workspace-nav-action {
+  color:#274158!important;
+}
+body[data-account="in"] .auth .workspace-nav .workspace-nav-section .tab:not(.active):not([aria-current="page"]) > span,
+body[data-account="in"] .auth .workspace-nav .workspace-nav-section .workspace-nav-action > span {
+  color:inherit!important;
+}
+body[data-account="in"] .auth .workspace-nav .workspace-nav-section .tab:not(.active):not([aria-current="page"]):hover,
+body[data-account="in"] .auth .workspace-nav .workspace-nav-section .workspace-nav-action:hover {
+  color:#154e70!important;
+}
