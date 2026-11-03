@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#14354f">
+  <meta name="description" content="Discover the Book of the Week from Library Manager: a featured read, cover and reading recommendation.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <title>Book of the Week | Library Manager</title>
+  <link rel="stylesheet" href="assets/spotlight.css">
+  <link rel="stylesheet" href="assets/spotlight-premium.css">
+  <script>try{document.documentElement.dataset.theme=localStorage.getItem('library_manager_theme_v2')==='dark'?'dark':'light'}catch{document.documentElement.dataset.theme='light'}</script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.115.0/dist/umd/supabase.min.js"></script>
+  <script defer src="assets/book-of-the-week.js"></script>
+  <script defer src="assets/public-contact.js"></script>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to Book of the Week</a>
+  <header class="spotlight-topbar">
+    <div class="spotlight-container spotlight-top-inner">
+      <a href="index.html" class="spotlight-brand" aria-label="Library Manager home"><span class="spotlight-brand-icon" aria-hidden="true"><img src="assets/book-logo.svg" class="spotlight-brand-mark" alt="" width="44" height="44"></span><span><strong>Library Manager</strong><small>Discover &amp; explore</small></span></a>
+      <nav class="spotlight-top-actions" aria-label="Public navigation"><a href="#publicContactArea" class="spotlight-contact-link">Contact</a><a href="index.html" class="spotlight-back">← Back to library</a><button id="spotlightThemeToggle" type="button" aria-label="Toggle dark appearance" title="Change appearance"><span aria-hidden="true">◐</span></button></nav>
+    </div>
+  </header>
+  <main id="main">
+    <div class="spotlight-container">
+      <div class="spotlight-intro"><span class="spotlight-kicker"><span aria-hidden="true">✦</span> LIBRARY EDITORIAL</span><h2>A new chapter starts here.</h2><p>Discover a thoughtfully highlighted title from our shelves, with a new library selection every week when no title is manually featured.</p></div>
+      <section class="spotlight-feature" aria-labelledby="spotlightTitle">
+        <div class="spotlight-cover-column"><div class="spotlight-cover-frame"><div class="spotlight-cover-glow" aria-hidden="true"></div><img id="spotlightCover" src="assets/book-stack-fallback.jpg" alt="A photograph of a stack of books, until a book is featured" loading="eager" decoding="async"><div class="spotlight-cover-placeholder" id="spotlightCoverPlaceholder" hidden><span>✦</span><strong>Discover your next great read</strong></div></div><div class="spotlight-cover-caption">FEATURED COLLECTION <span aria-hidden="true">✦</span> WEEKLY PICKS</div></div>
+        <div class="spotlight-feature-content"><div class="spotlight-ribbon"><span class="ribbon-star" aria-hidden="true">★</span> THE BOOK OF THE WEEK</div><div class="spotlight-edition" id="spotlightEdition">Library reading recommendation</div><p class="spotlight-overline" id="spotlightOverline">Curated by your library</p><h1 id="spotlightTitle">Your next great read awaits.</h1><p class="spotlight-author" id="spotlightAuthor">Discover a book worth sharing.</p><p class="spotlight-description" id="spotlightDescription">Our library team is preparing the next featured book. Check back for the title, cover image, and why it deserves a place on your reading list.</p><div class="spotlight-info" aria-label="Featured book details"><div><span>FORMAT</span><strong>Library collection</strong></div><div><span>ISBN</span><strong id="spotlightIsbn">To be announced</strong></div><div><span>LOCATION</span><strong id="spotlightShelf">Ask the library</strong></div><div><span>READING PICK</span><strong id="spotlightSource">Curated feature</strong></div></div><div class="spotlight-cta"><a href="index.html" class="spotlight-primary-cta">Explore the library <span aria-hidden="true">↗</span></a><a href="#publicContactArea" class="spotlight-contact-cta">Contact the library</a><span id="spotlightPublished" aria-live="polite">A new reading pick is on its way.</span></div></div>
+      </section>
+      <section class="spotlight-extras" aria-labelledby="spotlightExtrasTitle">
+        <div class="spotlight-extras-title"><span class="spotlight-kicker">DISCOVER MORE</span><h2 id="spotlightExtrasTitle">A reading experience, not just a recommendation.</h2><p>Explore the featured title, find its shelf, and connect with the team to learn more about borrowing.</p></div>
+        <div class="spotlight-extras-grid"><article><span class="spotlight-extra-icon">01</span><h3>Selected from the collection</h3><p>Each highlighted title belongs to the library catalog. Books are featured by administrators or rotated automatically each week.</p></article><article><span class="spotlight-extra-icon">02</span><h3>Find the right edition</h3><p>Use the ISBN and shelf information above when asking about a specific book. Confirm availability with library staff.</p></article><article><span class="spotlight-extra-icon">03</span><h3>Share the discovery</h3><p>Pass this reading recommendation to another reader, or use the contact links below to reach your library.</p><button type="button" id="shareSpotlight" class="spotlight-share">Share this book ↗</button></article></div>
+      </section>
+      <section class="spotlight-contact" id="publicContactArea" aria-labelledby="publicContactTitle"><div><span class="spotlight-kicker">STAY CONNECTED</span><h2 id="publicContactTitle">Keep the conversation going.</h2><p data-contact-detail="summary">Contact details and social accounts appear here when published by the library.</p><div class="public-contact-facts"><span data-contact-detail="email"></span><span data-contact-detail="phone"></span><span data-contact-detail="location"></span><span data-contact-detail="hours"></span></div></div><div class="public-social-links" data-public-socials aria-label="Connect with the library"></div></section>
+      <section class="spotlight-support" aria-label="Reading inspiration"><div class="spotlight-support-heading"><span class="spotlight-kicker">MORE THAN A BOOK</span><h2>Good stories connect us.</h2><p>Whether you enjoy new ideas, timeless classics or an unexpected adventure, there is always a story waiting for you.</p></div><div class="spotlight-support-cards"><article><span aria-hidden="true">01</span><h3>Discover</h3><p>Explore a book chosen to spark curiosity and conversation.</p></article><article><span aria-hidden="true">02</span><h3>Get inspired</h3><p>See why this week's selection deserves a closer look.</p></article><article><span aria-hidden="true">03</span><h3>Keep reading</h3><p>Return to the library to find even more titles and stories.</p></article></div></section>
+    </div>
+  </main>
+  <footer><div class="spotlight-container spotlight-footer-inner"><strong>Library Manager</strong><p>Discover a selected title from your library. Picks may be selected by an administrator or rotated automatically.</p><a href="index.html">Back to the library ↗</a></div></footer>
+</body>
+</html>

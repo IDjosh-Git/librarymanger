@@ -2,7 +2,7 @@
 
 ## What changed
 
-- One shared sign-in and account-creation screen with **Library user** and **Administrator** choices.
+- A shared entry screen: **Sign In** accepts only email/password; **Create Account** offers **Library user** and **Administrator** choices.
 - New users selecting **Library user** register normally and receive only Lend / Return permissions.
 - People selecting **Administrator** enter the **private administrator registration code**. Once they have authenticated and confirmed their email, the database verifies the code and promotes only their own account automatically. It does not use Resend, a verified sending domain, or Vercel email variables.
 - The role chosen in the browser is NOT trusted for authorization. Admin access is granted only when the Supabase function verifies the secret code, an authenticated user, and a confirmed email address. Existing administrator accounts retain their access when they sign in without a code.
@@ -32,9 +32,9 @@ The three columns should return names, not `NULL`.
 
 **Library user:** Create Account → Library user → enter email and password → confirm email if required → Sign In. Only Lend and Return are available.
 
-**Administrator:** Create Account → Administrator → enter the private code, email, password → confirm email if required → Sign In. The app validates the saved code with Supabase, then opens the admin workspace automatically. If confirming on another browser, select Administrator and enter the code again when signing in.
+**Administrator:** Create Account → Administrator → enter the private code, email, password → confirm email if required → Sign In. The app validates the saved code with Supabase, then opens the admin workspace automatically. If email confirmation happened on a different device and the pending code was lost, sign in normally and use **Account & access → Activate administrator access**.
 
-**Existing library user promoted to Admin:** Sign In → choose Administrator → enter the code → sign in, or use **Account & access settings → Activate administrator access** while signed in. Confirmation of the email remains required.
+**Existing library user promoted to Admin:** Sign in normally, then open **Account & access → Activate administrator access** and enter the code. Email confirmation remains required.
 
 **Existing Admin:** Sign in normally; the account's database role is authoritative. Selecting User on the form does not demote an existing Admin.
 

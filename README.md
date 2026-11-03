@@ -1,75 +1,51 @@
-# Library Manager — Compact Role Workspaces
+# Library Manager
 
-For Admin/User registration and the new navigation, start with [ADMIN_USER_REGISTRATION_SETUP.md](ADMIN_USER_REGISTRATION_SETUP.md). **Apply the one-time `library_admin_access_code_upgrade.sql` before using direct admin registration.** Administrator selection by itself never grants privileges.
+Library Manager is a Supabase-backed library workspace for inventory management, book scanning and review, lending, returns, overdue notifications, Excel import/export, and optional Gemini-powered book-cover recognition.
 
-# Library Manager — Clean deployment source
+## Current release — automatic feature, contact links and circulation refresh (3 November 2026)
 
-This is the cleaned, production-focused edition of the Library Manager, based on the automatic administrator email invitation release and updated book logo. It retains Inventory and its review queue, Scanned Books, OCR, optional AI image reading, catalog metadata completion, Excel import/export, lending, returns, overdue notifications, administrator invitations, and optional Google Sheets synchronization.
+This release extends the navigation and overview version with a premium public Book of the Week advert, deterministic **automatic weekly selection when no admin book is published**, clearer Lend and Return pages, and a new **Admin → Contact & social links** editor. Public and signed-in user pages display only the official contact fields and social links that an administrator has saved. The Google Sheets mirror remains absent.
 
-## Repository layout
+**New one-time Supabase setup required:** After the existing role and Book of the Week migrations, run `library_public_discovery_upgrade.sql` from Supabase SQL Editor. The new script adds the administrator-protected public contact directory, authorizes clearing a manual feature, and creates a narrowly scoped anonymous book-recommendation RPC. Read **`PUBLIC_DISCOVERY_CONTACT_SETUP_20261103.md`** before deployment.
 
-- `index.html`: app, pages, authentication and browser workflows.
-- `assets/`: **all referenced** interface styles, scripts, logo, favicon, icon sprite and offline image fallbacks.
-- `api/`: Vercel server functions for metadata, book-title search, optional AI photo reading, and admin invitation emails.
-- `lib/`: shared modules imported by the APIs.
-- `vercel.json`, `package.json`: Vercel configuration and Node 20+ engine.
-- `.env.example`: server-side environment variable names; contains placeholders only.
-- `*.sql`: database migration and security setup scripts; needed when installing relevant functionality on a new or existing Supabase project.
-- `Code.gs`: optional Google Apps Script source for users who maintain a Google Sheets mirror.
-- `PHOTO_CREDITS.md`: attribution and photographic source information.
+The public page does not require an administrator to log in and pick a book each week; its fallback selection changes by ISO week whenever a titled catalog record exists. A manual admin pick overrides it until the administrator clicks **Use automatic weekly pick**.
 
-The `.xlsx` example template was removed because the live application builds and downloads its own Excel workbooks; its Excel Import/Export features **do not depend** on that file. Old screenshots, development tests, and historical update reports are excluded from this deployment package. Retain your previous archive if you need the old test harness or historical release notes.
+Offline checks: 20 Python regression tests passed, inline and asset JavaScript syntax checked, CSS parsed, dynamic public contact links were simulated, and static responsive Chromium layouts showed no horizontal overflow from 320 to 1440 px. **No SQL was executed in your production Supabase project, and no live database integration test was performed.**
 
-## Deployment
+## November 3, 2026 redesign and Book of the Week
 
-1. Unzip. Upload **the contents of this folder** to the repository root, not an outer ZIP nesting level. Deploy to Vercel as a static site with Framework: Other and root directory `./`. The API functions must remain under `/api/`.
-2. Reuse the same existing Supabase project. Do not put a service-role key or other secrets in `index.html` or commit environment secrets. The public browser key is already configured for the existing project.
-3. In Supabase Authentication → URL Configuration, allow your deployed HTTPS URL as a redirect destination. Test sign-in, email confirmation, password reset and any invited-admin activation.
-4. For an existing database, **do not rerun migrations blindly**. Inspect your installed tables, functions, and RLS policies, make a database backup, and apply only missing upgrades after review.
-5. If configuring the role/invitation system for the first time, follow the order below. **The first trusted admin must be assigned once** in Supabase; all later admins are invited through the app.
-6. Configure the Vercel environment variables below, then redeploy. Check the administrator and librarian accounts separately and test inventory edits, returns and notifications.
+- **Google Sheets mirroring has been completely removed** from the app, including its configuration panel, Apps Script file, automatic book/loan mirror requests, and legacy connector code. Book and loan writes remain in **Supabase**.
+- Refreshed light/dark colours, readable navy hero cards, and consistent typography and card alignment across the public sign-in/create-account screens and the signed-in workspaces.
+- Replaced the problem dropdown icons with a single chevron pattern. Only the chevron rotates—not the text. Native selects also use consistent, high-contrast chevrons.
+- The Admin and User role architecture is unchanged. Sign In does not request a workspace choice. Create Account offers User or Admin, but Admin activation **requires a private access code checked by Supabase**.
+- Layout was checked at 390, 768 and 1440 px in both themes using static Chromium fixtures. **Live Supabase authentication, permissions, writes, and deployment still need end-to-end testing.**
 
-## Database scripts, ordered and conditional
+The latest redesign moves inventory search/filtering above bulk tools, consolidates CSS into one maintained app stylesheet, and adds `book-of-the-week.html` with secure Admin publishing. See `MODERN_REDESIGN_AND_SPOTLIGHT_SETUP.md` for the required Book of the Week setup.
 
-- `book_id_migration.sql`: permanent unique ID per physical copy; use only on projects lacking it.
-- `persistent_review_queue.sql`: adds the cloud-backed review queue if missing.
-- `allow_duplicate_isbn.sql`: **optional** — only if an unintended barcode uniqueness constraint blocks multiple physical copies.
-- `allow_books_without_isbn.sql`: **optional** — only if a NOT NULL barcode constraint blocks title-page books.
-- `library_roles_and_circulation.sql`: **required for role-based access**; backs up and replaces existing broad policies on books, loans, and review. Review thoroughly before applying. Default account role is `user`.
-- `library_admin_invites_upgrade.sql`: add the private, expiring, email-bound, single-use invitation system; run **after** roles are installed and first admin assigned.
-- `library_admin_email_invite_upgrade.sql`: add failed-email invitation revocation; run **after** the invite upgrade.
+See `RELEASE_NOTES_20261103.md` for earlier Google Sheets removal details.
 
-To assign the **first** trusted administrator after installing the roles script (substitute your real account email):
+## Deploy to Vercel
 
-```sql
-UPDATE public.library_member_roles
-SET role = 'admin'
-WHERE user_id = (SELECT id FROM auth.users WHERE email = 'YOUR_ADMIN_EMAIL');
-```
+1. Extract this project and push the **contents of `librarymanger-main/`** to your repository root (not a nested folder unless Vercel's Root Directory points to it).
+2. Deploy in Vercel using the existing project and framework setting. Keep `index.html`, `assets/`, `api/`, `lib/`, and `vercel.json` together.
+3. Keep the same Supabase URL and public/publishable key already configured in `index.html`. **Never put Supabase service-role keys or Gemini secrets in browser code.**
+4. Configure optional AI in **Vercel → Project → Settings → Environment Variables** using `GEMINI_API_KEY`, then redeploy. The optional `GEMINI_MODEL` is read by the AI endpoint if supported.
+5. If installing the role system for the first time, back up Supabase and follow `ADMIN_USER_REGISTRATION_SETUP.md`. Do not rerun existing SQL migrations blindly. The private administrator code migration is **not** a frontend-only setting.
+6. Test an Admin account and User account separately before using the app in production. Verify book creation, editing, scans, lending, returns, overdue notifications, Excel import/export, and password recovery.
 
-Do not allow users to select arbitrary admin authorization: invitations must be generated by an existing administrator and validated by Supabase before the admin role is assigned.
+**Important:** Modern styling does not require SQL changes, but the **public Book of the Week and contact features require `library_book_of_the_week.sql` and `library_public_discovery_upgrade.sql` (in that order)**. That migration adds only a separate, curated public-feature table with Admin-only writes. It does not delete or alter existing inventory and loans in Supabase.
 
-## Automatic email invitations via Vercel + Resend
+## Application architecture
 
-Set these variables using **Vercel → Project → Settings → Environment Variables** (see `.env.example`):
+- `index.html` — user interface, authentication and browser workflows.
+- `assets/library-ui.css` — a single consolidated app stylesheet with existing workflow-compatible rules and a final modern visual system (navigation, inventory, filters, dropdowns, cards and responsive layouts). The nine older standalone CSS files have been retired.
+- `book-of-the-week.html`, `assets/spotlight.css`, `assets/spotlight-premium.css`, `assets/book-of-the-week.js` — public reading advert with manual/automatic curated book selection.
+- `library_book_of_the_week.sql` — original Admin-only publishing migration; apply once in Supabase.
+- `library_public_discovery_upgrade.sql` — public contact directory, Admin-only contact edits and automatic featured-book fallback; apply once after the original Book of the Week table exists.
+- `assets/public-contact.js` — safe public contact link rendering on public, guest and signed-in pages.
+- `assets/*.js` and `lib/*.cjs` — inventory, scanner, Excel, metadata and dashboard logic.
+- `api/book-lookup.js`, `api/title-search.js`, `api/book-vision.js` — current Vercel functions. There is **no** `/api/admin-invite` function or Google Apps Script integration in this release.
+- `vercel.json` — current deployment config. It references only an existing Serverless Function.
+- `*.sql` — Supabase migrations. Apply only after inspecting your existing database state and backing it up.
 
-```env
-SUPABASE_URL=https://YOUR-PROJECT.supabase.co
-SUPABASE_PUBLISHABLE_KEY=sb_publishable_YOUR_PROJECT_PUBLIC_KEY
-RESEND_API_KEY=re_YOUR_PRIVATE_KEY
-RESEND_FROM=Library Manager <invites@your-verified-domain.com>
-APP_BASE_URL=https://your-deployed-library-site.com/
-```
-
-Create a Resend account, verify the `RESEND_FROM` domain, and use its private sending API key only as a server-side environment variable. `APP_BASE_URL` must be your canonical HTTPS app origin, including `/` at the root. The endpoint `/api/admin-invite` sends a 48-hour, single-use invitation email only when called by a signed-in administrator. The recipient opens the email link, uses the invited email, confirms it when prompted by Supabase, and signs in to redeem. Failed sends attempt to revoke the issued token. Verify deliverability and the whole flow in staging before production.
-
-## AI and Excel
-
-- The public catalog metadata lookup and automatic high-confidence missing-detail completion do not require a Gemini key.
-- Optional AI vision OCR requires `GEMINI_API_KEY` in server environment variables. It remains unavailable without the key. It is distinct from local OCR; speed varies by browser, image, and network.
-- Inventory Review retains its Excel **Export and Import** actions. Download the workbook from the running app, correct records, and import it back. No separately packaged `.xlsx` template is needed.
-- Optional Google Sheets mirror: `Code.gs` is provided for setup/maintenance of your existing Apps Script connector. Do not overwrite a working deployed Apps Script unnecessarily. Store its private sync token in Script Properties.
-
-## Verification and limitations
-
-Before cleanup, the full source passed all **119 JavaScript automated tests**; application scripts and APIs were retained. The deployment package intentionally excludes the test suite and historical screenshots. Run an admin and librarian staging acceptance test against your own Supabase, OCR, Resend, Excel, and optional Google Sheets environment before promoting to production. No live deployment or database migration has been performed as part of this file cleanup.
+The Gemini AI key is optional. Book metadata lookup, local OCR and Excel support remain separate from Gemini and Google Sheets.

@@ -1,44 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="title desc">
-  <title id="title">Library Manager book logo</title>
-  <desc id="desc">A realistic open book illustration on a colorful gradient background.</desc>
-  <defs>
-    <linearGradient id="bg" x1="8" y1="6" x2="58" y2="58" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#FFF2D0"/>
-      <stop offset="0.48" stop-color="#86E3F2"/>
-      <stop offset="1" stop-color="#8F79FF"/>
-    </linearGradient>
-    <linearGradient id="coverL" x1="18" y1="20" x2="35" y2="47" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#3A5F8B"/>
-      <stop offset="1" stop-color="#18344C"/>
-    </linearGradient>
-    <linearGradient id="coverR" x1="29" y1="18" x2="46" y2="48" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#2A8A7A"/>
-      <stop offset="1" stop-color="#145548"/>
-    </linearGradient>
-    <linearGradient id="page" x1="14" y1="17" x2="39" y2="42" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#FFFDF9"/>
-      <stop offset="1" stop-color="#F5EBDD"/>
-    </linearGradient>
-    <filter id="shadow" x="7" y="8" width="50" height="48" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-      <feDropShadow dx="0" dy="7" stdDeviation="4.5" flood-color="#071C2D" flood-opacity="0.26"/>
-    </filter>
-  </defs>
-  <rect x="3" y="3" width="58" height="58" rx="18" fill="url(#bg)"/>
-  <circle cx="48.5" cy="15.5" r="7.5" fill="#FFFFFF" fill-opacity="0.18"/>
-  <path d="M13 47.5c10.2-5.2 27.8-5.2 38 0" stroke="#FFFFFF" stroke-opacity="0.28" stroke-width="2" stroke-linecap="round"/>
-  <g filter="url(#shadow)">
-    <path d="M17.5 18.5c4.8-1.8 9.8-1.5 14.5 1.5v24.3c-4.4-2.8-9.5-3.4-14.5-1.8V18.5Z" fill="url(#page)"/>
-    <path d="M46.5 18.5c-4.8-1.8-9.8-1.5-14.5 1.5v24.3c4.4-2.8 9.5-3.4 14.5-1.8V18.5Z" fill="url(#page)"/>
-    <path d="M17.5 18.5c4.8-1.8 9.8-1.5 14.5 1.5v3.6c-4.8-2.9-9.7-3.3-14.5-1.2v-3.9Z" fill="url(#coverL)"/>
-    <path d="M46.5 18.5c-4.8-1.8-9.8-1.5-14.5 1.5v3.6c4.8-2.9 9.7-3.3 14.5-1.2v-3.9Z" fill="url(#coverR)"/>
-    <path d="M31.7 20.1h.6v24.8h-.6c-.8 0-1.4-.6-1.4-1.4V21.5c0-.8.6-1.4 1.4-1.4Z" fill="#E5D8C6"/>
-    <path d="M20.5 26h8" stroke="#DFCDB7" stroke-width="1.2" stroke-linecap="round"/>
-    <path d="M20.5 29.7h7" stroke="#E3D2BE" stroke-width="1.2" stroke-linecap="round"/>
-    <path d="M20.5 33.4h6.2" stroke="#E7D7C4" stroke-width="1.2" stroke-linecap="round"/>
-    <path d="M35.5 26h8" stroke="#DFCDB7" stroke-width="1.2" stroke-linecap="round"/>
-    <path d="M36.5 29.7h7" stroke="#E3D2BE" stroke-width="1.2" stroke-linecap="round"/>
-    <path d="M37.3 33.4h6.2" stroke="#E7D7C4" stroke-width="1.2" stroke-linecap="round"/>
-    <path d="M17.5 42.5c5-1.6 10.1-1 14.5 1.8" stroke="#CBB69D" stroke-width="1.15" stroke-linecap="round"/>
-    <path d="M46.5 42.5c-5-1.6-10.1-1-14.5 1.8" stroke="#CBB69D" stroke-width="1.15" stroke-linecap="round"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="logoTitle logoDesc">
+<title id="logoTitle">Library Manager</title><desc id="logoDesc">A refined open-book symbol, with a luminous gold bookmark, on a deep navy square</desc>
+<defs>
+ <linearGradient id="markBase" x1="4" y1="4" x2="61" y2="61" gradientUnits="userSpaceOnUse"><stop stop-color="#183B6C"/><stop offset=".63" stop-color="#102D50"/><stop offset="1" stop-color="#0C6A71"/></linearGradient>
+ <linearGradient id="leftPage" x1="17" y1="25" x2="32" y2="46" gradientUnits="userSpaceOnUse"><stop stop-color="#FFFFFF"/><stop offset="1" stop-color="#D9EFFF"/></linearGradient>
+ <linearGradient id="rightPage" x1="32" y1="26" x2="48" y2="45" gradientUnits="userSpaceOnUse"><stop stop-color="#9AE7D9"/><stop offset="1" stop-color="#43BDBA"/></linearGradient>
+ <linearGradient id="glint" x1="40" y1="12" x2="53" y2="25" gradientUnits="userSpaceOnUse"><stop stop-color="#FFE6AA"/><stop offset="1" stop-color="#EFB864"/></linearGradient>
+</defs>
+<rect x="2" y="2" width="60" height="60" rx="17" fill="url(#markBase)"/>
+<rect x="2.7" y="2.7" width="58.6" height="58.6" rx="16.3" stroke="#D7ECFF" stroke-opacity=".18" stroke-width="1.4"/>
+<path d="M12.5 43.5V23.7c7.4-2 14.1-.6 19.5 3.1v21c-5.9-3.8-12-5-19.5-4.3Z" fill="url(#leftPage)"/>
+<path d="M51.5 43.5V23.7c-7.4-2-14.1-.6-19.5 3.1v21c5.9-3.8 12-5 19.5-4.3Z" fill="url(#rightPage)"/>
+<path d="M12.5 43.5c7.6-1.6 13.6-.2 19.5 4.3 5.9-4.5 11.9-5.9 19.5-4.3" stroke="#C4E8F0" stroke-opacity=".95" stroke-width="2.1" stroke-linecap="round"/>
+<path d="M32 26.8v21" stroke="#174B6B" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M18.5 29c3.3-.25 5.9.45 8.2 1.7M18.5 34c3.3-.25 5.9.45 8.2 1.7" stroke="#8AAEC8" stroke-opacity=".85" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M37.3 30.7c2.4-1.25 5-1.95 8.2-1.7M37.3 35.7c2.4-1.25 5-1.95 8.2-1.7" stroke="#0D6C7F" stroke-opacity=".65" stroke-width="1.5" stroke-linecap="round"/>
+<path d="m47.5 10.5 1.9 4.9 4.9 1.9-4.9 1.9-1.9 4.9-1.9-4.9-4.9-1.9 4.9-1.9 1.9-4.9Z" fill="url(#glint)"/>
 </svg>

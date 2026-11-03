@@ -1,19 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <defs>
-    <linearGradient id="bg" x1="6" y1="8" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#FFF0C5"/>
-      <stop offset="0.46" stop-color="#8CE4EE"/>
-      <stop offset="1" stop-color="#8D7CFF"/>
-    </linearGradient>
-    <linearGradient id="book" x1="18" y1="18" x2="46" y2="46" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#23567D"/>
-      <stop offset="1" stop-color="#1A7A67"/>
-    </linearGradient>
-  </defs>
-  <rect x="4" y="4" width="56" height="56" rx="18" fill="url(#bg)"/>
-  <path d="M18 20.5c4.5-1.7 9.5-1.4 14 1.5v21.5c-4.3-2.4-8.8-2.9-14-1.4v-21.6Z" fill="#FFF8EE"/>
-  <path d="M46 20.5c-4.5-1.7-9.5-1.4-14 1.5v21.5c4.3-2.4 8.8-2.9 14-1.4v-21.6Z" fill="#FFF8EE"/>
-  <path d="M18 20.5c4.5-1.7 9.5-1.4 14 1.5v3.1c-4.4-2.3-9-2.5-14-.8v-3.8Z" fill="url(#book)"/>
-  <path d="M46 20.5c-4.5-1.7-9.5-1.4-14 1.5v3.1c4.4-2.3 9-2.5 14-.8v-3.8Z" fill="url(#book)"/>
-  <path d="M31.6 22h.8v21.8h-.8z" fill="#D9C4A8"/>
+<title>Library Manager</title>
+<defs>
+ <linearGradient id="markBase" x1="4" y1="4" x2="61" y2="61" gradientUnits="userSpaceOnUse"><stop stop-color="#183B6C"/><stop offset=".63" stop-color="#102D50"/><stop offset="1" stop-color="#0C6A71"/></linearGradient>
+ <linearGradient id="leftPage" x1="17" y1="25" x2="32" y2="46" gradientUnits="userSpaceOnUse"><stop stop-color="#FFFFFF"/><stop offset="1" stop-color="#D9EFFF"/></linearGradient>
+ <linearGradient id="rightPage" x1="32" y1="26" x2="48" y2="45" gradientUnits="userSpaceOnUse"><stop stop-color="#9AE7D9"/><stop offset="1" stop-color="#43BDBA"/></linearGradient>
+ <linearGradient id="glint" x1="40" y1="12" x2="53" y2="25" gradientUnits="userSpaceOnUse"><stop stop-color="#FFE6AA"/><stop offset="1" stop-color="#EFB864"/></linearGradient>
+</defs>
+<rect x="2" y="2" width="60" height="60" rx="17" fill="url(#markBase)"/>
+<rect x="2.7" y="2.7" width="58.6" height="58.6" rx="16.3" stroke="#D7ECFF" stroke-opacity=".18" stroke-width="1.4"/>
+<path d="M12.5 43.5V23.7c7.4-2 14.1-.6 19.5 3.1v21c-5.9-3.8-12-5-19.5-4.3Z" fill="url(#leftPage)"/>
+<path d="M51.5 43.5V23.7c-7.4-2-14.1-.6-19.5 3.1v21c5.9-3.8 12-5 19.5-4.3Z" fill="url(#rightPage)"/>
+<path d="M12.5 43.5c7.6-1.6 13.6-.2 19.5 4.3 5.9-4.5 11.9-5.9 19.5-4.3" stroke="#C4E8F0" stroke-opacity=".95" stroke-width="2.1" stroke-linecap="round"/>
+<path d="M32 26.8v21" stroke="#174B6B" stroke-width="1.8" stroke-linecap="round"/>
+<path d="M18.5 29c3.3-.25 5.9.45 8.2 1.7M18.5 34c3.3-.25 5.9.45 8.2 1.7" stroke="#8AAEC8" stroke-opacity=".85" stroke-width="1.5" stroke-linecap="round"/>
+<path d="M37.3 30.7c2.4-1.25 5-1.95 8.2-1.7M37.3 35.7c2.4-1.25 5-1.95 8.2-1.7" stroke="#0D6C7F" stroke-opacity=".65" stroke-width="1.5" stroke-linecap="round"/>
+<path d="m47.5 10.5 1.9 4.9 4.9 1.9-4.9 1.9-1.9 4.9-1.9-4.9-4.9-1.9 4.9-1.9 1.9-4.9Z" fill="url(#glint)"/>
 </svg>
