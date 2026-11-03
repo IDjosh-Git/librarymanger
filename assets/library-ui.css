@@ -3841,3 +3841,155 @@ body[data-account="in"] .workspace-nav .workspace-nav-section .workspace-nav-act
   #dashboard .dashboard-hero .dashboard-hero-art img,
   #inventory .hero-library .hero-visual img {min-height:200px!important;height:200px!important;}
 }
+
+
+/* 2026-11-03: Readable records — horizontal scrolling, not stacked table values.
+   Legacy phone rules converted rows to cards and forced Inventory min-width:0;
+   these scoped declarations deliberately supersede that behaviour. */
+:where(#bookTable.tablewrap:not(.grid-wrap), #loanTable.tablewrap, #scannedTable.scanned-table-wrap) {
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  overflow-x:auto!important;
+  overflow-y:auto!important;
+  overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;
+  scrollbar-color:var(--accent, #3686a5) transparent;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:var(--surface);
+}
+:where(#bookTable, #loanTable, #scannedTable):focus-visible {
+  outline:3px solid var(--accent, #2685ac);
+  outline-offset:3px;
+}
+#inventory #bookTable.tablewrap:not(.grid-wrap) table {
+  display:table!important;
+  width:max(100%, 1850px)!important;
+  min-width:1850px!important;
+  table-layout:auto;
+  border-collapse:separate;
+  border-spacing:0;
+}
+#history #loanTable.tablewrap table {
+  display:table!important;
+  width:max(100%, 1380px)!important;
+  min-width:1380px!important;
+  table-layout:auto;
+  border-collapse:separate;
+  border-spacing:0;
+}
+#scannedTable.scanned-table-wrap table {
+  display:table!important;
+  width:max(100%, 1520px)!important;
+  min-width:1520px!important;
+  table-layout:auto;
+}
+:where(#bookTable.tablewrap:not(.grid-wrap), #loanTable.tablewrap, #scannedTable.scanned-table-wrap) thead {
+  display:table-header-group!important;
+}
+:where(#bookTable.tablewrap:not(.grid-wrap), #loanTable.tablewrap, #scannedTable.scanned-table-wrap) tbody {
+  display:table-row-group!important;
+  padding:0!important;
+  background:transparent;
+}
+:where(#bookTable.tablewrap:not(.grid-wrap), #loanTable.tablewrap, #scannedTable.scanned-table-wrap) tr {
+  display:table-row!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  padding:0!important;
+}
+:where(#bookTable.tablewrap:not(.grid-wrap), #loanTable.tablewrap, #scannedTable.scanned-table-wrap) :is(th,td) {
+  display:table-cell!important;
+  width:auto;
+  text-align:left;
+  vertical-align:middle;
+  padding:14px 15px!important;
+  white-space:nowrap!important;
+  overflow-wrap:normal!important;
+  word-break:normal!important;
+  border-bottom:1px solid var(--line);
+}
+:where(#bookTable.tablewrap:not(.grid-wrap), #loanTable.tablewrap, #scannedTable.scanned-table-wrap) td::before {
+  display:none!important;
+  content:none!important;
+}
+:where(#bookTable.tablewrap:not(.grid-wrap), #loanTable.tablewrap, #scannedTable.scanned-table-wrap) :is(.pill,.scanned-status,.action-cell,button) {
+  white-space:nowrap;
+  flex-wrap:nowrap;
+}
+#inventory #bookTable .inventory-th-label {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  white-space:nowrap!important;
+}
+#inventory #bookTable .inventory-th-label>span {white-space:nowrap!important;}
+#inventory #bookTable th:nth-child(1) {min-width:65px;}
+#inventory #bookTable th:nth-child(2) {min-width:190px;}
+#inventory #bookTable th:nth-child(3) {min-width:300px;}
+#inventory #bookTable th:nth-child(4) {min-width:180px;}
+#inventory #bookTable th:nth-child(5) {min-width:155px;}
+#inventory #bookTable th:nth-child(6) {min-width:140px;}
+#inventory #bookTable th:nth-child(7) {min-width:115px;}
+#inventory #bookTable th:nth-child(8) {min-width:145px;}
+#inventory #bookTable th:nth-child(9) {min-width:140px;}
+#inventory #bookTable th:nth-child(10){min-width:135px;}
+#inventory #bookTable th:nth-child(11){min-width:135px;}
+#inventory #bookTable td[data-label="Title"],
+#inventory #bookTable td[data-label="Title"] .inventory-title-with-cover,
+#inventory #bookTable td[data-label="Title"] .inventory-title-with-cover>span:last-child,
+#history #loanTable td[data-label="Book"],
+#scannedTable td[data-label="Title"] {
+  white-space:normal!important;
+  overflow-wrap:break-word!important;
+  word-break:normal!important;
+}
+#inventory #bookTable td[data-label="Title"] {min-width:300px;max-width:400px;line-height:1.45;}
+#inventory #bookTable td[data-label="Title"] .inventory-title-with-cover {min-width:0;gap:12px;align-items:center;}
+#inventory #bookTable td[data-label="Title"] .inventory-title-with-cover>span:last-child {max-width:300px;}
+#inventory #bookTable td[data-label="Actions"] .action-cell {justify-content:flex-start;gap:5px;}
+#inventory #bookTable tr.inventory-copy-subrow>td {
+  white-space:normal!important;
+  overflow-wrap:break-word!important;
+  max-width:none;
+}
+#history #loanTable td[data-label="Book"] {min-width:270px;max-width:390px;line-height:1.45;}
+#history #loanTable :is(th,td):nth-child(2) {min-width:140px;}
+#history #loanTable :is(th,td):nth-child(3) {min-width:180px;}
+#history #loanTable :is(th,td):nth-child(n+4):nth-child(-n+6) {min-width:135px;}
+#history #loanTable :is(th,td):nth-child(7) {min-width:130px;}
+#history #loanTable :is(th,td):nth-child(8) {min-width:120px;}
+#scannedTable :is(th,td):nth-child(1) {min-width:140px;}
+#scannedTable :is(th,td):nth-child(2) {min-width:275px;}
+#scannedTable :is(th,td):nth-child(3) {min-width:185px;}
+#scannedTable :is(th,td):nth-child(4) {min-width:175px;}
+#scannedTable :is(th,td):nth-child(5) {min-width:125px;}
+#scannedTable :is(th,td):nth-child(6) {min-width:125px;}
+#scannedTable :is(th,td):nth-child(7) {min-width:125px;}
+#scannedTable :is(th,td):nth-child(8) {min-width:130px;}
+#scannedTable :is(th,td):nth-child(9) {min-width:105px;}
+#scannedTable td[data-label="Title"] {max-width:380px;line-height:1.45;}
+.table-scroll-hint {
+  display:none;
+  margin:12px 2px 7px;
+  font-size:.78rem;
+  color:var(--muted);
+  line-height:1.5;
+}
+@media(max-width:1850px) {
+  #inventory .table-scroll-hint, #history .table-scroll-hint, #scanned .table-scroll-hint {display:block;}
+}
+@media(max-width:650px) {
+  :where(#bookTable.tablewrap:not(.grid-wrap), #loanTable.tablewrap, #scannedTable.scanned-table-wrap) {overflow-x:auto!important;overflow-y:auto!important;background:var(--surface)!important;}
+  :where(#bookTable.tablewrap:not(.grid-wrap), #loanTable.tablewrap, #scannedTable.scanned-table-wrap) tbody {display:table-row-group!important;gap:0!important;}
+  :where(#bookTable.tablewrap:not(.grid-wrap), #loanTable.tablewrap, #scannedTable.scanned-table-wrap) td {display:table-cell!important;justify-content:initial!important;align-items:middle!important;min-width:0;}
+  :where(#bookTable.tablewrap:not(.grid-wrap), #loanTable.tablewrap, #scannedTable.scanned-table-wrap) tr {display:table-row!important;}
+  .table-scroll-hint {display:block;}
+}
+
+/* Inventory grid mode is not a horizontally scrollable table. */
+#inventoryTableScrollHelp:has(+ #bookTable.grid-wrap){display:none!important;}
