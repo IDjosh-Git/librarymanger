@@ -3436,3 +3436,408 @@ body[data-account="in"] .workspace-nav-section .tab[aria-current="page"]{
  #inventory .inventory-stats-grid .stat{padding:10px!important}
 }
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+
+
+/* Library Manager · Navigation & page-hero refinement · November 2026
+   The single, intentionally last-loaded layer for workspace navigation and
+   image-led banners. Original application logic and role visibility remain intact. */
+
+:root {
+  --nav-refine-deep: #092540;
+  --nav-refine-mid: #0e4567;
+  --nav-refine-aqua: #136977;
+  --nav-refine-mist: #c3f4eb;
+  --nav-refine-edge: rgba(255,255,255,.15);
+}
+
+/* Give menu labels a full line and the work area the remaining width. */
+@media (min-width:900px) {
+  body[data-account="in"] main { max-width:1740px; }
+  body[data-account="in"] .layout {
+    grid-template-columns:clamp(378px,29.5vw,436px) minmax(0,1fr) !important;
+    gap:clamp(16px,1.6vw,28px) !important;
+  }
+  body[data-account="in"] .layout>.auth { scrollbar-gutter:stable; }
+}
+body[data-account="in"] .auth .pad.auth-content { padding:17px !important; }
+body[data-account="in"] .workspace-nav {
+  position:relative; isolation:isolate; overflow:hidden;
+  padding:22px 18px 19px !important;
+  margin:18px 0 16px !important;
+  border:1px solid rgba(169,225,241,.2) !important;
+  border-radius:23px;
+  color:#f0faff;
+  background:linear-gradient(135deg,var(--nav-refine-deep),var(--nav-refine-mid) 43%,var(--nav-refine-aqua) 75%,#0a3457) !important;
+  background-size:170% 170% !important;
+  animation:navGradientDrift 22s ease-in-out infinite alternate;
+  box-shadow:0 18px 40px rgba(5,38,69,.18),inset 0 1px rgba(255,255,255,.13);
+}
+body[data-account="in"] .workspace-nav::before,
+body[data-account="in"] .workspace-nav::after {
+  content:"";position:absolute;z-index:-1;pointer-events:none;border-radius:50%;
+}
+body[data-account="in"] .workspace-nav::before {
+  width:330px;height:330px;right:-195px;top:-125px;
+  background:radial-gradient(circle,rgba(129,227,217,.23),transparent 69%);
+  animation:navGlowFloat 18s ease-in-out infinite alternate;
+}
+body[data-account="in"] .workspace-nav::after {
+  width:300px;height:300px;bottom:-170px;left:-140px;
+  background:radial-gradient(circle,rgba(86,151,255,.15),transparent 70%);
+  animation:navGlowFloat 24s ease-in-out infinite alternate-reverse;
+}
+@keyframes navGradientDrift { from {background-position:0% 25%} to {background-position:100% 75%} }
+@keyframes navGlowFloat { from {transform:translate3d(0,0,0)} to {transform:translate3d(24px,26px,0)} }
+body[data-account="in"] .workspace-nav-header { margin:0 0 23px; padding:1px 9px 18px; border-bottom:1px solid rgba(228,250,255,.15); }
+body[data-account="in"] .workspace-nav-header .workspace-nav-eyebrow {
+  color:var(--nav-refine-mist) !important;letter-spacing:.17em;font-size:.65rem;
+}
+body[data-account="in"] .workspace-nav-header strong { color:#fff !important;font-size:1.25rem !important;line-height:1.3; }
+body[data-account="in"] .workspace-nav-header p { color:#cce9f2 !important;font-size:.79rem; }
+body[data-account="in"] .workspace-nav-section { margin:0 0 20px !important;gap:6px !important; }
+body[data-account="in"] .workspace-nav-section .workspace-nav-label {
+  padding:0 8px;margin:0 0 5px 5px;color:#acd9e6 !important;
+  font-size:.65rem;letter-spacing:.14em;font-weight:830;
+}
+body[data-account="in"] .workspace-nav-section .tab,
+body[data-account="in"] .workspace-nav-section .workspace-nav-action {
+  display:flex;align-items:center;gap:13px!important;width:100%;min-width:0;
+  min-height:54px!important;padding:10px 13px!important;
+  border:1px solid transparent!important;border-radius:14px!important;
+  text-align:left;font-size:.87rem!important;line-height:1.3!important;font-weight:720;
+  color:#e9f5fb!important;background:transparent!important;box-shadow:none!important;
+  transition:background-color .2s ease,border-color .2s ease,transform .2s ease,box-shadow .2s ease!important;
+}
+body[data-account="in"] .workspace-nav-section .tab>span:not(.notification-nav-count),
+body[data-account="in"] .workspace-nav-section .workspace-nav-action>span {min-width:0;overflow-wrap:normal;white-space:normal;word-break:normal;}
+body[data-account="in"] .workspace-nav-section .tab>.app-icon,
+body[data-account="in"] .workspace-nav-section .workspace-nav-action>.app-icon {
+  width:20px!important;height:20px!important;flex:0 0 20px!important;padding:10px!important;
+  box-sizing:content-box;border-radius:11px;background:rgba(209,246,255,.12)!important;
+  color:#c4f6f4!important;
+}
+body[data-account="in"] .workspace-nav-section .tab:hover:not(.active),
+body[data-account="in"] .workspace-nav-section .workspace-nav-action:hover {
+  color:#fff!important;border-color:rgba(222,254,255,.24)!important;
+  background:rgba(242,255,255,.12)!important;transform:translateX(2px)!important;
+}
+body[data-account="in"] .workspace-nav-section .tab:focus-visible,
+body[data-account="in"] .workspace-nav-section .workspace-nav-action:focus-visible,
+body[data-account="in"] .workspace-spotlight-link:focus-visible {outline:3px solid #9aeae3!important;outline-offset:3px;}
+body[data-account="in"] .workspace-nav-section .tab.active,
+body[data-account="in"] .workspace-nav-section .tab[aria-current="page"] {
+  background:linear-gradient(105deg,#f5feff,#c8f5f0)!important;
+  color:#073b53!important;border-color:rgba(255,255,255,.82)!important;
+  box-shadow:0 9px 21px rgba(0,27,51,.18)!important;transform:none!important;
+}
+body[data-account="in"] .workspace-nav-section .tab.active>.app-icon,
+body[data-account="in"] .workspace-nav-section .tab[aria-current="page"]>.app-icon {
+  color:#07647a!important;background:#ddf7f2!important;
+}
+body[data-account="in"] .workspace-nav-section .tab.active .nav-current-mark {background:#157f85!important;}
+body[data-account="in"] .workspace-nav-section .notification-nav-count {background:#fff1e7!important;color:#74310b!important;}
+body[data-account="in"] .nav-quick-section,
+body[data-account="in"] .nav-discovery-section {
+  padding-top:19px!important;margin-top:5px;border-top:1px solid rgba(240,255,255,.17)!important;
+}
+body[data-account="in"] .nav-quick-section .workspace-nav-action {
+  min-height:51px!important;font-size:.82rem!important;color:#e7f7ff!important;
+  background:rgba(255,255,255,.075)!important;border:1px solid rgba(216,253,255,.17)!important;
+}
+body[data-account="in"] .nav-quick-section .workspace-nav-action>.app-icon {
+  width:19px!important;height:19px!important;flex-basis:19px!important;padding:9px!important;
+  background:rgba(210,252,247,.13)!important;
+}
+body[data-account="in"] .nav-quick-section .workspace-nav-action:hover {background:rgba(255,255,255,.17)!important;}
+body[data-account="in"] .workspace-spotlight-link {
+  display:flex;align-items:center;gap:12px;width:100%;min-width:0;
+  min-height:82px;padding:14px!important;border-radius:17px;
+  border:1px solid rgba(255,230,182,.28)!important;
+  background:linear-gradient(110deg,rgba(238,191,102,.21),rgba(174,231,220,.1))!important;
+  color:#fff!important;box-shadow:none!important;
+  text-decoration:none;
+}
+body[data-account="in"] .workspace-spotlight-link>span:nth-child(2) {flex:1;min-width:0;line-height:1.35;font-weight:800;}
+body[data-account="in"] .workspace-spotlight-link small {display:block;color:#e6edf5!important;line-height:1.4;font-size:.7rem;}
+body[data-account="in"] .workspace-spotlight-link .spotlight-nav-mark {
+  color:#fff!important;background:linear-gradient(140deg,#edb85c,#c18c31)!important;
+  width:42px;height:42px;flex:0 0 42px;
+}
+body[data-account="in"] .workspace-spotlight-link .app-icon {color:#e1fff9!important;}
+body[data-account="in"] .workspace-spotlight-link:hover {
+  background:linear-gradient(110deg,rgba(238,191,102,.31),rgba(174,231,220,.19))!important;
+  transform:translateY(-2px);
+}
+
+/* The Book Lookup and Account Access controls are utility cards, not another menu. */
+body[data-account="in"] .account-tools {
+  background:var(--surface)!important;border:1px solid var(--line)!important;
+  border-radius:18px!important;box-shadow:0 5px 18px rgba(10,39,66,.045)!important;
+}
+body[data-account="in"] .account-tools>summary {min-height:59px;padding:14px 16px!important;}
+body[data-account="in"] .lookupbox {
+  margin-top:14px!important;overflow:hidden;background:var(--surface)!important;
+  border:1px solid var(--line)!important;border-radius:19px!important;
+  box-shadow:0 10px 24px rgba(17,44,75,.055)!important;
+}
+body[data-account="in"] .lookupbox>.lookuphead {
+  display:flex;align-items:center;justify-content:flex-start;gap:12px;
+  min-height:82px;padding:15px!important;background:var(--surface)!important;
+  color:var(--ink)!important;flex-wrap:nowrap!important;transform:none!important;
+}
+body[data-account="in"] .lookuphead-icon {
+  flex:0 0 45px;width:45px;height:45px;display:grid;place-items:center;
+  border-radius:14px;background:linear-gradient(135deg,#184f77,#198d96);color:#fff;
+  box-shadow:0 7px 15px rgba(12,87,115,.13);
+}
+body[data-account="in"] .lookuphead-icon .app-icon {width:22px;height:22px;color:#fff;}
+body[data-account="in"] .lookuphead-copy {display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-width:0;flex:1;transform:none!important;}
+body[data-account="in"] .lookuphead-copy strong {font-size:.89rem;line-height:1.27;color:var(--ink)!important;white-space:normal;}
+body[data-account="in"] .lookuphead-copy small {font-size:.7rem;color:var(--muted);line-height:1.4;}
+body[data-account="in"] .lookuphead-status {
+  font-size:.68rem;font-weight:800;line-height:1.15;white-space:nowrap;
+  color:#156d70;background:#e9f8f5;border:1px solid #c9ebe5;
+  border-radius:999px;padding:6px 8px;
+}
+:root[data-theme="dark"] body[data-account="in"] .lookuphead-status {background:#203e49;border-color:#38636b;color:#b4f2e9;}
+body[data-account="in"] .lookupbox>.lookuphead::after {margin-left:0!important;margin-right:3px!important;flex:0 0 9px!important;}
+body[data-account="in"] .lookupbox[open]>.lookuphead {border-bottom:1px solid var(--line);}
+body[data-account="in"] .lookupbox>.lookuphead:hover {background:var(--surface2)!important;}
+body[data-account="in"] .lookupbody {padding:20px!important;display:grid;gap:9px;background:var(--surface)!important;}
+body[data-account="in"] .lookupbody .lookupnote {font-size:.78rem;line-height:1.6;margin:0;}
+body[data-account="in"] .lookupbody label {font-size:.75rem;color:var(--ink);font-weight:760;margin:9px 0 0;}
+body[data-account="in"] .lookupbody input {min-height:49px;}
+body[data-account="in"] .lookupbody>.row {margin-top:4px!important;display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+body[data-account="in"] .lookupbody>.row button {min-width:0;min-height:45px;padding:8px 10px;font-size:.75rem;}
+
+/* Editorial split heroes: dedicated text and image surfaces, never text on top of media. */
+#dashboard .dashboard-hero,
+#inventory .hero-library {
+  display:grid!important;grid-template-columns:minmax(0,.94fr) minmax(0,1.06fr)!important;
+  gap:0!important;align-items:stretch!important;position:relative!important;
+  padding:0!important;min-height:328px!important;overflow:hidden;
+  border-radius:24px!important;border:1px solid rgba(184,217,231,.16)!important;
+  background:linear-gradient(130deg,#0e3153 0%,#145878 100%)!important;
+  box-shadow:0 14px 34px rgba(11,45,80,.13)!important;
+}
+#inventory .hero-library {background:linear-gradient(135deg,#123556,#167079)!important;}
+#dashboard .dashboard-hero::before,#dashboard .dashboard-hero::after,
+#inventory .hero-library::before,#inventory .hero-library::after {content:none!important;display:none!important;}
+#dashboard .dashboard-hero-copy,#inventory .hero-library .hero-copy {
+  position:relative!important;inset:auto!important;transform:none!important;
+  max-width:none!important;width:100%;z-index:1;
+  display:flex;flex-direction:column;justify-content:center;align-items:flex-start;
+  gap:11px;padding:clamp(25px,3.2vw,43px)!important;
+  background:transparent!important;min-width:0;
+}
+#dashboard .dashboard-hero h2,#inventory .hero-library h2 {
+  margin:0 0 5px!important;font-size:clamp(1.7rem,2.7vw,2.6rem)!important;
+  line-height:1.15!important;color:#fff!important;letter-spacing:-.04em;
+}
+#dashboard .dashboard-hero p,#inventory .hero-library p {
+  margin:0!important;color:#ecf7fd!important;font-size:.87rem!important;
+  line-height:1.62!important;max-width:52ch!important;
+}
+#dashboard .dashboard-hero .eyebrow,#inventory .hero-library .eyebrow {color:#b9f4ec!important;}
+#dashboard .dashboard-hero .dashboard-hero-art,
+#inventory .hero-library .hero-visual {
+  display:block!important;position:relative!important;inset:auto!important;
+  align-self:stretch!important;justify-self:stretch!important;
+  height:100%!important;width:100%!important;max-width:none!important;min-height:328px!important;
+  margin:0!important;z-index:1;
+  overflow:hidden;border-radius:0!important;background:#174663;
+}
+#dashboard .dashboard-hero .dashboard-hero-art::before,
+#inventory .hero-library .hero-visual::before {content:none!important;display:none!important;}
+#dashboard .dashboard-hero .dashboard-hero-art img,
+#inventory .hero-library .hero-visual .hero-photo {
+  display:block!important;width:100%!important;height:100%!important;
+  max-width:none!important;min-height:328px!important;aspect-ratio:auto!important;
+  border-radius:0!important;border:0!important;box-shadow:none!important;
+  object-fit:cover;object-position:center center;
+  filter:none!important;transition:transform .6s cubic-bezier(.2,.7,.2,1);
+}
+#dashboard .dashboard-hero:hover .dashboard-hero-art img,
+#inventory .hero-library:hover .hero-photo {transform:scale(1.025);}
+#dashboard .dashboard-hero-actions,
+#inventory .hero-library .hero-actions {display:flex;flex-wrap:wrap;gap:9px;margin-top:9px!important;}
+#dashboard .dashboard-hero-actions button,
+#inventory .hero-library .hero-actions button {
+  min-height:43px!important;padding:9px 13px!important;font-size:.76rem!important;
+  border-radius:12px!important;box-shadow:none!important;line-height:1.35;
+}
+#inventory .hero-library .hero-highlights {margin-top:6px;gap:7px;}
+#inventory .hero-library .hero-highlights span {font-size:.68rem!important;padding:5px 9px!important;line-height:1.35;}
+
+/* The same dedicated photo pane and balanced spacing on the remaining workspace pages. */
+#lend .circulation-hero,#return .circulation-hero,#history .history-hero,
+#scanned .scanned-hero,#notifications .notification-hero,#contactSettings .public-settings-hero {
+  display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,.95fr)!important;
+  align-items:stretch!important;gap:0!important;overflow:hidden!important;
+  min-height:255px;padding:0!important;border-radius:22px!important;
+  position:relative!important;border:1px solid rgba(181,221,236,.13)!important;
+  background:linear-gradient(130deg,#123b61,#166878)!important;
+  box-shadow:0 14px 29px rgba(9,45,76,.10)!important;
+}
+#return .circulation-hero {background:linear-gradient(125deg,#145544,#18766a)!important;}
+#scanned .scanned-hero {background:linear-gradient(125deg,#174063,#225f81)!important;}
+#notifications .notification-hero {background:linear-gradient(125deg,#3b345f,#264e78)!important;}
+#contactSettings .public-settings-hero {background:linear-gradient(125deg,#18425e,#1a6874)!important;}
+#lend .circulation-hero::before,#lend .circulation-hero::after,
+#return .circulation-hero::before,#return .circulation-hero::after,
+#history .history-hero::before,#history .history-hero::after,
+#scanned .scanned-hero::before,#scanned .scanned-hero::after,
+#notifications .notification-hero::before,#notifications .notification-hero::after,
+#contactSettings .public-settings-hero::before,#contactSettings .public-settings-hero::after {content:none!important;display:none!important;}
+#lend .circulation-hero-copy,#return .circulation-hero-copy,
+#history .circulation-hero-copy,#scanned .scanned-hero>div:first-child,
+#notifications .notification-hero-copy,#contactSettings .section-hero-copy {
+  padding:clamp(24px,2.7vw,37px)!important;min-width:0;
+  display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:12px;
+  position:relative!important;z-index:1;
+}
+#lend .circulation-hero h2,#return .circulation-hero h2,#history .history-hero h2,
+#scanned .scanned-hero h2,#notifications .notification-hero h2,#contactSettings .public-settings-hero h2 {
+  color:#fff!important;line-height:1.17!important;font-size:clamp(1.6rem,2.5vw,2.2rem)!important;
+  margin:0!important;max-width:22ch!important;
+}
+#lend .circulation-hero p,#return .circulation-hero p,#history .history-hero p,
+#scanned .scanned-hero p,#notifications .notification-hero p,#contactSettings .public-settings-hero p {
+  color:#eaf6fb!important;line-height:1.62!important;font-size:.86rem!important;max-width:49ch!important;margin:0!important;
+}
+#lend .circulation-hero .eyebrow,#return .circulation-hero .eyebrow,#history .history-hero .eyebrow,
+#scanned .scanned-hero .eyebrow,#notifications .notification-hero .eyebrow,#contactSettings .public-settings-hero .eyebrow {
+  color:#bff4e9!important;line-height:1.4;
+}
+#lend .circulation-hero .scanbtn,#return .circulation-hero .scanbtn,
+#scanned .scanned-hero-actions button,#notifications .notification-hero-actions button {
+  min-height:45px!important;border-radius:12px;padding:9px 14px!important;
+}
+#lend .section-hero-art,#return .section-hero-art,#history .section-hero-art,
+#scanned .section-hero-art,#notifications .section-hero-art,#contactSettings .section-hero-art {
+  position:relative!important;grid-column:2;grid-row:1;
+  display:block!important;align-self:stretch;min-width:0;min-height:255px;overflow:hidden;
+  background:#194e6a;
+}
+#lend .section-hero-art img,#return .section-hero-art img,#history .section-hero-art img,
+#scanned .section-hero-art img,#notifications .section-hero-art img,#contactSettings .section-hero-art img {
+  position:absolute;inset:0;display:block;width:100%;height:100%;max-width:none;
+  object-fit:cover;object-position:center;filter:none;border:0;border-radius:0;
+  transition:transform .6s cubic-bezier(.2,.7,.2,1);
+}
+:is(#lend,#return,#history,#scanned,#notifications,#contactSettings) :is(.circulation-hero,.scanned-hero,.notification-hero,.public-settings-hero):hover .section-hero-art img {transform:scale(1.025);}
+#contactSettings .public-settings-hero a {color:#fff!important;}
+/* An overdue count belongs with the alert information, never on the photo. */
+#notifications .notification-hero {grid-template-rows:1fr auto;}
+#notifications .notification-hero-copy {grid-column:1;grid-row:1;padding-bottom:10px!important;}
+#notifications .notification-hero-counter {
+  position:relative!important;grid-column:1;grid-row:2;align-self:end;justify-self:start;
+  margin:0 30px 23px!important;padding:10px 17px!important;max-width:100%;min-height:0;
+  background:rgba(255,255,255,.11)!important;border:1px solid rgba(255,255,255,.22)!important;
+  border-radius:13px;color:#fff!important;box-shadow:none!important;
+}
+#notifications .notification-hero-counter :is(span,small,strong) {color:#fff!important;}
+#notifications .notification-hero .section-hero-art {grid-column:2;grid-row:1/3;}
+
+@media (min-width:900px) and (max-width:1250px) {
+  #dashboard .dashboard-metrics {grid-template-columns:repeat(2,minmax(0,1fr));}
+  #dashboard .dashboard-hero h2,#inventory .hero-library h2 {font-size:1.85rem!important;}
+  #inventory .hero-library .hero-highlights {display:none!important;}
+}
+@media (max-width:899px) {
+  #dashboard .dashboard-hero,#inventory .hero-library,
+  #lend .circulation-hero,#return .circulation-hero,#history .history-hero,
+  #scanned .scanned-hero,#notifications .notification-hero,#contactSettings .public-settings-hero {
+    display:grid!important;grid-template-columns:minmax(0,1fr)!important;
+    grid-template-rows:auto auto!important;min-height:0!important;gap:0!important;
+    border-radius:20px!important;
+  }
+  #dashboard .dashboard-hero-copy,#inventory .hero-library .hero-copy,
+  #lend .circulation-hero-copy,#return .circulation-hero-copy,#history .circulation-hero-copy,
+  #scanned .scanned-hero>div:first-child,#notifications .notification-hero-copy,#contactSettings .section-hero-copy {
+    grid-column:1!important;grid-row:1!important;
+    padding:clamp(20px,4vw,30px)!important;
+  }
+  #dashboard .dashboard-hero .dashboard-hero-art,
+  #inventory .hero-library .hero-visual,
+  #lend .section-hero-art,#return .section-hero-art,#history .section-hero-art,
+  #scanned .section-hero-art,#notifications .section-hero-art,#contactSettings .section-hero-art {
+    grid-column:1!important;grid-row:2!important;display:block!important;position:relative!important;
+    inset:auto!important;min-height:220px!important;height:220px!important;width:100%!important;
+    max-width:none!important;justify-self:stretch!important;align-self:stretch!important;
+  }
+  #dashboard .dashboard-hero .dashboard-hero-art img,
+  #inventory .hero-library .hero-photo {min-height:220px!important;height:220px!important;width:100%!important;}
+  #notifications .notification-hero {grid-template-rows:auto auto auto!important;}
+  #notifications .notification-hero-counter {grid-column:1!important;grid-row:2!important;margin:0 20px 20px!important;}
+  #notifications .notification-hero .section-hero-art {grid-column:1!important;grid-row:3!important;}
+  #dashboard .dashboard-hero .dashboard-hero-art {display:block!important;}
+}
+@media (max-width:560px) {
+  #dashboard .dashboard-hero-copy,#inventory .hero-library .hero-copy,
+  #lend .circulation-hero-copy,#return .circulation-hero-copy,#history .circulation-hero-copy,
+  #scanned .scanned-hero>div:first-child,#notifications .notification-hero-copy,#contactSettings .section-hero-copy {
+    padding:20px 18px!important;
+  }
+  #dashboard .dashboard-hero .dashboard-hero-art,#inventory .hero-library .hero-visual,
+  #lend .section-hero-art,#return .section-hero-art,#history .section-hero-art,
+  #scanned .section-hero-art,#notifications .section-hero-art,#contactSettings .section-hero-art {
+    min-height:174px!important;height:174px!important;
+  }
+  #dashboard .dashboard-hero .dashboard-hero-art img,#inventory .hero-library .hero-photo {min-height:174px!important;height:174px!important;}
+  #dashboard .dashboard-hero-actions,#inventory .hero-library .hero-actions {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%;gap:8px;}
+  #dashboard .dashboard-hero-actions button,#inventory .hero-library .hero-actions button {min-width:0;width:100%;font-size:.71rem!important;}
+  #inventory .hero-library .hero-actions button:first-child {grid-column:auto;}
+  #inventory .hero-library .hero-highlights {display:none!important;}
+  body[data-account="in"] .lookuphead-status {display:none;}
+  #notifications .notification-hero-counter {margin:0 18px 20px!important;}
+}
+@media (prefers-reduced-motion:reduce) {
+  body[data-account="in"] .workspace-nav {animation:none!important;background-position:50% 50%!important;}
+  body[data-account="in"] .workspace-nav::before,
+  body[data-account="in"] .workspace-nav::after {animation:none!important;}
+  body[data-account="in"] .workspace-nav-section .tab,
+  body[data-account="in"] .workspace-nav-section .workspace-nav-action,
+  body[data-account="in"] .workspace-spotlight-link,
+  #dashboard .dashboard-hero .dashboard-hero-art img,
+  #inventory .hero-library .hero-photo,
+  .section-hero-art img {transition:none!important;transform:none!important;}
+}
+
+/* Older non-active tab selectors used an extra :not() specificity; explicitly
+   reset their text against the new dark navigation surface. */
+body[data-account="in"] .workspace-nav .workspace-nav-section .tab:not(.active),
+body[data-account="in"] .workspace-nav .workspace-nav-section .workspace-nav-action {
+  color:#e8f7fc!important;
+}
+body[data-account="in"] .workspace-nav .workspace-nav-section .tab:not(.active)>span,
+body[data-account="in"] .workspace-nav .workspace-nav-section .workspace-nav-action>span {
+  color:inherit!important;
+}
+body[data-account="in"] .workspace-nav .workspace-nav-section .tab:not(.active):hover,
+body[data-account="in"] .workspace-nav .workspace-nav-section .workspace-nav-action:hover {
+  color:#fff!important;
+}
+#inventory .hero-library .hero-actions {
+  display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:9px;width:100%;
+}
+#inventory .hero-library .hero-actions button {
+  min-width:0!important;width:100%;justify-content:center;
+  padding:10px 9px!important;
+}
+#inventory .hero-library .hero-highlights {display:none!important;}
+@media (min-width:900px) and (max-width:1160px) {
+  #dashboard .dashboard-hero,#inventory .hero-library {
+    grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto!important;
+    min-height:0!important;
+  }
+  #dashboard .dashboard-hero .dashboard-hero-copy,
+  #inventory .hero-library .hero-copy {grid-column:1;grid-row:1;padding:27px!important;}
+  #dashboard .dashboard-hero .dashboard-hero-art,
+  #inventory .hero-library .hero-visual {
+    grid-column:1;grid-row:2;min-height:200px!important;height:200px!important;
+  }
+  #dashboard .dashboard-hero .dashboard-hero-art img,
+  #inventory .hero-library .hero-visual img {min-height:200px!important;height:200px!important;}
+}
