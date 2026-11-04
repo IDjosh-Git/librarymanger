@@ -132,3 +132,33 @@ body{font-family:"Inter",system-ui,-apple-system,"Segoe UI",sans-serif;
  .spotlight-back::after{content:"Home";font-size:.71rem;white-space:nowrap}
  #spotlightThemeToggle{width:34px;height:34px;flex-basis:34px}
 }
+
+
+/* Book of the Week — aligned editorial face of Library Manager */
+:root:not([data-theme="dark"]){--su-ink:#15213e;--su-paper:#ffffff;--su-stroke:#e5e9f4;--su-text:#61708b;--su-wash:#f4f5fd}
+:root[data-theme="dark"]{--su-ink:#f2f5ff;--su-paper:#17213a;--su-stroke:#35405c;--su-text:#b7c5df;--su-wash:#1b2947}
+body{background:radial-gradient(ellipse 68% 45% at 10% 0%,rgba(115,103,228,.10),transparent 73%),var(--su-wash)!important;color:var(--su-ink)}
+.spotlight-topbar{background:linear-gradient(110deg,#0d1731,#182d55 60%,#1b5269)!important;border-bottom:1px solid rgba(255,255,255,.2)!important;box-shadow:0 12px 32px rgba(11,26,63,.14)!important}
+.spotlight-top-inner{min-height:89px!important}
+.spotlight-brand-icon{border-radius:16px!important;background:rgba(240,243,255,.14)!important;border:1px solid rgba(255,255,255,.22)!important}
+.spotlight-back,.spotlight-contact-link,#spotlightThemeToggle{border-radius:13px!important;transition:background .2s,transform .2s!important}
+.spotlight-back:hover,.spotlight-contact-link:hover,#spotlightThemeToggle:hover{transform:translateY(-2px)}
+.spotlight-intro{padding-top:clamp(32px,5vw,65px)!important}
+.spotlight-feature{border-radius:30px!important;overflow:hidden!important;box-shadow:0 20px 60px rgba(19,27,70,.14)!important;border:1px solid var(--su-stroke)!important}
+.spotlight-cover-frame{border-radius:21px!important;overflow:hidden!important}
+.spotlight-cover-frame:after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,rgba(12,25,65,.34),transparent 45%)}
+.spotlight-feature-content{border-radius:0!important}
+.spotlight-extras-grid article,.spotlight-support,.spotlight-contact{border-radius:22px!important;border-color:var(--su-stroke)!important;box-shadow:0 9px 28px rgba(28,37,78,.06)!important}
+.spotlight-extras-grid article{transition:transform .25s,box-shadow .25s}
+.spotlight-extras-grid article:hover{transform:translateY(-4px);box-shadow:0 17px 38px rgba(28,37,78,.10)!important}
+.spotlight-contact{background:var(--su-paper)!important}
+.spotlight-contact p,.spotlight-intro p{color:var(--su-text)!important}
+.spotlight-footer-inner{gap:16px!important}
+@media(max-width:650px){.spotlight-top-inner{min-height:74px!important}.spotlight-feature{border-radius:22px!important}.spotlight-extras-grid article{border-radius:16px!important}}
+@media(prefers-reduced-motion:reduce){.spotlight-extras-grid article,.spotlight-back,.spotlight-contact-link,#spotlightThemeToggle{transition:none!important;transform:none!important}}
+
+/* Book-guide feature CTA on the public feature. */
+.spotlight-chat-cta{border:1px solid rgba(255,255,255,.25);background:linear-gradient(125deg,#6852c9,#8c74ef);color:#fff;border-radius:12px;min-height:47px;padding:10px 17px;font:800 13px Inter,sans-serif;cursor:pointer;box-shadow:0 10px 25px rgba(55,37,132,.18);transition:transform .2s ease,box-shadow .2s ease}
+.spotlight-chat-cta:hover{transform:translateY(-3px);box-shadow:0 16px 32px rgba(55,37,132,.25)}
+.spotlight-chat-cta:focus-visible{outline:3px solid #aea1ff;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){.spotlight-chat-cta{transition:none}}

@@ -1,5 +1,7 @@
 # Library Manager
 
+> **Latest UI update (4 November 2026):** Premium header/navigation, responsive dashboard and Inventory gradients, simplified Scan & Review shelf workflow, modern dropdown icons, dark-mode and Book of the Week refinements. See `PREMIUM_LIBRARY_UI_RELEASE_20261104.md`. Existing SQL migrations and library functionality remain unchanged.
+
 Library Manager is a Supabase-backed library workspace for inventory management, book scanning and review, lending, returns, overdue notifications, Excel import/export, and optional Gemini-powered book-cover recognition.
 
 ## Current release — automatic feature, contact links and circulation refresh (3 November 2026)

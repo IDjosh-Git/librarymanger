@@ -12,12 +12,15 @@
   <title>Book of the Week | Library Manager</title>
   <link rel="stylesheet" href="assets/spotlight.css">
   <link rel="stylesheet" href="assets/spotlight-premium.css">
+<link rel="stylesheet" href="assets/book-guide.css">
   <script>try{document.documentElement.dataset.theme=localStorage.getItem('library_manager_theme_v2')==='dark'?'dark':'light'}catch{document.documentElement.dataset.theme='light'}</script>
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.115.0/dist/umd/supabase.min.js"></script>
-  <script defer src="assets/book-of-the-week.js"></script>
+  <script defer src="assets/book-guide-format.js"></script>
+  <script defer src="assets/book-guide.js"></script>
+<script defer src="assets/book-of-the-week.js"></script>
   <script defer src="assets/public-contact.js"></script>
 </head>
-<body>
+<body data-public-spotlight="true">
   <a href="#main" class="skip-link">Skip to Book of the Week</a>
   <header class="spotlight-topbar">
     <div class="spotlight-container spotlight-top-inner">
@@ -30,7 +33,7 @@
       <div class="spotlight-intro"><span class="spotlight-kicker"><span aria-hidden="true">✦</span> LIBRARY EDITORIAL</span><h2>A new chapter starts here.</h2><p>Discover a thoughtfully highlighted title from our shelves, with a new library selection every week when no title is manually featured.</p></div>
       <section class="spotlight-feature" aria-labelledby="spotlightTitle">
         <div class="spotlight-cover-column"><div class="spotlight-cover-frame"><div class="spotlight-cover-glow" aria-hidden="true"></div><img id="spotlightCover" src="assets/book-stack-fallback.jpg" alt="A photograph of a stack of books, until a book is featured" loading="eager" decoding="async"><div class="spotlight-cover-placeholder" id="spotlightCoverPlaceholder" hidden><span>✦</span><strong>Discover your next great read</strong></div></div><div class="spotlight-cover-caption">FEATURED COLLECTION <span aria-hidden="true">✦</span> WEEKLY PICKS</div></div>
-        <div class="spotlight-feature-content"><div class="spotlight-ribbon"><span class="ribbon-star" aria-hidden="true">★</span> THE BOOK OF THE WEEK</div><div class="spotlight-edition" id="spotlightEdition">Library reading recommendation</div><p class="spotlight-overline" id="spotlightOverline">Curated by your library</p><h1 id="spotlightTitle">Your next great read awaits.</h1><p class="spotlight-author" id="spotlightAuthor">Discover a book worth sharing.</p><p class="spotlight-description" id="spotlightDescription">Our library team is preparing the next featured book. Check back for the title, cover image, and why it deserves a place on your reading list.</p><div class="spotlight-info" aria-label="Featured book details"><div><span>FORMAT</span><strong>Library collection</strong></div><div><span>ISBN</span><strong id="spotlightIsbn">To be announced</strong></div><div><span>LOCATION</span><strong id="spotlightShelf">Ask the library</strong></div><div><span>READING PICK</span><strong id="spotlightSource">Curated feature</strong></div></div><div class="spotlight-cta"><a href="index.html" class="spotlight-primary-cta">Explore the library <span aria-hidden="true">↗</span></a><a href="#publicContactArea" class="spotlight-contact-cta">Contact the library</a><span id="spotlightPublished" aria-live="polite">A new reading pick is on its way.</span></div></div>
+        <div class="spotlight-feature-content"><div class="spotlight-ribbon"><span class="ribbon-star" aria-hidden="true">★</span> THE BOOK OF THE WEEK</div><div class="spotlight-edition" id="spotlightEdition">Library reading recommendation</div><p class="spotlight-overline" id="spotlightOverline">Curated by your library</p><h1 id="spotlightTitle">Your next great read awaits.</h1><p class="spotlight-author" id="spotlightAuthor">Discover a book worth sharing.</p><p class="spotlight-description" id="spotlightDescription">Our library team is preparing the next featured book. Check back for the title, cover image, and why it deserves a place on your reading list.</p><div class="spotlight-info" aria-label="Featured book details"><div><span>FORMAT</span><strong>Library collection</strong></div><div><span>ISBN</span><strong id="spotlightIsbn">To be announced</strong></div><div><span>LOCATION</span><strong id="spotlightShelf">Ask the library</strong></div><div><span>READING PICK</span><strong id="spotlightSource">Curated feature</strong></div></div><div class="spotlight-cta"><button type="button" id="askFeaturedBook" class="spotlight-chat-cta">✦ Ask about this book</button><a href="index.html" class="spotlight-primary-cta">Explore the library <span aria-hidden="true">↗</span></a><a href="#publicContactArea" class="spotlight-contact-cta">Contact the library</a><span id="spotlightPublished" aria-live="polite">A new reading pick is on its way.</span></div></div>
       </section>
       <section class="spotlight-extras" aria-labelledby="spotlightExtrasTitle">
         <div class="spotlight-extras-title"><span class="spotlight-kicker">DISCOVER MORE</span><h2 id="spotlightExtrasTitle">A reading experience, not just a recommendation.</h2><p>Explore the featured title, find its shelf, and connect with the team to learn more about borrowing.</p></div>

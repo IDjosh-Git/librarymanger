@@ -37,7 +37,7 @@ class LibraryReleaseChecks(unittest.TestCase):
 
     def test_unified_stylesheet_and_modern_disclosures(self):
         css=(ROOT/'assets/library-ui.css').read_text()
-        self.assertEqual(len(re.findall(r'<link[^>]+rel="stylesheet"[^>]+href="assets/[^"]+"',HTML)),1)
+        self.assertEqual(len(re.findall(r'<link[^>]+rel="stylesheet"[^>]+href="assets/[^"]+"',HTML)),2)
         for old in ['assets/role-navigation.css','assets/admin-invitations.css','assets/design-system.css']:
             self.assertFalse((ROOT/old).exists(),old)
         self.assertIn('summary::after',css)

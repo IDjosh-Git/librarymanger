@@ -37,4 +37,4 @@
 <symbol id="x" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></symbol>
 <symbol id="plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
 <symbol id="pencil" viewBox="0 0 24 24"><path d="m16 4 4 4-12 12-5 1 1-5L16 4ZM14 6l4 4"/></symbol>
-<symbol id="filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol><symbol id="filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol></defs></svg>
+<symbol id="filter" viewBox="0 0 24 24"><path d="M4 6h16M7 12h10M10 18h4"/></symbol><symbol id="bell" viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></symbol><symbol id="book-plus" viewBox="0 0 24 24"><path d="M3.5 19.5V5a2 2 0 0 1 2-2H11a4 4 0 0 1 4 4v14a4 4 0 0 0-4-4H5.5a2 2 0 0 0-2 2.5ZM15 21a4 4 0 0 1 4-4h2M15.5 6.5h7m-3.5-3.5v7"/></symbol></defs></svg>

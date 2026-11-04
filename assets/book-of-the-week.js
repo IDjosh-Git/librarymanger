@@ -23,6 +23,7 @@
     byId('spotlightTitle').textContent = String(data.title).trim();
     byId('spotlightAuthor').textContent = 'By ' + String(data.authors || 'Unknown author').trim();
     byId('spotlightDescription').textContent = String(data.description || 'Discover this featured title in our library collection.').trim();
+    window.LibraryBookGuide?.setBooks([{title:data.title,authors:data.authors,isbn:data.isbn,shelf:data.shelf,description:data.description}]);
     byId('spotlightIsbn').textContent = data.isbn || 'Not listed';
     byId('spotlightShelf').textContent = data.shelf || 'Ask the library';
     const automatic=data.selection_source==='automatic';
@@ -61,6 +62,7 @@
       }
     } catch (_) { /* Unconfigured spotlight retains its honest, usable placeholder. */ }
   }
+  byId('askFeaturedBook')?.addEventListener('click',()=>{const title=byId('spotlightTitle').textContent;if(!title||title==='Your next great read awaits.')return;window.LibraryBookGuide?.openBook({title,authors:byId('spotlightAuthor').textContent.replace(/^By /,''),isbn:byId('spotlightIsbn').textContent,shelf:byId('spotlightShelf').textContent,description:byId('spotlightDescription').textContent})});
   const share=byId('shareSpotlight');
   share?.addEventListener('click',async()=>{
     const title=byId('spotlightTitle').textContent;
