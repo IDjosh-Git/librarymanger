@@ -4779,3 +4779,37 @@ body[data-book-guide-visible="true"] .scroll-controls{display:none!important}
 :root[data-theme="dark"] .admin-directory-footer .app-icon{color:#9ae2bb}
 @media(max-width:620px){.admin-directory-hero{grid-template-columns:minmax(0,1fr);border-radius:19px;padding:24px 18px}.admin-directory-hero-number{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px}.admin-directory-hero-number strong{font-size:2.6rem}.admin-directory-heading{align-items:stretch}.admin-directory-search-wrap{width:100%;flex:1 1 100%}.admin-directory-grid{grid-template-columns:1fr}.admin-directory-surface{padding:16px 13px;border-radius:18px}.admin-directory-person{padding:16px}.admin-remove-actions{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.admin-directory-panel button{transition:none!important;transform:none!important}}
+
+/* Verified administrators · accessible responsive registration table */
+.admin-directory-table-scroll{width:100%;max-width:100%;overflow-x:auto;border:1px solid var(--line);border-radius:18px;background:var(--surface);box-shadow:0 8px 24px rgba(22,39,77,.035)}
+.admin-directory-table{width:100%;border-collapse:separate;border-spacing:0;table-layout:auto;min-width:780px;color:var(--ink);font-size:.88rem}
+.admin-directory-table thead{background:var(--surface2)}
+.admin-directory-table th{text-align:left;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-size:.68rem;font-weight:850;padding:16px 13px;border-bottom:1px solid var(--line);white-space:nowrap}
+.admin-directory-table td{padding:16px 13px;border-bottom:1px solid var(--line);vertical-align:middle;line-height:1.45;overflow-wrap:anywhere}
+.admin-directory-table tbody tr:last-child td{border-bottom:0}
+.admin-directory-table tbody tr:hover{background:var(--surface2)}
+.admin-directory-identity{display:flex;align-items:center;gap:12px;min-width:190px}
+.admin-directory-identity .admin-directory-avatar{width:43px;height:43px;flex-basis:43px;border-radius:14px}
+.admin-directory-names{min-width:0;display:grid;gap:3px}
+.admin-directory-names strong{color:var(--ink);font-size:.87rem;letter-spacing:-.015em}
+.admin-directory-names small{font-size:.76rem;color:var(--muted);overflow-wrap:anywhere}
+.admin-directory-action-cell{text-align:right}
+.admin-directory-action-cell .admin-directory-remove{width:auto!important;min-width:94px;min-height:41px;padding:9px 13px!important;margin:0;font-size:.76rem}
+.admin-directory-table td.admin-directory-empty{padding:32px 15px;text-align:center;color:var(--muted)}
+.admin-directory-table .admin-directory-person-role{display:inline-flex;width:max-content;max-width:100%;white-space:nowrap}
+.admin-directory-row:focus-within{outline:2px solid #8279de;outline-offset:-2px}
+@media(max-width:780px){
+ .admin-directory-table-scroll{overflow:visible;border:0;background:transparent;box-shadow:none}
+ .admin-directory-table{min-width:0;display:block;width:100%}
+ .admin-directory-table thead{display:none}
+ .admin-directory-table tbody{display:grid;gap:14px}
+ .admin-directory-table tbody tr{display:grid;gap:0;background:var(--surface2);border:1px solid var(--line);border-radius:17px;padding:13px 15px;box-shadow:0 6px 18px rgba(22,39,77,.04)}
+ .admin-directory-table tbody td{display:flex;align-items:center;justify-content:space-between;gap:14px;text-align:right;padding:10px 0;border-bottom:1px solid var(--line);min-width:0;font-size:.79rem}
+ .admin-directory-table tbody td:last-child{border-bottom:0;padding-bottom:0}
+ .admin-directory-table tbody td:not(.admin-directory-name-cell)::before{content:attr(data-label);flex:0 0 auto;text-align:left;font-size:.71rem;font-weight:750;color:var(--muted)}
+ .admin-directory-table tbody td.admin-directory-name-cell{justify-content:flex-start;text-align:left;padding-top:2px}
+ .admin-directory-identity{min-width:0}
+ .admin-directory-action-cell .admin-directory-remove{margin-left:auto}
+ .admin-directory-table tbody td.admin-directory-empty{display:block;border:0;text-align:center}
+}
+@media(max-width:360px){.admin-directory-table tbody td{gap:8px}.admin-directory-surface{padding:12px 9px}.admin-directory-table tbody tr{padding:12px}}

@@ -1,3 +1,5 @@
+> **5 Nov 2026 Admin directory fix:** The Administrators table now shows registered, verified Admin-role accounts immediately after secure activation—no prior visit required. See `ADMIN_SIGNUP_DIRECTORY_RELEASE_20261105.md` and `library_admin_signup_directory_fix.sql`.
+
 > **Admin Management update (5 November 2026):** Added a verified administrator directory, remove-access confirmation, and server-enforced revocation. Apply `library_admin_management_upgrade.sql` after role setup. See `ADMIN_MANAGEMENT_RELEASE_20261105.md`.
 
 # Library Manager

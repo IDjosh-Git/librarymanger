@@ -473,12 +473,12 @@
 </div>
 <div id="adminDirectory" class="panel admin-directory-panel" aria-labelledby="adminDirectoryTitle">
   <section class="admin-directory-hero">
-    <div class="admin-directory-hero-copy"><span class="eyebrow">ACCESS CONTROL · VERIFIED APP ACTIVITY</span><h2 id="adminDirectoryTitle">Manage your administrators.</h2><p>Only administrators who have signed in to this Library Manager workspace appear here. Review access, see recent usage, and revoke privileges safely.</p><div class="admin-directory-hero-actions"><span class="admin-directory-secure"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg> Server-verified access</span><button type="button" id="adminDirectoryRefresh" class="admin-directory-refresh"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#refresh"></use></svg>Refresh directory</button></div></div>
-    <div class="admin-directory-hero-number" aria-label="Administrators using Library Manager"><small>VERIFIED ADMINS</small><strong id="adminDirectoryTotal">—</strong><span>Have entered this app</span></div>
+    <div class="admin-directory-hero-copy"><span class="eyebrow">ACCESS CONTROL · VERIFIED ADMIN ACCOUNTS</span><h2 id="adminDirectoryTitle">Manage your administrators.</h2><p>View every email-confirmed account with approved Administrator privileges, including new administrators who have not opened the workspace yet. Revoke access securely when it is no longer needed.</p><div class="admin-directory-hero-actions"><span class="admin-directory-secure"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg> Server-verified access</span><button type="button" id="adminDirectoryRefresh" class="admin-directory-refresh"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#refresh"></use></svg>Refresh directory</button></div></div>
+    <div class="admin-directory-hero-number" aria-label="Registered administrators"><small>VERIFIED ADMINS</small><strong id="adminDirectoryTotal">—</strong><span>Approved Admin accounts</span></div>
   </section>
-  <section class="admin-directory-surface" aria-label="Administrator directory"><div class="admin-directory-heading"><div><span class="eyebrow">ACCESS DIRECTORY</span><h3>Administrators using the app</h3><p>Accounts with an Admin role and recorded workspace sign-in. Other Supabase accounts are not shown.</p></div><div class="admin-directory-search-wrap"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input id="adminDirectorySearch" type="search" placeholder="Find an administrator…" aria-label="Search administrators"></div></div>
-    <p id="adminDirectoryStatus" class="admin-directory-status" role="status" aria-live="polite">Loading verified administrators…</p>
-    <div id="adminDirectoryList" class="admin-directory-grid" aria-live="polite"></div>
+  <section class="admin-directory-surface" aria-label="Administrator directory"><div class="admin-directory-heading"><div><span class="eyebrow">ACCESS DIRECTORY</span><h3>Verified administrator registrations</h3><p>Only confirmed accounts with a verified Admin role appear here. Selecting Admin without a valid access code does not grant privileges. Visit history is optional.</p></div><div class="admin-directory-search-wrap"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input id="adminDirectorySearch" type="search" placeholder="Find an administrator…" aria-label="Search administrators"></div></div>
+    <p id="adminDirectoryStatus" class="admin-directory-status" role="status" aria-live="polite">Loading registered administrators…</p>
+    <div class="admin-directory-table-scroll"><table class="admin-directory-table"><thead><tr><th scope="col">Administrator</th><th scope="col">Access</th><th scope="col">Registered</th><th scope="col">Last visit</th><th scope="col">Visits</th><th scope="col">Manage</th></tr></thead><tbody id="adminDirectoryList" aria-live="polite"></tbody></table></div>
     <div class="admin-directory-footer"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg><p>Removing access changes the account to a regular library user. It does not erase the account, books, loans or audit history. Self-removal and last-admin removal are blocked.</p></div>
   </section>
 </div>
@@ -683,24 +683,34 @@ function renderAdminDirectory(){
  const rows=adminDirectoryRows.filter(x=>(String(x.display_name||'')+' '+String(x.email||'')).toLocaleLowerCase().includes(filter));
  $('adminDirectoryTotal').textContent=String(adminDirectoryRows.length);
  list.replaceChildren();
- if(!rows.length){list.innerHTML='<div class="admin-directory-empty">'+(filter?'No administrators match that search.':'No verified administrator activity yet. Sign in as an admin after installing the SQL upgrade.')+'</div>';return}
+ if(!rows.length){const tr=document.createElement('tr'),td=document.createElement('td');td.colSpan=6;td.className='admin-directory-empty';td.textContent=filter?'No administrators match your search.':'No verified Administrator accounts are available yet. An administrator must complete registration and verify their email.';tr.append(td);list.append(tr);return}
+ const cell=(tr,label,contents,cls='')=>{const td=document.createElement('td');td.dataset.label=label;if(cls)td.className=cls;if(typeof contents==='string')td.textContent=contents;else td.append(contents);tr.append(td);return td};
  for(const person of rows){
-  const card=document.createElement('article');card.className='admin-directory-person';
-  const initials=(String(person.display_name||person.email||'A').trim().slice(0,2)).toLocaleUpperCase();
   const self=person.user_id===session?.user?.id;
-  card.innerHTML='<div class="admin-directory-person-top"><span class="admin-directory-avatar" aria-hidden="true">'+esc(initials)+'</span><span class="admin-directory-person-role">'+(self?'YOU · ADMIN':'ADMINISTRATOR')+'</span></div><h4>'+esc(person.display_name||'Administrator')+'</h4><p class="admin-directory-email">'+esc(person.email||'')+'</p><dl><div><dt>Last in Library Manager</dt><dd>'+esc(adminDirectoryDate(person.last_seen_at))+'</dd></div><div><dt>First recorded</dt><dd>'+esc(adminDirectoryDate(person.first_seen_at))+'</dd></div><div><dt>Recorded visits</dt><dd>'+Number(person.sign_in_count||0).toLocaleString()+'</dd></div></dl>';
-  const button=document.createElement('button');button.type='button';button.className='admin-directory-remove';button.textContent=self?'Your account · protected':'Remove admin access';button.disabled=self;button.setAttribute('aria-label',self?'Cannot remove your own administrator access':'Remove administrator access for '+(person.email||person.display_name));
-  if(!self)button.addEventListener('click',()=>openAdminRemoval(person));card.append(button);list.append(card);
+  const tr=document.createElement('tr');tr.className='admin-directory-row';
+  const identity=document.createElement('div');identity.className='admin-directory-identity';
+  const avatar=document.createElement('span');avatar.className='admin-directory-avatar';avatar.setAttribute('aria-hidden','true');avatar.textContent=String(person.display_name||person.email||'AD').trim().slice(0,2).toUpperCase();
+  const names=document.createElement('span');names.className='admin-directory-names';
+  const display=document.createElement('strong');display.textContent=person.display_name||'Administrator';
+  const email=document.createElement('small');email.textContent=person.email||'Email unavailable';names.append(display,email);identity.append(avatar,names);
+  cell(tr,'Administrator',identity,'admin-directory-name-cell');
+  const chip=document.createElement('span');chip.className='admin-directory-person-role';chip.textContent=self?'YOU · ADMIN':'VERIFIED ADMIN';cell(tr,'Access',chip);
+  cell(tr,'Registered',adminDirectoryDate(person.first_seen_at));
+  cell(tr,'Last visit',person.last_seen_at?adminDirectoryDate(person.last_seen_at):'Not recorded yet');
+  cell(tr,'Visits',Number(person.sign_in_count||0).toLocaleString());
+  const button=document.createElement('button');button.type='button';button.className='admin-directory-remove';button.textContent=self?'Your account · protected':'Remove';button.disabled=self;button.setAttribute('aria-label',self?'Cannot remove your own administrator access':'Remove administrator access for '+(person.email||person.display_name));
+  if(!self)button.addEventListener('click',()=>openAdminRemoval(person));cell(tr,'Manage',button,'admin-directory-action-cell');
+  list.append(tr);
  }
 }
 async function loadAdminDirectory(){
  if(!isAdmin()||!session?.user||adminDirectoryBusy)return;
- adminDirectoryBusy=true;$('adminDirectoryStatus').textContent='Loading verified administrators…';$('adminDirectoryRefresh').disabled=true;
+ adminDirectoryBusy=true;$('adminDirectoryStatus').textContent='Loading registered administrators…';$('adminDirectoryRefresh').disabled=true;
  try{const {data,error}=await sb.rpc('library_list_active_admins');if(error)throw error;
   if(!isAdmin())return;
   adminDirectoryRows=Array.isArray(data)?data:[];renderAdminDirectory();
-  $('adminDirectoryStatus').textContent=adminDirectoryRows.length+' verified administrator'+(adminDirectoryRows.length===1?'':'s')+' using Library Manager.';
- }catch(error){adminDirectoryRows=[];renderAdminDirectory();$('adminDirectoryStatus').textContent='Could not load the administrator directory. Apply library_admin_management_upgrade.sql in Supabase first. '+(error?.message||'');}
+  $('adminDirectoryStatus').textContent=adminDirectoryRows.length+' verified administrator'+(adminDirectoryRows.length===1?'':'s')+' registered with Admin access.';
+ }catch(error){adminDirectoryRows=[];renderAdminDirectory();$('adminDirectoryStatus').textContent='Could not load the administrator directory. Apply library_admin_signup_directory_fix.sql in Supabase after the Admin Management upgrade. '+(error?.message||'');}
  finally{adminDirectoryBusy=false;$('adminDirectoryRefresh').disabled=false}
 }
 function openAdminRemoval(person){if(!isAdmin()||person.user_id===session?.user?.id)return;adminRemovalTarget=person;adminRemoveFocus=document.activeElement;$('adminRemoveTarget').textContent=person.email||person.display_name;$('adminRemoveConfirm').value='';$('adminRemoveError').hidden=true;$('adminRemoveSubmit').disabled=true;$('adminRemoveBackdrop').hidden=false;$('adminRemoveConfirm').focus();}

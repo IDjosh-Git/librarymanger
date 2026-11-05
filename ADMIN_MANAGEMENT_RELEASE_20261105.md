@@ -1,9 +1,11 @@
+> **Updated 5 November 2026:** The admin directory no longer requires a recorded visit. It now lists all email-confirmed accounts with a current, server-verified Admin role. Use `library_admin_signup_directory_fix.sql` on existing installations. Details in `ADMIN_SIGNUP_DIRECTORY_RELEASE_20261105.md`.
+
 # Library Manager — Admin Management (5 Nov 2026)
 
 ## New screen
 
 - **Administrators** in the desktop workspace menu and mobile More menu.
-- Lists only members whose current `library_member_roles.role` is `admin` **and** who have registered real activity in this Library Manager app through the server-validated `library_register_admin_visit` RPC.
+- Prior version listed members whose current `library_member_roles.role` is `admin` **and** who had registered real activity in this Library Manager app through the server-validated `library_register_admin_visit` RPC.
 - Displays their name, email, first recorded visit, latest recorded visit and the number of recorded entries. Includes search, refresh, a responsive card layout and dark/light theme support.
 - Current admin is labelled **YOU · ADMIN** and cannot be removed.
 

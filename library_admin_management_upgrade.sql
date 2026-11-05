@@ -1,5 +1,6 @@
--- Library Manager · Active Administrator Directory
+-- Library Manager · Verified Administrator Registration Directory
 -- Review and apply ONCE in the Supabase SQL editor after library_roles_and_circulation.sql.
+-- Lists all verified current Admin-role accounts, even before their first recorded visit.
 -- No existing accounts or records are deleted. Removing an administrator demotes their role to 'user'.
 BEGIN;
 CREATE TABLE IF NOT EXISTS public.library_admin_activity (
@@ -42,12 +43,12 @@ BEGIN
  RETURN QUERY SELECT r.user_id,
    COALESCE(NULLIF(btrim(u.raw_user_meta_data->>'full_name'),''),NULLIF(split_part(u.email,'@',1),''),'Administrator')::text,
    COALESCE(u.email,'')::text,
-   a.first_seen_at,a.last_seen_at,a.sign_in_count,(r.user_id=v_uid)
+   u.created_at,a.last_seen_at,coalesce(a.sign_in_count,0)::bigint,(r.user_id=v_uid)
  FROM public.library_member_roles r
- JOIN public.library_admin_activity a ON a.user_id=r.user_id
+ LEFT JOIN public.library_admin_activity a ON a.user_id=r.user_id
  JOIN auth.users u ON u.id=r.user_id
- WHERE r.role='admin'
- ORDER BY a.last_seen_at DESC,r.user_id;
+ WHERE r.role='admin' AND u.email_confirmed_at IS NOT NULL
+ ORDER BY u.created_at DESC,r.user_id;
 END;
 $$;
 
@@ -65,8 +66,6 @@ BEGIN
  THEN RAISE EXCEPTION 'Administrator access no longer available' USING ERRCODE='42501'; END IF;
  IF (SELECT count(*) FROM public.library_member_roles WHERE role='admin')<=1
  THEN RAISE EXCEPTION 'Cannot remove the last administrator' USING ERRCODE='23514'; END IF;
- IF NOT EXISTS (SELECT 1 FROM public.library_admin_activity WHERE user_id=p_target)
- THEN RAISE EXCEPTION 'This account has no verified Library Manager administrator activity' USING ERRCODE='22023'; END IF;
  UPDATE public.library_member_roles SET role='user' WHERE user_id=p_target AND role='admin';
  GET DIAGNOSTICS v_changed=ROW_COUNT;
  IF v_changed<>1 THEN RAISE EXCEPTION 'This account is not an administrator' USING ERRCODE='22023'; END IF;
@@ -81,4 +80,28 @@ REVOKE ALL ON FUNCTION public.library_revoke_admin(uuid) FROM PUBLIC,anon;
 GRANT EXECUTE ON FUNCTION public.library_register_admin_visit() TO authenticated;
 GRANT EXECUTE ON FUNCTION public.library_list_active_admins() TO authenticated;
 GRANT EXECUTE ON FUNCTION public.library_revoke_admin(uuid) TO authenticated;
+
+-- A formerly removed administrator cannot re-promote themself using an old shared code.
+-- This is checked by the database for both verified-code and invitation promotion.
+-- A trusted database operator may deliberately restore a role with a privileged SQL update.
+CREATE SCHEMA IF NOT EXISTS private;
+CREATE OR REPLACE FUNCTION private.library_block_revoked_admin_reclaim()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = '' AS $$
+BEGIN
+ IF NEW.role = 'admin' AND (TG_OP = 'INSERT' OR OLD.role IS DISTINCT FROM 'admin')
+   AND (SELECT auth.uid()) = NEW.user_id
+   AND EXISTS (SELECT 1 FROM public.library_admin_role_audit a
+      WHERE a.affected_user_id = NEW.user_id AND a.action = 'revoke_admin')
+ THEN
+   RAISE EXCEPTION 'Administrator access has been revoked. Contact the library owner.' USING ERRCODE='42501';
+ END IF;
+ RETURN NEW;
+END;
+$$;
+REVOKE ALL ON FUNCTION private.library_block_revoked_admin_reclaim() FROM PUBLIC,anon,authenticated;
+DROP TRIGGER IF EXISTS library_block_revoked_admin_reclaim ON public.library_member_roles;
+CREATE TRIGGER library_block_revoked_admin_reclaim
+ BEFORE INSERT OR UPDATE OF role ON public.library_member_roles
+ FOR EACH ROW EXECUTE FUNCTION private.library_block_revoked_admin_reclaim();
+
 COMMIT;
