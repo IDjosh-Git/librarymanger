@@ -23,7 +23,7 @@
     byId('spotlightTitle').textContent = String(data.title).trim();
     byId('spotlightAuthor').textContent = 'By ' + String(data.authors || 'Unknown author').trim();
     byId('spotlightDescription').textContent = String(data.description || 'Discover this featured title in our library collection.').trim();
-    window.LibraryBookGuide?.setBooks([{title:data.title,authors:data.authors,isbn:data.isbn,shelf:data.shelf,description:data.description}]);
+    window.LibraryBookGuide?.addBook({title:data.title,authors:data.authors,isbn:data.isbn,shelf:data.shelf,description:data.description});
     byId('spotlightIsbn').textContent = data.isbn || 'Not listed';
     byId('spotlightShelf').textContent = data.shelf || 'Ask the library';
     const automatic=data.selection_source==='automatic';
@@ -51,6 +51,8 @@
       const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
         auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false }
       });
+      // Populate the Book Guide with all public catalogue titles (metadata only).
+      void window.LibraryBookGuide?.loadPublicCatalog();
       // SQL endpoint exposes only curated bibliographic fields, never loans or members.
       const { data, error } = await db.rpc('library_public_featured_book');
       if (!error && Array.isArray(data) && data[0]) updateSpotlight(data[0]);

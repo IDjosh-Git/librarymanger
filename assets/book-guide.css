@@ -137,3 +137,11 @@ body[data-account="in"] #accountCard .workspace-nav .tab.active :is(span,strong,
 :root[data-theme="dark"] body[data-account="in"] #accountCard .workspace-nav .tab.active,
 :root[data-theme="dark"] body[data-account="in"] #accountCard .workspace-nav .tab.active :is(span,strong,small,svg){color:#f3eeff!important;stroke:currentColor}
 #adminDirectory .admin-directory-hero .eyebrow{color:#bdd3ff!important;letter-spacing:.13em}
+
+/* Full-catalogue picker — searchable and consistent on phones and desktops. */
+.book-guide-root .book-guide-selection-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.book-guide-root .book-guide-selection-top label{margin-bottom:7px}
+.book-guide-root .book-guide-count{font:750 10px/1.4 Inter,sans-serif;color:var(--guide-muted);white-space:nowrap}
+.book-guide-root .book-guide-selection #bookGuideSearch{display:block;width:100%;min-width:0;min-height:42px!important;margin:0 0 8px!important;padding:10px 13px!important;border:1px solid var(--guide-border)!important;border-radius:12px!important;background:var(--guide-paper)!important;color:var(--guide-ink)!important;font:500 13px/1.4 Inter,sans-serif!important;box-sizing:border-box;box-shadow:none!important}
+.book-guide-root .book-guide-selection #bookGuideSearch::placeholder{color:var(--guide-muted);opacity:1}
+.book-guide-root .book-guide-selection #bookGuideSearch:focus-visible{outline:3px solid rgba(112,90,218,.2)!important;border-color:#7664d9!important}

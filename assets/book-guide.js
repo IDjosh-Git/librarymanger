@@ -2,7 +2,7 @@
    The public page passes only already-published featured-book metadata; never borrower records. */
 (function(root){
 'use strict';
-let books=[],current=null,visible=false,ready=false,busy=false,history=[];
+let books=[],current=null,visible=true,ready=false,busy=false,history=[],publicCatalogCache=null,publicCatalogPromise=null,featured=null;
 const $=id=>document.getElementById(id);
 const norm=s=>String(s||'').trim().slice(0,350);
 function safeBook(b){return {title:norm(b?.title),authors:norm(b?.authors),isbn:norm(b?.isbn),shelf:norm(b?.shelf),publisher:norm(b?.publisher),year:norm(b?.year),subject:norm(b?.subject),pages:norm(b?.pages),description:norm(b?.description).slice(0,1200)};}
@@ -11,7 +11,7 @@ function init(){if(ready)return;ready=true;
  <button type="button" class="book-guide-fab" id="bookGuideFab" aria-controls="bookGuidePanel" aria-expanded="false" aria-label="Open book assistant"><span class="book-guide-fab-symbol" aria-hidden="true">✦</span><span class="book-guide-fab-label">Ask about a book</span><span class="book-guide-fab-glow" aria-hidden="true"></span></button>
  <section class="book-guide-panel" id="bookGuidePanel" aria-labelledby="bookGuideTitle" role="dialog" aria-modal="false" hidden>
   <header class="book-guide-head"><div class="book-guide-icon" aria-hidden="true">✦</div><div class="book-guide-title-wrap"><span class="book-guide-eyebrow">YOUR READING COMPANION</span><h2 id="bookGuideTitle">Book Guide</h2><p>Explore a title, ask anything you are curious about.</p></div><button class="book-guide-close" type="button" id="bookGuideClose" aria-label="Close book assistant">×</button></header>
-  <div class="book-guide-selection"><label for="bookGuideSelect">BOOK TO EXPLORE</label><select id="bookGuideSelect" aria-label="Choose a book"><option value="">Choose a book from the library…</option></select><p id="bookGuideDetails" class="book-guide-book-note">Choose a title to get started.</p></div>
+  <div class="book-guide-selection"><div class="book-guide-selection-top"><label for="bookGuideSelect">BOOK TO EXPLORE</label><span class="book-guide-count" id="bookGuideCount" role="status" aria-live="polite">Loading books…</span></div><label class="sr-only" for="bookGuideSearch">Search the library catalogue</label><input type="search" id="bookGuideSearch" autocomplete="off" placeholder="Search titles or authors…" aria-label="Search book titles and authors"><select id="bookGuideSelect" aria-label="Choose a book"><option value="">Choose a book from the library…</option></select><p id="bookGuideDetails" class="book-guide-book-note">Choose a title to get started.</p></div>
   <div id="bookGuideMessages" class="book-guide-messages" role="log" aria-live="polite" aria-relevant="additions text"></div>
   <div class="book-guide-prompts" id="bookGuidePrompts"><button type="button" data-prompt="What is this book about?">What is it about?</button><button type="button" data-prompt="Who wrote it?">Author</button><button type="button" data-prompt="Where can I find it?">Location</button><button type="button" data-prompt="What should I know before reading?">Reading tips</button></div>
   <form class="book-guide-compose" id="bookGuideForm"><label for="bookGuideInput" class="sr-only">Ask a question about the selected book</label><input id="bookGuideInput" maxlength="500" autocomplete="off" placeholder="Ask about this book…" required><button type="submit" id="bookGuideSend" aria-label="Send question" title="Send question"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form>
@@ -19,15 +19,29 @@ function init(){if(ready)return;ready=true;
  </section>`;document.body.appendChild(node);
  $('bookGuideFab').addEventListener('click',()=>open());$('bookGuideClose').addEventListener('click',close);
  $('bookGuideSelect').addEventListener('change',e=>{const index=Number(e.target.value);if(e.target.value!==''&&books[index])selectBook(books[index]);});
+ $('bookGuideSearch').addEventListener('input',renderOptions);
  $('bookGuidePrompts').addEventListener('click',e=>{const b=e.target.closest('[data-prompt]');if(b)void ask(b.dataset.prompt);});
  $('bookGuideForm').addEventListener('submit',e=>{e.preventDefault();const v=$('bookGuideInput').value.trim();if(v){$('bookGuideInput').value='';void ask(v);}});
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('bookGuidePanel').hidden)close()});
  renderOptions();setVisible(visible);
 }
-function renderOptions(){if(!ready)return;const select=$('bookGuideSelect'),last=select.value;select.replaceChildren();select.add(new Option(books.length?'Choose a book…':'No books available yet',''));
- books.forEach((b,i)=>select.add(new Option(b.title+(b.authors?' · '+b.authors:''),String(i))));if(books[Number(last)]&&last!=='')select.value=last;
- if(current){const index=books.findIndex(b=>b.title===current.title&&b.isbn===current.isbn);if(index>=0)select.value=String(index);}
+function renderOptions(){
+ if(!ready)return;
+ const select=$('bookGuideSelect'),query=norm($('bookGuideSearch')?.value).toLowerCase();
+ const selectedIndex=current?books.findIndex(b=>b.title===current.title&&b.isbn===current.isbn&&b.authors===current.authors):-1;
+ const fragment=document.createDocumentFragment();
+ fragment.appendChild(new Option(books.length?'Choose a book…':'No books in the catalogue yet',''));
+ let matches=0;
+ books.forEach((b,i)=>{
+  if(query&&!([b.title,b.authors,b.isbn].some(v=>String(v||'').toLowerCase().includes(query))))return;
+  fragment.appendChild(new Option(b.title+(b.authors?' · '+b.authors:''),String(i)));
+  matches++;
+ });
+ select.replaceChildren(fragment);
+ if(selectedIndex>=0&&(!query||select.querySelector(`option[value="${selectedIndex}"]`)))select.value=String(selectedIndex);
+ $('bookGuideCount').textContent=books.length?query?matches+' of '+books.length+' titles':books.length+' titles':'No books loaded';
 }
+
 function setMessageText(messageNode,text){
  const body=messageNode.querySelector('.book-guide-message-body');
  if(!body)return;
@@ -65,7 +79,51 @@ async function ask(question){if(!ready)init();if(busy)return;if(!current){addMes
 function open(){if(!ready)init();if(!visible)return;$('bookGuidePanel').hidden=false;$('bookGuideFab').setAttribute('aria-expanded','true');$('bookGuideInput').focus({preventScroll:true});if(!$('bookGuideMessages').children.length)addMessage('assistant','Hello! Pick a book to explore its details, get guidance, or start a conversation.');}
 function close(){if(!ready)return;$('bookGuidePanel').hidden=true;$('bookGuideFab').setAttribute('aria-expanded','false');$('bookGuideFab').focus({preventScroll:true});}
 function setVisible(value){visible=!!value;document.body.dataset.bookGuideVisible=visible?'true':'false';if(!ready)return;$('bookGuideFab').hidden=!visible;if(!visible)close();}
-function setBooks(list){books=Array.isArray(list)?list.filter(b=>b&&String(b.title||'').trim()).map(safeBook).filter((b,i,a)=>a.findIndex(v=>v.title===b.title&&v.isbn===b.isbn)===i).sort((a,b)=>a.title.localeCompare(b.title)).slice(0,5000):[];if(!ready)init();renderOptions();}
-function openBook(book){if(!ready)init();const b=safeBook(book);if(b.title&&!books.some(x=>x.title===b.title&&x.isbn===b.isbn)){books.unshift(b)}if(b.title)selectBook(b);setVisible(true);open();}
-root.LibraryBookGuide={setVisible,setBooks,openBook};document.addEventListener('DOMContentLoaded',()=>{init();if(document.body.dataset.publicSpotlight==='true')setVisible(true);});
+function setBooks(list){
+ books=Array.isArray(list)?list.filter(b=>b&&String(b.title||'').trim()).map(safeBook)
+  .filter((b,i,a)=>a.findIndex(v=>v.title===b.title&&v.isbn===b.isbn&&v.authors===b.authors)===i)
+  .sort((a,b)=>a.title.localeCompare(b.title)):[];
+ if(!books.length){current=null;history=[];if(ready){$('bookGuideMessages').replaceChildren();$('bookGuideDetails').textContent='Choose a title to get started.';}}
+ if(featured&&document.body.dataset.publicSpotlight==='true'&& !books.some(b=>b.title===featured.title&&b.isbn===featured.isbn))books.unshift(featured);
+ if(!ready)init();renderOptions();
+}
+function addBook(value){const book=safeBook(value);if(!book.title)return;
+ featured=book;const i=books.findIndex(b=>b.title===book.title&&b.isbn===book.isbn);
+ if(i<0){books.push(book);books.sort((a,b)=>a.title.localeCompare(b.title));}renderOptions();
+}
+function openBook(book){if(!ready)init();const b=safeBook(book);
+ if(b.title&&!books.some(x=>x.title===b.title&&x.isbn===b.isbn))books.unshift(b);
+ if(b.title)selectBook(b);setVisible(true);open();
+}
+// A public, read-only RPC returns only bibliographic fields; never account or loan records.
+// Keep this separate from the authenticated workspace inventory fetch.
+async function loadPublicCatalog(){
+ if(document.body.dataset.account==='in'&&document.body.dataset.publicSpotlight!=='true')return;
+ if(publicCatalogCache){setBooks(publicCatalogCache);return;}
+ if(publicCatalogPromise)return publicCatalogPromise;
+ publicCatalogPromise=(async()=>{
+  if(!root.supabase?.createClient)return;
+  const db=root.supabase.createClient('https://hotysnqorkqbiconjskl.supabase.co','sb_publishable_OL7r2hmR6n7OOWY5m-3bRw_Peft2X9q',
+   {auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+  const accumulated=[];
+  try{
+   for(let offset=0;offset<20000;offset+=1000){
+    const {data,error}=await db.rpc('library_public_guide_books',{p_offset:offset,p_limit:1000});
+    if(error)throw error;
+    if(!Array.isArray(data))break;
+    accumulated.push(...data);
+    if(data.length<1000)break;
+   }
+   publicCatalogCache=accumulated;
+   if(document.body.dataset.account!=='in'||document.body.dataset.publicSpotlight==='true')setBooks(accumulated);
+  }catch{
+   // On sites where the new SQL upgrade is not yet installed, keep the featured-book
+   // fallback rather than trying to read protected library_books in the browser.
+   if(ready&&!books.length)$('bookGuideCount').textContent='Catalogue needs setup';
+  }
+ })().finally(()=>{publicCatalogPromise=null;});
+ return publicCatalogPromise;
+}
+root.LibraryBookGuide={setVisible,setBooks,addBook,openBook,loadPublicCatalog};
+document.addEventListener('DOMContentLoaded',()=>{init();setVisible(true);});
 })(window);

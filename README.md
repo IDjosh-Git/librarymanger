@@ -55,3 +55,7 @@ See `RELEASE_NOTES_20261103.md` for earlier Google Sheets removal details.
 - `*.sql` — Supabase migrations. Apply only after inspecting your existing database state and backing it up.
 
 The Gemini AI key is optional. Book metadata lookup, local OCR and Excel support remain separate from Gemini and Google Sheets.
+
+
+## Full Book Guide catalogue (5 Nov 2026)
+The floating Book Guide now appears on all workspace panels and public pages. It lists the available library titles and editions, supports title/author search, and uses a read-only public catalogue RPC on public pages. See `BOOK_GUIDE_ALL_BOOKS_RELEASE_20261105.md` and `library_public_book_guide_catalog.sql`. The SQL has already been applied to the connected Library Manager Supabase project.
