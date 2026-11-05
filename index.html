@@ -698,7 +698,7 @@ function renderAdminDirectory(){
   cell(tr,'Registered',adminDirectoryDate(person.first_seen_at));
   cell(tr,'Last visit',person.last_seen_at?adminDirectoryDate(person.last_seen_at):'Not recorded yet');
   cell(tr,'Visits',Number(person.sign_in_count||0).toLocaleString());
-  const button=document.createElement('button');button.type='button';button.className='admin-directory-remove';button.textContent=self?'Your account · protected':'Remove';button.disabled=self;button.setAttribute('aria-label',self?'Cannot remove your own administrator access':'Remove administrator access for '+(person.email||person.display_name));
+  const button=document.createElement('button');button.type='button';button.className='admin-directory-remove';button.textContent=self?'Your account · protected':'Remove admin';button.disabled=self;button.setAttribute('aria-label',self?'Cannot remove your own administrator access':'Remove administrator access for '+(person.email||person.display_name));
   if(!self)button.addEventListener('click',()=>openAdminRemoval(person));cell(tr,'Manage',button,'admin-directory-action-cell');
   list.append(tr);
  }

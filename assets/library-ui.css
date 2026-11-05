@@ -4813,3 +4813,70 @@ body[data-book-guide-visible="true"] .scroll-controls{display:none!important}
  .admin-directory-table tbody td.admin-directory-empty{display:block;border:0;text-align:center}
 }
 @media(max-width:360px){.admin-directory-table tbody td{gap:8px}.admin-directory-surface{padding:12px 9px}.admin-directory-table tbody tr{padding:12px}}
+
+/* V6 authenticated workspace and admin directory premium pass. */
+/* Library Manager V6 — self-contained, premium reading companion and workspace card.
+   Loaded after legacy styles to avoid reshuffling existing inventory functionality. */
+:root{
+  --lm-glow:#6d5ad8;
+  --lm-indigo:#43368f;
+  --lm-deep:#172443;
+  --lm-edge:#dce4f4;
+  --lm-sky:#edf4fc;
+}
+/* The entire authenticated 'Your workspace' card, not just the menu links. */
+body[data-account="in"] #accountCard{
+  border:1px solid rgba(121,138,199,.25)!important;
+  border-radius:26px!important;
+  background:linear-gradient(166deg,#fff 0%,#f5f7ff 58%,#edf3ff 100%)!important;
+  box-shadow:0 23px 56px rgba(23,39,83,.11),0 3px 10px rgba(35,50,103,.035)!important;
+  isolation:isolate;
+}
+body[data-account="in"] #accountCard .auth-content{padding:20px 17px 19px!important;min-width:0}
+body[data-account="in"] #accountCard .sidebar-title{padding:4px 2px 16px!important;border-bottom:1px solid #dbe3f5!important;margin-bottom:16px!important}
+body[data-account="in"] #accountCard .sidebar-title strong{display:flex!important;align-items:center;gap:8px;color:#202d53!important;font:800 15px/1.3 Manrope,Inter,sans-serif;letter-spacing:-.035em}
+body[data-account="in"] #accountCard .sidebar-title .app-icon{color:#6458c9!important;width:20px;height:20px}
+body[data-account="in"] #accountCard #authBadge{display:inline-flex;align-items:center;justify-content:center;background:#e9e7ff!important;border:1px solid #d8d4ff!important;color:#4e42a3!important;font-size:10px!important;font-weight:800!important;border-radius:100px;padding:6px 9px!important}
+body[data-account="in"] #accountCard .workspace-account{gap:12px;padding:15px!important;border-radius:18px!important;border:1px solid #d6e0fa!important;background:linear-gradient(140deg,#f6f5ff,#eaf2ff)!important;box-shadow:0 7px 18px rgba(65,73,139,.055)!important}
+body[data-account="in"] #accountCard .workspace-account-avatar{flex:0 0 47px;width:47px;height:47px;border-radius:15px!important;background:linear-gradient(132deg,#5342bd,#8872e5)!important;color:white!important;box-shadow:0 9px 23px rgba(91,72,182,.22)}
+body[data-account="in"] #accountCard .workspace-account-avatar .app-icon{color:#fff!important}
+body[data-account="in"] #accountCard .workspace-account-caption{color:#586b94!important;font-size:10px;letter-spacing:.13em}
+body[data-account="in"] #accountCard #who{color:#202d53!important;font-weight:800!important;line-height:1.45;overflow-wrap:anywhere}
+body[data-account="in"] #accountCard .member-role-pill{color:#4939a1!important;background:#fff!important;border-color:#d6d3f8!important;font-size:10px}
+body[data-account="in"] #accountCard .workspace-nav{margin-top:17px;min-width:0}
+body[data-account="in"] #accountCard .workspace-nav-header{margin:0 0 16px!important;padding:16px 16px 17px!important;background:linear-gradient(129deg,#24345f,#44359b 74%,#6551be)!important;border:1px solid rgba(255,255,255,.13)!important;border-radius:17px!important;box-shadow:0 10px 20px rgba(42,44,103,.12)!important}
+body[data-account="in"] #accountCard .workspace-nav-header .workspace-nav-eyebrow{font-size:10px!important;color:#c8d1ff!important;letter-spacing:.17em!important}
+body[data-account="in"] #accountCard .workspace-nav-header strong{color:#fff!important;font:800 19px/1.3 Manrope,Inter,sans-serif!important;letter-spacing:-.045em!important}
+body[data-account="in"] #accountCard .workspace-nav-header p{color:#e0e5ff!important;margin:4px 0 0!important;font-size:12px!important}
+body[data-account="in"] #accountCard .workspace-nav-section{min-width:0}
+body[data-account="in"] #accountCard .workspace-nav-label{color:#5c6d94!important;font-size:10px!important;letter-spacing:.13em!important;font-weight:850!important}
+body[data-account="in"] #accountCard .workspace-nav .tab{border-radius:12px!important;margin-bottom:3px!important;transition:background .16s,border-color .16s,box-shadow .16s,transform .16s}
+body[data-account="in"] #accountCard .workspace-nav .tab:hover:not(.active){background:#edf0ff!important;color:#38347b!important;transform:translateX(2px)}
+body[data-account="in"] #accountCard .workspace-nav .tab.active{background:linear-gradient(110deg,#eceaff,#e4edff)!important;color:#352c8b!important;border-color:#c5c7f6!important;box-shadow:inset 3px 0 #7661e0,0 5px 13px rgba(77,73,156,.08)!important}
+body[data-account="in"] #accountCard .workspace-nav .tab.active .app-icon{color:#584ac6!important}
+body[data-account="in"] #accountCard .account-tools{border:1px solid #dce4f4!important;border-radius:15px!important;background:#fff!important;overflow:hidden}
+body[data-account="in"] #accountCard .account-tools summary{color:#2e3c60!important;font-weight:750}
+body[data-account="in"] #accountCard :is(button,a,summary):focus-visible{outline:3px solid #9785f9!important;outline-offset:2px!important}
+:root[data-theme="dark"] body[data-account="in"] #accountCard{background:linear-gradient(160deg,#151d35,#202445)!important;border-color:#3e4569!important}
+:root[data-theme="dark"] body[data-account="in"] #accountCard .sidebar-title{border-color:#3b4668!important}
+:root[data-theme="dark"] body[data-account="in"] #accountCard .sidebar-title strong,
+:root[data-theme="dark"] body[data-account="in"] #accountCard #who{color:#edf0ff!important}
+:root[data-theme="dark"] body[data-account="in"] #accountCard .workspace-account{background:linear-gradient(130deg,#242a4a,#1c3451)!important;border-color:#424f74!important}
+:root[data-theme="dark"] body[data-account="in"] #accountCard .workspace-account-caption,
+:root[data-theme="dark"] body[data-account="in"] #accountCard .workspace-nav-label{color:#b7c5e7!important}
+:root[data-theme="dark"] body[data-account="in"] #accountCard .workspace-nav .tab.active{background:#302e60!important;color:#f1edff!important;border-color:#6559b0!important}
+:root[data-theme="dark"] body[data-account="in"] #accountCard .workspace-nav .tab:hover:not(.active){background:#293450!important;color:#f0ecff!important}
+:root[data-theme="dark"] body[data-account="in"] #accountCard .account-tools{background:#202840!important;border-color:#3e4869!important}
+:root[data-theme="dark"] body[data-account="in"] #accountCard .account-tools summary{color:#e7ecff!important}
+
+/* Admin directory: visual clarity without making an unverified role appear valid. */
+#adminDirectory .admin-directory-hero{background:radial-gradient(circle at 90% 0%,rgba(126,114,246,.27),transparent 39%),linear-gradient(116deg,#152340,#263d76 65%,#433897)!important}
+#adminDirectory .admin-directory-hero-number{background:linear-gradient(138deg,rgba(111,127,214,.23),rgba(255,255,255,.075))!important;border-color:rgba(212,224,255,.28)!important;backdrop-filter:blur(8px)}
+#adminDirectory .admin-directory-surface{box-shadow:0 18px 42px rgba(35,48,98,.07)!important;border:1px solid var(--line)!important}
+#adminDirectory .admin-directory-table tbody tr{transition:background .17s,box-shadow .17s}
+#adminDirectory .admin-directory-table tbody tr:hover{background:rgba(104,91,211,.052)!important}
+#adminDirectory .admin-directory-remove:not(:disabled){display:inline-flex!important;align-items:center;justify-content:center;gap:7px;color:#a32647!important;background:#fff5f6!important;border:1px solid #f1bcc7!important;border-radius:11px!important;padding:10px 16px!important;font-weight:850!important;box-shadow:none!important}
+#adminDirectory .admin-directory-remove:not(:disabled):hover{background:#ffe3e9!important;border-color:#d8809a!important;transform:translateY(-1px)}
+#adminDirectory .admin-directory-search-wrap:focus-within{outline:3px solid rgba(127,101,239,.18);border-color:#7d63de!important}
+:root[data-theme="dark"] #adminDirectory .admin-directory-remove:not(:disabled){color:#ffe0e7!important;background:#48243a!important;border-color:#a95d76!important}
+

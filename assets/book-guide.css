@@ -62,3 +62,78 @@ body .book-guide-fab[aria-expanded="true"]{opacity:0;visibility:hidden;pointer-e
 .book-guide-message-body blockquote{border-left:3px solid var(--guide-accent);padding:3px 0 3px 9px;opacity:.92}
 .book-guide-message-body a{color:var(--guide-accent);font-weight:750;text-decoration:underline;text-underline-offset:2px}
 .book-guide-message.user .book-guide-message-body a{color:#fff}
+
+/* V6 premium reader chat interface. */
+
+.book-guide-root{
+ --guide-ink:#21304f;--guide-muted:#63708e;
+ --guide-soft:#f3f5ff;--guide-border:#dce1f5;--guide-paper:#fff;
+ --guide-accent:#624ac7;
+ font-family:Inter,system-ui,sans-serif;
+}
+:root[data-theme="dark"] .book-guide-root{
+ --guide-ink:#eef1ff;--guide-muted:#bdc7e0;--guide-soft:#202a47;
+ --guide-border:#3e4a70;--guide-paper:#121c35;--guide-accent:#bfadff;
+}
+.book-guide-root .book-guide-panel{
+ width:min(468px,calc(100vw - 24px));max-height:min(755px,calc(100dvh - 110px));
+ border:1px solid var(--guide-border)!important;border-radius:25px!important;
+ background:var(--guide-paper)!important;
+ box-shadow:0 35px 85px rgba(19,27,63,.29),0 5px 18px rgba(28,45,91,.08)!important;
+}
+body .book-guide-root .book-guide-head{
+ display:flex;align-items:center;gap:13px;
+ padding:19px 20px 18px!important;
+ background:radial-gradient(circle at 83% -20%,rgba(178,162,255,.42),transparent 49%),linear-gradient(122deg,#222956,#41369a 75%,#664ecb)!important;
+ border-bottom:1px solid rgba(255,255,255,.13)!important;
+}
+.book-guide-root .book-guide-icon{width:48px;height:48px;flex-basis:48px;border:1px solid rgba(236,230,255,.3);border-radius:16px;background:rgba(255,255,255,.13);font-size:26px;box-shadow:inset 0 1px rgba(255,255,255,.1)}
+.book-guide-root .book-guide-eyebrow{letter-spacing:.15em;color:#cbc8ff;font-size:9px}
+.book-guide-root .book-guide-title-wrap h2{font:850 23px/1.13 Manrope,Inter,sans-serif!important;letter-spacing:-.045em;color:#fff!important;margin:4px 0 3px!important}
+.book-guide-root .book-guide-title-wrap p{font-size:11px;color:#e3e1ff}
+.book-guide-root .book-guide-close{background:rgba(255,255,255,.12)!important;border:1px solid rgba(255,255,255,.22)!important;color:#fff!important;width:37px;max-width:37px;min-height:37px;flex-basis:37px;border-radius:11px;font-size:23px}
+.book-guide-root .book-guide-close:hover{background:rgba(255,255,255,.25)!important}
+.book-guide-root .book-guide-selection{padding:15px 19px!important;background:linear-gradient(180deg,var(--guide-soft),var(--guide-paper));border-bottom:1px solid var(--guide-border)}
+.book-guide-root .book-guide-selection label{color:var(--guide-muted);font-weight:850;font-size:10px;letter-spacing:.13em}
+.book-guide-root .book-guide-selection select{min-height:48px!important;border:1px solid var(--guide-border)!important;border-radius:13px!important;background:var(--guide-paper)!important;color:var(--guide-ink)!important;box-shadow:0 3px 8px rgba(19,33,81,.035);font-size:13px!important;font-weight:650!important;padding-inline:13px!important}
+.book-guide-root .book-guide-selection select:focus-visible{outline:3px solid rgba(112,90,218,.2)!important;border-color:#7664d9!important}
+.book-guide-root .book-guide-book-note{font-size:11px;line-height:1.55}
+.book-guide-root .book-guide-messages{background:radial-gradient(circle at 14% 2%,rgba(123,111,218,.065),transparent 45%),var(--guide-paper)!important;gap:16px!important;min-height:160px;padding:20px 18px!important}
+.book-guide-root .book-guide-message{gap:9px;max-width:100%}
+.book-guide-root .book-guide-message-avatar{width:32px;height:32px;flex-basis:32px;border-radius:12px;background:#e7e3ff;color:#5946be;font-weight:900}
+.book-guide-root .book-guide-message.user .book-guide-message-avatar{background:#e7effd;color:#324f83}
+.book-guide-root .book-guide-message-body{font-size:13px!important;line-height:1.68!important;padding:13px 15px!important;border-radius:5px 16px 16px 16px!important;background:var(--guide-soft)!important;border:1px solid var(--guide-border)!important;color:var(--guide-ink)!important;box-shadow:0 5px 15px rgba(24,40,82,.045)}
+.book-guide-root .book-guide-message.user .book-guide-message-body{border:1px solid transparent!important;border-radius:16px 5px 16px 16px!important;background:linear-gradient(122deg,#4d3cad,#7260d5)!important;color:#fff!important;box-shadow:0 7px 16px rgba(83,65,179,.17)}
+.book-guide-root .book-guide-prompts{padding:11px 15px 14px;gap:7px;border-top:1px solid var(--guide-border);background:var(--guide-paper)}
+.book-guide-root .book-guide-prompts button{background:var(--guide-soft)!important;color:var(--guide-ink)!important;border:1px solid var(--guide-border)!important;border-radius:999px!important;min-height:35px!important;padding:7px 12px!important;font-size:11px!important;font-weight:750!important}
+.book-guide-root .book-guide-prompts button:hover{background:#e7e1ff!important;color:#47339f!important;border-color:#c4b9fa!important}
+.book-guide-root .book-guide-compose{border:1px solid #c8cce7!important;border-radius:17px!important;background:var(--guide-paper)!important;margin:0 15px 12px!important;padding:5px!important;box-shadow:0 0 0 3px rgba(104,85,199,.045),0 6px 16px rgba(30,43,89,.06)!important;transition:border-color .16s,box-shadow .16s}
+.book-guide-root .book-guide-compose:focus-within{border-color:#7661df!important;box-shadow:0 0 0 4px rgba(118,97,223,.14)!important}
+.book-guide-root .book-guide-compose input{color:var(--guide-ink)!important;min-height:44px!important;padding:10px 13px!important;font-size:13px!important;font-weight:500!important}
+.book-guide-root .book-guide-compose input::placeholder{color:var(--guide-muted)!important;opacity:1}
+.book-guide-root .book-guide-compose button{height:44px!important;min-height:44px!important;width:44px!important;min-width:44px!important;max-width:44px!important;display:grid!important;place-items:center!important;border-radius:13px!important;background:linear-gradient(135deg,#4737b0,#826de5)!important;color:#fff!important;box-shadow:0 7px 14px rgba(74,57,171,.18)!important}
+.book-guide-root .book-guide-compose button svg{width:18px;height:18px;stroke-width:2.3}
+.book-guide-root .book-guide-compose button:disabled{opacity:.55!important;box-shadow:none!important}
+.book-guide-root .book-guide-disclaimer{border-top:1px solid var(--guide-border);background:var(--guide-soft);color:var(--guide-muted);padding:12px 16px!important;font-size:10.5px!important}
+.book-guide-root .book-guide-note-icon{background:var(--guide-paper);border:1px solid var(--guide-border);color:var(--guide-accent)}
+.book-guide-root .book-guide-fab{background:linear-gradient(125deg,#2d2a70,#5746bc 68%,#7662df)!important;border:1px solid rgba(255,255,255,.3)!important;box-shadow:0 15px 36px rgba(44,39,122,.29)!important}
+@media(max-width:430px){
+ .book-guide-root .book-guide-panel{right:8px!important;width:calc(100vw - 16px)!important;border-radius:20px!important}
+ body .book-guide-root .book-guide-head{padding:14px 13px!important}
+ .book-guide-root .book-guide-title-wrap h2{font-size:20px!important}
+ .book-guide-root .book-guide-messages{padding:14px 12px!important}
+ .book-guide-root .book-guide-selection{padding:11px 12px!important}
+ .book-guide-root .book-guide-prompts{padding-inline:10px!important}
+ .book-guide-root .book-guide-compose{margin-inline:10px!important}
+ .book-guide-root .book-guide-message-body{font-size:12px!important;padding:11px 12px!important}
+ body[data-account="in"] #accountCard{border-radius:20px!important}
+ body[data-account="in"] #accountCard .auth-content{padding:15px!important}
+}
+@media(max-height:590px){.book-guide-root .book-guide-panel{bottom:8px!important;max-height:calc(100dvh - 16px)!important}}
+@media(prefers-reduced-motion:reduce){.book-guide-root .book-guide-panel,.book-guide-root .book-guide-prompts button{transition:none!important;animation:none!important}}
+/* Final contrast pass: legacy active-navigation spans were white on the new pale active surface. */
+body[data-account="in"] #accountCard .workspace-nav .tab.active,
+body[data-account="in"] #accountCard .workspace-nav .tab.active :is(span,strong,small,svg){color:#352c8b!important;stroke:currentColor}
+:root[data-theme="dark"] body[data-account="in"] #accountCard .workspace-nav .tab.active,
+:root[data-theme="dark"] body[data-account="in"] #accountCard .workspace-nav .tab.active :is(span,strong,small,svg){color:#f3eeff!important;stroke:currentColor}
+#adminDirectory .admin-directory-hero .eyebrow{color:#bdd3ff!important;letter-spacing:.13em}
