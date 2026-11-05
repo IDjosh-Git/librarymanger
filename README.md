@@ -1,3 +1,5 @@
+> **Admin Management update (5 November 2026):** Added a verified administrator directory, remove-access confirmation, and server-enforced revocation. Apply `library_admin_management_upgrade.sql` after role setup. See `ADMIN_MANAGEMENT_RELEASE_20261105.md`.
+
 # Library Manager
 
 > **Latest UI update (4 November 2026):** Premium header/navigation, responsive dashboard and Inventory gradients, simplified Scan & Review shelf workflow, modern dropdown icons, dark-mode and Book of the Week refinements. See `PREMIUM_LIBRARY_UI_RELEASE_20261104.md`. Existing SQL migrations and library functionality remain unchanged.

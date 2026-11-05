@@ -22,15 +22,15 @@ class NavigationAndOverviewChecks(unittest.TestCase):
 
     def test_admin_and_user_destinations_preserved(self):
         self.assertEqual(set(re.findall(r'data-tab="([^"]+)"', HTML)),
-                         {'dashboard','inventory','shelfScan','featuredAdmin','scanned','notifications','history','contactSettings','lend','return'})
-        self.assertIn('const ADMIN_PAGES=new Set(["dashboard","inventory","shelfScan","featuredAdmin","scanned","notifications","history","contactSettings"])', HTML)
+                         {'dashboard','inventory','shelfScan','featuredAdmin','scanned','notifications','history','contactSettings','adminDirectory','lend','return'})
+        self.assertIn('const ADMIN_PAGES=new Set(["dashboard","inventory","shelfScan","featuredAdmin","scanned","notifications","history","contactSettings","adminDirectory"])', HTML)
         self.assertIn('const USER_PAGES=new Set(["lend","return"])', HTML)
         self.assertIn("if(!session?.user||!isAdmin())return;", HTML)
         self.assertIn('book-of-the-week.html', HTML)
 
     def test_mobile_all_destinations_and_accessible_dialog(self):
         self.assertEqual(set(re.findall(r'data-mobile-tab="([^"]+)"', HTML)),
-                         {'dashboard','inventory','shelfScan','featuredAdmin','scanned','notifications','history','contactSettings','lend','return'})
+                         {'dashboard','inventory','shelfScan','featuredAdmin','scanned','notifications','history','contactSettings','adminDirectory','lend','return'})
         self.assertIn('aria-labelledby="mobileNavTitle"', HTML)
         self.assertIn('aria-controls="mobileNavSheet"', HTML)
         self.assertIn('function closeMobileMenu()', HTML)

@@ -24,7 +24,7 @@ class PremiumWorkspaceV2Tests(unittest.TestCase):
     def test_main_navigation_has_unique_destinations(self):
         pages=[e['data-tab'] for e in SOUP.select('.workspace-nav [data-tab]')]
         self.assertEqual(len(pages),len(set(pages)))
-        self.assertEqual(set(pages),{'dashboard','inventory','shelfScan','featuredAdmin','scanned','notifications','history','contactSettings','lend','return'})
+        self.assertEqual(set(pages),{'dashboard','inventory','shelfScan','featuredAdmin','scanned','notifications','history','contactSettings','adminDirectory','lend','return'})
 
     def test_quick_tools_are_explicit_disclosure(self):
         details=SOUP.select_one('details.workspace-utilities')

@@ -43,7 +43,7 @@ class DiscoveryTests(unittest.TestCase):
         self.assertIn('id="contactSettings"',APP)
         self.assertIn('data-tab="contactSettings"',APP)
         self.assertIn('data-mobile-tab="contactSettings"',APP)
-        self.assertIn('const ADMIN_PAGES=new Set(["dashboard","inventory","shelfScan","featuredAdmin","scanned","notifications","history","contactSettings"])',APP)
+        self.assertIn('const ADMIN_PAGES=new Set(["dashboard","inventory","shelfScan","featuredAdmin","scanned","notifications","history","contactSettings","adminDirectory"])',APP)
         self.assertIn("if(!isAdmin()||!session?.user)return msg('Admin permission required.'",APP)
         self.assertIn('library_contact_admin_insert',SQL)
         self.assertIn('library_contact_admin_update',SQL)
