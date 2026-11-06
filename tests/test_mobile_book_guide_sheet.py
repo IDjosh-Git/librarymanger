@@ -19,6 +19,6 @@ class MobileGuideAndCover(unittest.TestCase):
    self.assertIn(q,API)
  def test_existing_scanner_optin_and_review_gate(self):
   self.assertIn('id="batchUseAI" type="checkbox"',PAGE)
-  self.assertIn("x.reviewApproval===reviewFingerprint(x)",PAGE)
+  self.assertIn("function batchValid(x){return !!(!x.saved&&!x.reviewBusy&&hasBookTitle(x.title))}",PAGE)
   self.assertIn("if(!(force||$('batchUseAI')?.checked))return false",PAGE)
 if __name__=='__main__':unittest.main()

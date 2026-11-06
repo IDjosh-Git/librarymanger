@@ -61,3 +61,7 @@ The Gemini AI key is optional. Book metadata lookup, local OCR and Excel support
 
 ## Full Book Guide catalogue (5 Nov 2026)
 The floating Book Guide now appears on all workspace panels and public pages. It lists the available library titles and editions, supports title/author search, and uses a read-only public catalogue RPC on public pages. See `BOOK_GUIDE_ALL_BOOKS_RELEASE_20261105.md` and `library_public_book_guide_catalog.sql`. The SQL has already been applied to the connected Library Manager Supabase project.
+
+## Current UI update — 6 Nov 2026
+
+The Inventory Filters control now opens a dedicated premium responsive filter screen. It supports availability, book details, ISBN/barcode, title, author, shelf, copy quantities, and advanced criteria; Cancel restores prior selections while Show results applies them. See `PREMIUM_INVENTORY_FILTER_PAGE_20261106.md`. No database migration is required.

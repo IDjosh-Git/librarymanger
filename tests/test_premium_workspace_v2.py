@@ -30,7 +30,7 @@ class PremiumWorkspaceV2Tests(unittest.TestCase):
         details=SOUP.select_one('details.workspace-utilities')
         self.assertIsNotNone(details)
         self.assertFalse(details.has_attr('open'))
-        self.assertEqual(len(details.select('[data-nav-action]')),3)
+        self.assertEqual(len(details.select('[data-nav-action]')),2)  # Scan is only a navigation destination, not an extra scan control
         self.assertIsNotNone(SOUP.select_one('#navImportShelf'))
 
     def test_scanner_preserves_workflow(self):
