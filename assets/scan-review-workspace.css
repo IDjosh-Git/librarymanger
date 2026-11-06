@@ -1,0 +1,319 @@
+/* Release 5.13. Dedicated Review workspace — all colors inherit the existing theme. */
+.review-workspace{min-width:0}
+.review-workspace-hero,.review-editor-section,.review-tools-section,.scan-review-inbox{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:22px;box-shadow:var(--shadow)}
+.review-workspace-hero{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:clamp(19px,3vw,29px);background:linear-gradient(115deg,var(--surface),var(--surface2));}
+.review-workspace-hero .eyebrow{font-size:11px;color:var(--muted);font-weight:850;letter-spacing:.13em}
+.review-workspace-hero h2{font-size:clamp(1.45rem,2.5vw,2rem);margin:8px 0 10px;letter-spacing:-.035em;color:var(--ink);line-height:1.2}
+.review-workspace-hero p{font-size:13px;color:var(--muted);line-height:1.65;margin:0;max-width:620px}
+.review-hero-actions{display:flex;gap:9px;align-items:center;flex-shrink:0;flex-wrap:wrap}
+.review-hero-actions button{min-height:43px;font-size:12px}
+.review-stats{display:flex;gap:12px;flex-wrap:wrap;margin:14px 0}
+.review-stats span{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:13px;padding:11px 17px;font-size:12px;color:var(--muted);font-weight:750}
+.review-stats strong{font-size:20px;color:var(--ink);font-weight:850}
+.review-editor-section{padding:clamp(13px,2vw,22px);margin-top:14px}
+.review-editor-section .scan-review-heading{margin-top:0}
+.review-editor-section .batch-review{min-width:0}
+.review-editor-section .saved-review-panel{margin-top:18px}
+.review-tools-section{padding:clamp(13px,2vw,22px);margin-top:16px}
+.review-tools-section .scan-advanced-options{margin:0}
+.review-tools-section .scan-advanced-inner{padding:clamp(12px,2vw,19px)}
+.scan-review-inbox{margin:16px 0 0;padding:17px 18px}
+.scan-review-inbox-head{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:13px}
+.scan-review-inbox-head h3{margin:5px 0;font-size:1.18rem;color:var(--ink)}
+.scan-review-inbox-head h3 span{display:inline-grid;place-items:center;font-size:12px;background:var(--soft);color:var(--accent);border:1px solid var(--line);border-radius:30px;padding:5px 10px;margin-left:4px}
+.scan-review-inbox-head p{margin:4px 0;color:var(--muted);font-size:12px;line-height:1.55}
+.scan-review-inbox-head button{flex-shrink:0;min-height:42px;font-size:12px}
+.scan-stage-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:12px;font-weight:750;color:var(--muted);padding:10px 0}
+.scan-stage-actions button{font-size:12px;min-height:38px}
+.scan-stage-list{display:grid;gap:9px;min-width:0}
+.scan-stage-item{display:flex;align-items:center;gap:12px;min-width:0;padding:10px 12px;background:var(--surface2);border:1px solid var(--line);border-radius:15px}
+.scan-stage-cover{width:45px;height:57px;flex:0 0 45px;background:var(--soft);color:var(--accent);display:grid;place-items:center;border:1px solid var(--line);border-radius:9px;overflow:hidden}
+.scan-stage-cover img{width:100%;height:100%;object-fit:cover}
+.scan-stage-detail{display:grid;gap:5px;min-width:0;flex:1}
+.scan-stage-detail strong{color:var(--ink);font-size:13px;line-height:1.35;overflow-wrap:anywhere}
+.scan-stage-detail small{color:var(--muted);font-size:11px;line-height:1.4;overflow-wrap:anywhere}
+.scan-stage-button{font-size:12px;white-space:nowrap;min-height:40px;flex-shrink:0}
+.scan-stage-empty{display:flex;align-items:center;gap:11px;padding:21px 13px;color:var(--muted);font-size:12px;background:var(--surface2);border-radius:13px;line-height:1.6}
+.scan-stage-empty>span:first-child{display:grid;place-items:center;width:34px;height:34px;flex-shrink:0;background:var(--soft);color:var(--accent);border-radius:50%;font-size:19px}
+.review-workspace :is(button,input,select,summary):focus-visible,.scan-stage-button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media(max-width:650px){
+ .review-workspace-hero{display:block;padding:19px 16px}
+ .review-workspace-hero h2{font-size:1.55rem}
+ .review-hero-actions{margin-top:18px;display:grid;grid-template-columns:1fr 1fr}
+ .review-hero-actions button{width:100%;padding:0 8px;white-space:normal}
+ .review-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .review-stats span{padding:9px 11px;flex-wrap:wrap;gap:4px;font-size:11px}
+ .review-stats strong{font-size:20px;min-width:100%}
+ .review-editor-section,.review-tools-section{padding:12px;border-radius:18px}
+ .scan-review-inbox{padding:13px;border-radius:17px}
+ .scan-review-inbox-head{align-items:flex-start;flex-wrap:wrap}
+ .scan-review-inbox-head button{width:100%}
+ .scan-stage-actions{flex-wrap:wrap}
+ .scan-stage-actions button{width:100%}
+ .scan-stage-item{display:grid;grid-template-columns:45px minmax(0,1fr);gap:10px}
+ .scan-stage-item .scan-stage-button{grid-column:1/-1;width:100%}
+}
+
+/* Advanced Tools lives in Review now; give it a complete standalone design instead
+   of inheriting selectors that only apply inside the old Scan page. */
+.review-workspace .review-tools-section{overflow:hidden}
+.review-workspace #scanAdvancedTools.scan-advanced-options{display:block;width:100%;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow:hidden;color:var(--ink)}
+.review-workspace #scanAdvancedTools>.scan-advanced-summary{display:flex;align-items:center;gap:12px;min-height:65px;padding:15px 18px;background:var(--surface2);list-style:none;cursor:pointer;border-bottom:1px solid transparent}
+.review-workspace #scanAdvancedTools>.scan-advanced-summary::-webkit-details-marker{display:none}
+.review-workspace #scanAdvancedTools[open]>.scan-advanced-summary{border-bottom-color:var(--line)}
+.review-workspace .scan-advanced-emblem{display:grid;place-items:center;flex:0 0 35px;width:35px;height:35px;background:var(--soft);border:1px solid var(--line);border-radius:11px;color:var(--accent);font-size:18px}
+.review-workspace .scan-advanced-heading{display:flex;flex:1;flex-direction:column;gap:4px;min-width:0}
+.review-workspace .scan-advanced-heading strong{display:block;font-size:14px;line-height:1.35;color:var(--ink);letter-spacing:-.02em}
+.review-workspace .scan-advanced-heading small{display:block;font-size:11px;line-height:1.45;color:var(--muted);font-weight:500}
+.review-workspace .scan-advanced-optional{flex-shrink:0;padding:5px 9px;border-radius:100px;background:var(--soft);font-size:10px;font-weight:750;color:var(--muted)}
+.review-workspace .scan-advanced-chevron{font-size:19px;line-height:1;color:var(--muted);transition:transform .2s ease}
+.review-workspace #scanAdvancedTools[open] .scan-advanced-chevron{transform:rotate(180deg)}
+.review-workspace #scanAdvancedTools>.scan-advanced-inner{display:grid;gap:18px;padding:clamp(13px,2vw,20px);background:var(--surface)}
+.review-workspace .scan-advanced-intro{display:flex;align-items:center;justify-content:space-between;gap:16px;min-width:0}
+.review-workspace .scan-advanced-intro>div{min-width:0}
+.review-workspace .scan-advanced-label,.review-workspace .scan-tool-eyebrow{display:block;font-size:10px;color:var(--accent);font-weight:800;letter-spacing:.10em;text-transform:uppercase;line-height:1.45}
+.review-workspace .scan-advanced-intro h4{font-size:clamp(15px,1.5vw,18px);line-height:1.35;color:var(--ink);margin:7px 0}
+.review-workspace .scan-advanced-intro p{font-size:12px;color:var(--muted);line-height:1.6;margin:0;max-width:52ch}
+.review-workspace .scan-advanced-intro button{flex:0 0 auto;min-height:42px;padding:9px 14px;font-size:12px;max-width:100%;white-space:normal}
+.review-workspace .scan-advanced-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;min-width:0}
+.review-workspace .scan-tool-card{display:flex;flex-direction:column;align-items:flex-start;gap:11px;min-width:0;padding:18px;background:var(--surface2);border:1px solid var(--line);border-radius:15px;box-shadow:none}
+.review-workspace .scan-tool-symbol{width:36px;height:36px;flex:0 0 36px;display:grid;place-items:center;border-radius:11px;color:var(--accent);background:var(--soft);font-size:21px}
+.review-workspace .scan-tool-card>div{flex:1;min-width:0}
+.review-workspace .scan-tool-card h4{font-size:14px;line-height:1.4;color:var(--ink);margin:7px 0}
+.review-workspace .scan-tool-card p{font-size:12px;line-height:1.65;color:var(--muted);margin:6px 0 0;overflow-wrap:anywhere}
+.review-workspace .scan-tool-card button,.review-workspace .scan-tool-import{display:inline-flex;align-items:center;justify-content:center;min-height:41px;padding:9px 14px;max-width:100%;margin-top:2px;font-weight:750;font-size:12px;white-space:normal;line-height:1.4;text-align:center}
+.review-workspace .scan-tool-import{background:var(--accent);color:#fff;border-radius:10px;cursor:pointer}
+.review-workspace .scan-tool-card button:disabled{cursor:not-allowed;opacity:.57}
+.review-workspace .scan-extra-exports{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface2)}
+.review-workspace .scan-extra-exports summary{font-size:12px;color:var(--ink);font-weight:750;cursor:pointer;line-height:1.6}
+.review-workspace .scan-extra-exports button{margin:10px 0;font-size:12px}
+.review-workspace .scan-extra-exports p{color:var(--muted);font-size:12px;line-height:1.6;margin:8px 0 0}
+@media(max-width:800px){
+ .review-workspace .scan-advanced-grid{grid-template-columns:1fr}
+ .review-workspace .scan-advanced-intro{align-items:flex-start;flex-direction:column}
+ .review-workspace .scan-advanced-intro button{width:100%}
+}
+@media(max-width:430px){
+ .review-workspace #scanAdvancedTools>.scan-advanced-summary{gap:9px;padding:12px 10px}
+ .review-workspace .scan-advanced-emblem{width:30px;height:30px;flex-basis:30px}
+ .review-workspace .scan-advanced-optional{display:none}
+ .review-workspace .scan-advanced-heading strong{font-size:13px}
+ .review-workspace .scan-advanced-heading small{font-size:10px}
+ .review-workspace .scan-tool-card{padding:14px}
+}
+
+.review-workspace .scan-tool-card .scan-tool-import{box-sizing:border-box;display:inline-flex;flex:0 0 auto;align-self:flex-start;width:auto;height:auto!important;min-height:43px;max-height:56px;padding:10px 15px;line-height:1.25;aspect-ratio:auto;white-space:normal}
+.review-workspace .review-editor-section>.scan-review-heading{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.review-workspace .review-editor-section>.scan-review-heading>div{min-width:0}
+.review-workspace #reviewSaveCorrected{flex-shrink:0;min-height:43px;white-space:nowrap;font-size:12px}
+.review-workspace #reviewSaveCorrected:disabled{cursor:not-allowed;opacity:.48}
+.review-workspace .review-action-status{font-size:12px;color:var(--muted);line-height:1.45;margin:8px 0}
+.review-workspace .review-action-status:empty{display:none}
+@media(max-width:650px){.review-workspace .review-editor-section>.scan-review-heading{display:grid;grid-template-columns:minmax(0,1fr)}.review-workspace #reviewSaveCorrected{width:100%}}
+
+/* 5.14 · Scan & Review UI system. Flat surfaces, predictable grid and theme-preserving controls.
+   This file is the only page-specific stylesheet for these two workspaces. */
+#shelfScan,#review{min-width:0;overflow:visible}
+#shelfScan *,#review *{box-sizing:border-box}
+#shelfScan :is(.shelf-page-hero,.batch-box,.scan-review-inbox),
+#review :is(.review-workspace-hero,#scanAdvancedTools){background:var(--surface)!important;border:1px solid var(--line)!important;box-shadow:none!important}
+#shelfScan .shelf-page-hero{padding:clamp(18px,3vw,28px)!important;border-radius:19px!important;min-height:unset!important}
+#shelfScan .shelf-page-image{display:none!important}
+#shelfScan .shelf-page-copy{max-width:100%!important}
+#shelfScan .shelf-page-hero-actions{gap:9px;align-items:center;flex-wrap:wrap}
+#shelfScan .shelf-process-stats{background:transparent!important;box-shadow:none!important}
+#shelfScan .batch-box{border-radius:20px!important;overflow:hidden}
+#shelfScan .batch-head{background:var(--surface)!important;border-bottom:1px solid var(--line)!important;box-shadow:none!important}
+#shelfScan .batch-body{background:var(--surface)!important;border:0!important;box-shadow:none!important}
+#shelfScan :is(.scan-command-bar,.scan-recognition-settings,.batch-details,.scan-selection-tools,.scan-cloud-toolbar,.scan-ready-section,.scan-review-inbox),
+#review :is(.review-editor-section,.review-tools-section,.scan-advanced-inner,.scan-advanced-summary){background:transparent!important;background-image:none!important;box-shadow:none!important}
+#shelfScan :is(.scan-command-bar,.scan-recognition-settings,.batch-details,.scan-selection-tools,.scan-cloud-toolbar){border:1px solid var(--line)!important}
+#shelfScan .scan-command-bar{border-radius:14px!important}
+#shelfScan .scan-recognition-card{background:var(--surface)!important;border:1px solid var(--line)!important;box-shadow:none!important;border-radius:13px!important}
+#shelfScan .batch-picker{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px!important}
+#shelfScan .batch-picker label{background:var(--surface)!important;color:var(--ink)!important;border:1px solid var(--line)!important;box-shadow:none!important;border-radius:13px!important;min-width:0;min-height:70px;justify-content:center;line-height:1.35;text-align:center;cursor:pointer}
+#shelfScan .batch-picker label:hover{border-color:var(--accent)!important}
+#shelfScan .batch-summary span{border-radius:12px!important;background:transparent!important;border:1px solid var(--line)!important;box-shadow:none!important}
+#shelfScan .scan-ready-section{border:0!important;padding:0!important}
+#shelfScan .scan-ready-item{display:grid!important;grid-template-columns:30px minmax(0,1fr) auto auto;align-items:center;gap:13px;min-width:0;padding:13px 15px!important;border:1px solid var(--line)!important;background:var(--surface)!important;box-shadow:none!important;border-radius:13px!important}
+#shelfScan .scan-ready-item>div{min-width:0;overflow-wrap:anywhere}
+#shelfScan .scan-ready-checkbox{display:flex;align-items:center;gap:5px;white-space:nowrap}
+#shelfScan .scan-ready-item button{white-space:nowrap;min-height:42px}
+#shelfScan .scan-review-inbox{border:1px solid var(--line)!important;border-radius:15px!important}
+#shelfScan .scan-stage-item{background:transparent!important;box-shadow:none!important;border:1px solid var(--line)!important}
+#shelfScan .scan-stage-detail{overflow-wrap:anywhere}
+#review{display:none}
+#review.active{display:block}
+#review .review-workspace-hero{border-radius:19px!important;background-image:none!important;align-items:flex-start}
+#review .review-editor-section,#review .review-tools-section{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;margin-top:20px!important}
+#review .review-stats{margin:14px 0 0!important}
+#review .review-stats span{background:var(--surface)!important;border-radius:13px!important;box-shadow:none!important;min-height:67px}
+#review .review-editor-section>.scan-review-heading{background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:15px!important;padding:16px 18px!important;margin-bottom:12px!important;gap:14px;align-items:center}
+#review .review-editor-section>.scan-review-heading h3{font-size:clamp(1rem,1.6vw,1.2rem);line-height:1.3;overflow-wrap:anywhere}
+#review .review-editor-section>.scan-review-heading p{margin:6px 0 0;line-height:1.5}
+#review .scan-review-controls{display:grid!important;grid-template-columns:minmax(0,1fr);gap:7px;padding:0!important;margin:16px 0!important;background:transparent!important;border:0!important;box-shadow:none!important}
+#review .scan-review-controls>label{color:var(--ink)!important;font-weight:750;font-size:13px}
+#review .review-search-input{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;position:relative;align-items:center;min-width:0}
+#review .review-search-icon{position:absolute;top:50%;left:15px;transform:translateY(-50%);color:var(--muted);pointer-events:none;display:grid;place-items:center;z-index:1}
+#review #scanReviewSearch{min-width:0;width:100%;height:49px!important;min-height:49px!important;border-radius:13px!important;border:1px solid var(--line)!important;box-shadow:none!important;background:var(--surface)!important;color:var(--ink)!important;padding:10px 13px 10px 44px!important;font:inherit;font-size:14px}
+#review #scanReviewSearch::placeholder{color:var(--muted)}
+#review #scanReviewSearch:focus{outline:2px solid var(--accent)!important;outline-offset:1px}
+#review #scanReviewSearchClear{min-height:48px;border:1px solid var(--line)!important;background:var(--surface)!important;color:var(--ink)!important}
+#review .batch-review{margin:0!important;min-width:0;background:transparent!important;border:0!important;box-shadow:none!important}
+#review .batch-book-list{display:grid;gap:13px;min-width:0}
+#review .batch-book.scan-title-review-card{background:var(--surface)!important;color:var(--ink)!important;border:1px solid var(--line)!important;border-radius:16px!important;box-shadow:none!important;padding:16px!important;overflow:visible;min-width:0}
+#review .batch-book-head{display:flex;align-items:center;gap:10px;min-width:0;margin:0!important;flex-wrap:wrap}
+#review .scan-title-review-number{flex:0 0 auto;display:grid;place-items:center;width:32px;height:32px;border-radius:9px;background:var(--soft)!important;color:var(--accent)!important;font-weight:850}
+#review .batch-book-source{flex:1;min-width:155px;display:grid;gap:4px}
+#review .batch-book-source strong{overflow-wrap:anywhere;font-size:13px;line-height:1.4}
+#review .batch-path{overflow-wrap:anywhere;color:var(--muted);font-size:11px}
+#review .batch-book-state{font-size:11px;white-space:nowrap;border-radius:999px!important;padding:7px 10px!important;flex:0 0 auto}
+#review .batch-book-content{display:grid!important;grid-template-columns:112px minmax(0,1fr);align-items:start;gap:17px;margin:16px 0 0!important;min-width:0}
+#review .batch-book-photo{display:block;object-fit:contain;width:112px;height:154px;max-width:100%;border:1px solid var(--line);border-radius:10px;background:transparent!important;box-shadow:none!important;margin:0}
+#review .batch-book-fields{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:12px!important;margin:0!important;min-width:0;width:100%}
+#review .scan-title-primary{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;gap:10px;align-items:end;width:100%}
+#review .scan-title-primary .batch-book-field{min-width:0}
+#review .scan-title-support{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr)) auto!important;gap:10px;align-items:end;min-width:0;width:100%}
+#review .batch-book-field{display:flex;flex-direction:column;gap:6px;min-width:0;font-size:12px;color:var(--muted)!important;font-weight:750}
+#review .batch-book-field span{line-height:1.35}
+#review .batch-book-field input,#review .batch-book-field select{
+ width:100%!important;min-width:0!important;height:45px!important;min-height:45px!important;max-width:100%;background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:11px!important;box-shadow:none!important;padding:10px 12px!important;color:var(--ink)!important;font:inherit;font-size:13px}
+#review .batch-book-field :is(input,select):focus{outline:2px solid var(--accent)!important;outline-offset:1px}
+#review .batch-book-field select,#review .review-tools-section select{
+ appearance:none;-webkit-appearance:none;padding-right:42px!important;
+ background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' fill='none' stroke='%23819b9a' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m4 7 5 5 5-5'/%3E%3C/svg%3E")!important;
+ background-repeat:no-repeat!important;background-position:right 13px center!important;background-size:18px!important}
+#review .scan-title-primary button,#review .scan-title-support button{min-height:45px;min-width:max-content;white-space:nowrap}
+#review button{border-radius:11px!important;font-weight:750;line-height:1.2;transition:border-color .16s ease,box-shadow .16s ease,transform .16s ease}
+#review button:hover:not(:disabled){transform:translateY(-1px)}
+#review button:disabled{opacity:.5;cursor:not-allowed;transform:none}
+#review .scan-card-more{padding:0!important;margin:1px 0!important;border:0!important;background:transparent!important;box-shadow:none!important;min-width:0}
+#review .scan-card-more summary{display:flex;align-items:center;justify-content:space-between;cursor:pointer;background:transparent!important;border:1px solid var(--line)!important;border-radius:11px;padding:12px 13px;line-height:1.35;color:var(--ink)!important;font-size:12px;font-weight:750;list-style:none}
+#review .scan-card-more summary::-webkit-details-marker{display:none}
+#review .scan-card-more summary::after{content:'';width:9px;height:9px;flex:0 0 9px;transform:rotate(45deg);border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);margin:-5px 4px 0 8px}
+#review .scan-card-more[open] summary::after{transform:rotate(225deg);margin:4px 4px 0 8px}
+#review .scan-card-more .batch-book-field{margin-top:11px}
+#review .batch-extra-fields{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;min-width:0}
+#review .batch-action-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:14px}
+#review .batch-action-row button{min-height:40px!important;font-size:12px;padding:9px 12px}
+#review .batch-matches,#review .ocr-text{background:transparent!important;box-shadow:none!important}
+#review .saved-review-panel{margin-top:20px!important;min-width:0}
+#review .saved-review-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px 12px;background:var(--surface)!important;border:1px solid var(--line)!important;border-radius:13px;padding:17px!important;margin:0 0 12px!important}
+#review .saved-review-heading>div{min-width:0}
+#review .saved-review-heading h3{margin:0 0 5px!important;color:var(--ink)!important;font-size:16px}
+#review .saved-review-heading p{margin:0;line-height:1.5}
+#review .review-view-count{font-size:11px;color:var(--muted);white-space:nowrap}
+#review .saved-review-list{display:grid;gap:10px}
+#review .saved-review-book{min-width:0;background:var(--surface)!important;border:1px solid var(--line)!important;box-shadow:none!important;border-radius:13px!important;padding:13px!important;overflow-wrap:anywhere}
+#review .scan-saved-actions{display:flex;flex-wrap:wrap;gap:8px}
+#review .scan-advanced-options{border-radius:16px!important;overflow:hidden}
+#review .scan-advanced-summary{border-bottom:1px solid var(--line)!important}
+#review .scan-advanced-grid{gap:10px!important}
+#review .scan-tool-card{background:transparent!important;box-shadow:none!important;border:1px solid var(--line)!important;border-radius:13px!important;min-height:0!important;align-items:stretch}
+#review .scan-tool-card button,#review .scan-tool-card .scan-tool-import{width:100%;min-width:0;max-width:100%;min-height:44px;box-shadow:none!important}
+#review .scan-extra-exports{background:transparent!important;border-color:var(--line)!important;box-shadow:none!important}
+#review .review-pager{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;padding:15px 4px}
+#review .review-pager button{min-height:42px}
+#review .scan-empty-review{border:1px dashed var(--line);border-radius:13px;background:var(--surface)!important;box-shadow:none!important;padding:25px 18px}
+#review .scan-empty-review p{color:var(--muted);line-height:1.5}
+#shelfScan :is(button,input,select),#review :is(button,input,select){font-family:inherit}
+#shelfScan :is(button,[type='file']){cursor:pointer}
+#shelfScan :is(button,input,select):focus-visible,#review :is(button,input,select,summary):focus-visible{outline:2px solid var(--accent)!important;outline-offset:2px!important}
+@media(max-width:980px){
+ #review .batch-book-content{grid-template-columns:92px minmax(0,1fr);gap:12px}
+ #review .batch-book-photo{width:92px;height:135px}
+ #review .scan-title-support{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ #review .scan-title-support button{grid-column:1/-1;width:100%;min-width:0}
+}
+@media(max-width:650px){
+ #shelfScan .shelf-page-hero-actions{display:flex;flex-wrap:wrap}
+ #shelfScan .batch-picker{grid-template-columns:1fr!important}
+ #shelfScan .scan-ready-item{grid-template-columns:25px minmax(0,1fr);gap:8px 12px;padding:13px!important}
+ #shelfScan .scan-ready-item .scan-ready-checkbox{grid-column:2}
+ #shelfScan .scan-ready-item button{grid-column:1/-1;width:100%;min-width:0}
+ #review .review-workspace-hero{padding:18px!important}
+ #review .review-editor-section>.scan-review-heading{display:grid!important;grid-template-columns:minmax(0,1fr);padding:15px!important}
+ #review .review-editor-section>.scan-review-heading button{width:100%}
+ #review .review-search-input{grid-template-columns:minmax(0,1fr)}
+ #review #scanReviewSearchClear{width:100%;min-height:40px}
+ #review .batch-book.scan-title-review-card{padding:13px!important}
+ #review .batch-book-head{align-items:flex-start}
+ #review .batch-book-source{min-width:0;flex-basis:calc(100% - 50px)}
+ #review .batch-book-state{margin-left:42px}
+ #review .batch-book-content{grid-template-columns:76px minmax(0,1fr);gap:10px}
+ #review .batch-book-photo{width:76px;height:104px;object-fit:contain}
+ #review .batch-book-fields{grid-column:1/-1}
+ #review .scan-title-primary{grid-template-columns:minmax(0,1fr)!important}
+ #review .scan-title-primary button{min-width:0;width:100%}
+ #review .scan-title-support{grid-template-columns:minmax(0,1fr)!important}
+ #review .scan-title-support button{grid-column:auto}
+ #review .batch-extra-fields{grid-template-columns:minmax(0,1fr)!important}
+ #review .saved-review-book{display:grid;grid-template-columns:minmax(0,1fr)}
+ #review .scan-saved-actions button{flex:1;min-width:0}
+ #review .review-hero-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+ #review .review-stats span{min-height:76px}
+ #review .scan-tool-card{padding:14px!important}
+}
+@media(max-width:350px){#review .review-hero-actions{grid-template-columns:1fr}#review .batch-book-state{margin-left:0}#shelfScan .batch-summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){#review button{transition:none!important}#review button:hover:not(:disabled){transform:none}}
+/* Final flattening: no tinted container behind another tinted card. */
+#review .saved-review-panel{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important}
+#review .batch-review-toolbar{background:transparent!important;border:1px solid var(--line)!important;border-radius:12px!important;color:var(--ink)!important;padding:12px 14px!important;margin-bottom:10px}
+#review .batch-review-toolbar strong,#review .batch-review-toolbar span{color:var(--ink)!important}
+#review .review-workspace-hero .eyebrow,#review .scan-review-heading .eyebrow{color:var(--accent)!important}
+#review .saved-review-book .saved-review-icon{background:var(--soft)!important;color:var(--accent)!important}
+#review .review-stats span{color:var(--muted)!important}
+#review .scan-tool-card>div{min-width:0;overflow-wrap:anywhere}
+/* Progressive disclosure keeps the mobile Scan task short and scannable. */
+#shelfScan #inventoryQuickAdd{margin:12px 0 16px!important;padding:0!important;border:0!important;background:transparent!important;box-shadow:none!important}
+#shelfScan .quick-add-drawer{border:1px solid var(--line)!important;background:var(--surface)!important;border-radius:15px!important;overflow:hidden;box-shadow:none!important}
+#shelfScan .quick-add-drawer>summary{display:flex;align-items:center;gap:12px;padding:14px 17px;color:var(--ink);cursor:pointer;list-style:none;min-height:66px}
+#shelfScan .quick-add-drawer>summary::-webkit-details-marker{display:none}
+#shelfScan .quick-add-drawer>summary>span:first-child{display:grid;place-items:center;flex:0 0 38px;height:38px;border-radius:11px;background:var(--soft);color:var(--accent);font-size:24px;font-weight:550}
+#shelfScan .quick-add-drawer>summary>span:nth-child(2){display:grid;gap:4px;min-width:0;flex:1}
+#shelfScan .quick-add-drawer>summary strong{font-size:14px;font-weight:800;color:var(--ink)}
+#shelfScan .quick-add-drawer>summary small{font-size:11px;line-height:1.4;color:var(--muted)}
+#shelfScan .drawer-chevron{width:9px;height:9px;border-bottom:2px solid var(--muted);border-right:2px solid var(--muted);transform:rotate(45deg);margin-right:6px;transition:transform .16s}
+#shelfScan .quick-add-drawer[open] .drawer-chevron{transform:rotate(225deg)}
+#shelfScan .quick-add-drawer .inventory-dashboard-grid{padding:10px 13px 13px;border-top:1px solid var(--line);min-width:0}
+#shelfScan .quick-add-drawer .manual-entry-section{margin:0!important;min-width:0;background:transparent!important;border:0!important;box-shadow:none!important;padding:6px!important}
+#shelfScan .quick-add-drawer .quickadd-form-content{background:transparent!important;box-shadow:none!important}
+#shelfScan .scan-more-actions{display:inline-flex;flex-direction:column;position:relative;min-width:145px;max-width:100%;border:1px solid var(--line);border-radius:11px;background:var(--surface);padding:0!important}
+#shelfScan .scan-more-actions>summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;min-height:45px;padding:9px 16px;font-weight:750;color:var(--ink);font-size:13px}
+#shelfScan .scan-more-actions>summary::-webkit-details-marker{display:none}
+#shelfScan .scan-more-actions>summary::after{content:'';width:8px;height:8px;transform:rotate(45deg);border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);margin-top:-4px}
+#shelfScan .scan-more-actions[open]>summary::after{transform:rotate(225deg);margin-top:4px}
+#shelfScan .scan-more-actions>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;padding:11px;background:var(--surface);border-top:1px solid var(--line);min-width:0}
+#shelfScan .scan-more-actions button{min-width:0;min-height:42px!important;border:1px solid var(--line)!important;background:transparent!important;color:var(--ink)!important;border-radius:9px!important;white-space:normal;text-align:center;font-size:12px}
+#shelfScan .scan-more-actions button:disabled{opacity:.5}
+#shelfScan .batch-actions-secondary{display:flex;align-items:flex-start;flex-wrap:wrap;gap:9px}
+#shelfScan .batch-actions-secondary>button{min-height:46px;border-radius:11px!important}
+#shelfScan .scan-recognition-settings{background:transparent!important;padding:14px!important}
+#shelfScan .batch-info{margin:16px 0!important;border:0!important;padding:0!important;background:transparent!important;box-shadow:none!important;color:var(--muted)!important;line-height:1.55!important;font-size:12px!important}
+#shelfScan .scan-cloud-toolbar{background:transparent!important;box-shadow:none!important}
+#shelfScan .scan-command-bar{background:transparent!important;border-color:var(--line)!important}
+#shelfScan .batch-details{background:transparent!important}
+#shelfScan .scan-ready-results{background:transparent!important}
+@media(max-width:650px){
+ #shelfScan .quick-add-drawer .inventory-dashboard-grid{padding:8px}
+ #shelfScan .batch-actions-secondary>button,#shelfScan .scan-more-actions{width:100%;min-width:0;flex:none}
+ #shelfScan .scan-more-actions>div{grid-template-columns:minmax(0,1fr)}
+ #shelfScan .batch-info{padding:0!important}
+}
+/* Text contrast follows the original light/dark theme, not the removed gradient image. */
+#shelfScan .shelf-page-hero h2,#shelfScan .batch-head h3{color:var(--ink)!important;text-shadow:none!important}
+#shelfScan .shelf-page-hero p,#shelfScan .batch-head p,#shelfScan .scan-limit-note{color:var(--muted)!important;text-shadow:none!important}
+#shelfScan .shelf-kicker,#shelfScan .batch-kicker{color:var(--accent)!important;text-shadow:none!important}
+#shelfScan .shelf-speed-tag{color:var(--muted)!important}
+#shelfScan .batch-head .batch-kicker{border:1px solid var(--line)!important;background:transparent!important;color:var(--accent)!important}
+
+/* Confirmation remains after the metadata, not in the middle of the form. */
+#review .scan-title-primary{grid-template-columns:minmax(0,1fr)!important}
+#review .review-card-footer{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:13px;margin-top:3px;flex-wrap:wrap}
+#review .review-card-save-note{font-size:12px;line-height:1.45;color:var(--muted);flex:1;min-width:160px}
+#review .review-card-footer button{min-height:46px;min-width:140px}
+@media(max-width:650px){#review .review-card-footer{display:grid;grid-template-columns:1fr}#review .review-card-footer button{width:100%}}
+/* Remove old decorative overlay layers from the Scan hero, not merely the base fill. */
+#shelfScan .shelf-page-hero::before,#shelfScan .shelf-page-hero::after{content:none!important;display:none!important;background:none!important}
+#shelfScan .shelf-page-hero{background-image:none!important}
+#review .review-workspace-hero::before,#review .review-workspace-hero::after{content:none!important;display:none!important;background:none!important}

@@ -1,78 +1,35 @@
-> **Latest (6 November 2026):** See [Premium Scan & Review and multi-device consistency](PREMIUM_SCAN_AND_MULTIDEVICE_RELEASE_20261106.md). **Run `SCAN_CLOUD_CONSISTENCY_UPGRADE.sql` in Supabase** after deploying the build to finish the cross-device fix.
+# Library Manager 5.14 — Clean Scan & Review release
 
-## Latest update — Premium Scan & Review Advanced Tools (6 Nov 2026)
+## What changed
 
-The Scan & Review page now includes premium Advanced Tools cards, instant cloud refresh, periodic saved-status reconciliation across devices, automatic ISBN-driven metadata suggestions for titleless books, and Mark All/Save All Ready. See [ADVANCED_SCAN_CLOUD_SYNC_RELEASE_20261106.md](ADVANCED_SCAN_CLOUD_SYNC_RELEASE_20261106.md).
+- **Scan books** is focused on uploading covers and folders, recognizing books, and saving completed copies. Manual entry and secondary controls are collapsible.
+- **Review books** has a dedicated searchable pending queue, a consistent correction form with Save at the bottom, ISBN suggestions, saved-inventory corrections, and Advanced Tools (including Excel/CSV import and export).
+- Responsive flat-card styling replaces piled gradient backgrounds in Scan/Review, with aligned inputs, accessible focus outlines, chevron dropdowns, and the **existing palette unchanged**.
+- Returning between Scan and Review uses recently loaded data instead of always re-fetching. Review realtime events refresh only the review queue, and unchanged drafts no longer cause repeated cloud writes.
+- Repeated identical scan image content within the active session is skipped by image-byte signature, regardless of file name. **The same ISBN is permitted for different physical copies**; each copy gets its own persistent record ID. Record IDs and a database guard prevent already saved review records reappearing as pending on another device.
+- Reduced ISBN lookup waiting after provider rate limits. If metadata fetching fails, manual editing and retry remain available.
 
-> **6 November 2026 — Visible OCR/AI controls and general research assistant:** Both scan switches now appear directly on Scan & Review. Library AI accepts general questions without a book, with optional Google Search grounding and source links. See `OCR_AI_GENERAL_ASSISTANT_20261106.md`. No database migration is necessary.
+## Deploy existing app (Vercel + Supabase)
 
-> **6 November 2026:** Mobile Book Guide scroll locking and book-cover recognition improvements: see [MOBILE_AI_PANEL_AND_COVER_SCANNER_FIX_20261106.md](MOBILE_AI_PANEL_AND_COVER_SCANNER_FIX_20261106.md).
+1. Back up your **existing Supabase database** before applying schema changes.
+2. Upload **the contents of this ZIP at your Vercel project root**. Keep `index.html`, `assets/`, `api/`, `lib/`, and `vercel.json` together.
+3. Keep using the same Supabase project and authentication settings. The client uses a **public publishable key**; never place a service-role key in the frontend.
+4. Ensure Supabase's `library_books` has a `record_id` per copy and the `library_review_queue` exists. For deployments still missing these, inspect and apply `database/01_unique_physical_copy_ids.sql` then `database/02_persistent_review_queue.sql`. Run `database/03_cross_device_saved_book_guard.sql` **after both prerequisites**, if not previously applied; the previous release may already have installed it. These SQL scripts are provided for review, **not automatically executed**.
+5. Existing administrator, Book of the Week, public discovery, and library-role migrations must remain installed in your existing Supabase database. This is a targeted **upgrade**, not a fresh Supabase bootstrap bundle.
+6. Optional migrations: only use `database/optional_books_without_isbn.sql` if your schema rejects title-only books; `database/optional_multiple_copies_same_isbn.sql` only if a unique ISBN constraint prevents multiple physical copies. Review each SQL file before running it.
+7. Optional AI: configure `OPENROUTER_API_KEY`, `GROQ_API_KEY` or `GEMINI_API_KEY` under Vercel **Environment Variables**, then redeploy. Keys remain server-side. Free providers require keys and may impose quotas; they do not guarantee real-time web search.
 
-> **5 Nov 2026 Admin directory fix:** The Administrators table now shows registered, verified Admin-role accounts immediately after secure activation—no prior visit required. See `ADMIN_SIGNUP_DIRECTORY_RELEASE_20261105.md` and `library_admin_signup_directory_fix.sql`.
+## Smoke-test the deployed app
 
-> **Admin Management update (5 November 2026):** Added a verified administrator directory, remove-access confirmation, and server-enforced revocation. Apply `library_admin_management_upgrade.sql` after role setup. See `ADMIN_MANAGEMENT_RELEASE_20261105.md`.
+Sign in on Windows and mobile with the **same Supabase account**. Scan a cover, save it to Review, fill its title/ISBN and save it. Confirm it disappears from pending review and appears exactly once in Inventory on both devices. Upload the **same image twice in one scanning session** to verify skip protection. Upload two **different physical copies** with the same ISBN and confirm they remain distinct Book IDs. Test imports, exports, offline reconnection, and permissions with your actual Supabase data. Verify OCR and AI only when configured.
 
-# Library Manager
+## Limitations and validation
 
-> **Latest UI update (4 November 2026):** Premium header/navigation, responsive dashboard and Inventory gradients, simplified Scan & Review shelf workflow, modern dropdown icons, dark-mode and Book of the Week refinements. See `PREMIUM_LIBRARY_UI_RELEASE_20261104.md`. Existing SQL migrations and library functionality remain unchanged.
+- Local automated tests passed: **72 Python tests**, **11 JavaScript test suites**, and additional 5.14 regression checks. Responsive Chromium fixtures were checked at **320, 390, 768 and 1440 px** in light/dark without horizontal page overflow.
+- **No production Supabase/Vercel connection was available for live two-device integration checks.** The app avoids redundant reads and writes but real network speed depends on your hosting, region, data size and client connection.
+- Content-based duplicate detection currently covers **images inside the current scanning session**; it is not a guaranteed global content-hash uniqueness constraint for reuploads on all devices. It deliberately does not block different copies sharing an ISBN.
+- The existing global stylesheet `assets/library-ui.css` remains because other app pages depend on it. Old extra release-note copies, patch scripts, test files, previews and the replaced Scan/Review CSS file are excluded from this deployment archive.
 
-Library Manager is a Supabase-backed library workspace for inventory management, book scanning and review, lending, returns, overdue notifications, Excel import/export, and optional Gemini-powered book-cover recognition.
+## Assets and attribution
 
-## Current release — automatic feature, contact links and circulation refresh (3 November 2026)
-
-This release extends the navigation and overview version with a premium public Book of the Week advert, deterministic **automatic weekly selection when no admin book is published**, clearer Lend and Return pages, and a new **Admin → Contact & social links** editor. Public and signed-in user pages display only the official contact fields and social links that an administrator has saved. The Google Sheets mirror remains absent.
-
-**New one-time Supabase setup required:** After the existing role and Book of the Week migrations, run `library_public_discovery_upgrade.sql` from Supabase SQL Editor. The new script adds the administrator-protected public contact directory, authorizes clearing a manual feature, and creates a narrowly scoped anonymous book-recommendation RPC. Read **`PUBLIC_DISCOVERY_CONTACT_SETUP_20261103.md`** before deployment.
-
-The public page does not require an administrator to log in and pick a book each week; its fallback selection changes by ISO week whenever a titled catalog record exists. A manual admin pick overrides it until the administrator clicks **Use automatic weekly pick**.
-
-Offline checks: 20 Python regression tests passed, inline and asset JavaScript syntax checked, CSS parsed, dynamic public contact links were simulated, and static responsive Chromium layouts showed no horizontal overflow from 320 to 1440 px. **No SQL was executed in your production Supabase project, and no live database integration test was performed.**
-
-## November 3, 2026 redesign and Book of the Week
-
-- **Google Sheets mirroring has been completely removed** from the app, including its configuration panel, Apps Script file, automatic book/loan mirror requests, and legacy connector code. Book and loan writes remain in **Supabase**.
-- Refreshed light/dark colours, readable navy hero cards, and consistent typography and card alignment across the public sign-in/create-account screens and the signed-in workspaces.
-- Replaced the problem dropdown icons with a single chevron pattern. Only the chevron rotates—not the text. Native selects also use consistent, high-contrast chevrons.
-- The Admin and User role architecture is unchanged. Sign In does not request a workspace choice. Create Account offers User or Admin, but Admin activation **requires a private access code checked by Supabase**.
-- Layout was checked at 390, 768 and 1440 px in both themes using static Chromium fixtures. **Live Supabase authentication, permissions, writes, and deployment still need end-to-end testing.**
-
-The latest redesign moves inventory search/filtering above bulk tools, consolidates CSS into one maintained app stylesheet, and adds `book-of-the-week.html` with secure Admin publishing. See `MODERN_REDESIGN_AND_SPOTLIGHT_SETUP.md` for the required Book of the Week setup.
-
-See `RELEASE_NOTES_20261103.md` for earlier Google Sheets removal details.
-
-## Deploy to Vercel
-
-1. Extract this project and push the **contents of `librarymanger-main/`** to your repository root (not a nested folder unless Vercel's Root Directory points to it).
-2. Deploy in Vercel using the existing project and framework setting. Keep `index.html`, `assets/`, `api/`, `lib/`, and `vercel.json` together.
-3. Keep the same Supabase URL and public/publishable key already configured in `index.html`. **Never put Supabase service-role keys or Gemini secrets in browser code.**
-4. Configure optional AI in **Vercel → Project → Settings → Environment Variables** using `GEMINI_API_KEY`, then redeploy. The optional `GEMINI_MODEL` is read by the AI endpoint if supported.
-5. If installing the role system for the first time, back up Supabase and follow `ADMIN_USER_REGISTRATION_SETUP.md`. Do not rerun existing SQL migrations blindly. The private administrator code migration is **not** a frontend-only setting.
-6. Test an Admin account and User account separately before using the app in production. Verify book creation, editing, scans, lending, returns, overdue notifications, Excel import/export, and password recovery.
-
-**Important:** Modern styling does not require SQL changes, but the **public Book of the Week and contact features require `library_book_of_the_week.sql` and `library_public_discovery_upgrade.sql` (in that order)**. That migration adds only a separate, curated public-feature table with Admin-only writes. It does not delete or alter existing inventory and loans in Supabase.
-
-## Application architecture
-
-- `index.html` — user interface, authentication and browser workflows.
-- `assets/library-ui.css` — a single consolidated app stylesheet with existing workflow-compatible rules and a final modern visual system (navigation, inventory, filters, dropdowns, cards and responsive layouts). The nine older standalone CSS files have been retired.
-- `book-of-the-week.html`, `assets/spotlight.css`, `assets/spotlight-premium.css`, `assets/book-of-the-week.js` — public reading advert with manual/automatic curated book selection.
-- `library_book_of_the_week.sql` — original Admin-only publishing migration; apply once in Supabase.
-- `library_public_discovery_upgrade.sql` — public contact directory, Admin-only contact edits and automatic featured-book fallback; apply once after the original Book of the Week table exists.
-- `assets/public-contact.js` — safe public contact link rendering on public, guest and signed-in pages.
-- `assets/*.js` and `lib/*.cjs` — inventory, scanner, Excel, metadata and dashboard logic.
-- `api/book-lookup.js`, `api/title-search.js`, `api/book-vision.js` — current Vercel functions. There is **no** `/api/admin-invite` function or Google Apps Script integration in this release.
-- `vercel.json` — current deployment config. It references only an existing Serverless Function.
-- `*.sql` — Supabase migrations. Apply only after inspecting your existing database state and backing it up.
-
-The Gemini AI key is optional. Book metadata lookup, local OCR and Excel support remain separate from Gemini and Google Sheets.
-
-
-## Full Book Guide catalogue (5 Nov 2026)
-The floating Book Guide now appears on all workspace panels and public pages. It lists the available library titles and editions, supports title/author search, and uses a read-only public catalogue RPC on public pages. See `BOOK_GUIDE_ALL_BOOKS_RELEASE_20261105.md` and `library_public_book_guide_catalog.sql`. The SQL has already been applied to the connected Library Manager Supabase project.
-
-## Current UI update — 6 Nov 2026
-
-The Inventory Filters control now opens a dedicated premium responsive filter screen. It supports availability, book details, ISBN/barcode, title, author, shelf, copy quantities, and advanced criteria; Cancel restores prior selections while Show results applies them. See `PREMIUM_INVENTORY_FILTER_PAGE_20261106.md`. No database migration is required.
-
-## Header image blending refinement — 6 November 2026
-The Overview and Inventory hero sections now blend their copy-side background seamlessly into their respective library photographs, with mobile-specific dark overlays for legible text. This is CSS-only; see `HERO_IMAGE_BLEND_UPDATE_20261106.md`.
+The fallback library photographs are derived from Unsplash (https://unsplash.com/license): Isaac Benhesed's reading-room photograph (photo-1557818288-320deebced6c), library interior (photo-1548453282-29d422a7025a), and book-stack image (photo-1520467795206-62e33627e6ce). The app may retrieve other library photographs from Unsplash CDN and book covers from Open Library.

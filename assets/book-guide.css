@@ -225,3 +225,68 @@ body[data-account="in"] #accountCard .workspace-nav .tab.active :is(span,strong,
 .book-guide-root .book-guide-context>summary:focus-visible{outline:3px solid #b7abf0;outline-offset:-3px}
 .book-guide-root .book-guide-context[open] .book-guide-selection{padding-top:5px}
 @media(max-width:899px){.book-guide-root .book-guide-context[open]{max-height:35%;overflow-y:auto;overscroll-behavior:contain}.book-guide-root .book-guide-context .book-guide-selection{max-height:none!important;overflow:visible!important}}
+
+/* Release 5.13 — conversation-first AI sheet. Keeps the established guide theme and colors. */
+.book-guide-root .book-guide-panel{width:min(480px,calc(100vw - 30px));max-height:min(760px,calc(100dvh - 120px))}
+.book-guide-root .book-guide-head{padding:15px 16px;gap:11px}
+.book-guide-root .book-guide-icon{width:37px;height:37px;flex-basis:37px;border-radius:12px;font-size:20px}
+.book-guide-root .book-guide-title-wrap h2{font-size:18px;margin:0 0 3px;letter-spacing:-.03em}
+.book-guide-root .book-guide-title-wrap p{font-size:11px;color:#ded8ff;margin:0;line-height:1.35}
+.book-guide-root .book-guide-head-actions{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.book-guide-root .book-guide-new-chat,.book-guide-root .book-guide-close{display:grid;place-items:center;background:rgba(255,255,255,.13);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:11px;width:38px;height:38px;min-width:38px;min-height:38px;padding:0;font-size:23px;font-weight:500}
+.book-guide-root .book-guide-new-chat:hover,.book-guide-root .book-guide-close:hover{background:rgba(255,255,255,.25)}
+.book-guide-root .book-guide-settings{flex:0 0 auto;min-height:0;border-bottom:1px solid var(--guide-border);background:var(--guide-paper)}
+.book-guide-root .book-guide-settings>summary{list-style:none;display:flex;align-items:center;gap:7px;min-height:37px;padding:6px 17px;cursor:pointer;font-size:11.5px;font-weight:780;color:var(--guide-ink);user-select:none}
+.book-guide-root .book-guide-settings>summary::-webkit-details-marker{display:none}
+.book-guide-root .book-guide-settings>summary small{margin-left:auto;font-size:10px;color:var(--guide-muted);font-weight:600}
+.book-guide-root .book-guide-settings[open]>summary{border-bottom:1px solid var(--guide-border)}
+.book-guide-root .book-guide-settings-body{max-height:min(300px,38dvh);overflow-y:auto;overscroll-behavior:contain}
+.book-guide-root .book-guide-context{border-bottom:none}
+.book-guide-root .book-guide-context>summary{padding:9px 16px}
+.book-guide-root .book-guide-capabilities{padding:10px 14px;background:var(--guide-soft)}
+.book-guide-root .book-guide-live{display:none}
+.book-guide-root .book-guide-web-switch{border-radius:11px;padding:8px 10px;box-shadow:none}
+.book-guide-root .book-guide-web-copy small{font-size:10px}
+.book-guide-root .book-guide-messages{min-height:170px;flex:1 1 auto!important;padding:22px 16px!important;gap:18px!important;background:var(--guide-paper)!important}
+.book-guide-root .book-guide-message{width:100%;max-width:100%;display:flex;gap:9px;align-items:flex-start}
+.book-guide-root .book-guide-message.assistant{align-self:stretch;flex-direction:row}
+.book-guide-root .book-guide-message.user{width:auto;max-width:88%;align-self:flex-end;flex-direction:row-reverse}
+.book-guide-root .book-guide-message-avatar{border-radius:50%;width:28px;height:28px;flex:0 0 28px;font-size:13px}
+.book-guide-root .book-guide-message.user .book-guide-message-avatar{display:none}
+.book-guide-root .book-guide-message.assistant .book-guide-message-body{background:transparent!important;border:none!important;box-shadow:none!important;border-radius:0!important;padding:2px 0!important;font-size:14px!important;line-height:1.7!important;max-width:calc(100% - 37px)!important}
+.book-guide-root .book-guide-message.user .book-guide-message-body{padding:11px 15px!important;font-size:14px!important;line-height:1.55!important;border-radius:18px 18px 4px 18px!important;box-shadow:none!important}
+.book-guide-root .book-guide-message-body>*{font-size:inherit;line-height:1.7;margin-bottom:10px}
+.book-guide-root .book-guide-message-body h3{font-size:15px;line-height:1.4}
+.book-guide-root .book-guide-sources{margin-left:0;width:100%;max-width:100%;gap:6px}
+.book-guide-root .book-guide-prompts{padding:7px 14px 12px;border:0;gap:8px;flex-wrap:wrap;overflow:visible}
+.book-guide-root .book-guide-prompts button{white-space:normal;min-height:37px;font-weight:600!important}
+.book-guide-root .book-guide-panel.has-conversation .book-guide-prompts{display:none!important}
+.book-guide-root .book-guide-compose{margin:7px 13px 3px!important;align-items:flex-end;flex:none;border-radius:19px!important;background:var(--guide-paper)!important}
+.book-guide-root .book-guide-compose textarea{font-family:Inter,system-ui,sans-serif;font-size:14px!important;line-height:1.5!important;min-height:43px!important;max-height:126px!important;resize:none;overflow-y:auto;flex:1;min-width:0;width:100%;padding:11px 9px!important;border:0!important;outline:0!important;background:transparent!important;color:var(--guide-ink)!important;box-shadow:none!important}
+.book-guide-root .book-guide-compose textarea::placeholder{color:var(--guide-muted)}
+.book-guide-root .book-guide-compose button{align-self:flex-end}
+.book-guide-root .book-guide-disclaimer{text-align:center;font-size:10px;line-height:1.4;padding:3px 13px 10px;margin:0;color:var(--guide-muted);background:var(--guide-paper)}
+@media(max-width:899px){
+ body .book-guide-root .book-guide-panel{width:100vw!important;max-height:var(--guide-vv-height,100dvh)!important;height:var(--guide-vv-height,100dvh)!important}
+ .book-guide-root .book-guide-head{padding:10px 14px!important;min-height:58px}
+ .book-guide-root .book-guide-icon{width:33px;height:33px;flex-basis:33px}
+ .book-guide-root .book-guide-title-wrap h2{font-size:16px}
+ .book-guide-root .book-guide-title-wrap p{font-size:10px}
+ .book-guide-root .book-guide-new-chat,.book-guide-root .book-guide-close{width:37px;height:37px;min-width:37px;min-height:37px}
+ .book-guide-root .book-guide-settings>summary{min-height:39px;padding:7px 14px}
+ .book-guide-root .book-guide-settings-body{max-height:31dvh}
+ .book-guide-root .book-guide-messages{flex:1 1 auto!important;min-height:33dvh!important;padding:18px 14px!important;gap:20px!important;overflow-y:auto}
+ .book-guide-root .book-guide-message.assistant .book-guide-message-body{font-size:14px!important;line-height:1.72!important}
+ .book-guide-root .book-guide-message.user .book-guide-message-body{font-size:14px!important}
+ .book-guide-root .book-guide-prompts{padding:7px 11px!important;flex-wrap:wrap;gap:6px}
+ .book-guide-root .book-guide-prompts button{font-size:11px!important;padding:7px 10px!important;min-height:34px!important}
+ .book-guide-root .book-guide-compose{margin:6px 11px 0!important;border-radius:19px!important;padding:5px!important}
+ .book-guide-root .book-guide-compose textarea{font-size:16px!important;min-height:42px!important;padding:10px 11px!important}
+ .book-guide-root .book-guide-disclaimer{padding:5px 11px calc(8px + env(safe-area-inset-bottom))!important;font-size:10px}
+ .book-guide-root .book-guide-selection{max-height:none!important}
+}
+@media(max-width:899px) and (max-height:590px){
+ .book-guide-root .book-guide-messages{min-height:130px!important}
+ .book-guide-root .book-guide-settings-body{max-height:28dvh}
+ .book-guide-root .book-guide-disclaimer{display:none}
+}

@@ -12,25 +12,28 @@ function init(){if(ready)return;ready=true;
  <div class="book-guide-backdrop" id="bookGuideBackdrop" hidden aria-hidden="true"></div>
  <button type="button" class="book-guide-fab" id="bookGuideFab" aria-controls="bookGuidePanel" aria-expanded="false" aria-label="Open Library AI assistant"><span class="book-guide-fab-symbol" aria-hidden="true">✦</span><span class="book-guide-fab-label">Ask Library AI</span><span class="book-guide-fab-glow" aria-hidden="true"></span></button>
  <section class="book-guide-panel" id="bookGuidePanel" aria-labelledby="bookGuideTitle" role="dialog" aria-modal="false" hidden>
-  <header class="book-guide-head"><div class="book-guide-icon" aria-hidden="true">✦</div><div class="book-guide-title-wrap"><span class="book-guide-eyebrow">YOUR RESEARCH COMPANION</span><h2 id="bookGuideTitle">Library AI</h2><p>Ask anything, explore books, or research topics.</p></div><button class="book-guide-close" type="button" id="bookGuideClose" aria-label="Close book assistant">×</button></header>
-  <details class="book-guide-context" id="bookGuideContext"><summary><span>Library book context <small>Optional</small></span><span id="bookGuideContextLabel">Add a book</span></summary><div class="book-guide-selection"><div class="book-guide-selection-top"><label for="bookGuideSelect">OPTIONAL BOOK CONTEXT</label><span class="book-guide-count" id="bookGuideCount" role="status" aria-live="polite">Loading books…</span></div><label class="sr-only" for="bookGuideSearch">Search the library catalogue</label><input type="search" id="bookGuideSearch" autocomplete="off" placeholder="Find a library title (optional)…" aria-label="Search library titles and authors"><select id="bookGuideSelect" aria-label="Select optional book context"><option value="">No book selected — ask anything</option></select><p id="bookGuideDetails" class="book-guide-book-note">No book required. Select a title only when you want the AI to use its catalogue details.</p></div></details>
-  <div class="book-guide-capabilities"><span class="book-guide-live"><span aria-hidden="true">●</span> Powered by Gemini when configured</span><label for="bookGuideWebSearch" class="book-guide-web-switch"><input id="bookGuideWebSearch" type="checkbox"><span class="book-guide-web-slider" aria-hidden="true"></span><span class="book-guide-web-copy"><strong>Search the web</strong><small>For current information and external sources. Optional; provider quota or charges may apply.</small></span></label></div>
+  <header class="book-guide-head"><div class="book-guide-icon" aria-hidden="true">✦</div><div class="book-guide-title-wrap"><h2 id="bookGuideTitle">Library AI</h2><p id="bookGuideProvider">Ready to help · Automatic AI fallback</p></div><div class="book-guide-head-actions"><button class="book-guide-new-chat" type="button" id="bookGuideNewChat" aria-label="Start a new chat" title="New chat">＋</button><button class="book-guide-close" type="button" id="bookGuideClose" aria-label="Close book assistant">×</button></div></header>
+  <details class="book-guide-settings" id="bookGuideSettings"><summary>⚙ <span>Chat options</span><small>Web search · Book context</small></summary><div class="book-guide-settings-body"><details class="book-guide-context" id="bookGuideContext"><summary><span>Library book context <small>Optional</small></span><span id="bookGuideContextLabel">Add a book</span></summary><div class="book-guide-selection"><div class="book-guide-selection-top"><label for="bookGuideSelect">OPTIONAL BOOK CONTEXT</label><span class="book-guide-count" id="bookGuideCount" role="status" aria-live="polite">Loading books…</span></div><label class="sr-only" for="bookGuideSearch">Search the library catalogue</label><input type="search" id="bookGuideSearch" autocomplete="off" placeholder="Find a library title (optional)…" aria-label="Search library titles and authors"><select id="bookGuideSelect" aria-label="Select optional book context"><option value="">No book selected — ask anything</option></select><p id="bookGuideDetails" class="book-guide-book-note">No book required. Select a title only when you want the AI to use its catalogue details.</p></div></details>
+  <div class="book-guide-capabilities"><span class="book-guide-live"><span aria-hidden="true">●</span> Provider selected automatically</span><label for="bookGuideWebSearch" class="book-guide-web-switch"><input id="bookGuideWebSearch" type="checkbox"><span class="book-guide-web-slider" aria-hidden="true"></span><span class="book-guide-web-copy"><strong>Search the web</strong><small>For current information and external sources. Optional; availability depends on your provider.</small></span></label></div></div></details>
   <div id="bookGuideMessages" class="book-guide-messages" role="log" aria-live="polite" aria-relevant="additions text"></div>
   <div class="book-guide-prompts" id="bookGuidePrompts"><button type="button" data-prompt="Recommend three beginner-friendly books about data analysis.">Book ideas</button><button type="button" data-prompt="Explain the difference between a novel and a biography.">Ask a question</button><button type="button" data-prompt="What are some current developments in digital libraries?">Current research</button><button type="button" data-prompt="What is this book about?">Selected book</button></div>
-  <form class="book-guide-compose" id="bookGuideForm"><label for="bookGuideInput" class="sr-only">Ask Library AI anything</label><input id="bookGuideInput" maxlength="1200" autocomplete="off" placeholder="Ask anything…" required><button type="submit" id="bookGuideSend" aria-label="Send question" title="Send question"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form>
-  <p class="book-guide-disclaimer" id="bookGuideDisclaimer"><span class="book-guide-note-icon" aria-hidden="true">✦</span><span><strong>Reading tip:</strong> AI answers may be imperfect. Use web search for timely facts; verify important information from linked sources.</span></p>
+  <form class="book-guide-compose" id="bookGuideForm"><label for="bookGuideInput" class="sr-only">Ask Library AI anything</label><textarea id="bookGuideInput" rows="1" maxlength="1200" autocomplete="off" placeholder="Message Library AI…" required></textarea><button type="submit" id="bookGuideSend" aria-label="Send question" title="Send question"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form>
+  <p class="book-guide-disclaimer" id="bookGuideDisclaimer">AI may make mistakes. Check important information.</p>
  </section>`;document.body.appendChild(node);
  $('bookGuideFab').addEventListener('click',()=>open());$('bookGuideClose').addEventListener('click',close);
+ $('bookGuideNewChat').addEventListener('click',()=>{current=null;history=[];$('bookGuideMessages').replaceChildren();$('bookGuideSettings').open=false;$('bookGuideContext').open=false;$('bookGuideContextLabel').textContent='Add a book';$('bookGuideProvider').textContent='New conversation · Automatic AI fallback';$('bookGuidePanel').classList.remove('has-conversation');addMessage('assistant','What can I help you explore today?');$('bookGuideInput').focus();});
  $('bookGuideBackdrop').addEventListener('click',close);
  $('bookGuideSelect').addEventListener('change',e=>{const index=Number(e.target.value);if(e.target.value!==''&&books[index])selectBook(books[index]);else{current=null;history=[];$('bookGuideContextLabel').textContent='Add a book';$('bookGuideDetails').textContent='General questions are welcome. No library title is needed.';$('bookGuideMessages').replaceChildren();addMessage('assistant','You can ask me about any topic. Enable Search the web when you need recent facts or external sources.');}});
  $('bookGuideSearch').addEventListener('input',renderOptions);
  $('bookGuidePrompts').addEventListener('click',e=>{const b=e.target.closest('[data-prompt]');if(b)void ask(b.dataset.prompt);});
- $('bookGuideForm').addEventListener('submit',e=>{e.preventDefault();const v=$('bookGuideInput').value.trim();if(v){$('bookGuideInput').value='';void ask(v);}});
+ $('bookGuideForm').addEventListener('submit',e=>{e.preventDefault();const v=$('bookGuideInput').value.trim();if(v){$('bookGuideInput').value='';fitComposer();void ask(v);}});
+ $('bookGuideInput').addEventListener('input',fitComposer);
+ $('bookGuideInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('bookGuideForm').requestSubmit();}});
  document.addEventListener('keydown',e=>{
   const panel=$('bookGuidePanel');if(panel.hidden)return;
   if(e.key==='Escape'){e.preventDefault();close();return;}
   if(e.key==='Tab'&&lockedPage){
-   const tabbable=[...panel.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), a[href]')].filter(x=>x.getClientRects().length);
+   const tabbable=[...panel.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href]')].filter(x=>x.getClientRects().length);
    if(!tabbable.length)return;const first=tabbable[0],last=tabbable[tabbable.length-1];
    if(e.shiftKey&&(document.activeElement===first||!panel.contains(document.activeElement))){e.preventDefault();last.focus();}
    else if(!e.shiftKey&&(document.activeElement===last||!panel.contains(document.activeElement))){e.preventDefault();first.focus();}
@@ -38,9 +41,11 @@ function init(){if(ready)return;ready=true;
  });
  document.addEventListener('touchmove',e=>{if(lockedPage&&!e.target.closest('.book-guide-panel'))e.preventDefault()},{passive:false});
  window.visualViewport?.addEventListener('resize',syncSheetViewport);window.visualViewport?.addEventListener('scroll',syncSheetViewport);
- window.addEventListener('resize',()=>{if($('bookGuidePanel')?.hidden)return;if(isMobileSheet())lockBackground();else unlockBackground();syncSheetViewport();});
+ window.addEventListener('resize',()=>{if($('bookGuidePanel')?.hidden)return;if(isMobileSheet())lockBackground();else unlockBackground();
+ $('bookGuideSettings').open=false;syncSheetViewport();});
  renderOptions();setVisible(visible);
 }
+function fitComposer(){const box=$('bookGuideInput');if(!box)return;box.style.height='auto';box.style.height=Math.min(box.scrollHeight,126)+'px';}
 function renderOptions(){
  if(!ready)return;
  const select=$('bookGuideSelect'),query=norm($('bookGuideSearch')?.value).toLowerCase();
@@ -70,12 +75,13 @@ function addMessage(role,message){
  const avatar=document.createElement('span');avatar.className='book-guide-message-avatar';avatar.textContent=role==='assistant'?'✦':'You';
  const body=document.createElement('div');body.className='book-guide-message-body';m.append(avatar,body);
  setMessageText(m,message);$('bookGuideMessages').appendChild(m);
+ if(role==='user'){$('bookGuidePanel').classList.add('has-conversation');$('bookGuideSettings').open=false;}
  $('bookGuideMessages').scrollTop=$('bookGuideMessages').scrollHeight;return m;
 }
-function selectBook(value){current=safeBook(value);history=[];if(!ready)init();$('bookGuideContext').open=true;$('bookGuideContextLabel').textContent=current.title.slice(0,34);$('bookGuideMessages').replaceChildren();$('bookGuideDetails').textContent=[current.authors?'By '+current.authors:'Author unknown',current.shelf?'Shelf '+current.shelf:'Shelf not listed'].join(' · ');addMessage('assistant','I can help you explore “'+(current.title||'this title')+'”, or answer unrelated questions. Switch on web search for current information.');renderOptions();}
+function selectBook(value){current=safeBook(value);history=[];if(!ready)init();$('bookGuideSettings').open=true;$('bookGuideContext').open=true;$('bookGuideContextLabel').textContent=current.title.slice(0,34);$('bookGuideMessages').replaceChildren();$('bookGuideDetails').textContent=[current.authors?'By '+current.authors:'Author unknown',current.shelf?'Shelf '+current.shelf:'Shelf not listed'].join(' · ');addMessage('assistant','I can help you explore “'+(current.title||'this title')+'”, or answer unrelated questions. Switch on web search for current information.');renderOptions();}
 function openGeneral({search=false}={}){
  if(!ready)init();
- current=null;history=[];
+ current=null;history=[];$('bookGuidePanel').classList.remove('has-conversation');$('bookGuideSettings').open=false;
  $('bookGuideContextLabel').textContent='No book selected';
  $('bookGuideContext').open=false;
  $('bookGuideDetails').textContent='Ask about any topic; no library title is required.';
@@ -132,12 +138,15 @@ async function ask(question){
   const json=await response.json().catch(()=>({error:'The AI service returned an unexpected response.'}));
   if(!response.ok||!json.reply||typeof json.reply!=='string')throw new Error(String(json.error||'The AI service is temporarily unavailable.').slice(0,180));
   setMessageText(pending,json.reply);addSources(pending,json);
+  const names={gemini:'Gemini',openrouter:'OpenRouter free',groq:'Groq'};
+  $('bookGuideProvider').textContent='Answered with '+(names[json.mode]||'Library AI')+(json.searchUnavailable&&searchRequested?' · Live search unavailable':'');
  }catch(error){
-  const fallback=current?localAnswer(question):'The AI could not answer right now. Please retry shortly.';
+  const fallback=current?localAnswer(question):'No AI provider could answer right now. Ask the administrator to check the configured free AI providers.';
   setMessageText(pending,fallback+'\n\n'+(error?.message||'The request may have timed out.'));
  }finally{
   history.push({role:'user',text:question},{role:'assistant',text:pending.dataset.messageText||''});
   history=history.slice(-10);busy=false;$('bookGuideSend').disabled=false;
+  if($('bookGuidePanel')&&!$('bookGuidePanel').hidden)$('bookGuideInput').focus({preventScroll:true});
  }
 }
 function isMobileSheet(){return root.matchMedia('(max-width: 899px)').matches;}
@@ -171,6 +180,7 @@ function open(){
  returnFocus=document.activeElement;
  $('bookGuidePanel').hidden=false;$('bookGuideFab').setAttribute('aria-expanded','true');
  if(isMobileSheet())lockBackground();else unlockBackground();
+ $('bookGuideSettings').open=false;
  if(!$('bookGuideMessages').children.length)addMessage('assistant','Hello! Ask me anything. You can also choose a library book for context or enable web search for current information.');
  (isMobileSheet() ? $('bookGuideClose') : $('bookGuideInput')).focus({preventScroll:true});
 }
