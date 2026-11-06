@@ -359,7 +359,7 @@
     <label><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#archive"></use></svg> Upload ZIP<input id="batchZip" aria-label="Upload ZIP containing shelf folders" type="file" accept=".zip,application/zip,application/x-zip-compressed"></label>
     <label><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#image"></use></svg> Select photos<input id="batchPhotos" aria-label="Select multiple barcode photos" type="file" accept="image/*,.heic,.heif,.avif" multiple></label>
   </div>
-  <label class="scan-ocr-setting"><input id="batchUseAI" type="checkbox"><span><strong>AI-assisted cover reading (optional)</strong><small>When Gemini is configured on the server, analyze hard-to-read photos first. Images are sent to the configured AI provider only when enabled. Verify suggestions before saving.</small></span></label>
+  <label class="scan-ocr-setting"><input id="batchUseAI" type="checkbox"><span><strong>AI cover recognition (optional)</strong><small>Turn on to send uploaded covers to Gemini for title, author, ISBN and visible publication details. Otherwise photos stay in the browser for local OCR. Each review card also has an explicit “Read cover with AI” action.</small></span></label>
   <label class="scan-ocr-setting"><input id="batchUseOCR" type="checkbox" checked> <span><strong>Fast local OCR for covers and title pages</strong><small>Preloads the recognition engine when photos are selected, reuses it between books and skips unnecessary rotations. Very large or unclear photos still take longer; disable for barcode-only shelves.</small></span></label>
 <div class="batch-details"><div><label for="batchDefaultShelf">Shelf for loose photos (optional for folders)</label><input id="batchDefaultShelf" maxlength="120" placeholder="Example: Shelf A01"></div><button id="batchStart" class="alt" disabled>Scan selected images</button></div>
   <div class="batch-progress" aria-live="polite"><span id="batchStatus">Choose a folder, ZIP, or photos to begin.</span><progress id="batchProgress" max="100" value="0" aria-label="Batch scanning progress"></progress></div>
@@ -1867,8 +1867,8 @@ function renderBatch(){
   const field=(name,label,max)=>`<label class="batch-book-field"><span>${label}</span><input aria-label="${label} for ${batchAttr(x.fileName)}" data-batch-field="${name}" data-batch-index="${i}" maxlength="${max}" value="${batchAttr(x[name])}" ${x.saved||locked||x.reviewBusy?'disabled':''}></label>`;
   h+=`<article role="listitem" class="batch-book ${x.duplicate&&!x.saved?'batch-book-duplicate':''}" aria-label="Scanned book ${i+1}: ${batchAttr(x.fileName)}">
    <div class="batch-book-head"><label class="batch-book-check"><input type="checkbox" aria-label="Select book ${i+1}${x.duplicate?' (possible duplicate)':''}" data-batch-select="${i}" ${x.selected?'checked':''} ${x.saved||locked?'disabled':''}><span class="batch-book-number">${i+1}</span></label><div class="batch-book-source"><strong>${esc(x.fileName)}</strong><span class="batch-path">${esc(x.path)}</span></div><span class="batch-book-state ${state}">${result}</span></div>
-   <div class="batch-book-content">${(x.file||x.thumbnailData)?`<img class="batch-book-photo" loading="lazy" alt="Original photo for ${batchAttr(x.fileName)}" src="${batchAttr(batchPreview(x))}">`:'<div class="batch-book-photo batch-photo-placeholder">Imported from Excel<br>Image not included</div>'}<div class="batch-book-fields">${reviewShelfField(x,i,locked)}<div class="batch-isbn-action">${field('barcode','Barcode / ISBN',80)}<button type="button" class="light batch-lookup-btn" data-batch-lookup="${i}" ${x.saved||locked?'disabled':''}>Find book details</button></div>${field('title','Book title',350)}${field('authors','Author',350)}<div class="batch-extra-fields">${field('publisher','Publisher',250)}${field('publication_year','Publication year',20)}</div><div class="batch-action-row"><button type="button" class="light" data-batch-crop="${i}" ${x.saved||locked||x.reviewBusy||(!x.file&&!x.thumbnailData)?'disabled':''}>Crop / zoom ISBN</button><button type="button" class="light" data-batch-retake="${i}" ${x.saved||locked?'disabled':''}>Replace photo / retry ISBN</button><button type="button" class="light batch-find-title" data-batch-title="${i}" ${x.saved||locked?'disabled':''}>Search by title &amp; author</button><button type="button" class="light batch-read-image" data-batch-ocr="${i}" ${x.saved||locked?'disabled':''}>Read text from photo</button></div><label class="batch-attention-filter"><input type="checkbox" data-batch-approve="${i}" ${validity?'checked':''} ${x.saved||locked||x.reviewBusy||!x.title||!x.shelf?'disabled':''}> I checked the title/edition, this physical copy, and shelf: ${esc(x.shelf||'choose a shelf first')}.</label></div></div><div class="batch-matches" id="batchMatch${i}">${batchCandidateMarkup(x,i)}</div>${x.ocrText?`<details class="ocr-text"><summary>Text read from photo</summary><pre>${esc(x.ocrText.slice(0,2500))}</pre></details>`:''}
-   ${x.saveError?`<p class="batch-book-error" role="alert">Save failed: ${esc(x.saveError)}. You can retry Save selected.</p>`:''}${x.error?`<p class="batch-book-error" role="status">${esc(x.error)}</p>`:''}${x.lookup_status!=='Manual'?`<p class="batch-book-hint">Scan: ${esc(x.lookup_status)}</p>`:''}${x.duplicate&&!x.saved?'<p class="batch-book-hint">Check whether this is a different physical copy before saving.</p>':''}
+   <div class="batch-book-content">${(x.file||x.thumbnailData)?`<img class="batch-book-photo" loading="lazy" alt="Original photo for ${batchAttr(x.fileName)}" src="${batchAttr(batchPreview(x))}">`:'<div class="batch-book-photo batch-photo-placeholder">Imported from Excel<br>Image not included</div>'}<div class="batch-book-fields">${reviewShelfField(x,i,locked)}<div class="batch-isbn-action">${field('barcode','Barcode / ISBN',80)}<button type="button" class="light batch-lookup-btn" data-batch-lookup="${i}" ${x.saved||locked?'disabled':''}>Find book details</button></div>${field('title','Book title',350)}${field('authors','Author',350)}<div class="batch-extra-fields">${field('publisher','Publisher',250)}${field('publication_year','Publication year',20)}</div><div class="batch-action-row"><button type="button" class="light" data-batch-crop="${i}" ${x.saved||locked||x.reviewBusy||(!x.file&&!x.thumbnailData)?'disabled':''}>Crop / zoom ISBN</button><button type="button" class="light" data-batch-retake="${i}" ${x.saved||locked?'disabled':''}>Replace photo / retry ISBN</button><button type="button" class="light batch-find-title" data-batch-title="${i}" ${x.saved||locked?'disabled':''}>Search by title &amp; author</button><button type="button" class="light batch-read-image" data-batch-ocr="${i}" ${x.saved||locked?'disabled':''}>Read text from photo</button><button type="button" class="light batch-read-ai" data-batch-ai="${i}" title="Send this image to the configured AI provider to identify visible cover details" ${x.saved||locked?'disabled':''}>Read cover with AI</button></div><label class="batch-attention-filter"><input type="checkbox" data-batch-approve="${i}" ${validity?'checked':''} ${x.saved||locked||x.reviewBusy||!x.title||!x.shelf?'disabled':''}> I checked the title/edition, this physical copy, and shelf: ${esc(x.shelf||'choose a shelf first')}.</label></div></div><div class="batch-matches" id="batchMatch${i}">${batchCandidateMarkup(x,i)}</div>${x.ocrText?`<details class="ocr-text"><summary>Text read from photo</summary><pre>${esc(x.ocrText.slice(0,2500))}</pre></details>`:''}
+   ${x.saveError?`<p class="batch-book-error" role="alert">Save failed: ${esc(x.saveError)}. You can retry Save selected.</p>`:''}${x.error?`<p class="batch-book-error" role="status">${esc(x.error)}</p>`:''}${x.aiNotice?`<p class="batch-book-hint" role="status">${esc(x.aiNotice)}</p>`:''}${x.lookup_status!=='Manual'?`<p class="batch-book-hint">Scan: ${esc(x.lookup_status)}</p>`:''}${x.duplicate&&!x.saved?'<p class="batch-book-hint">Check whether this is a different physical copy before saving.</p>':''}
   </article>`;
  });
  h+='</div>';
@@ -2017,9 +2017,22 @@ async function findOCRCatalogMatches(row){
  return scanHelper.scoreCandidates([...unique.values()],row.ocrText,row.title,row.authors).filter(m=>m.score>=.40).slice(0,8);
 }
 async function imageForAI(file){
- const image=await createImageBitmap(file);
- try{const ratio=Math.min(1,1200/Math.max(image.width,image.height)),canvas=document.createElement('canvas');canvas.width=Math.max(1,Math.round(image.width*ratio));canvas.height=Math.max(1,Math.round(image.height*ratio));canvas.getContext('2d').drawImage(image,0,0,canvas.width,canvas.height);return canvas.toDataURL('image/jpeg',.74).split(',')[1]}
- finally{image.close?.()}
+ let image=null,temporaryUrl='';
+ try{
+  // Some mobile browsers do not support createImageBitmap for camera uploads.
+  try{if(typeof createImageBitmap==='function')image=await createImageBitmap(file)}catch{}
+  if(!image){
+   temporaryUrl=URL.createObjectURL(file);
+   image=new Image();image.src=temporaryUrl;await image.decode();
+  }
+  const width=image.width||image.naturalWidth,height=image.height||image.naturalHeight;
+  if(!width||!height)throw new Error('Cannot open this image. Try a clear JPEG or PNG photo.');
+  const ratio=Math.min(1,1400/Math.max(width,height)),canvas=document.createElement('canvas');
+  canvas.width=Math.max(1,Math.round(width*ratio));canvas.height=Math.max(1,Math.round(height*ratio));
+  const ctx=canvas.getContext('2d');if(!ctx)throw new Error('This browser cannot process the image.');
+  ctx.drawImage(image,0,0,canvas.width,canvas.height);
+  return canvas.toDataURL('image/jpeg',.78).split(',')[1];
+ }finally{image?.close?.();if(temporaryUrl)URL.revokeObjectURL(temporaryUrl)}
 }
 async function reviewSourceFile(row){
  if(row.file)return row.file;
@@ -2029,36 +2042,73 @@ async function reviewSourceFile(row){
  for(let i=0;i<binary.length;i++)bytes[i]=binary.charCodeAt(i);
  return new File([bytes],row.fileName||'restored-book-photo.jpg',{type:match[1]});
 }
-async function readCoverWithAI(row,file=row.file){
- if(!$('batchUseAI')?.checked||!session?.access_token)return false;
- row.lookup_status='Reading book cover with optional AI…';
+async function readCoverWithAI(row,file=row.file,force=false){
+ // Only send a photo to the AI provider when the user opted in or explicitly pressed the AI button.
+ if(!(force||$('batchUseAI')?.checked))return false;
+ if(!session?.access_token){row.aiNotice='Sign in to use AI book-cover scanning.';return false}
+ row.lookup_status='Reading visible text on the cover with AI…';row.aiNotice='';
  try{
-  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12500);
-  let response;try{response=await fetch('/api/book-vision',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({image:await imageForAI(file)}),signal:controller.signal})}finally{clearTimeout(timer)}
-  if(!response.ok){if(response.status===501||response.status===404){row.lookup_status='AI not configured; using local OCR.';return false}throw new Error('AI lookup unavailable')}
-  const result=await response.json(),info=result.metadata||{};
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),26500);
+  let response;
+  try{response=await fetch('/api/book-vision',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({image:await imageForAI(file)}),signal:controller.signal})}
+  finally{clearTimeout(timer)}
+  let result={};try{result=await response.json()}catch{}
+  if(!response.ok){
+   const reason=response.status===501||response.status===404?'AI cover reading is not configured in this deployment.':response.status===429?'AI scanning is temporarily rate-limited.':response.status===401?'Sign in again to use AI scanning.':response.status===408||response.status===504?'The AI reader took too long.':String(result?.error||'AI cover reading is temporarily unavailable.').slice(0,160);
+   row.aiNotice=reason+' Local OCR will be attempted.';return false;
+  }
+  const info=result.metadata||{};
   if(info.isbn&&validIsbn(info.isbn)&&!row.barcode){row.barcode=normalizeIsbn(info.isbn);await batchLookUp(row)}
-  if(info.title&&!row.title)row.title=String(info.title).slice(0,350);
-  if(info.authors&&!row.authors)row.authors=String(info.authors).slice(0,350);
-  if(info.title||info.isbn){row.lookup_status='AI extracted visible details. Verify title and edition before saving.';row.error='Verify AI suggestions against the book image before saving.';return !!row.title}
+  for(const field of ['title','authors','publisher','publication_year']){
+   if(info[field]&&!row[field])row[field]=String(info[field]).trim().slice(0,field==='publication_year'?20:350);
+  }
+  if(row.title||row.barcode){
+   row.lookup_status='Cover details extracted by AI; verify the text and edition before saving.';
+   return true;
+  }
+  row.aiNotice='AI could not read enough text on this photo. Try a sharper cover or title page.';
   return false;
- }catch{row.lookup_status='AI unavailable; trying local OCR.';return false}
+ }catch(error){row.aiNotice=error?.name==='AbortError'?'AI reading timed out. Try a clearer image or local OCR.':'AI unavailable; local OCR will be attempted.';return false}
 }
-async function enrichScanFromImage(row){
- row.lookup_status='Reading title-page and printed ISBN text…';
+function applyCoverCatalogMatch(row){
+ // A title search can return many editions. Only apply bibliographic data when one title clearly wins.
+ const matches=row.matches||[],best=matches[0],second=matches[1];if(!best)return false;
+ const sourceTitles=row.title?[row.title,...scanHelper.titleCandidates(row.ocrText)]:scanHelper.titleCandidates(row.ocrText);
+ const score=Math.max(0,...sourceTitles.map(t=>scanHelper.similarity(t,best.title)));
+ const secondScore=second?Math.max(0,...sourceTitles.map(t=>scanHelper.similarity(t,second.title))):0;
+ const authorEvidence=row.authors||scanHelper.authorFromText(row.ocrText);
+ if(score<.9||(second&&score-secondScore<.09)||(authorEvidence&&best.authors&&scanHelper.similarity(authorEvidence,best.authors)<.55))return false;
+ for(const field of ['title','authors','publisher','publication_year','language','pages','subject'])if(best[field]&&!row[field])row[field]=String(best[field]);
+ row.lookup_status='High-confidence title match from '+(best.source||'book catalogue')+'. Verify the edition before saving.';
+ row.matches=[];return true;
+}
+async function enrichScanFromImage(row,{forceAI=false}={}){
+ row.lookup_status='Reading book cover and title-page text…';
  try{
   const file=await reviewSourceFile(row);
-  if(await readCoverWithAI(row,file))return;
+  const usedAI=await readCoverWithAI(row,file,forceAI);
+  // Image AI often reads front covers that have no barcode. Enrich by title too.
+  if(usedAI&&row.title){
+   row.matches=await findOCRCatalogMatches(row);
+   if(applyCoverCatalogMatch(row))return;
+   row.lookup_status=row.matches.length?'Cover text extracted; compare the suggested catalogue matches below.':'Cover text extracted; verify the title and author before saving.';
+   return;
+  }
   row.ocrText=await ocrText(file);
-  if(!row.ocrText){row.lookup_status='OCR could not read text; enter book details from the image.';return}
+  if(!row.ocrText){row.lookup_status='No readable cover text found. Try a brighter, sharper photo or enter details manually.';return}
   if(!row.barcode){const isbn=scanHelper.isbnFromText(row.ocrText)[0];if(isbn){row.barcode=isbn;await batchLookUp(row)}}
   if(!row.authors)row.authors=scanHelper.authorFromText(row.ocrText);
-  if(!row.title){
+  if(!row.title||!row.publisher||!row.publication_year){
    row.matches=await findOCRCatalogMatches(row);
-   if(row.matches.length){row.lookup_status='Possible title matches from OCR; select the correct book below.';row.error='Choose a matching book from the suggestions, or type its title.'}
-   else row.lookup_status='Text extracted; check it below and manually enter the title or use title search.';
+   if(applyCoverCatalogMatch(row))return;
+   // OCR-only photos can still prefill a possible title; mark it explicitly for review.
+   if(!row.title){
+    const possible=scanHelper.titleCandidates(row.ocrText)[0];
+    if(possible&&possible.length>=4&&possible.length<=100)row.title=possible;
+   }
+   row.lookup_status=row.matches.length?'Possible cover details found. Compare the matching books below.':'Cover text detected. Check and correct the suggested title before saving.';
   }
- }catch(e){row.lookup_status='Text recognition unavailable: '+String(e?.message||e);row.error=row.title?'':'Please enter the title manually or retry “Read text from photo”.'}
+ }catch(error){row.lookup_status='Text recognition unavailable: '+String(error?.message||error).slice(0,180);row.error=row.title?'':'Try another photo or enter the title manually.'}
 }
 async function batchTitleSearch(index,withOCR=false){
  const row=batchItems[index];if(!row||row.saved||batchActive||batchSaving||batchZipLoading||batchExcelLoading)return;
@@ -2069,9 +2119,9 @@ async function batchTitleSearch(index,withOCR=false){
   if(input)row[field]=input.value.trim();
  }
  row.matches=[];row.error='';row.lookup_status=withOCR?'Reading image…':'Searching by title…';
- const button=$('batchResults').querySelector(`[data-batch-${withOCR?'ocr':'title'}="${index}"]`);if(button){button.disabled=true;button.textContent='Searching…'}
+ const button=$('batchResults').querySelector(`[data-batch-${withOCR==='ai'?'ai':withOCR?'ocr':'title'}="${index}"]`);if(button){button.disabled=true;button.textContent='Searching…'}
  try{
-  if(withOCR)await enrichScanFromImage(row);
+  if(withOCR)await enrichScanFromImage(row,{forceAI:withOCR==='ai'});
   else{
    if(!row.title){row.error='Enter the title printed on this page, or choose Read text from photo.';return}
    row.matches=scanHelper.scoreCandidates(await findTitleCandidates(row.title,row.authors),row.title,row.title,row.authors).slice(0,8);
@@ -2551,6 +2601,7 @@ $("batchResults").addEventListener('click',e=>{
  const crop=e.target.closest('[data-batch-crop]');if(crop)return cropBatchIsbn(Number(crop.dataset.batchCrop));
  const retake=e.target.closest('[data-batch-retake]');if(retake){if(batchActive||batchSaving||batchZipLoading||batchExcelLoading)return;const row=batchItems[Number(retake.dataset.batchRetake)];if(!row||row.saved)return;batchRetakeRow=row;$('batchRetakeFile').click();return}
  const read=e.target.closest('[data-batch-ocr]');if(read)return batchTitleSearch(Number(read.dataset.batchOcr),true);
+ const aiRead=e.target.closest('[data-batch-ai]');if(aiRead)return batchTitleSearch(Number(aiRead.dataset.batchAi),'ai');
  const match=e.target.closest('[data-batch-match]');if(match){
   const row=batchItems[Number(match.dataset.batchMatch)],item=row?.matches?.[Number(match.dataset.matchIndex)];
   if(!item||row.saved)return;

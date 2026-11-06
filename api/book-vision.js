@@ -23,12 +23,12 @@ module.exports=async function handler(req,res){
   const model=process.env.GEMINI_MODEL||'gemini-3.5-flash-lite';
   const api=await fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent',{
    method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':process.env.GEMINI_API_KEY},
-   body:JSON.stringify({contents:[{parts:[{text:'Extract ONLY text actually legible on this book cover or title page. Do not invent an ISBN, author, title or publisher. Return JSON with string keys title, authors, isbn; use empty strings if uncertain. No markdown.'},{inline_data:{mime_type:'image/jpeg',data:image}}]}],generationConfig:{responseMimeType:'application/json',temperature:0,maxOutputTokens:250}}),signal:AbortSignal.timeout(10500)
+   body:JSON.stringify({contents:[{parts:[{text:'You are reading a photograph of a book cover or title page. Transcribe ONLY information actually legible in the image. Return exactly a JSON object with string keys: title, authors, isbn, publisher, publication_year. Return an empty string for any field not clearly visible. Never infer an ISBN, edition, publisher, or year from general knowledge. No markdown.'},{inline_data:{mime_type:'image/jpeg',data:image}}]}],generationConfig:{responseMimeType:'application/json',temperature:0,maxOutputTokens:480}}),signal:AbortSignal.timeout(18500)
   });
-  if(!api.ok)return res.status(api.status===429?429:503).json({error:'AI image reading temporarily unavailable.'});
+  if(!api.ok)return res.status(api.status===429?429:api.status===400?422:503).json({error:api.status===429?'AI image-reading quota is temporarily exhausted.':api.status===400?'AI provider rejected this image or model request.':'AI image reading temporarily unavailable.'});
   const body=await api.json(),value=body.candidates?.[0]?.content?.parts?.find(p=>p.text)?.text||'{}';
-  const parsed=JSON.parse(value);
+  const parsed=JSON.parse(value.replace(/^```(?:json)?\s*|\s*```$/g,'').trim());
   const safe=k=>typeof parsed[k]==='string'?parsed[k].replace(/[\x00-\x1f<>]/g,' ').trim().slice(0,k==='isbn'?30:350):'';
-  return res.status(200).json({metadata:{title:safe('title'),authors:safe('authors'),isbn:safe('isbn')},source:'AI image suggestion',verified:false});
- }catch{return res.status(503).json({error:'AI image reading unavailable; local OCR can still be used.'})}
+  return res.status(200).json({metadata:{title:safe('title'),authors:safe('authors'),isbn:safe('isbn'),publisher:safe('publisher'),publication_year:safe('publication_year')},source:'AI image suggestion',verified:false});
+ }catch(error){return res.status(error?.name==='TimeoutError'?504:503).json({error:error?.name==='TimeoutError'?'AI reading timed out.':'AI image reading unavailable; local OCR can still be used.'})}
 };

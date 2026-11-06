@@ -3,11 +3,13 @@
 (function(root){
 'use strict';
 let books=[],current=null,visible=true,ready=false,busy=false,history=[],publicCatalogCache=null,publicCatalogPromise=null,featured=null;
+let lockedPage=null,returnFocus=null;
 const $=id=>document.getElementById(id);
 const norm=s=>String(s||'').trim().slice(0,350);
 function safeBook(b){return {title:norm(b?.title),authors:norm(b?.authors),isbn:norm(b?.isbn),shelf:norm(b?.shelf),publisher:norm(b?.publisher),year:norm(b?.year),subject:norm(b?.subject),pages:norm(b?.pages),description:norm(b?.description).slice(0,1200)};}
 function init(){if(ready)return;ready=true;
  const node=document.createElement('div');node.className='book-guide-root';node.innerHTML=`
+ <div class="book-guide-backdrop" id="bookGuideBackdrop" hidden aria-hidden="true"></div>
  <button type="button" class="book-guide-fab" id="bookGuideFab" aria-controls="bookGuidePanel" aria-expanded="false" aria-label="Open book assistant"><span class="book-guide-fab-symbol" aria-hidden="true">✦</span><span class="book-guide-fab-label">Ask about a book</span><span class="book-guide-fab-glow" aria-hidden="true"></span></button>
  <section class="book-guide-panel" id="bookGuidePanel" aria-labelledby="bookGuideTitle" role="dialog" aria-modal="false" hidden>
   <header class="book-guide-head"><div class="book-guide-icon" aria-hidden="true">✦</div><div class="book-guide-title-wrap"><span class="book-guide-eyebrow">YOUR READING COMPANION</span><h2 id="bookGuideTitle">Book Guide</h2><p>Explore a title, ask anything you are curious about.</p></div><button class="book-guide-close" type="button" id="bookGuideClose" aria-label="Close book assistant">×</button></header>
@@ -18,11 +20,24 @@ function init(){if(ready)return;ready=true;
   <p class="book-guide-disclaimer" id="bookGuideDisclaimer"><span class="book-guide-note-icon" aria-hidden="true">✦</span><span><strong>Reading tip:</strong> Ask questions, compare ideas, and check key details in the book or with your librarian.</span></p>
  </section>`;document.body.appendChild(node);
  $('bookGuideFab').addEventListener('click',()=>open());$('bookGuideClose').addEventListener('click',close);
+ $('bookGuideBackdrop').addEventListener('click',close);
  $('bookGuideSelect').addEventListener('change',e=>{const index=Number(e.target.value);if(e.target.value!==''&&books[index])selectBook(books[index]);});
  $('bookGuideSearch').addEventListener('input',renderOptions);
  $('bookGuidePrompts').addEventListener('click',e=>{const b=e.target.closest('[data-prompt]');if(b)void ask(b.dataset.prompt);});
  $('bookGuideForm').addEventListener('submit',e=>{e.preventDefault();const v=$('bookGuideInput').value.trim();if(v){$('bookGuideInput').value='';void ask(v);}});
- document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('bookGuidePanel').hidden)close()});
+ document.addEventListener('keydown',e=>{
+  const panel=$('bookGuidePanel');if(panel.hidden)return;
+  if(e.key==='Escape'){e.preventDefault();close();return;}
+  if(e.key==='Tab'&&lockedPage){
+   const tabbable=[...panel.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), a[href]')].filter(x=>x.getClientRects().length);
+   if(!tabbable.length)return;const first=tabbable[0],last=tabbable[tabbable.length-1];
+   if(e.shiftKey&&(document.activeElement===first||!panel.contains(document.activeElement))){e.preventDefault();last.focus();}
+   else if(!e.shiftKey&&(document.activeElement===last||!panel.contains(document.activeElement))){e.preventDefault();first.focus();}
+  }
+ });
+ document.addEventListener('touchmove',e=>{if(lockedPage&&!e.target.closest('.book-guide-panel'))e.preventDefault()},{passive:false});
+ window.visualViewport?.addEventListener('resize',syncSheetViewport);window.visualViewport?.addEventListener('scroll',syncSheetViewport);
+ window.addEventListener('resize',()=>{if($('bookGuidePanel')?.hidden)return;if(isMobileSheet())lockBackground();else unlockBackground();syncSheetViewport();});
  renderOptions();setVisible(visible);
 }
 function renderOptions(){
@@ -76,8 +91,47 @@ async function ask(question){if(!ready)init();if(busy)return;if(!current){addMes
  }catch{setMessageText(pending,localAnswer(question));}
  finally{history.push({role:'user',text:question},{role:'assistant',text:pending.dataset.messageText||''});history=history.slice(-8);busy=false;$('bookGuideSend').disabled=false;}
 }
-function open(){if(!ready)init();if(!visible)return;$('bookGuidePanel').hidden=false;$('bookGuideFab').setAttribute('aria-expanded','true');$('bookGuideInput').focus({preventScroll:true});if(!$('bookGuideMessages').children.length)addMessage('assistant','Hello! Pick a book to explore its details, get guidance, or start a conversation.');}
-function close(){if(!ready)return;$('bookGuidePanel').hidden=true;$('bookGuideFab').setAttribute('aria-expanded','false');$('bookGuideFab').focus({preventScroll:true});}
+function isMobileSheet(){return root.matchMedia('(max-width: 899px)').matches;}
+function syncSheetViewport(){
+ if(!ready)return;
+ const vv=root.visualViewport;
+ $('bookGuidePanel').style.setProperty('--guide-vv-height',Math.round(vv?.height||root.innerHeight)+'px');
+ $('bookGuidePanel').style.setProperty('--guide-vv-top',Math.round(vv?.offsetTop||0)+'px');
+}
+function lockBackground(){
+ if(!ready||!isMobileSheet())return;
+ if(!lockedPage){
+  const body=document.body,html=document.documentElement;
+  lockedPage={y:root.scrollY||html.scrollTop||0,bodyPosition:body.style.position,bodyTop:body.style.top,bodyLeft:body.style.left,bodyRight:body.style.right,bodyWidth:body.style.width,bodyOverflow:body.style.overflow,htmlOverflow:html.style.overflow};
+  body.style.position='fixed';body.style.top='-'+lockedPage.y+'px';body.style.left='0';body.style.right='0';body.style.width='100%';body.style.overflow='hidden';html.style.overflow='hidden';
+  body.classList.add('book-guide-sheet-open');
+ }
+ $('bookGuideBackdrop').hidden=false;$('bookGuidePanel').setAttribute('aria-modal','true');
+ syncSheetViewport();
+}
+function unlockBackground(){
+ if(!ready)return;
+ $('bookGuideBackdrop').hidden=true;$('bookGuidePanel').setAttribute('aria-modal','false');
+ if(!lockedPage)return;
+ const state=lockedPage;lockedPage=null;const body=document.body,html=document.documentElement;
+ body.style.position=state.bodyPosition;body.style.top=state.bodyTop;body.style.left=state.bodyLeft;body.style.right=state.bodyRight;body.style.width=state.bodyWidth;body.style.overflow=state.bodyOverflow;html.style.overflow=state.htmlOverflow;
+ body.classList.remove('book-guide-sheet-open');root.scrollTo(0,state.y);
+}
+function open(){
+ if(!ready)init();if(!visible)return;
+ returnFocus=document.activeElement;
+ $('bookGuidePanel').hidden=false;$('bookGuideFab').setAttribute('aria-expanded','true');
+ if(isMobileSheet())lockBackground();else unlockBackground();
+ if(!$('bookGuideMessages').children.length)addMessage('assistant','Hello! Pick a book to explore its details, get guidance, or start a conversation.');
+ (isMobileSheet() ? $('bookGuideClose') : $('bookGuideInput')).focus({preventScroll:true});
+}
+function close(){
+ if(!ready)return;
+ $('bookGuidePanel').hidden=true;$('bookGuideFab').setAttribute('aria-expanded','false');
+ unlockBackground();
+ const target=returnFocus?.isConnected?returnFocus:$('bookGuideFab');returnFocus=null;
+ if(!target.hidden)target.focus({preventScroll:true});
+}
 function setVisible(value){visible=!!value;document.body.dataset.bookGuideVisible=visible?'true':'false';if(!ready)return;$('bookGuideFab').hidden=!visible;if(!visible)close();}
 function setBooks(list){
  books=Array.isArray(list)?list.filter(b=>b&&String(b.title||'').trim()).map(safeBook)

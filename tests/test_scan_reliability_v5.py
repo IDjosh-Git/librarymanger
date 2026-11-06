@@ -16,7 +16,7 @@ class ScanReliabilityV5(unittest.TestCase):
   assert "await reloadAll();" in APP
   assert "renderScannedBooks();" in APP
  def test_resume_ocr_from_saved_thumbnail(self):
-  for part in ('async function reviewSourceFile(row)',"const file=await reviewSourceFile(row)",'if(await readCoverWithAI(row,file))return','row.ocrText=await ocrText(file)'):
+  for part in ('async function reviewSourceFile(row)',"const file=await reviewSourceFile(row)",'const usedAI=await readCoverWithAI(row,file,forceAI)','row.ocrText=await ocrText(file)'):
    self.assertIn(part,APP)
  def test_checkpoint_before_batch_finished(self):
   chunk=APP[APP.index('async function runBatch(){'):APP.index('function batchSelectAll(){')]
