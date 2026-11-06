@@ -10,18 +10,19 @@ function safeBook(b){return {title:norm(b?.title),authors:norm(b?.authors),isbn:
 function init(){if(ready)return;ready=true;
  const node=document.createElement('div');node.className='book-guide-root';node.innerHTML=`
  <div class="book-guide-backdrop" id="bookGuideBackdrop" hidden aria-hidden="true"></div>
- <button type="button" class="book-guide-fab" id="bookGuideFab" aria-controls="bookGuidePanel" aria-expanded="false" aria-label="Open book assistant"><span class="book-guide-fab-symbol" aria-hidden="true">✦</span><span class="book-guide-fab-label">Ask about a book</span><span class="book-guide-fab-glow" aria-hidden="true"></span></button>
+ <button type="button" class="book-guide-fab" id="bookGuideFab" aria-controls="bookGuidePanel" aria-expanded="false" aria-label="Open Library AI assistant"><span class="book-guide-fab-symbol" aria-hidden="true">✦</span><span class="book-guide-fab-label">Ask Library AI</span><span class="book-guide-fab-glow" aria-hidden="true"></span></button>
  <section class="book-guide-panel" id="bookGuidePanel" aria-labelledby="bookGuideTitle" role="dialog" aria-modal="false" hidden>
-  <header class="book-guide-head"><div class="book-guide-icon" aria-hidden="true">✦</div><div class="book-guide-title-wrap"><span class="book-guide-eyebrow">YOUR READING COMPANION</span><h2 id="bookGuideTitle">Book Guide</h2><p>Explore a title, ask anything you are curious about.</p></div><button class="book-guide-close" type="button" id="bookGuideClose" aria-label="Close book assistant">×</button></header>
-  <div class="book-guide-selection"><div class="book-guide-selection-top"><label for="bookGuideSelect">BOOK TO EXPLORE</label><span class="book-guide-count" id="bookGuideCount" role="status" aria-live="polite">Loading books…</span></div><label class="sr-only" for="bookGuideSearch">Search the library catalogue</label><input type="search" id="bookGuideSearch" autocomplete="off" placeholder="Search titles or authors…" aria-label="Search book titles and authors"><select id="bookGuideSelect" aria-label="Choose a book"><option value="">Choose a book from the library…</option></select><p id="bookGuideDetails" class="book-guide-book-note">Choose a title to get started.</p></div>
+  <header class="book-guide-head"><div class="book-guide-icon" aria-hidden="true">✦</div><div class="book-guide-title-wrap"><span class="book-guide-eyebrow">YOUR RESEARCH COMPANION</span><h2 id="bookGuideTitle">Library AI</h2><p>Ask anything, explore books, or research topics.</p></div><button class="book-guide-close" type="button" id="bookGuideClose" aria-label="Close book assistant">×</button></header>
+  <details class="book-guide-context" id="bookGuideContext"><summary><span>Library book context <small>Optional</small></span><span id="bookGuideContextLabel">Add a book</span></summary><div class="book-guide-selection"><div class="book-guide-selection-top"><label for="bookGuideSelect">OPTIONAL BOOK CONTEXT</label><span class="book-guide-count" id="bookGuideCount" role="status" aria-live="polite">Loading books…</span></div><label class="sr-only" for="bookGuideSearch">Search the library catalogue</label><input type="search" id="bookGuideSearch" autocomplete="off" placeholder="Find a library title (optional)…" aria-label="Search library titles and authors"><select id="bookGuideSelect" aria-label="Select optional book context"><option value="">No book selected — ask anything</option></select><p id="bookGuideDetails" class="book-guide-book-note">No book required. Select a title only when you want the AI to use its catalogue details.</p></div></details>
+  <div class="book-guide-capabilities"><span class="book-guide-live"><span aria-hidden="true">●</span> Powered by Gemini when configured</span><label for="bookGuideWebSearch" class="book-guide-web-switch"><input id="bookGuideWebSearch" type="checkbox"><span class="book-guide-web-slider" aria-hidden="true"></span><span class="book-guide-web-copy"><strong>Search the web</strong><small>For current information and external sources. Optional; provider quota or charges may apply.</small></span></label></div>
   <div id="bookGuideMessages" class="book-guide-messages" role="log" aria-live="polite" aria-relevant="additions text"></div>
-  <div class="book-guide-prompts" id="bookGuidePrompts"><button type="button" data-prompt="What is this book about?">What is it about?</button><button type="button" data-prompt="Who wrote it?">Author</button><button type="button" data-prompt="Where can I find it?">Location</button><button type="button" data-prompt="What should I know before reading?">Reading tips</button></div>
-  <form class="book-guide-compose" id="bookGuideForm"><label for="bookGuideInput" class="sr-only">Ask a question about the selected book</label><input id="bookGuideInput" maxlength="500" autocomplete="off" placeholder="Ask about this book…" required><button type="submit" id="bookGuideSend" aria-label="Send question" title="Send question"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form>
-  <p class="book-guide-disclaimer" id="bookGuideDisclaimer"><span class="book-guide-note-icon" aria-hidden="true">✦</span><span><strong>Reading tip:</strong> Ask questions, compare ideas, and check key details in the book or with your librarian.</span></p>
+  <div class="book-guide-prompts" id="bookGuidePrompts"><button type="button" data-prompt="Recommend three beginner-friendly books about data analysis.">Book ideas</button><button type="button" data-prompt="Explain the difference between a novel and a biography.">Ask a question</button><button type="button" data-prompt="What are some current developments in digital libraries?">Current research</button><button type="button" data-prompt="What is this book about?">Selected book</button></div>
+  <form class="book-guide-compose" id="bookGuideForm"><label for="bookGuideInput" class="sr-only">Ask Library AI anything</label><input id="bookGuideInput" maxlength="1200" autocomplete="off" placeholder="Ask anything…" required><button type="submit" id="bookGuideSend" aria-label="Send question" title="Send question"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form>
+  <p class="book-guide-disclaimer" id="bookGuideDisclaimer"><span class="book-guide-note-icon" aria-hidden="true">✦</span><span><strong>Reading tip:</strong> AI answers may be imperfect. Use web search for timely facts; verify important information from linked sources.</span></p>
  </section>`;document.body.appendChild(node);
  $('bookGuideFab').addEventListener('click',()=>open());$('bookGuideClose').addEventListener('click',close);
  $('bookGuideBackdrop').addEventListener('click',close);
- $('bookGuideSelect').addEventListener('change',e=>{const index=Number(e.target.value);if(e.target.value!==''&&books[index])selectBook(books[index]);});
+ $('bookGuideSelect').addEventListener('change',e=>{const index=Number(e.target.value);if(e.target.value!==''&&books[index])selectBook(books[index]);else{current=null;history=[];$('bookGuideContextLabel').textContent='Add a book';$('bookGuideDetails').textContent='General questions are welcome. No library title is needed.';$('bookGuideMessages').replaceChildren();addMessage('assistant','You can ask me about any topic. Enable Search the web when you need recent facts or external sources.');}});
  $('bookGuideSearch').addEventListener('input',renderOptions);
  $('bookGuidePrompts').addEventListener('click',e=>{const b=e.target.closest('[data-prompt]');if(b)void ask(b.dataset.prompt);});
  $('bookGuideForm').addEventListener('submit',e=>{e.preventDefault();const v=$('bookGuideInput').value.trim();if(v){$('bookGuideInput').value='';void ask(v);}});
@@ -45,7 +46,7 @@ function renderOptions(){
  const select=$('bookGuideSelect'),query=norm($('bookGuideSearch')?.value).toLowerCase();
  const selectedIndex=current?books.findIndex(b=>b.title===current.title&&b.isbn===current.isbn&&b.authors===current.authors):-1;
  const fragment=document.createDocumentFragment();
- fragment.appendChild(new Option(books.length?'Choose a book…':'No books in the catalogue yet',''));
+ fragment.appendChild(new Option('No book selected — ask anything',''));
  let matches=0;
  books.forEach((b,i)=>{
   if(query&&!([b.title,b.authors,b.isbn].some(v=>String(v||'').toLowerCase().includes(query))))return;
@@ -54,7 +55,7 @@ function renderOptions(){
  });
  select.replaceChildren(fragment);
  if(selectedIndex>=0&&(!query||select.querySelector(`option[value="${selectedIndex}"]`)))select.value=String(selectedIndex);
- $('bookGuideCount').textContent=books.length?query?matches+' of '+books.length+' titles':books.length+' titles':'No books loaded';
+ $('bookGuideCount').textContent=books.length?query?matches+' of '+books.length+' titles':books.length+' library titles':'General AI mode';
 }
 
 function setMessageText(messageNode,text){
@@ -71,8 +72,19 @@ function addMessage(role,message){
  setMessageText(m,message);$('bookGuideMessages').appendChild(m);
  $('bookGuideMessages').scrollTop=$('bookGuideMessages').scrollHeight;return m;
 }
-function selectBook(value){current=safeBook(value);history=[];if(!ready)init();$('bookGuideMessages').replaceChildren();$('bookGuideDetails').textContent=[current.authors?'By '+current.authors:'Author unknown',current.shelf?'Shelf '+current.shelf:'Ask the library for its shelf'].join(' · ');addMessage('assistant','Let’s explore “'+(current.title||'this title')+'”. You can ask about its author, edition, location, topics or reading suggestions.');renderOptions();}
-function localAnswer(question){const q=question.toLowerCase(),b=current;if(!b)return'Choose a book above and I’ll help you explore its available catalogue details.';const intro=b.title+(b.authors?' by '+b.authors:'');
+function selectBook(value){current=safeBook(value);history=[];if(!ready)init();$('bookGuideContext').open=true;$('bookGuideContextLabel').textContent=current.title.slice(0,34);$('bookGuideMessages').replaceChildren();$('bookGuideDetails').textContent=[current.authors?'By '+current.authors:'Author unknown',current.shelf?'Shelf '+current.shelf:'Shelf not listed'].join(' · ');addMessage('assistant','I can help you explore “'+(current.title||'this title')+'”, or answer unrelated questions. Switch on web search for current information.');renderOptions();}
+function openGeneral({search=false}={}){
+ if(!ready)init();
+ current=null;history=[];
+ $('bookGuideContextLabel').textContent='No book selected';
+ $('bookGuideContext').open=false;
+ $('bookGuideDetails').textContent='Ask about any topic; no library title is required.';
+ $('bookGuideMessages').replaceChildren();
+ addMessage('assistant','Ask anything. External web research is '+(search?'enabled':'optional')+'; check linked sources for current information.');
+ $('bookGuideWebSearch').checked=!!search;
+ renderOptions();open();
+}
+function localAnswer(question){const q=question.toLowerCase(),b=current;if(!b)return'Live AI is unavailable right now. Please retry later. You can still search the book catalogue without the AI.';const intro=b.title+(b.authors?' by '+b.authors:'');
  if(/(author|wrote|writer|who.*(write|wrote|written))/.test(q))return b.authors?'The catalogue credits '+b.authors+' as the author of “'+b.title+'”.':'The author is not listed in the available catalogue data. Check the title page to confirm.';
  if(/(isbn|edition|barcode|identifier)/.test(q))return b.isbn?'The listed ISBN or barcode is '+b.isbn+'. Check the physical copy for the exact edition.':'There is no verified ISBN or barcode on file for this book.';
  if(/(where|shelf|location|find|available|borrow|loan)/.test(q))return b.shelf?'The recorded shelf is '+b.shelf+'. Availability can change, so confirm with the librarian.':'The shelf is not specified. Please ask the library team for its location and borrowing availability.';
@@ -82,14 +94,51 @@ function localAnswer(question){const q=question.toLowerCase(),b=current;if(!b)re
  if(/(recommend|read|tip|before|start|difficulty|good for)/.test(q))return'To decide if '+intro+' suits you, read the introduction or first chapter, check the subject or edition, and ask the librarian for a preview. '+(b.subject?'Its listed subject is '+b.subject+'.':'The catalogue does not list a subject yet.');
  return'I can help with '+intro+' using catalogue information: author, title, ISBN, shelf, publisher, year and subjects. For deeper discussion, try a specific question about this title or consult your librarian.';
 }
-async function ask(question){if(!ready)init();if(busy)return;if(!current){addMessage('assistant','Select a book from the dropdown first.');return;}question=norm(question).slice(0,500);if(!question)return;
- addMessage('user',question);const pending=addMessage('assistant','Thinking about the catalogue details…');busy=true;$('bookGuideSend').disabled=true;
+function addSources(messageNode,answer){
+ messageNode.querySelector('.book-guide-sources')?.remove();
+ const raw=Array.isArray(answer?.sources)?answer.sources:[];
+ const safe=raw.filter(x=>x&&typeof x.url==='string').map(x=>{
+  try{const url=new URL(x.url);if(url.protocol!=='https:'&&url.protocol!=='http:')return null;
+   return {url:url.href,title:String(x.title||url.hostname).slice(0,100)};}catch{return null;}
+ }).filter(Boolean).slice(0,6);
+ const node=document.createElement('div');node.className='book-guide-sources';
+ if(answer?.searchRequested){
+  const status=document.createElement('span');status.className='book-guide-grounding';
+  status.textContent=answer.grounded?'Web sources checked':answer.searchUnavailable?'Search unavailable · AI knowledge used':'Search enabled · no source links provided';node.append(status);
+ }
+ if(safe.length){
+  const title=document.createElement('span');title.className='book-guide-source-heading';title.textContent='Sources';node.appendChild(title);
+  for(const item of safe){const link=document.createElement('a');link.href=item.url;link.target='_blank';link.rel='noopener noreferrer';link.textContent=item.title;node.appendChild(link);}
+ }
+ if(node.childNodes.length)messageNode.querySelector('.book-guide-message-body')?.appendChild(node);
+ // Search suggestions supplied by Google are hosted in a sandboxed frame: untrusted
+ // provider HTML can never execute scripts in the application origin.
+ if(answer?.grounded&&typeof answer.searchSuggestions==='string'&&answer.searchSuggestions.length){
+  const suggestions=document.createElement('iframe');suggestions.className='book-guide-search-suggestions';
+  suggestions.title='Google Search suggestions';suggestions.loading='lazy';suggestions.referrerPolicy='no-referrer';
+  suggestions.setAttribute('sandbox','allow-popups allow-popups-to-escape-sandbox');
+  suggestions.srcdoc=answer.searchSuggestions.slice(0,10000);messageNode.querySelector('.book-guide-message-body')?.appendChild(suggestions);
+ }
+}
+async function ask(question){
+ if(!ready)init();if(busy)return;question=String(question||'').trim().slice(0,1200);if(!question)return;
+ addMessage('user',question);
+ const searchRequested=!!$('bookGuideWebSearch')?.checked;
+ const pending=addMessage('assistant',searchRequested?'Searching and preparing your answer…':'Thinking…');
+ busy=true;$('bookGuideSend').disabled=true;
  try{
-  const body={book:current,question,history:history.slice(-6)};const response=await fetch('/api/book-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(12000)});
-  if(!response.ok)throw new Error('AI model not available');const json=await response.json();if(!json.reply||typeof json.reply!=='string')throw new Error('Missing response');
-  setMessageText(pending,json.reply);
- }catch{setMessageText(pending,localAnswer(question));}
- finally{history.push({role:'user',text:question},{role:'assistant',text:pending.dataset.messageText||''});history=history.slice(-8);busy=false;$('bookGuideSend').disabled=false;}
+  const body={book:current||null,question,history:history.slice(-8),searchWeb:searchRequested};
+  const response=await fetch('/api/book-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(25000)});
+  const json=await response.json().catch(()=>({error:'The AI service returned an unexpected response.'}));
+  if(!response.ok||!json.reply||typeof json.reply!=='string')throw new Error(String(json.error||'The AI service is temporarily unavailable.').slice(0,180));
+  setMessageText(pending,json.reply);addSources(pending,json);
+ }catch(error){
+  const fallback=current?localAnswer(question):'The AI could not answer right now. Please retry shortly.';
+  setMessageText(pending,fallback+'\n\n'+(error?.message||'The request may have timed out.'));
+ }finally{
+  history.push({role:'user',text:question},{role:'assistant',text:pending.dataset.messageText||''});
+  history=history.slice(-10);busy=false;$('bookGuideSend').disabled=false;
+ }
 }
 function isMobileSheet(){return root.matchMedia('(max-width: 899px)').matches;}
 function syncSheetViewport(){
@@ -122,7 +171,7 @@ function open(){
  returnFocus=document.activeElement;
  $('bookGuidePanel').hidden=false;$('bookGuideFab').setAttribute('aria-expanded','true');
  if(isMobileSheet())lockBackground();else unlockBackground();
- if(!$('bookGuideMessages').children.length)addMessage('assistant','Hello! Pick a book to explore its details, get guidance, or start a conversation.');
+ if(!$('bookGuideMessages').children.length)addMessage('assistant','Hello! Ask me anything. You can also choose a library book for context or enable web search for current information.');
  (isMobileSheet() ? $('bookGuideClose') : $('bookGuideInput')).focus({preventScroll:true});
 }
 function close(){
@@ -137,7 +186,7 @@ function setBooks(list){
  books=Array.isArray(list)?list.filter(b=>b&&String(b.title||'').trim()).map(safeBook)
   .filter((b,i,a)=>a.findIndex(v=>v.title===b.title&&v.isbn===b.isbn&&v.authors===b.authors)===i)
   .sort((a,b)=>a.title.localeCompare(b.title)):[];
- if(!books.length){current=null;history=[];if(ready){$('bookGuideMessages').replaceChildren();$('bookGuideDetails').textContent='Choose a title to get started.';}}
+ if(!books.length){current=null;history=[];if(ready){$('bookGuideContextLabel').textContent='Add a book';$('bookGuideMessages').replaceChildren();$('bookGuideDetails').textContent='Ask any question, or select a library title for context.';}}
  if(featured&&document.body.dataset.publicSpotlight==='true'&& !books.some(b=>b.title===featured.title&&b.isbn===featured.isbn))books.unshift(featured);
  if(!ready)init();renderOptions();
 }
@@ -178,6 +227,6 @@ async function loadPublicCatalog(){
  })().finally(()=>{publicCatalogPromise=null;});
  return publicCatalogPromise;
 }
-root.LibraryBookGuide={setVisible,setBooks,addBook,openBook,loadPublicCatalog};
+root.LibraryBookGuide={setVisible,setBooks,addBook,openBook,openGeneral,loadPublicCatalog};
 document.addEventListener('DOMContentLoaded',()=>{init();setVisible(true);});
 })(window);

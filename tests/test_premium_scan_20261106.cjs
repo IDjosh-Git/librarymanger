@@ -1,0 +1,27 @@
+'use strict';
+const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
+const root=path.resolve(__dirname,'..');
+const html=fs.readFileSync(path.join(root,'index.html'),'utf8');
+const sql=fs.readFileSync(path.join(root,'SCAN_CLOUD_CONSISTENCY_UPGRADE.sql'),'utf8');
+const ai=require('../api/isbn-ai.js');
+assert.match(html,/id="batchUseAI" type="checkbox" checked/);
+assert.match(html,/id="batchUseOCR" type="checkbox" checked/);
+assert.match(html,/id="batchSelectAll"/);
+assert.match(html,/id="batchSaveAllReady"/);
+assert.match(html,/id="scanAdvancedTools" open/);
+assert.match(html,/ensureInventoryLiveSync\(uid\)/);
+assert.match(html,/savedIds\.has\(String\(r\.saveRecordId\)\)/);
+assert.match(html,/function lookupAIIsbnSuggestion\(/);
+assert.match(html,/function saveScanDevicePreferences\(/);
+assert.match(sql,/library_review_guard_saved_copy/);
+assert.match(sql,/library_resolve_review_on_book_save/);
+assert.match(sql,/OLD\.status = 'resolved'/);
+assert.match(sql,/reviewUpdatedAt/);
+const response=()=>({headers:{},setHeader(k,v){this.headers[k]=v},status(n){this.code=n;return this},json(x){this.body=x;return this}});
+(async()=>{
+ let res=response();await ai({method:'GET',body:{},headers:{}},res);assert.equal(res.code,405);
+ process.env.GEMINI_API_KEY='test-only-not-real';
+ res=response();await ai({method:'POST',body:{isbn:'1234'},headers:{}},res);assert.equal(res.code,400);
+ res=response();await ai({method:'POST',body:{isbn:'9780143127741'},headers:{}},res);assert.equal(res.code,401);
+ console.log('PASS: scan controls, local prefs, realtime, anti-resurrection SQL and AI ISBN request checks');
+})().catch(e=>{console.error(e);process.exitCode=1});

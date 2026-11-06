@@ -1,3 +1,11 @@
+> **Latest (6 November 2026):** See [Premium Scan & Review and multi-device consistency](PREMIUM_SCAN_AND_MULTIDEVICE_RELEASE_20261106.md). **Run `SCAN_CLOUD_CONSISTENCY_UPGRADE.sql` in Supabase** after deploying the build to finish the cross-device fix.
+
+## Latest update — Premium Scan & Review Advanced Tools (6 Nov 2026)
+
+The Scan & Review page now includes premium Advanced Tools cards, instant cloud refresh, periodic saved-status reconciliation across devices, automatic ISBN-driven metadata suggestions for titleless books, and Mark All/Save All Ready. See [ADVANCED_SCAN_CLOUD_SYNC_RELEASE_20261106.md](ADVANCED_SCAN_CLOUD_SYNC_RELEASE_20261106.md).
+
+> **6 November 2026 — Visible OCR/AI controls and general research assistant:** Both scan switches now appear directly on Scan & Review. Library AI accepts general questions without a book, with optional Google Search grounding and source links. See `OCR_AI_GENERAL_ASSISTANT_20261106.md`. No database migration is necessary.
+
 > **6 November 2026:** Mobile Book Guide scroll locking and book-cover recognition improvements: see [MOBILE_AI_PANEL_AND_COVER_SCANNER_FIX_20261106.md](MOBILE_AI_PANEL_AND_COVER_SCANNER_FIX_20261106.md).
 
 > **5 Nov 2026 Admin directory fix:** The Administrators table now shows registered, verified Admin-role accounts immediately after secure activation—no prior visit required. See `ADMIN_SIGNUP_DIRECTORY_RELEASE_20261105.md` and `library_admin_signup_directory_fix.sql`.
@@ -65,3 +73,6 @@ The floating Book Guide now appears on all workspace panels and public pages. It
 ## Current UI update — 6 Nov 2026
 
 The Inventory Filters control now opens a dedicated premium responsive filter screen. It supports availability, book details, ISBN/barcode, title, author, shelf, copy quantities, and advanced criteria; Cancel restores prior selections while Show results applies them. See `PREMIUM_INVENTORY_FILTER_PAGE_20261106.md`. No database migration is required.
+
+## Header image blending refinement — 6 November 2026
+The Overview and Inventory hero sections now blend their copy-side background seamlessly into their respective library photographs, with mobile-specific dark overlays for legible text. This is CSS-only; see `HERO_IMAGE_BLEND_UPDATE_20261106.md`.

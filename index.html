@@ -368,29 +368,52 @@
 </section>
 <section class="scanned-review-section" aria-label="Inventory book scanning and review">
 <section class="batch-box" aria-labelledby="batchHeading">
- <div class="batch-head"><span class="batch-kicker"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg> ONE PLACE FOR ALL SCANNING</span><h3 id="batchHeading">Add books in <span>one easy upload.</span></h3><p>Upload a folder, ZIP or book photos. The scanner identifies titles and saves recognized copies automatically. Only images with no identified book title need manual review. <span class="scan-limit-note">Supports folders, ZIPs, and common image formats. Large uploads depend on device memory and connection speed.</span></p></div>
+ <div class="batch-head"><span class="batch-kicker"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg> ONE PLACE FOR ALL SCANNING</span><h3 id="batchHeading">Scan faster. <span>Review smarter.</span></h3><p>Upload a folder, ZIP or book photos. Use AI recognition or on-device OCR, check the results, and save your books to one shared inventory. Books that need attention remain editable until you approve them. <span class="scan-limit-note">Supports folders, ZIPs, and common image formats. Large uploads depend on device memory and connection speed.</span></p></div>
  <div class="batch-body">
+  <div class="scan-command-bar" aria-label="Quick actions">
+    <div class="scan-command-message"><span class="scan-command-orb" aria-hidden="true">✦</span><div><strong>Your scanning workbench</strong><small>One inventory on every device · Your scan settings stay on this device</small></div></div>
+    <div class="scan-command-buttons"><button id="scanReviewJump" type="button" class="light">Review attention <span id="scanQuickAttentionCount">0</span></button><button id="scanAskResearch" type="button" class="light">✦ Ask AI anything</button></div>
+  </div>
   <div class="scan-workflow-steps" aria-label="Simple scanning workflow"><span><b>1</b> Upload books</span><span><b>2</b> Automatic title recognition</span><span><b>3</b> Save or fix missing titles</span></div>
   <div class="batch-picker">
     <label><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg> Upload folder<input id="batchFolder" aria-label="Upload barcode folder" type="file" accept="image/*" webkitdirectory directory multiple></label>
     <label><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#archive"></use></svg> Upload ZIP<input id="batchZip" aria-label="Upload ZIP containing shelf folders" type="file" accept=".zip,application/zip,application/x-zip-compressed"></label>
     <label><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#image"></use></svg> Select photos<input id="batchPhotos" aria-label="Select multiple barcode photos" type="file" accept="image/*,.heic,.heif,.avif" multiple></label>
   </div>
-  <details class="scan-advanced-options"><summary>Scanning preferences <span>Optional</span></summary><label class="scan-ocr-setting"><input id="batchUseAI" type="checkbox" checked><span><strong>Recognize covers with AI</strong><small>Use Gemini when available to identify book titles and visible details. Uploaded images are sent to the configured service when enabled.</small></span></label>
-  <label class="scan-ocr-setting"><input id="batchUseOCR" type="checkbox" checked> <span><strong>Also read text locally</strong><small>Local text recognition helps when AI cannot identify a cover.</small></span></label></details>
-<div class="batch-details"><div><label for="batchDefaultShelf">Shelf / location <span class="quickadd-optional">optional</span></label><input id="batchDefaultShelf" maxlength="120" placeholder="e.g. Shelf A01 — leave blank if unsure"></div><label class="scan-autosave-switch" for="batchAutoSave"><input id="batchAutoSave" type="checkbox" checked><span><strong>Automatically save recognized books</strong><small>On by default. Turn off to select books or duplicates before saving.</small></span></label><button id="batchStart" class="alt" disabled>Retry selected upload</button></div>
+  <section class="scan-recognition-settings" aria-labelledby="scanRecognitionTitle">
+   <div class="scan-recognition-heading"><div><span class="eyebrow">SCAN OPTIONS</span><h4 id="scanRecognitionTitle">Choose how covers are read</h4><p>AI and OCR are on by default. Switch either off before uploading to control how your photos are processed.</p></div><span class="scan-recognition-status">Always visible · Device preference</span></div>
+   <div class="scan-recognition-grid">
+    <label class="scan-recognition-card" for="batchUseAI"><span class="scan-recognition-icon" aria-hidden="true">✦</span><span class="scan-recognition-copy"><strong>AI Cover Recognition</strong><small>Gemini identifies the title and visible book details. Cover images are sent securely to the AI service.</small></span><input id="batchUseAI" type="checkbox" checked aria-label="Enable AI cover recognition"><span class="scan-recognition-switch" aria-hidden="true"></span></label>
+    <label class="scan-recognition-card" for="batchUseOCR"><span class="scan-recognition-icon" aria-hidden="true">▤</span><span class="scan-recognition-copy"><strong>Local OCR</strong><small>Read printed cover text on this device. Useful when AI is unavailable or a title is difficult to recognise.</small></span><input id="batchUseOCR" type="checkbox" checked aria-label="Enable local OCR"><span class="scan-recognition-switch" aria-hidden="true"></span></label>
+   </div>
+  </section>
+<div class="batch-details"><div><label for="batchDefaultShelf">Shelf / location <span class="quickadd-optional">optional</span></label><input id="batchDefaultShelf" maxlength="120" placeholder="e.g. Shelf A01 — leave blank if unsure"></div><label class="scan-autosave-switch" for="batchAutoSave"><input id="batchAutoSave" type="checkbox"><span><strong>Automatically save recognized books</strong><small>Off by default so you can review recognized books before saving. Turn on to save identified titles automatically.</small></span></label><button id="batchStart" class="alt" disabled>Retry selected upload</button></div>
   <div class="batch-progress" role="status" aria-live="polite"><span id="batchStatus">Choose a folder, ZIP or photos. Scanning will start automatically.</span><progress id="batchProgress" max="100" value="0" aria-label="Scanning progress"></progress></div>
+  <div class="scan-cloud-toolbar" aria-label="Shared inventory synchronization"><div class="scan-cloud-copy"><span class="scan-cloud-indicator" aria-hidden="true"></span><div><strong>Shared inventory · synchronized book copies</strong><small id="scanCloudLastSync">Reading the latest saved books from Supabase…</small></div></div><button id="scanRefreshCloud" type="button" class="scan-refresh-button"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#refresh"></use></svg> Refresh from cloud</button></div>
   <div id="batchSummary" class="batch-summary" aria-live="polite"></div>
   <div class="batch-actions scan-selection-tools" role="group" aria-label="Choose which recognized books to save">
-    <button id="batchSelectAll" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg> Select all identified</button>
+    <button id="batchSelectAll" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg> Mark all ready</button>
+    <button id="batchSaveAllReady" type="button" class="scan-save-all" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check"></use></svg> Save all ready books</button>
     <button id="batchSelectDuplicates" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#alert"></use></svg> Select duplicate copies <span id="batchDuplicateCount" class="batch-count" aria-hidden="true">0</span></button>
-    <button id="batchSelectReady" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check"></use></svg> Select title-verified</button>
+    <button id="batchSelectReady" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check"></use></svg> Mark verified titles</button>
     <button id="batchDeselectAll" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#x"></use></svg> Clear selection</button>
   </div>
-  <details class="batch-excel-panel scan-advanced-options"><summary>Advanced tools: Excel &amp; cloud review backup <span>Optional</span></summary><div><strong>Fix titles in bulk (optional)</strong><p>The normal workflow is automatic. Use Excel only if you have many unreadable covers to correct or wish to export a backup.</p><p class="review-export-status" id="reviewExportStatus" role="status" aria-live="polite">Loading review queue…</p><p class="review-sync-status" id="reviewSyncStatus" role="status" aria-live="polite">Preparing cloud review sync…</p></div><div class="batch-excel-actions"><button id="batchExportExcel" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export review · Excel</button><button id="savedAttentionExport" type="button" class="light" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export saved needs attention · Excel</button><button id="refreshReviewCloud" type="button" class="light">Refresh review</button><label for="batchExcelFile" class="batch-excel-import">Import corrected Excel<input id="batchExcelFile" type="file" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv" hidden></label></div><p class="batch-excel-note">Keep the <b>Review_Key</b> column unchanged for existing copies. Leave it empty only when adding a new book row. To omit a row, write <b>SKIP</b> under Import_Action. Use Import_Action = SAVE for new copies, UPDATE for existing saved copies, or SKIP to omit a row. Only unresolved scans remain in the pending review queue; cloud sync is available when the review table is installed.</p></details>
+  <details class="batch-excel-panel scan-advanced-options" id="scanAdvancedTools" open>
+   <summary class="scan-advanced-summary"><span class="scan-advanced-emblem" aria-hidden="true">✦</span><span class="scan-advanced-heading"><strong>Advanced tools</strong><small>Find missing details, manage Excel files, and sync your review queue</small></span><span class="scan-advanced-optional">Optional</span><span class="scan-advanced-chevron" aria-hidden="true">⌄</span></summary>
+   <div class="scan-advanced-inner">
+    <div class="scan-advanced-intro"><div><span class="scan-advanced-label">YOUR PROFESSIONAL TOOLKIT</span><h4>One place for smarter library management.</h4><p>Batch enrichment, safe cloud recovery and spreadsheet editing — without leaving your review.</p></div><button type="button" id="scanResearchFromAdvanced" class="scan-ai-research">✦ Research anything with AI</button></div>
+    <div class="scan-advanced-grid">
+     <section class="scan-tool-card scan-tool-intelligence"><span class="scan-tool-symbol" aria-hidden="true">✧</span><div><span class="scan-tool-eyebrow">SMART DETAILS</span><h4>Complete books with ISBN</h4><p>Automatically suggest ISBN-backed details on new or saved records. Inspect the proposed information before committing any saved-book changes.</p></div><button id="batchEnrichAll" type="button" class="scan-tool-primary">Find missing details</button></section>
+     <section class="scan-tool-card"><span class="scan-tool-symbol" aria-hidden="true">☁</span><div><span class="scan-tool-eyebrow">SHARED REVIEW QUEUE</span><h4>Continue on any device</h4><p>Refresh the cloud queue after saving from another phone or computer. Successfully saved copies will disappear from pending review.</p><p class="review-sync-status" id="reviewSyncStatus" role="status" aria-live="polite">Connecting to cloud review…</p></div><button id="refreshReviewCloud" type="button" class="light">Sync review queue</button></section>
+     <section class="scan-tool-card"><span class="scan-tool-symbol" aria-hidden="true">▤</span><div><span class="scan-tool-eyebrow">EXCEL BACKUP</span><h4>Export review books</h4><p>Download the list for bulk corrections. Keep the Review_Key column unchanged when importing your updates.</p><p class="review-export-status" id="reviewExportStatus" role="status" aria-live="polite">Loading review queue…</p></div><button id="batchExportExcel" type="button" class="light" disabled>Export review · Excel</button></section>
+     <section class="scan-tool-card"><span class="scan-tool-symbol" aria-hidden="true">↥</span><div><span class="scan-tool-eyebrow">BULK UPDATES</span><h4>Import corrected details</h4><p>Upload an edited Excel or CSV file to update existing books or add new copies.</p></div><label for="batchExcelFile" class="batch-excel-import scan-tool-import">Choose Excel or CSV<input id="batchExcelFile" type="file" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv" hidden></label></section>
+    </div>
+    <details class="scan-extra-exports"><summary>More export options and spreadsheet instructions</summary><button id="savedAttentionExport" type="button" class="light" disabled>Export saved books missing titles · Excel</button><p>Keep <strong>Review_Key</strong> for existing copies. Use <strong>SAVE</strong> for new copies, <strong>UPDATE</strong> for existing saved copies, or <strong>SKIP</strong> to omit a row. Only books without an identified title require review.</p></details>
+   </div>
+  </details>
   <div class="scan-action-label"><strong>Save and manage</strong><span id="scanSelectionHint" aria-live="polite">Select identified books to save or retry. Repeated ISBNs are allowed as additional physical copies.</span></div><div class="batch-actions batch-actions-secondary"><button id="batchSave" type="button" class="green" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg> Save selected books</button><button id="batchSaveIncomplete" type="button" class="light" hidden disabled aria-hidden="true">Legacy incomplete save</button><button id="batchRemoveSelected" type="button" class="light" disabled>Remove selected pending</button><button id="batchStop" type="button" class="light" disabled>Stop scan</button><button id="batchClear" type="button" class="light" disabled>Clear selection</button></div>
-  <div class="batch-info"><strong>How it works:</strong> Upload your folder, ZIP or photos. The app reads each cover and attempts to save titled books automatically. Any failed saves can be retried here. <strong>Only covers with no title</strong> need manual review. Select all to retry in bulk; select duplicates to add separate physical copies. ISBN, author, publisher and shelf are optional.</div><input id="batchRetakeFile" type="file" accept="image/*" hidden>
-  <div id="batchReadyResults" class="scan-ready-results" aria-live="polite"></div><div class="scan-review-heading"><div><span class="eyebrow">ONLY UNIDENTIFIED BOOKS</span><h3>Needs a book title</h3><p>Only covers without a recognizable title appear here. Type the book title and tap Save book. Other details are optional.</p></div><span id="scanNeedsTitleCount" class="scan-needs-count">0</span></div><div id="batchResults" class="batch-review" aria-live="polite"><div class="empty">Loading your saved review queue…</div></div><div id="savedReviewResults" class="saved-review-panel" aria-live="polite"></div>
+  <div class="batch-info"><strong>How it works:</strong> Upload your folder, ZIP or photos. The app reads covers and prepares titles for you. Use Save all ready books, or enable automatic saving on this device. Any failed saves can be retried here. <strong>Only covers with no title</strong> need manual review. Select all to retry in bulk; select duplicates to add separate physical copies. ISBN, author, publisher and shelf are optional.</div><input id="batchRetakeFile" type="file" accept="image/*" hidden>
+  <div id="batchReadyResults" class="scan-ready-results" aria-live="polite"></div><div class="scan-review-heading"><div><span class="eyebrow">ONLY UNIDENTIFIED BOOKS</span><h3>Needs a book title</h3><p>Only covers without a recognizable title appear here. Type the book title and tap Save book. Other details are optional.</p></div><span id="scanNeedsTitleCount" class="scan-needs-count">0</span></div><div class="scan-review-controls"><label for="scanReviewSearch">Find a book waiting for review</label><div><input id="scanReviewSearch" type="search" maxlength="180" autocomplete="off" placeholder="Search ISBN, filename, author or shelf…"><button id="scanReviewSearchClear" type="button" class="light">Clear search</button></div></div><div id="batchResults" class="batch-review" aria-live="polite"><div class="empty">Loading your saved review queue…</div></div><div id="savedReviewResults" class="saved-review-panel" aria-live="polite"></div>
  </div>
 </section>
 </section>
@@ -684,7 +707,7 @@ function jumpInventorySection(id){
 $('jumpCatalog').addEventListener('click',()=>jumpInventorySection('inventoryCatalog'));
 $('jumpQuickAdd').addEventListener('click',()=>jumpInventorySection('inventoryQuickAdd'));
 $('columnFiltersClose').addEventListener('click',()=>setColumnFiltersOpen(false));
-function resetAccountState(){if($('columnFiltersPanel').open)closeInventoryFilter(false);adminDirectoryRows=[];adminRemovalTarget=null;if($('adminDirectoryList'))$('adminDirectoryList').replaceChildren();if($('adminRemoveBackdrop'))$('adminRemoveBackdrop').hidden=true;window.LibraryBookGuide?.setBooks([]);window.LibraryBookGuide?.setVisible(true);memberRole=null;memberRolePromise=null;libraryOwnerId=null;books=[];loans=[];selectedLend=null;selectedReturn=null;$("lendCopyDetail").textContent="Select a copy to view its Book ID and shelf below.";$("returnCopyDetail").textContent="Select a borrowed copy to view its Book ID and borrower below.";$("lendBookSearch").value="";$("returnBookSearch").value="";$("lendBookDisplay").value="";$("lendBookId").value="";$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";batchStopRequested=true;batchQueue=[];batchExcelLoading=false;reviewDraftVersion++;reviewDraftLoadedFor=null;if(reviewSaveTimer)clearTimeout(reviewSaveTimer);reviewSaveTimer=null;reviewRemoteHashes.clear();reviewCloudStatus='loading';reviewCloudFailure='';releaseBatchPreviews();batchItems=[];batchMetadataCache.clear();$("batchProgress").value=0;bookSearch="";loanSearch="";columnFilters=LibraryInventoryColumnFilters.empty();selectedColumnValues={};resetColumnFilterInputs();bookFilter="all";qualityFilter="all";loanFilter="all";bookPage=1;loanPage=1;$("bookSearch").value="";$("loanSearch").value="";setPressed("book","all");setPressed("quality","all");setPressed("loan","all");notificationQuery="";$("notificationSearch").value="";renderBatch();renderAll()}
+function resetAccountState(){stopInventoryLiveSync();if($('columnFiltersPanel').open)closeInventoryFilter(false);adminDirectoryRows=[];adminRemovalTarget=null;if($('adminDirectoryList'))$('adminDirectoryList').replaceChildren();if($('adminRemoveBackdrop'))$('adminRemoveBackdrop').hidden=true;window.LibraryBookGuide?.setBooks([]);window.LibraryBookGuide?.setVisible(true);memberRole=null;memberRolePromise=null;libraryOwnerId=null;books=[];loans=[];selectedLend=null;selectedReturn=null;$("lendCopyDetail").textContent="Select a copy to view its Book ID and shelf below.";$("returnCopyDetail").textContent="Select a borrowed copy to view its Book ID and borrower below.";$("lendBookSearch").value="";$("returnBookSearch").value="";$("lendBookDisplay").value="";$("lendBookId").value="";$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";batchStopRequested=true;batchQueue=[];batchExcelLoading=false;reviewDraftVersion++;reviewDraftLoadedFor=null;if(reviewSaveTimer)clearTimeout(reviewSaveTimer);reviewSaveTimer=null;reviewRemoteHashes.clear();autoISBNChecked.clear();savedISBNSuggestions.clear();isbnAutoJob=null;lastCloudScanAt=0;reviewCloudStatus='loading';reviewCloudFailure='';releaseBatchPreviews();batchItems=[];batchMetadataCache.clear();$("batchProgress").value=0;bookSearch="";loanSearch="";columnFilters=LibraryInventoryColumnFilters.empty();selectedColumnValues={};resetColumnFilterInputs();bookFilter="all";qualityFilter="all";loanFilter="all";bookPage=1;loanPage=1;$("bookSearch").value="";$("loanSearch").value="";setPressed("book","all");setPressed("quality","all");setPressed("loan","all");notificationQuery="";$("notificationSearch").value="";renderBatch();renderAll()}
 function authRedirectOptions(){if(!/^https?:$/.test(location.protocol))return {};return {emailRedirectTo:location.origin+location.pathname}}
 function authError(e){let text=e?.message||"Authentication failed.";if(/rate limit|email rate/i.test(text))text+=" Try later; if emails are limited, the project owner must configure SMTP in Supabase.";return text}
 let adminDirectoryRows=[],adminDirectoryBusy=false,adminRemovalTarget=null,adminRemoveFocus=null;
@@ -746,7 +769,7 @@ $('adminRemoveSubmit').addEventListener('click',async()=>{
  }catch(error){delete button.dataset.busy;$('adminRemoveCancel').disabled=false;button.disabled=false;$('adminRemoveError').textContent=error?.message||'Unable to remove access';$('adminRemoveError').hidden=false;}
 });
 
-function tab(name){if(!canAccess(name)){if(memberRole)msg('Your account does not have access to that page.','warn');return}const workspaceTitles={dashboard:'Overview',inventory:'Inventory',shelfScan:'Scan & Review',featuredAdmin:'Book of the Week',scanned:'Scanned books',lend:'Lend a book',return:'Return a book',notifications:'Notifications',history:'Loan history',contactSettings:'Contact & social links',adminDirectory:'Administrators'};const contextTitle=document.getElementById('headerContextName');if(contextTitle)contextTitle.textContent=workspaceTitles[name]||'Library workspace';if(location.hash.slice(1)!==name)history.replaceState(null,'','#'+name);requestAnimationFrame(updatePageControls);document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===name));document.querySelectorAll("[data-tab]").forEach(x=>{let a=x.dataset.tab===name;x.classList.toggle("active",a);x.setAttribute("aria-pressed",String(a));x.setAttribute("aria-current",a?"page":"false")});document.querySelectorAll("[data-gotab]").forEach(x=>{let a=x.dataset.gotab===name;x.classList.toggle("active",a);x.setAttribute("aria-current",a?"page":"false")});if(name==='inventory')scheduleAutomaticMetadataCheck();if(name==='shelfScan')renderBatch();window.LibraryBookGuide?.setVisible(true);if(name==='notifications')renderNotifications();if(name==='scanned')renderScannedBooks();if(name==='contactSettings')loadContactSettings();if(name==='adminDirectory')void loadAdminDirectory();document.querySelectorAll('[data-mobile-tab]').forEach(b=>{const active=b.dataset.mobileTab===name;b.classList.toggle('active',active);b.setAttribute('aria-current',active?'page':'false')});$('mobileMenuToggle').classList.toggle('active',!['dashboard','inventory','shelfScan','scanned','lend','return'].includes(name))}document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>tab(b.dataset.tab));document.querySelectorAll("[data-gotab]").forEach(b=>b.onclick=()=>tab(b.dataset.gotab));
+function tab(name){if(!canAccess(name)){if(memberRole)msg('Your account does not have access to that page.','warn');return}const workspaceTitles={dashboard:'Overview',inventory:'Inventory',shelfScan:'Scan & Review',featuredAdmin:'Book of the Week',scanned:'Scanned books',lend:'Lend a book',return:'Return a book',notifications:'Notifications',history:'Loan history',contactSettings:'Contact & social links',adminDirectory:'Administrators'};const contextTitle=document.getElementById('headerContextName');if(contextTitle)contextTitle.textContent=workspaceTitles[name]||'Library workspace';if(location.hash.slice(1)!==name)history.replaceState(null,'','#'+name);requestAnimationFrame(updatePageControls);document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===name));document.querySelectorAll("[data-tab]").forEach(x=>{let a=x.dataset.tab===name;x.classList.toggle("active",a);x.setAttribute("aria-pressed",String(a));x.setAttribute("aria-current",a?"page":"false")});document.querySelectorAll("[data-gotab]").forEach(x=>{let a=x.dataset.gotab===name;x.classList.toggle("active",a);x.setAttribute("aria-current",a?"page":"false")});if(name==='inventory')scheduleAutomaticMetadataCheck();if(name==='shelfScan'){renderBatch();void reloadAll({background:true,force:true})}window.LibraryBookGuide?.setVisible(true);if(name==='notifications')renderNotifications();if(name==='scanned')renderScannedBooks();if(name==='contactSettings')loadContactSettings();if(name==='adminDirectory')void loadAdminDirectory();document.querySelectorAll('[data-mobile-tab]').forEach(b=>{const active=b.dataset.mobileTab===name;b.classList.toggle('active',active);b.setAttribute('aria-current',active?'page':'false')});$('mobileMenuToggle').classList.toggle('active',!['dashboard','inventory','shelfScan','scanned','lend','return'].includes(name))}document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>tab(b.dataset.tab));document.querySelectorAll("[data-gotab]").forEach(b=>b.onclick=()=>tab(b.dataset.gotab));
 
 async function signIn(){
  if(authBusy)return;let email=$("email").value.trim(),password=$("password").value;
@@ -806,19 +829,45 @@ async function fetchShared(table,isCurrent=()=>true){
  }
  return all;
 }
+// Supabase Realtime accelerates propagation. The 30s poll and focus refresh remain
+// fallback because mobile browsers suspend sockets when apps are backgrounded.
+let inventoryLiveChannel=null,inventoryLiveOwner=null,inventoryEventTimer=null;
+function stopInventoryLiveSync(){
+ if(inventoryEventTimer){clearTimeout(inventoryEventTimer);inventoryEventTimer=null}
+ if(inventoryLiveChannel){void sb.removeChannel(inventoryLiveChannel);inventoryLiveChannel=null}
+ inventoryLiveOwner=null;
+}
+function scheduleInventoryEventSync(){
+ if(!session?.user||document.hidden)return;
+ if(inventoryEventTimer)clearTimeout(inventoryEventTimer);
+ inventoryEventTimer=setTimeout(()=>{
+  inventoryEventTimer=null;
+  if(session?.user&&!document.hidden)void reloadAll({background:true,force:true});
+ },650);
+}
+function ensureInventoryLiveSync(owner){
+ if(!owner||inventoryLiveOwner===owner)return;
+ stopInventoryLiveSync();inventoryLiveOwner=owner;
+ try{
+  inventoryLiveChannel=sb.channel('library-inventory-v3-'+owner)
+   .on('postgres_changes',{event:'*',schema:'public',table:BOOKS},scheduleInventoryEventSync)
+   .on('postgres_changes',{event:'*',schema:'public',table:REVIEW_QUEUE,filter:'user_id=eq.'+owner},scheduleInventoryEventSync)
+   .subscribe();
+ }catch(e){console.warn('Realtime unavailable; visible refresh remains enabled',e)}
+}
 const BACKGROUND_REFRESH_MS=30000;
 let reloadJob=null,lastRefresh=null;
-async function reloadAll({background=false}={}){
+async function reloadAll({background=false,force=false}={}){
  if(!session?.user)return;
  if(typeof ensureMemberRole==='function'&&memberRole!=='admin'&&memberRole!=='user'&&!(await ensureMemberRole()))return;
  const uid=session.user.id,generation=authGeneration;
  if(reloadJob?.uid===uid&&reloadJob.generation===generation){
   // A mutation/manual reload must read again after the current snapshot finishes.
   // Passive tab changes can simply share the existing request.
-  if(!background)reloadJob.again=true;
+  if(!background||force)reloadJob.again=true;
   return reloadJob.promise;
  }
- if(background&&lastRefresh?.uid===uid&&lastRefresh.generation===generation&&Date.now()-lastRefresh.at<BACKGROUND_REFRESH_MS)return;
+ if(background&&!force&&lastRefresh?.uid===uid&&lastRefresh.generation===generation&&Date.now()-lastRefresh.at<BACKGROUND_REFRESH_MS)return;
  const job={uid,generation,again:false,promise:null};reloadJob=job;
  const isCurrent=()=>session?.user?.id===uid&&authGeneration===generation;
  job.promise=(async()=>{
@@ -832,16 +881,20 @@ async function reloadAll({background=false}={}){
     if(job.again)continue;
     const failed=results.find(r=>r.status==='rejected');if(failed)throw failed.reason;
     [books,loans]=results.map(r=>r.value);
+    ensureInventoryLiveSync(uid);
     libraryOwnerId=books.find(x=>x.user_id)?.user_id||null;
-
-    lastRefresh={uid,generation,at:Date.now()};
-    renderAll();renderBatch();if(typeof renderScannedBooks==='function')renderScannedBooks();requestAnimationFrame(updatePageControls);
+    // A different device may have saved these exact copy IDs since our last read.
+    const resolved=reconcileSavedScanRows();
+    lastRefresh={uid,generation,at:Date.now()};lastCloudScanAt=Date.now();updateCloudScanStatus();
+    renderAll();renderBatch();
+    if(resolved)batchOutput(`${resolved} already-saved ${resolved===1?'copy was':'copies were'} removed from pending review after cloud sync.`);if(typeof renderScannedBooks==='function')renderScannedBooks();requestAnimationFrame(updatePageControls);
     if(!background&&typeof document!=='undefined'&&document.getElementById('inventory')?.classList.contains('active')&&typeof scheduleAutomaticMetadataCheck==='function')scheduleAutomaticMetadataCheck();
     if(!background)msg("Shared library loaded: "+books.length+" books.","ok");
     // Review has its own loading state and must not block inventory.
-    void restoreReviewDraft().catch(e=>{if(isCurrent())reviewStatus("Review could not be restored: "+(e?.message||e),"error")});
+    void restoreReviewDraft(true).catch(e=>{if(isCurrent())reviewStatus("Review could not be restored: "+(e?.message||e),"error")});
    }while(job.again&&isCurrent());
-  }catch(e){if(isCurrent())msg("Could not load shared library: "+(e?.message||e),"err")}
+   return true;
+  }catch(e){if(isCurrent())msg("Could not load shared library: "+(e?.message||e),"err");return false}
   finally{if(reloadJob===job)reloadJob=null}
  })();
  return job.promise;
@@ -1515,7 +1568,9 @@ $('bookEditorForm').onsubmit=async e=>{
  patch.updated_at=new Date().toISOString();patch.lookup_status='Reviewed / edited manually';
  const old=books.find(x=>x.record_id===recordId);
  const btn=$('bookEditorForm').querySelector('[type="submit"]');btn.disabled=true;
- try{const {data,error}=await sb.from(BOOKS).update(patch).eq('record_id',recordId).select('*').single();
+ try{let request=sb.from(BOOKS).update(patch).eq('record_id',recordId);
+ if(latest.updated_at)request=request.eq('updated_at',latest.updated_at);
+ const {data,error}=await request.select('*').maybeSingle();
   if(error)throw error;closeBookEditor();await reloadAll();msg('Updated '+(data?.book_id||old?.book_id||'book')+' successfully.','ok');
  }catch(error){$('editorResults').textContent='Save failed: '+String(error.message||error)}finally{btn.disabled=false}
 };
@@ -1709,13 +1764,39 @@ const batchMetadataCache=new Map();
 // Only compressed thumbnail previews are retained, not full-resolution photographs.
 let reviewDraftLoadedFor=null,reviewSaveTimer=null,reviewDraftVersion=0;
 let reviewCloudStatus='loading',reviewCloudFailure='',reviewCloudSync=Promise.resolve();
+const autoISBNChecked=new Set(),savedISBNSuggestions=new Map();
+let isbnAutoJob=null,lastCloudScanAt=0;
 const reviewRemoteHashes=new Map();
 function reviewStatus(message,type='ok'){
  reviewCloudStatus=type;reviewCloudFailure=type==='error'?message:'';
  const el=$('reviewSyncStatus');if(!el)return;
+ const cloud=$('scanCloudLastSync'),bar=document.querySelector('#shelfScan .scan-cloud-toolbar');
+ if(bar)bar.dataset.sync=type;
+ if(cloud&&type==='error')cloud.textContent='Cloud review unavailable · unsaved edits kept locally';
  el.textContent=message;el.className='review-sync-status '+type;
 }
 function reviewRowKey(row){return String(row?.saveRecordId||'').trim()}
+// The server's unique copy record ID is authoritative across devices. ISBN/title
+// alone cannot establish that two photos are the same physical copy.
+function reconcileSavedScanRows(){
+ const ids=new Set(books.map(book=>String(book.record_id||'')));
+ const resolved=[];
+ batchItems=batchItems.filter(row=>{
+  if(row.saved||row.importAction==='UPDATE'||row.updateTargetId||!ids.has(String(row.saveRecordId||'')))return true;
+  resolved.push(row.saveRecordId);
+  if(row.file){const preview=batchImageUrls.get(row.file);if(preview){URL.revokeObjectURL(preview);batchImageUrls.delete(row.file)}}
+  return false;
+ });
+ if(resolved.length){
+  void deleteCloudReview(resolved).catch(error=>console.warn('Review cleanup failed:',error));
+  scheduleReviewDraftSave();
+ }
+ return resolved.length;
+}
+function updateCloudScanStatus(){
+ const el=$('scanCloudLastSync');if(el&&lastCloudScanAt)el.textContent='Last checked '+new Date(lastCloudScanAt).toLocaleTimeString()+' · Saved status comes from Supabase';
+}
+
 function reviewAttention(row){return !hasBookTitle(row?.title)}
 function validReviewKey(key){return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(key||''))}
 async function reviewThumbnail(file){
@@ -1745,7 +1826,8 @@ async function deleteCloudReview(keys,owner=session?.user?.id){
  const ids=[...new Set(keys.filter(validReviewKey))];if(!owner||!ids.length)return;
  reviewCloudSync=reviewCloudSync.catch(()=>{}).then(async()=>{
   for(let i=0;i<ids.length;i+=100){
-   const {error}=await sb.from(REVIEW_QUEUE).delete().eq('user_id',owner).in('review_key',ids.slice(i,i+100));
+   const now=new Date().toISOString();
+   const {error}=await sb.from(REVIEW_QUEUE).upsert(ids.slice(i,i+100).map(review_key=>({user_id:owner,review_key,data:{},status:'resolved',updated_at:now})),{onConflict:'user_id,review_key'});
    if(error)throw error;
   }
   ids.forEach(id=>reviewRemoteHashes.delete(id));
@@ -1754,7 +1836,8 @@ async function deleteCloudReview(keys,owner=session?.user?.id){
 }
 async function syncCloudReview(owner,rows){
  if(!owner||!rows.length)return;
- const pending=rows.filter(r=>!r.saved&&validReviewKey(r.saveRecordId)).map(row=>{
+ const savedIds=new Set(books.map(b=>String(b.record_id||'')));
+ const pending=rows.filter(r=>!r.saved&&validReviewKey(r.saveRecordId)&&!savedIds.has(String(r.saveRecordId))).map(row=>{
   const data=reviewSerializableRow(row),serialized=JSON.stringify(data);
   return {row,serialized,data};
  }).filter(item=>reviewRemoteHashes.get(item.data.saveRecordId)!==item.serialized);
@@ -1812,8 +1895,8 @@ async function restoreReviewDraft(force=false){
  reviewDraftLoadedFor=owner;
  const live=new Map(batchItems.filter(x=>!x.saved).map(x=>[reviewRowKey(x),x]));
  const initialKeys=new Set(live.keys());
- const saved=new Set(books.map(b=>b.record_id));
- let cloud=[];let restoredBrowser=0;
+ const saved=new Set(books.map(b=>String(b.record_id)));
+ let cloud=[];let restoredBrowser=0,staleCloudKeys=[];
  try{
   const draft=await reviewDraftOperation('readonly',owner);
   if(!isCurrent())return;
@@ -1827,7 +1910,8 @@ async function restoreReviewDraft(force=false){
   if(!isCurrent())return;
   for(const row of cloud){
    const raw=row.data;
-   if(!raw?.saveRecordId||raw.saved||saved.has(raw.saveRecordId))continue;
+   if(!raw?.saveRecordId||raw.saved)continue;
+   if(saved.has(String(raw.saveRecordId))){staleCloudKeys.push(raw.saveRecordId);continue}
    const existing=live.get(raw.saveRecordId);
    // Never overwrite live unsaved edits with an older cloud snapshot.
    if(!existing||Number(raw.reviewUpdatedAt||0)>Number(existing.reviewUpdatedAt||0)){
@@ -1849,8 +1933,11 @@ async function restoreReviewDraft(force=false){
  }
  const nowSaved=new Set(books.map(b=>b.record_id));
  batchItems=[...live.values()].filter(item=>!nowSaved.has(item.saveRecordId)||item.importAction==='UPDATE'||item.updateTargetId);
- if(cloud.length||restoredBrowser)batchOutput(`Restored ${batchItems.length} unfinished scans. Small book photos remain visible where available. Export to Excel at any time.`);
- renderBatch();
+ if(staleCloudKeys.length)void deleteCloudReview(staleCloudKeys,owner);
+ if(cloud.length||restoredBrowser)batchOutput(`Review synced: ${batchItems.length} unfinished covers. Saved copies from other devices are no longer pending.`);
+ lastCloudScanAt=Date.now();updateCloudScanStatus();renderBatch();
+ if(staleCloudKeys.length||restoredBrowser)scheduleReviewDraftSave();
+ if(document.querySelector('#shelfScan.panel.active'))void autoEnrichISBNReviews();
 }
 
 function batchShelf(path,fallback="",source="photos"){
@@ -1890,6 +1977,7 @@ function batchSummary(){
  const locked=batchActive||batchSaving||batchZipLoading||batchExcelLoading;
  const pending=batchItems.filter(x=>!x.saved).length;
  const savedAttention=books.filter(b=>bookQuality(b).attention).length;
+ const quickCount=$('scanQuickAttentionCount');if(quickCount)quickCount.textContent=String(failed+savedAttention);
  $("batchExportExcel").disabled=locked||!pending;
  $("savedAttentionExport").disabled=locked||!savedAttention;
  $("reviewExportStatus").textContent=`Review: ${pending} unsaved ${pending===1?'book':'books'} · Saved needs attention: ${savedAttention} ${savedAttention===1?'copy':'copies'}. ${!pending?'No unsaved Review books currently.':''}`;
@@ -1897,6 +1985,8 @@ function batchSummary(){
  $("batchSummary").innerHTML=`<span class="scan-counter-ready"><strong>${ready}</strong> ready to save</span><span class="scan-counter-review"><strong>${failed}</strong> need a title</span><span class="scan-counter-duplicates"><strong>${dup}</strong> additional copies</span><span class="scan-counter-selected"><strong>${selected}</strong> selected</span><span class="scan-counter-saved"><strong>${done}</strong> saved this session</span>`;
  const selectionHint=$('scanSelectionHint');if(selectionHint)selectionHint.textContent=selected?`${selected} selected · ${batchItems.filter(x=>x.selected&&batchValid(x)).length} eligible to save`:'Select all, choose duplicates, or save an individual identified book.';
  $("batchSave").disabled=locked||!batchItems.some(x=>x.selected&&batchValid(x));
+ $("batchSaveAllReady").disabled=locked||!ready;
+ $("batchEnrichAll").disabled=locked||!batchItems.some(x=>!x.saved&&!hasBookTitle(x.title)&&validIsbn(x.barcode))&&!books.some(b=>bookQuality(b).attention&&validIsbn(b.barcode));
  $("batchSaveIncomplete").disabled=locked||selected===0;
  $("batchStart").disabled=locked||!batchQueue.length;
  $("batchSelectAll").disabled=locked||!batchItems.some(x=>batchValid(x));
@@ -1914,11 +2004,91 @@ function batchCandidateMarkup(row,index){
  if(!row.matches?.length)return '';
  return '<p class="batch-candidate-note">Possible catalog matches — compare with your photo before selecting. ISBN is not guessed.</p>'+row.matches.map((m,i)=>`<div class="batch-match"><span><strong>${esc(m.title)}</strong><small>${esc([m.authors,m.publication_year,m.source].filter(Boolean).join(' · '))}</small></span><button type="button" class="light smallbtn" data-batch-match="${index}" data-match-index="${i}">Use these details</button></div>`).join('');
 }
+async function findSavedISBNDetails(recordId,{automatic=false}={}){
+ const row=books.find(b=>b.record_id===recordId);
+ if(!row||hasBookTitle(row.title)||!validIsbn(row.barcode)||!session?.user)return;
+ const key='saved:'+recordId+'|'+normalizeIsbn(row.barcode);
+ if(automatic&&autoISBNChecked.has(key))return;
+ autoISBNChecked.add(key);
+ try{
+  const info=await findProposedISBNDetails(normalizeIsbn(row.barcode));
+  if(info?.title&&books.some(b=>b.record_id===recordId&&!hasBookTitle(b.title))){
+   savedISBNSuggestions.set(recordId,info);renderSavedAttentionReview();
+  }else if(!automatic)batchOutput('No verified title was found for this ISBN. Please type the title using Edit.');
+ }catch(error){if(!automatic)batchOutput('ISBN lookup unavailable: '+String(error?.message||error))}
+}
+async function applySavedISBNDetails(recordId){
+ const original=books.find(b=>b.record_id===recordId),info=savedISBNSuggestions.get(recordId);
+ if(!original||!info?.title||!session?.user)return;
+ const {data:latest,error:readError}=await sb.from(BOOKS).select('*').eq('record_id',recordId).single();
+ if(readError||!latest)return batchOutput('Could not verify saved book details. Refresh from cloud and retry.');
+ if(info._unverified&&!confirm('These details were suggested by AI and are not verified against the exact ISBN. Have you checked the cover and edition?'))return;
+ if(hasBookTitle(latest.title)){savedISBNSuggestions.delete(recordId);await reloadAll({background:true,force:true});return batchOutput('This book has already been completed on another device.');}
+ const patch={title:String(info.title).trim(),updated_at:new Date().toISOString()};
+ for(const field of ['authors','publisher','publication_year','language','pages','subject'])if(!latest[field]&&info[field])patch[field]=String(info[field]);
+ const {data,error}=await sb.from(BOOKS).update(patch).eq('record_id',recordId).select('*').single();
+ if(error||!data)return batchOutput('This record has changed or could not be saved. Refresh the inventory, inspect the latest details and retry: '+(error?.message||'Update not confirmed'));
+ savedISBNSuggestions.delete(recordId);batchOutput('Saved recognized ISBN details to the shared inventory.');await reloadAll({background:true,force:true});
+}
+// A second, optional research step when exact catalogue lookup has no title.
+// AI metadata is always labelled a suggestion and never auto-saves a book.
+async function lookupAIIsbnSuggestion(code){
+ if(!$('batchUseAI')?.checked||!session?.access_token||!validIsbn(code))return null;
+ const response=await fetch('/api/isbn-ai',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({isbn:normalizeIsbn(code)}),signal:AbortSignal.timeout(26000)});
+ if(!response.ok)return null;
+ const answer=await response.json();
+ if(!answer?.metadata?.title)return null;
+ return {...answer.metadata,_sources:['AI suggestion — verify edition'],_unverified:true,_sourcesLinks:answer.sources||[]};
+}
+async function findProposedISBNDetails(isbn){
+ const catalog=await lookupISBN(isbn);
+ if(catalog?.title)return catalog;
+ try{return await lookupAIIsbnSuggestion(isbn)}catch{return null}
+}
+async function autoEnrichISBNReviews({force=false}={}){
+ if(!session?.user||batchActive||batchSaving||batchZipLoading||batchExcelLoading)return;
+ if(isbnAutoJob)return isbnAutoJob;
+ const owner=session.user.id,generation=authGeneration;
+ const pending=batchItems.filter(x=>!x.saved&&!x.updateTargetId&&!hasBookTitle(x.title)&&validIsbn(x.barcode)&&!x.reviewBusy&&
+  (force||!autoISBNChecked.has('draft:'+x.saveRecordId+'|'+normalizeIsbn(x.barcode))));
+ const savedMissing=books.filter(b=>!hasBookTitle(b.title)&&validIsbn(b.barcode)&&
+  (force||!autoISBNChecked.has('saved:'+b.record_id+'|'+normalizeIsbn(b.barcode))));
+ if(!pending.length&&!savedMissing.length)return;
+ const jobs=[...pending.map(x=>({type:'draft',row:x})),...savedMissing.slice(0,25).map(x=>({type:'saved',row:x}))];
+ let next=0,complete=0;
+ const worker=async()=>{
+  while(next<jobs.length&&session?.user?.id===owner&&authGeneration===generation){
+   const job=jobs[next++],row=job.row;
+   if(job.type==='saved'){await findSavedISBNDetails(row.record_id,{automatic:true});continue}
+   const key='draft:'+row.saveRecordId+'|'+normalizeIsbn(row.barcode);autoISBNChecked.add(key);
+   try{
+    await batchLookUp(row);
+    // AI can read a cover when the verified ISBN catalog has no title.
+    if(!hasBookTitle(row.title)&&$('batchUseAI')?.checked&&(row.file||row.thumbnailData)){
+     try{const file=await reviewSourceFile(row);await readCoverWithAI(row,file)}catch{}
+    }
+    if(!hasBookTitle(row.title)&&$('batchUseAI')?.checked){
+     const suggestion=await lookupAIIsbnSuggestion(row.barcode).catch(()=>null);
+     if(suggestion?.title){for(const field of ['title','authors','publisher','publication_year','language','pages','subject'])if(!row[field]&&suggestion[field])row[field]=String(suggestion[field]);row.lookup_status='AI suggestion — verify the printed ISBN, title and edition';row.aiNotice='AI-generated book details are unverified. Check the book cover before saving.'}
+    }
+    row.reviewUpdatedAt=Date.now();row.selected=false;complete+=hasBookTitle(row.title)?1:0;
+   }catch(error){row.lookup_status='ISBN details unavailable. Enter the title or retry later.'}
+  }
+ };
+ isbnAutoJob=Promise.all([worker(),worker()]).finally(()=>{
+  isbnAutoJob=null;if(session?.user?.id!==owner)return;
+  renderBatch();if(complete)batchOutput(`${complete} book ${complete===1?'title was':'titles were'} filled from ISBN/AI. Mark all ready or use Save all ready books.`);
+ });
+ return isbnAutoJob;
+}
 function renderSavedAttentionReview(){
  const el=$('savedReviewResults');if(!el)return;
  const attention=books.filter(b=>bookQuality(b).attention);
  if(!attention.length){el.innerHTML='<div class="saved-review-heading"><h3>Saved books missing titles <span>0</span></h3><p>Every saved book already has a title.</p></div>';return}
- const cards=attention.map(b=>`<article class="saved-review-book"><div class="saved-review-icon">${uiIcon('book')}</div><div class="saved-review-detail"><strong>${esc(b.title||'Title missing')}</strong><small>${esc(b.book_id||'Copy')} · ${esc(b.shelf_location||'No shelf assigned')}</small><span>Add a book title to finish this record</span></div><button type="button" class="light smallbtn" data-edit-book="${esc(b.record_id)}">Edit</button></article>`).join('');
+ const cards=attention.map(b=>{
+  const hint=savedISBNSuggestions.get(b.record_id),isbn=validIsbn(b.barcode);
+  return `<article class="saved-review-book"><div class="saved-review-icon">${uiIcon('book')}</div><div class="saved-review-detail"><strong>${esc(b.title||'Title missing')}</strong><small>${esc(b.book_id||'Copy')} · ${esc(b.barcode||'No ISBN')}</small><span>${hint?`${hint._unverified?'AI suggestion — check edition':'Verified catalogue title'}: ${esc(hint.title)}`:isbn?'ISBN available · the app can find its title':'Enter the book title to complete this record'}</span>${hint?`<div class="saved-isbn-preview"><small>${esc([hint.authors,hint.publisher,hint.publication_year].filter(Boolean).join(' · '))}</small><button type="button" class="scan-tool-primary" data-apply-saved-isbn="${esc(b.record_id)}">Apply details to saved book</button></div>`:''}</div><div class="scan-saved-actions">${isbn?`<button type="button" class="light smallbtn" data-find-saved-isbn="${esc(b.record_id)}">${hint?'Find again':'Find title by ISBN'}</button>`:''}<button type="button" class="light smallbtn" data-edit-book="${esc(b.record_id)}">Edit</button></div></article>`;
+ }).join('');
  el.innerHTML=`<div class="saved-review-heading"><h3>Saved books missing titles <span>${attention.length}</span></h3><p>These older records are missing book titles. Edit a record to add its title. Author, ISBN, publisher, year and shelf are optional.</p></div><div class="saved-review-list">${cards}</div>`;
 }
 function renderBatch(){
@@ -1927,20 +2097,22 @@ function renderBatch(){
  const locked=batchActive||batchSaving||batchZipLoading||batchExcelLoading;
  const pending=batchItems.map((x,i)=>({x,i})).filter(({x})=>!x.saved);
  const identified=pending.filter(({x})=>hasBookTitle(x.title));
- const unidentified=pending.filter(({x})=>!hasBookTitle(x.title));
+ const allUnidentified=pending.filter(({x})=>!hasBookTitle(x.title));
+ const reviewQuery=String($('scanReviewSearch')?.value||'').trim().toLocaleLowerCase();
+ const unidentified=reviewQuery?allUnidentified.filter(({x})=>[x.fileName,x.path,x.barcode,x.title,x.authors,x.shelf,x.publisher].some(value=>String(value||'').toLocaleLowerCase().includes(reviewQuery))):allUnidentified;
  const readyContainer=$('batchReadyResults');
  if(readyContainer){
   readyContainer.innerHTML=identified.length?`<section class="scan-ready-section"><div class="scan-ready-heading"><div><span class="eyebrow">IDENTIFIED · READY FOR YOUR LIBRARY</span><h3>${identified.length} book${identified.length===1?'':'s'} ready to save</h3><p>Titles were recognized. These books can be saved without entering optional details.</p></div><span class="scan-ready-badge">${identified.length} recognized</span></div><div class="scan-ready-list">${identified.slice(0,150).map(({x,i})=>`<div class="scan-ready-item"><span class="scan-ready-symbol" aria-hidden="true">✓</span><div><strong>${esc(x.title)}</strong><small>${esc(x.authors||'Author optional')} · ${esc(x.shelf||'Shelf optional')}${x.duplicate?' · Additional copy':''}</small>${x.saveError?`<em role="alert">${esc(x.saveError)}</em>`:''}</div><label class="scan-ready-checkbox"><input type="checkbox" data-ready-select="${i}" ${x.selected?'checked':''} ${locked?'disabled':''}><span>Select</span></label><button type="button" class="scan-inline-save" data-save-ready="${i}" ${locked?'disabled':''}>${x.saveError?'Retry save':'Save book'}</button></div>`).join('')}</div></section>`:'<div class="scan-all-identified" role="status"><span aria-hidden="true">✓</span> Turn off automatic saving above to choose which recognized books to save. Only missing titles require review.</div>';
  }
- const counter=$('scanNeedsTitleCount');if(counter)counter.textContent=String(unidentified.length);
+ const counter=$('scanNeedsTitleCount');if(counter)counter.textContent=String(allUnidentified.length);
  const perPage=35,pages=Math.max(1,Math.ceil(unidentified.length/perPage));reviewPage=Math.min(Math.max(1,reviewPage),pages);
- if(!unidentified.length){$('batchResults').innerHTML='<div class="scan-empty-review"><span aria-hidden="true">✓</span><strong>No books need title review</strong><p>Upload photos, a folder or a ZIP above. When automatic saving is enabled, identified books go straight to your library.</p></div>';scheduleReviewDraftSave();return}
- let h=`<div class="batch-review-toolbar"><strong>${unidentified.length} photo${unidentified.length===1?'':'s'} need a title</strong><span>Page ${reviewPage} of ${pages}</span></div><div class="batch-book-list" role="list">`;
+ if(!unidentified.length){$('batchResults').innerHTML=reviewQuery?'<div class="scan-empty-review"><strong>No matching review books</strong><p>Try another ISBN, filename, author or shelf.</p></div>':'<div class="scan-empty-review"><span aria-hidden="true">✓</span><strong>No books need title review</strong><p>Upload photos, a folder or a ZIP above. Identified titles are ready to save; automatic saving is optional.</p></div>';scheduleReviewDraftSave();return}
+ let h=`<div class="batch-review-toolbar"><strong>${unidentified.length}${reviewQuery?' matching':''} photo${unidentified.length===1?'':'s'} need a title</strong><span>Page ${reviewPage} of ${pages}</span></div><div class="batch-book-list" role="list">`;
  unidentified.slice((reviewPage-1)*perPage,reviewPage*perPage).forEach(({x,i},position)=>{
   const field=(name,label,max)=>`<label class="batch-book-field"><span>${label}</span><input aria-label="${label} for ${batchAttr(x.fileName)}" data-batch-field="${name}" data-batch-index="${i}" maxlength="${max}" value="${batchAttr(x[name])}" ${locked||x.reviewBusy?'disabled':''}></label>`;
   h+=`<article role="listitem" class="batch-book scan-title-review-card" aria-label="Book cover ${i+1}: ${batchAttr(x.fileName)}"><div class="batch-book-head"><span class="scan-title-review-number">${(reviewPage-1)*perPage+position+1}</span><div class="batch-book-source"><strong>${esc(x.fileName||'Uploaded image')}</strong><span class="batch-path">${esc(x.path||'Book cover')}</span></div><span class="batch-book-state incomplete">Title needed</span></div>
    <div class="batch-book-content">${(x.file||x.thumbnailData)?`<img class="batch-book-photo" loading="lazy" alt="Cover photo from ${batchAttr(x.fileName)}" src="${batchAttr(batchPreview(x))}">`:'<div class="batch-book-photo batch-photo-placeholder">No image preview</div>'}
-   <div class="batch-book-fields"><div class="scan-title-primary">${field('title','Book title (required)',350)}<button type="button" class="scan-inline-save green" data-save-title="${i}" ${locked?'disabled':''}>Save book</button></div><div class="scan-title-support">${field('authors','Author (optional)',350)}${field('barcode','ISBN (optional)',80)}</div><details class="scan-card-more"><summary>More details and recognition tools</summary>${reviewShelfField(x,i,locked)}<div class="batch-extra-fields">${field('publisher','Publisher',250)}${field('publication_year','Publication year',20)}</div><div class="batch-action-row"><button type="button" class="light" data-batch-lookup="${i}" ${locked?'disabled':''}>Find details using ISBN</button><button type="button" class="light" data-batch-title="${i}" ${locked?'disabled':''}>Search title</button><button type="button" class="light" data-batch-ocr="${i}" ${locked?'disabled':''}>Read photo text</button><button type="button" class="light" data-batch-ai="${i}" ${locked?'disabled':''}>Try AI recognition</button><button type="button" class="light" data-batch-retake="${i}" ${locked?'disabled':''}>Replace photo</button><button type="button" class="light" data-batch-crop="${i}" ${locked?'disabled':''}>Crop ISBN</button></div></details></div></div><div class="batch-matches" id="batchMatch${i}">${batchCandidateMarkup(x,i)}</div>${x.ocrText?`<details class="ocr-text"><summary>Text found in photo</summary><pre>${esc(x.ocrText.slice(0,1600))}</pre></details>`:''}${x.error?`<p class="batch-book-hint">${esc(x.error)}</p>`:''}${x.aiNotice?`<p class="batch-book-hint">${esc(x.aiNotice)}</p>`:''}</article>`;
+   <div class="batch-book-fields"><div class="scan-title-primary">${field('title','Book title (required)',350)}<button type="button" class="scan-inline-save green" data-save-title="${i}" ${locked?'disabled':''}>Save book</button></div><div class="scan-title-support">${field('authors','Author (optional)',350)}${field('barcode','ISBN (optional)',80)}<button type="button" class="scan-quick-isbn" data-batch-lookup="${i}" ${locked?'disabled':''}>✦ Fill from ISBN</button></div><details class="scan-card-more"><summary>More details and recognition tools</summary>${reviewShelfField(x,i,locked)}<div class="batch-extra-fields">${field('publisher','Publisher',250)}${field('publication_year','Publication year',20)}</div><div class="batch-action-row"><button type="button" class="light" data-batch-lookup="${i}" ${locked?'disabled':''}>Find details using ISBN</button><button type="button" class="light" data-batch-title="${i}" ${locked?'disabled':''}>Search title</button><button type="button" class="light" data-batch-ocr="${i}" ${locked?'disabled':''}>Read photo text</button><button type="button" class="light" data-batch-ai="${i}" ${locked?'disabled':''}>Try AI recognition</button><button type="button" class="light" data-batch-retake="${i}" ${locked?'disabled':''}>Replace photo</button><button type="button" class="light" data-batch-crop="${i}" ${locked?'disabled':''}>Crop ISBN</button></div></details></div></div><div class="batch-matches" id="batchMatch${i}">${batchCandidateMarkup(x,i)}</div>${x.ocrText?`<details class="ocr-text"><summary>Text found in photo</summary><pre>${esc(x.ocrText.slice(0,1600))}</pre></details>`:''}${x.error?`<p class="batch-book-hint">${esc(x.error)}</p>`:''}${x.aiNotice?`<p class="batch-book-hint">${esc(x.aiNotice)}</p>`:''}</article>`;
  });
  h+='</div>';
  if(pages>1)h+=`<nav class="review-pager" aria-label="Unidentified cover pages"><button type="button" class="light smallbtn" data-review-page="${reviewPage-1}" ${reviewPage<=1?'disabled':''}>Previous</button><span>${reviewPage} / ${pages}</span><button type="button" class="light smallbtn" data-review-page="${reviewPage+1}" ${reviewPage>=pages?'disabled':''}>Next</button></nav>`;
@@ -2030,7 +2202,20 @@ async function acquireOCRWorker(){
  }
 }
 function releaseOCRWorker(entry){if(!entry)return;entry.busy=false;ocrWaiters.shift()?.()}
-$('batchUseOCR').addEventListener('change',e=>{if(e.target.checked)void warmupOCR()});
+const SCAN_PREFS_KEY='library_scan_device_preferences_v3';
+function saveScanDevicePreferences(){
+ try{localStorage.setItem(SCAN_PREFS_KEY,JSON.stringify({ai:!!$('batchUseAI').checked,ocr:!!$('batchUseOCR').checked,autosave:!!$('batchAutoSave').checked}))}catch{}
+}
+try{
+ const prefs=JSON.parse(localStorage.getItem(SCAN_PREFS_KEY)||'null');
+ if(prefs&&typeof prefs==='object'){
+  for(const [id,key] of [['batchUseAI','ai'],['batchUseOCR','ocr'],['batchAutoSave','autosave']])
+   if(typeof prefs[key]==='boolean')$(id).checked=prefs[key];
+ }
+}catch{}
+$('batchUseOCR').addEventListener('change',e=>{saveScanDevicePreferences();if(e.target.checked)void warmupOCR()});
+$('batchUseAI').addEventListener('change',saveScanDevicePreferences);
+$('batchAutoSave').addEventListener('change',saveScanDevicePreferences);
 async function preparedOCRImage(file,angle=0){
  const bitmap=await createImageBitmap(file);try{
   const rotated=angle===90||angle===270;
@@ -2325,7 +2510,9 @@ async function runBatch(){
    await persistReviewDraft(uploader,reviewDraftVersion);
   }
  }finally{batchActive=false;batchQueue=[];renderBatch()}
- // New identified books save automatically; genuinely unidentified titles remain for review.
+ // Newly scanned ISBNs are enriched immediately; the user still approves saving.
+ if(session?.user?.id===uploader&&newRecords.size&&typeof autoEnrichISBNReviews==='function')void autoEnrichISBNReviews();
+ // New identified books save automatically only when that device opts in.
  const eligible=batchItems.filter(x=>newRecords.has(x.saveRecordId)&&batchValid(x));
  if(eligible.length&&$('batchAutoSave')?.checked){eligible.forEach(x=>x.selected=true);await saveBatch(false,{auto:true,ids:newRecords});}
  else if(eligible.length){batchOutput(`${eligible.length} recognized book${eligible.length===1?'':'s'} ready. Select all or choose duplicate copies, then click Save selected books.`);renderBatch();}
@@ -2490,7 +2677,19 @@ async function importBatchReviewExcel(file){
 }
 $("batchExportExcel").onclick=exportBatchReviewExcel;
 $("savedAttentionExport").onclick=exportSavedAttentionExcel;
-$("refreshReviewCloud").onclick=async()=>{if(!session?.user)return;await restoreReviewDraft(true);batchOutput('Review refreshed from browser and Supabase. Unfinished rows are retained.')};
+async function refreshScanFromCloud(){
+ if(!session?.user)return;
+ const buttons=[$('scanRefreshCloud'),$('refreshReviewCloud')].filter(Boolean);
+ buttons.forEach(button=>button.disabled=true);
+ try{
+  const loaded=await reloadAll({background:true,force:true});
+  if(!loaded){batchOutput('Could not refresh inventory from Supabase. Please check your connection and try again.');return;}
+  await restoreReviewDraft(true);
+  batchOutput(reviewCloudStatus==='error'? 'Inventory refreshed, but cloud Review could not sync. Check the review status below.' : 'Scan & Review refreshed from Supabase. Copies already saved on other devices have been reconciled.');
+ }finally{buttons.forEach(button=>button.disabled=false)}
+}
+$("refreshReviewCloud").onclick=refreshScanFromCloud;
+$("scanRefreshCloud").onclick=refreshScanFromCloud;
 $("batchExcelFile").onchange=e=>{const f=e.target.files?.[0];if(f)importBatchReviewExcel(f);e.target.value='';};
 async function saveBatch(allowIncomplete=false,options={}){
  if(batchActive||batchSaving||batchZipLoading||batchExcelLoading||!session?.user)return;
@@ -2644,7 +2843,29 @@ $('batchRetakeFile').onchange=async e=>{
  }catch(error){row.lookup_status='Photo could not be read. Existing details and shelf were kept. Enter the printed ISBN manually.'}
  finally{batchActive=false;renderBatch()}
 };
+$('scanAskResearch').onclick=()=>window.LibraryBookGuide?.openGeneral?.({search:true});
+$('scanResearchFromAdvanced').onclick=()=>window.LibraryBookGuide?.openGeneral?.({search:true});
+$('scanReviewJump').onclick=()=>{
+ const el=books.some(b=>bookQuality(b).attention)?$('savedReviewResults'):$('batchResults');
+ el?.scrollIntoView({behavior:'smooth',block:'start'});
+};
+$('scanAdvancedTools').addEventListener('toggle',()=>{
+ try{localStorage.setItem('library_scan_advanced_open_v3',$('scanAdvancedTools').open?'yes':'no')}catch{}
+});
+try{const choice=localStorage.getItem('library_scan_advanced_open_v3');if(choice)$('scanAdvancedTools').open=choice==='yes'}catch{}
 $("batchSave").onclick=()=>saveBatch();
+$("batchSaveAllReady").onclick=async()=>{
+ if(batchActive||batchSaving||batchZipLoading||batchExcelLoading)return;
+ batchSelectAll();await saveBatch();
+};
+$("batchEnrichAll").onclick=async()=>{
+ autoISBNChecked.clear();await autoEnrichISBNReviews({force:true});
+};
+$('savedReviewResults').addEventListener('click',e=>{
+ const edit=e.target.closest('[data-edit-book]');if(edit)return openBookEditor(edit.dataset.editBook);
+ const find=e.target.closest('[data-find-saved-isbn]');if(find)return void findSavedISBNDetails(find.dataset.findSavedIsbn);
+ const apply=e.target.closest('[data-apply-saved-isbn]');if(apply)return void applySavedISBNDetails(apply.dataset.applySavedIsbn);
+});
 $("batchSaveIncomplete").onclick=()=>saveBatch(true);
 $("batchSelectReady").onclick=batchSelectReady;
 $("batchSelectAll").onclick=batchSelectAll;
@@ -2662,6 +2883,10 @@ async function batchLookupInCard(index){
  const button=$("batchResults").querySelector(`[data-batch-lookup="${index}"]`);
  if(button){button.disabled=true;button.textContent='Finding details…'}
  await batchLookUp(x);
+ if(!hasBookTitle(x.title)&&validIsbn(x.barcode)&&$('batchUseAI')?.checked){
+  const suggestion=await lookupAIIsbnSuggestion(x.barcode).catch(()=>null);
+  if(suggestion?.title){for(const k of ['title','authors','publisher','publication_year','language','pages','subject'])if(!x[k]&&suggestion[k])x[k]=suggestion[k];x.lookup_status='AI suggestion — verify before saving';x.aiNotice='Check AI-proposed details against the physical copy.'}
+ }
  x.duplicate=batchDuplicate(x.barcode,x);
  x.error=!hasBookTitle(x.title)?'Title still missing. Choose a suggested title or type it here.':'';
  if(batchValid(x))x.selected=true;x.reviewUpdatedAt=Date.now();
@@ -2698,6 +2923,8 @@ $("batchResults").addEventListener('click',e=>{
 });
 $('batchReadyResults').addEventListener('click',e=>{const btn=e.target.closest('[data-save-ready]');if(!btn)return;const row=batchItems[Number(btn.dataset.saveReady)];if(!row||!batchValid(row))return;row.selected=true;void saveBatch(false,{auto:true,ids:new Set([row.saveRecordId])})});
 $('batchReadyResults').addEventListener('change',e=>{const field=e.target.closest('[data-ready-select]');if(!field||batchActive||batchSaving)return;const row=batchItems[Number(field.dataset.readySelect)];if(!row||!batchValid(row))return;row.selected=field.checked;batchSummary()});
+$('scanReviewSearch').addEventListener('input',()=>{reviewPage=1;renderBatch()});
+$('scanReviewSearchClear').onclick=()=>{$('scanReviewSearch').value='';reviewPage=1;renderBatch();$('scanReviewSearch').focus()};
 $("batchResults").addEventListener('keydown',e=>{
  if(e.key==='Enter'&&e.target.matches('[data-batch-field="barcode"]')){e.preventDefault();batchLookupInCard(Number(e.target.dataset.batchIndex))}
 });
@@ -2724,7 +2951,7 @@ $("batchResults").addEventListener('change',async e=>{
  if(name==='barcode'){
   x.error='';x.lookup_status='Manual';
   // Preserve manually corrected metadata when a barcode is amended.
-  if(x.barcode&&!x.title)await batchLookUp(x);
+  if(validIsbn(x.barcode)&&!hasBookTitle(x.title)){await batchLookUp(x);if(!hasBookTitle(x.title)&&$('batchUseAI')?.checked){const suggestion=await lookupAIIsbnSuggestion(x.barcode).catch(()=>null);if(suggestion?.title){for(const k of ['title','authors','publisher','publication_year','language','pages','subject'])if(!x[k]&&suggestion[k])x[k]=suggestion[k];x.lookup_status='AI suggestion — verify before saving';x.aiNotice='AI-generated details are not independently verified.'}}}
  }
  x.duplicate=batchDuplicate(x.barcode,x);
  x.error=!hasBookTitle(x.title)?'Title missing — choose a suggestion or type it.':'';
@@ -2955,7 +3182,9 @@ $("forgotPassword").onclick=forgotPassword;$("resendConfirmation").onclick=resen
 $("signOut").onclick=signOut;$("roleGateSignOut").onclick=signOut;$("reload").onclick=reloadAll;$("reloadLoans").onclick=reloadAll;
 $("bookTable").addEventListener("focusout",async e=>{let c=e.target.closest('[contenteditable][data-field="shelf_location"]');if(!c||!session?.user)return;let val=c.innerText.trim();let upd={shelf_location:val||null,updated_at:new Date().toISOString()};let {data,error}=await sb.from(BOOKS).update(upd).eq("record_id",c.dataset.book).select("*").single();if(error)msg(error.message,"err");else{let b=books.find(x=>x.record_id===c.dataset.book);if(b)books=books.map(x=>x.record_id===b.record_id?{...x,[c.dataset.field]:val}:x);msg("Book updated in Supabase.","ok")}});
 setInterval(()=>{if(session?.user&&!document.hidden)renderNotifications()},60_000);
-document.addEventListener("visibilitychange",()=>{if(document.hidden&&session?.user){if(reviewSaveTimer)clearTimeout(reviewSaveTimer);reviewSaveTimer=null;persistReviewDraft(session.user.id,reviewDraftVersion)}else if(session?.user)reloadAll({background:true})});$("exportBooks").onclick=()=>exportRows(inventoryGroups().map(g=>{const b=g.representative;return {Barcode:inventoryGroupBarcode(g),Title:b.title,Authors:b.authors,Publisher:b.publisher,Year:b.publication_year,Available_Copies:g.availableCopies,Total_Copies:g.totalCopies,On_Loan:g.borrowedCopies,Shelves:g.shelves.join("; "),Book_IDs:g.copies.map(c=>c.book_id||"").join("; "),Details_Complete:inventoryGroupQuality(g).full?"Yes":"No"}}),"Library_Books");
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&session?.user){if(reviewSaveTimer)clearTimeout(reviewSaveTimer);reviewSaveTimer=null;persistReviewDraft(session.user.id,reviewDraftVersion)}else if(session?.user)reloadAll({background:true,force:!!document.querySelector('#shelfScan.panel.active')})});
+window.addEventListener('focus',()=>{if(session?.user&&document.querySelector('#shelfScan.panel.active'))void reloadAll({background:true,force:true})});
+setInterval(()=>{if(session?.user&&!document.hidden&&document.querySelector('#shelfScan.panel.active')&&!batchActive&&!batchSaving)void reloadAll({background:true,force:true})},30000);$("exportBooks").onclick=()=>exportRows(inventoryGroups().map(g=>{const b=g.representative;return {Barcode:inventoryGroupBarcode(g),Title:b.title,Authors:b.authors,Publisher:b.publisher,Year:b.publication_year,Available_Copies:g.availableCopies,Total_Copies:g.totalCopies,On_Loan:g.borrowedCopies,Shelves:g.shelves.join("; "),Book_IDs:g.copies.map(c=>c.book_id||"").join("; "),Details_Complete:inventoryGroupQuality(g).full?"Yes":"No"}}),"Library_Books");
 $("exportLoans").onclick=()=>exportRows(loans.map(l=>({Book:l.book_title,Book_ID:l.book_id,Barcode:l.barcode,Borrower:l.borrower_name,Date_Borrowed:l.date_borrowed,Due_Date:l.due_date,Return_Date:l.return_date,Status:isOverdue(l)?"Overdue":l.status})),"Loan_History");
 (async()=>{
  $("googleBooksKey").value=localStorage.getItem(GOOGLE_BOOKS_KEY)||"";

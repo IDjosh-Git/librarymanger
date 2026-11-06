@@ -30,6 +30,12 @@
     },
     "api/book-vision.js": {
       "maxDuration": 30
+    },
+    "api/book-chat.js": {
+      "maxDuration": 30
+    },
+    "api/isbn-ai.js": {
+      "maxDuration": 30
     }
   }
 }
