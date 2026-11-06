@@ -8,6 +8,22 @@ const safeSource=(item)=>{
  try{const u=new URL(uri);return ['https:','http:'].includes(u.protocol)?{url:u.href,title:clean(title,100)||u.hostname}:null}catch{return null}
 };
 function createError(message,status){return Object.assign(new Error(message),{status});}
+function explainFailure(error){
+ if(error?.name==='AbortError'||error?.name==='TimeoutError')return 'timed out';
+ const status=Number(error?.status)||0;
+ if(status===400||status===404||status===422)return 'model or request unavailable';
+ if(status===401)return 'API key rejected';
+ if(status===403)return 'access denied';
+ if(status===429)return 'free-tier quota or rate limit reached';
+ if(status===402)return 'account requires credits';
+ if(status>=500)return 'provider is temporarily unavailable';
+ return 'network or provider error';
+}
+function safeFailureDetails(failures){
+ const names={gemini:'Gemini',openrouter:'OpenRouter',groq:'Groq'};
+ return failures.map(({provider,error})=>({provider,problem:explainFailure(error),name:names[provider]||provider}));
+}
+
 function availableProviders(){
  const all=[];
  if(process.env.GEMINI_API_KEY)all.push('gemini');
@@ -16,7 +32,7 @@ function availableProviders(){
  return all;
 }
 async function generateGemini(base,search,signal){
- const url='https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(process.env.GEMINI_CHAT_MODEL||'gemini-2.5-flash-lite')+':generateContent';
+ const url='https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(process.env.GEMINI_CHAT_MODEL||process.env.GEMINI_MODEL||'gemini-3.5-flash-lite')+':generateContent';
  async function generate(withSearch){
   const response=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':process.env.GEMINI_API_KEY},body:JSON.stringify(withSearch?{...base,tools:[{google_search:{}}]}:base),signal});
   if(!response.ok)throw createError('Gemini '+response.status,response.status);
@@ -53,18 +69,18 @@ async function failover(providers,base,messages,searchRequested){
  // A secondary provider starts after 1.2 seconds rather than waiting for a Gemini timeout.
  // If the first provider fails, immediately start the next one. Cancel losing HTTP requests.
  const controllers=providers.map(()=>new AbortController());
- const started=new Map(),running=new Set();let resolved=false,next=0,failures=[];
+ const running=new Set();let resolved=false,next=0,failures=[];
  return await new Promise((resolve,reject)=>{
   const stop=()=>{resolved=true;clearInterval(hedge);controllers.forEach(c=>c.abort())};
-  const finishError=()=>{if(next===providers.length&&!running.size&&!resolved){stop();reject(createError('All configured AI providers are unavailable.',failures.length&&failures.every(x=>x.includes('429'))?429:503))}};
+  const finishError=()=>{if(next===providers.length&&!running.size&&!resolved){stop();const e=createError('All configured AI providers are unavailable.',failures.length&&failures.every(x=>x.error?.status===429)?429:503);e.providerFailures=safeFailureDetails(failures);reject(e)}};
   const launch=()=>{
    if(resolved||next>=providers.length)return;
    const index=next++,provider=providers[index],controller=controllers[index];running.add(index);
+   const deadline=setTimeout(()=>controller.abort(),16000);
    const task=(provider==='gemini'?generateGemini(base,searchRequested,controller.signal):generateCompatible(provider,messages,controller.signal));
-   started.set(provider,task);
-   task.then(result=>{running.delete(index);if(!resolved){stop();resolve({...result,searchRequested})}},error=>{
-    running.delete(index);if(resolved)return;
-    failures.push(error?.message||'Service unavailable');
+   task.then(result=>{clearTimeout(deadline);running.delete(index);if(!resolved){stop();resolve({...result,searchRequested})}},error=>{
+    clearTimeout(deadline);running.delete(index);if(resolved)return;
+    failures.push({provider,error});
     // Immediate next provider on 429, missing model or any network error.
     launch();finishError();
    });
@@ -77,7 +93,7 @@ module.exports=async function handler(req,res){
  res.setHeader('Cache-Control','no-store');res.setHeader('X-Content-Type-Options','nosniff');res.setHeader('Content-Type','application/json; charset=utf-8');
  if(req.method!=='POST'){res.setHeader('Allow','POST');return res.status(405).json({error:'Method not allowed'});}
  const providers=availableProviders();
- if(!providers.length)return res.status(503).json({error:'AI is not configured. Set OPENROUTER_API_KEY (free models), GROQ_API_KEY (free developer tier), or GEMINI_API_KEY on the server.'});
+ if(!providers.length)return res.status(503).json({error:'No AI provider is enabled in this deployment. Add OPENROUTER_API_KEY, GROQ_API_KEY or GEMINI_API_KEY in Vercel, then redeploy to Production.',code:'AI_NOT_CONFIGURED'});
  const now=Date.now();const addr=String(req.headers['x-forwarded-for']||req.socket?.remoteAddress||'unknown').split(',')[0].trim().slice(0,100);
  const calls=(rate.get(addr)||[]).filter(t=>t>now-60000);
  if(calls.length>=10){res.setHeader('Retry-After','60');return res.status(429).json({error:'Too many AI requests. Try again in a minute.'});}
@@ -97,5 +113,14 @@ module.exports=async function handler(req,res){
  const messages=[{role:'system',content:instructions},...history,{role:'user',content:question}];
  const base={systemInstruction:{parts:[{text:instructions}]},contents:[...history.map(x=>({role:x.role==='assistant'?'model':'user',parts:[{text:x.content}]})),{role:'user',parts:[{text:question}]}],generationConfig:{temperature:0.55,maxOutputTokens:1100}};
  try{const result=await failover(providers,base,messages,searchRequested);return res.status(200).json(result)}
- catch(e){const status=e?.status===429?429:503;return res.status(status).json({error:status===429?'The configured AI services are rate-limited. Try again after the quota resets.':'No configured AI provider could answer. Check your provider keys and free-tier quotas in Vercel.'})}
+ catch(e){
+  const failures=Array.isArray(e?.providerFailures)?e.providerFailures:[];
+  const status=e?.status===429?429:503;
+  const label=failures.map(x=>x.name+': '+x.problem).join('; ');
+  return res.status(status).json({
+   error:label?'AI services could not respond. '+label+'.':'AI services are temporarily unavailable. Please retry.',
+   code:status===429?'AI_QUOTA_LIMIT':'AI_PROVIDER_FAILURE',
+   providers:failures.map(({provider,problem})=>({provider,problem}))
+  });
+ }
 };

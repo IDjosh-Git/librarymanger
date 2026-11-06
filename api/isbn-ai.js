@@ -32,7 +32,7 @@ module.exports=async function handler(req,res){
     const fallback=await compatibleJSON(provider,instructions+'\n'+prompt,{signal,maxTokens:650});
     return {...fallback,grounding:null,searchUnavailable:true};
    }
-   const model=process.env.GEMINI_CHAT_MODEL||'gemini-2.5-flash-lite';
+   const model=process.env.GEMINI_CHAT_MODEL||process.env.GEMINI_MODEL||'gemini-3.5-flash-lite';
    const request={systemInstruction:{parts:[{text:instructions}]},contents:[{parts:[{text:prompt}]}],tools:[{google_search:{}}],generationConfig:{temperature:0,maxOutputTokens:650}};
    const endpoint='https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent';
    async function send(body){return fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':process.env.GEMINI_API_KEY},body:JSON.stringify(body),signal})}

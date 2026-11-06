@@ -116,10 +116,7 @@
 #shelfScan,#review{min-width:0;overflow:visible}
 #shelfScan *,#review *{box-sizing:border-box}
 #shelfScan :is(.shelf-page-hero,.batch-box,.scan-review-inbox),
-#review :is(.review-workspace-hero,#scanAdvancedTools){background:var(--surface)!important;border:1px solid var(--line)!important;box-shadow:none!important}
-#shelfScan .shelf-page-hero{padding:clamp(18px,3vw,28px)!important;border-radius:19px!important;min-height:unset!important}
-#shelfScan .shelf-page-image{display:none!important}
-#shelfScan .shelf-page-copy{max-width:100%!important}
+#review #scanAdvancedTools{background:var(--surface)!important;border:1px solid var(--line)!important;box-shadow:none!important}
 #shelfScan .shelf-page-hero-actions{gap:9px;align-items:center;flex-wrap:wrap}
 #shelfScan .shelf-process-stats{background:transparent!important;box-shadow:none!important}
 #shelfScan .batch-box{border-radius:20px!important;overflow:hidden}
@@ -144,7 +141,6 @@
 #shelfScan .scan-stage-detail{overflow-wrap:anywhere}
 #review{display:none}
 #review.active{display:block}
-#review .review-workspace-hero{border-radius:19px!important;background-image:none!important;align-items:flex-start}
 #review .review-editor-section,#review .review-tools-section{background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;margin-top:20px!important}
 #review .review-stats{margin:14px 0 0!important}
 #review .review-stats span{background:var(--surface)!important;border-radius:13px!important;box-shadow:none!important;min-height:67px}
@@ -314,6 +310,3 @@
 #review .review-card-footer button{min-height:46px;min-width:140px}
 @media(max-width:650px){#review .review-card-footer{display:grid;grid-template-columns:1fr}#review .review-card-footer button{width:100%}}
 /* Remove old decorative overlay layers from the Scan hero, not merely the base fill. */
-#shelfScan .shelf-page-hero::before,#shelfScan .shelf-page-hero::after{content:none!important;display:none!important;background:none!important}
-#shelfScan .shelf-page-hero{background-image:none!important}
-#review .review-workspace-hero::before,#review .review-workspace-hero::after{content:none!important;display:none!important;background:none!important}

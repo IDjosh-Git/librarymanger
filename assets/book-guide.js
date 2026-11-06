@@ -141,8 +141,9 @@ async function ask(question){
   const names={gemini:'Gemini',openrouter:'OpenRouter free',groq:'Groq'};
   $('bookGuideProvider').textContent='Answered with '+(names[json.mode]||'Library AI')+(json.searchUnavailable&&searchRequested?' · Live search unavailable':'');
  }catch(error){
-  const fallback=current?localAnswer(question):'No AI provider could answer right now. Ask the administrator to check the configured free AI providers.';
-  setMessageText(pending,fallback+'\n\n'+(error?.message||'The request may have timed out.'));
+  const detail=String(error?.message||'This request could not be completed. Please retry.');
+  const offline=current?localAnswer(question)+'\n\nAI lookup unavailable: ':'AI lookup unavailable: ';
+  setMessageText(pending,offline+detail);
  }finally{
   history.push({role:'user',text:question},{role:'assistant',text:pending.dataset.messageText||''});
   history=history.slice(-10);busy=false;$('bookGuideSend').disabled=false;

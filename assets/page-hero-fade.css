@@ -1,0 +1,89 @@
+/* v5.15: A single photographic, edge-to-edge hero surface per page.
+   No superimposed image panels or duplicate overlays. Keep existing brand palette. */
+#shelfScan .shelf-page-hero,
+#review .review-workspace-hero,
+#scanned .scanned-hero,
+#lend .circulation-hero,
+#return .circulation-hero,
+#history .circulation-hero,
+#notifications .notification-hero,
+#contactSettings .public-settings-hero,
+#adminDirectory .admin-directory-hero {
+  --hero-photograph:url('./library-shelves-fallback.jpg');
+  box-sizing:border-box;
+  position:relative!important;
+  isolation:isolate;
+  overflow:hidden!important;
+  min-width:0!important;
+  min-height:240px!important;
+  border:1px solid rgba(130,148,196,.24)!important;
+  border-radius:23px!important;
+  color:#fff!important;
+  background-color:#101c3e!important;
+  background-image:linear-gradient(93deg,#101c3e 0%,rgba(16,28,62,.98) 24%,rgba(18,32,69,.88) 43%,rgba(17,38,70,.47) 70%,rgba(16,35,64,.09) 100%),var(--hero-photograph)!important;
+  background-repeat:no-repeat!important;
+  background-size:cover!important;
+  background-position:center center!important;
+  box-shadow:0 11px 29px rgba(21,35,74,.10)!important;
+}
+#shelfScan .shelf-page-hero,
+#review .review-workspace-hero,
+#scanned .scanned-hero,
+#adminDirectory .admin-directory-hero {display:flex!important;flex-direction:column!important;justify-content:center!important;align-items:flex-start!important;gap:12px!important;padding:clamp(24px,3vw,34px)!important;}
+#shelfScan .shelf-page-hero {--hero-photograph:url('./library-shelves-fallback.jpg');min-height:300px!important;}
+#review .review-workspace-hero {--hero-photograph:url('./library-reading-fallback.jpg');}
+#scanned .scanned-hero {--hero-photograph:url('./library-shelves-fallback.jpg');}
+#lend .circulation-hero,#history .circulation-hero,#contactSettings .public-settings-hero {--hero-photograph:url('./library-reading-fallback.jpg');}
+#return .circulation-hero,#notifications .notification-hero,#adminDirectory .admin-directory-hero {--hero-photograph:url('./library-shelves-fallback.jpg');}
+/* Image is rendered once as part of the hero background, not as a second card. */
+#shelfScan .shelf-page-image,
+#scanned .scanned-hero > .section-hero-art,
+#lend .circulation-hero > .section-hero-art,
+#return .circulation-hero > .section-hero-art,
+#history .circulation-hero > .section-hero-art,
+#notifications .notification-hero > .section-hero-art,
+#contactSettings .public-settings-hero > .section-hero-art {display:none!important;}
+#shelfScan .shelf-page-hero::before,#shelfScan .shelf-page-hero::after,
+#review .review-workspace-hero::before,#review .review-workspace-hero::after,
+#scanned .scanned-hero::before,#scanned .scanned-hero::after,
+#lend .circulation-hero::before,#lend .circulation-hero::after,
+#return .circulation-hero::before,#return .circulation-hero::after,
+#history .circulation-hero::before,#history .circulation-hero::after,
+#notifications .notification-hero::before,#notifications .notification-hero::after,
+#contactSettings .public-settings-hero::before,#contactSettings .public-settings-hero::after,
+#adminDirectory .admin-directory-hero::before,#adminDirectory .admin-directory-hero::after {content:none!important;display:none!important;}
+#shelfScan .shelf-page-copy {z-index:1!important;max-width:760px!important;width:min(100%,760px)!important;padding:0!important;background:transparent!important;border:0!important;box-shadow:none!important;}
+#review .review-workspace-hero > div:first-child,
+#scanned .scanned-hero > div:first-child,
+#adminDirectory .admin-directory-hero-copy,
+#notifications .notification-hero-copy,
+#contactSettings .section-hero-copy,
+#lend .circulation-hero-copy,#return .circulation-hero-copy,#history .circulation-hero-copy {
+  position:relative;z-index:1;min-width:0;max-width:680px!important;background:transparent!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;
+}
+#review .review-workspace-hero > div:first-child {max-width:580px!important;}
+#review .review-hero-actions {position:relative;z-index:1;margin-top:3px!important;}
+:is(#shelfScan .shelf-page-hero,#review .review-workspace-hero,#scanned .scanned-hero,#lend .circulation-hero,#return .circulation-hero,#history .circulation-hero,#notifications .notification-hero,#contactSettings .public-settings-hero,#adminDirectory .admin-directory-hero) :is(h2,p,.eyebrow,.shelf-kicker,.shelf-speed-tag,.notification-hero-counter span,.notification-hero-counter small) {
+  color:#f5f8ff!important;text-shadow:none!important;
+}
+:is(#shelfScan .shelf-page-hero,#review .review-workspace-hero,#scanned .scanned-hero,#lend .circulation-hero,#return .circulation-hero,#history .circulation-hero,#notifications .notification-hero,#contactSettings .public-settings-hero,#adminDirectory .admin-directory-hero) :is(.eyebrow,.shelf-kicker) {color:#c9ddff!important;}
+#shelfScan .shelf-page-hero h2,#review .review-workspace-hero h2 {line-height:1.15!important;letter-spacing:-.035em!important;margin:7px 0 9px!important;}
+#shelfScan .shelf-page-hero p,#review .review-workspace-hero p {max-width:59ch!important;line-height:1.65!important;margin:0 0 7px!important;}
+#shelfScan .shelf-page-hero-actions {margin-top:8px!important;max-width:690px!important;}
+#shelfScan .shelf-page-hero-actions button,#review .review-hero-actions button {border-radius:12px!important;min-height:43px!important;}
+#shelfScan .shelf-page-hero-actions :is(.light,.shelf-return),#review .review-hero-actions .light {background:rgba(255,255,255,.12)!important;color:#fff!important;border:1px solid rgba(255,255,255,.43)!important;box-shadow:none!important;}
+#shelfScan .shelf-page-hero-actions :is(.light,.shelf-return):hover,#review .review-hero-actions .light:hover {background:rgba(255,255,255,.23)!important;}
+#contactSettings .public-settings-hero a {color:#fff!important;text-decoration:underline;text-underline-offset:3px;}
+#notifications .notification-hero-counter,#adminDirectory .admin-directory-hero-number {position:relative;z-index:1;}
+@media(max-width:750px){
+ #shelfScan .shelf-page-hero,#review .review-workspace-hero,#scanned .scanned-hero,#lend .circulation-hero,#return .circulation-hero,#history .circulation-hero,#notifications .notification-hero,#contactSettings .public-settings-hero,#adminDirectory .admin-directory-hero {
+   min-height:230px!important;border-radius:19px!important;
+   background-image:linear-gradient(94deg,rgba(16,28,62,.97) 0%,rgba(17,31,66,.92) 42%,rgba(16,32,65,.56) 100%),var(--hero-photograph)!important;
+   background-position:64% center!important;
+ }
+ #shelfScan .shelf-page-hero,#review .review-workspace-hero,#scanned .scanned-hero,#adminDirectory .admin-directory-hero{padding:23px 19px!important;}
+ #shelfScan .shelf-page-hero {min-height:300px!important;}
+ #shelfScan .shelf-page-hero-actions .shelf-speed-tag {display:block;width:100%;}
+ #review .review-hero-actions {display:flex!important;flex-wrap:wrap!important;gap:8px!important;}
+ #review .review-hero-actions button {flex:1 1 155px;width:auto!important;}
+}
