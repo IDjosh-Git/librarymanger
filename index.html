@@ -12,6 +12,7 @@
 <title>Library Manager | Modern Library Workspace</title>
 <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="assets/scan-extraction.js"></script>
+<script src="assets/ocr-quality.js?v=5.23.0"></script>
 <script src="assets/scan-upload-dedup.js?v=5.20.0"></script>
 <script src="assets/isbn-crop.js"></script>
 <script src="assets/review-excel.js"></script>
@@ -36,12 +37,13 @@
 <script>try{document.documentElement.dataset.theme=localStorage.getItem("library_manager_theme_v2")==="dark"?"dark":"light"}catch{document.documentElement.dataset.theme="light"}</script>
 <link rel="stylesheet" href="assets/library-ui.css">
 <link rel="stylesheet" href="assets/book-guide.css">
-<link rel="stylesheet" href="assets/scan-review-workspace.css?v=5.16.0">
+<link rel="stylesheet" href="assets/scan-review-workspace.css?v=5.24.0">
 <link rel="stylesheet" href="assets/page-hero-fade.css?v=5.16.0">
 <link rel="stylesheet" href="assets/compact-card-insights.css?v=5.17.0">
 <link rel="stylesheet" href="assets/premium-progress-upload.css?v=5.18.0">
 <link rel="stylesheet" href="assets/weekly-admin.css?v=5.19.0">
 <link rel="stylesheet" href="assets/premium-navigation-filters.css?v=5.21.0">
+<link rel="stylesheet" href="assets/mobile-navigation-ai-orb.css?v=5.22.0">
 <script defer src="assets/compact-card-insights.js?v=5.17.0"></script>
 <script defer src="assets/premium-progress-upload.js?v=5.18.0"></script>
 <script defer src="assets/book-guide-format.js"></script>
@@ -415,7 +417,7 @@
 
   </div>
   <div class="scan-action-label"><strong>Save and manage</strong><span id="scanSelectionHint" aria-live="polite">Select identified books to save or retry. Matching ISBNs may be separate physical copies. Repeated photo uploads are discarded across devices.</span></div><div class="batch-actions batch-actions-secondary"><button id="batchSave" type="button" class="green" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg> Save selected books</button><button id="batchStop" type="button" class="light" disabled>Stop scan</button><details class="scan-more-actions"><summary>More actions</summary><div><button id="batchSelectDuplicates" type="button" class="light" disabled>Select other ISBN copies <span id="batchDuplicateCount" class="batch-count">0</span></button><button id="batchSelectReady" type="button" class="light" disabled>Mark verified titles</button><button id="batchDeselectAll" type="button" class="light" disabled>Clear marked books</button><button id="batchRemoveSelected" type="button" class="light" disabled>Remove marked scans</button><button id="batchClear" type="button" class="light" disabled>Clear upload</button></div></details></div>
-  <p class="batch-info">Recognized books can be saved here. Unfinished books can be sent to <strong>Review books</strong>. Matching ISBNs may be different physical copies. The same photo is accepted only once, even if uploaded again from another folder, ZIP or device.</p><input id="batchRetakeFile" type="file" accept="image/*" hidden>
+  <p class="batch-info">Recognized books can be saved here. Unfinished books can be sent to <strong>Review books</strong>. Matching ISBNs may be different physical copies. The same photo is accepted only once, even if uploaded again from another folder, ZIP or device.</p><input id="batchRetakeFile" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,image/avif,.jpg,.jpeg,.png,.webp,.heic,.heif,.avif" hidden>
   <div id="batchReadyResults" class="scan-ready-results" aria-live="polite"></div>
   <section class="scan-review-inbox" aria-labelledby="scanReviewInboxTitle">
    <div class="scan-review-inbox-head"><div><span class="eyebrow">UNIDENTIFIED SCANS</span><h3 id="scanReviewInboxTitle">Books needing attention <span id="scanNeedsTitleCount">0</span></h3><p>Keep this screen for scanning. Send a book to the Review workspace to correct its details later.</p></div><button id="scanOpenReview" type="button" class="light">Open Review →</button></div>
@@ -1846,8 +1848,39 @@ function exportRows(rows,name){if(!rows.length)return msg("Nothing to export.","
 const BATCH_MAX_FILES=12000,BATCH_MAX_IMAGE=60*1024*1024,BATCH_MAX_ZIP=2*1024*1024*1024,BATCH_MAX_TOTAL=4*1024*1024*1024;
 const reviewExcel=globalThis.LibraryReviewExcel;
 const batchImageUrls=new Map();
-function batchPreview(x){if(!x?.file)return x?.thumbnailData||'';if(!batchImageUrls.has(x.file))batchImageUrls.set(x.file,URL.createObjectURL(x.file));return batchImageUrls.get(x.file)}
+// Stable, browser-decodable thumbnails take priority over temporary blob: URLs.
+// This also makes photo previews survive Review cloud restores and page changes.
+function isSavedPhotoPreview(value){return /^data:image\/(?:jpeg|png|webp);base64,[a-z0-9+/=]{80,}$/i.test(String(value||''))}
+function batchPreview(x){
+ if(isSavedPhotoPreview(x?.thumbnailData))return x.thumbnailData;
+ if(!x?.file)return '';
+ if(!batchImageUrls.has(x.file))batchImageUrls.set(x.file,URL.createObjectURL(x.file));
+ return batchImageUrls.get(x.file);
+}
+// ISBN cropping must use the ORIGINAL high-resolution image, never the small card preview.
+function batchOriginalPreview(x){
+ if(!x?.file)return batchPreview(x);
+ if(!batchImageUrls.has(x.file))batchImageUrls.set(x.file,URL.createObjectURL(x.file));
+ return batchImageUrls.get(x.file);
+}
 function releaseBatchPreviews(){for(const url of batchImageUrls.values())URL.revokeObjectURL(url);batchImageUrls.clear()}
+// A missing or unsupported preview must never render as the browser's broken-image icon.
+function batchPhotoMarkup(x,cssClass='batch-book-photo',alt='Book cover'){
+ const source=batchPreview(x),compact=cssClass==='scan-stage-photo';
+ const label=source?'Photo could not be displayed. Replace the photo.':'Photo unavailable. Add a JPEG or PNG cover.';
+ const placeholder=compact?'▤':label;
+ return source?`<img class="${cssClass}" data-review-photo-preview loading="lazy" decoding="async" alt="${batchAttr(alt)}" src="${batchAttr(source)}">`:`<div class="${cssClass} batch-photo-placeholder" role="img" aria-label="${batchAttr(label)}">${esc(placeholder)}</div>`;
+}
+document.addEventListener('error',event=>{
+ const image=event.target;
+ if(!(image instanceof HTMLImageElement)||!image.matches('[data-review-photo-preview]'))return;
+ const placeholder=document.createElement('div');
+ placeholder.className=image.className+' batch-photo-placeholder';
+ placeholder.setAttribute('role','img');
+ placeholder.setAttribute('aria-label','Image preview unavailable');
+ placeholder.textContent=image.classList.contains('scan-stage-photo')?'▤':'Cannot display this photo. Use Replace photo (JPEG or PNG).';
+ image.replaceWith(placeholder);
+},true);
 let reviewPage=1,batchAttentionOnly=false,batchItems=[],batchQueue=[],batchActive=false,batchSaving=false,batchStopRequested=false,batchCounter=0,batchZipLoading=false,batchExcelLoading=false;
 const batchMetadataCache=new Map();
 // A durable server-backed queue, with browser IndexedDB as offline fallback.
@@ -1892,19 +1925,38 @@ function updateCloudScanStatus(){
 function reviewAttention(row){return !hasBookTitle(row?.title)}
 function validReviewKey(key){return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(key||''))}
 async function reviewThumbnail(file){
- if(!file||!/^image\//i.test(file.type||''))return '';
+ if(!file||!file.size)return '';
+ let bitmap=null,photo=null,url='';
  try{
-  const url=URL.createObjectURL(file);
-  try{
-   const picture=new Image();picture.decoding='async';picture.src=url;await picture.decode();
-   const maxEdge=720,ratio=Math.min(1,maxEdge/Math.max(picture.naturalWidth,picture.naturalHeight)),canvas=document.createElement('canvas');
-   canvas.width=Math.max(1,Math.round(picture.naturalWidth*ratio));canvas.height=Math.max(1,Math.round(picture.naturalHeight*ratio));
-   canvas.getContext('2d',{alpha:false}).drawImage(picture,0,0,canvas.width,canvas.height);
-   let data=canvas.toDataURL('image/jpeg',.56);
-   if(data.length>125000){canvas.width=Math.max(1,Math.round(canvas.width*.65));canvas.height=Math.max(1,Math.round(canvas.height*.65));canvas.getContext('2d',{alpha:false}).drawImage(picture,0,0,canvas.width,canvas.height);data=canvas.toDataURL('image/jpeg',.50)}
-   return data.length<=125000?data:'';
-  }finally{URL.revokeObjectURL(url)}
- }catch{return ''}
+  // Prefer a decoded bitmap; fall back to Image for older mobile browsers.
+  if(typeof createImageBitmap==='function'){
+   try{bitmap=await createImageBitmap(file)}catch{}
+  }
+  if(!bitmap){
+   url=URL.createObjectURL(file);
+   photo=new Image();photo.decoding='async';photo.src=url;
+   await photo.decode();
+  }
+  const image=bitmap||photo,width=image.naturalWidth||image.width,height=image.naturalHeight||image.height;
+  if(!width||!height||width*height>120000000)return '';
+  const canvas=document.createElement('canvas'),ctx=canvas.getContext('2d',{alpha:false});
+  if(!ctx)return '';
+  // Keep a small, durable cover image in cloud Review. Larger photos remain local for OCR.
+  const target=Math.min(1,820/Math.max(width,height));
+  let factor=target,last='';
+  for(let i=0;i<8;i++){
+   canvas.width=Math.max(1,Math.round(width*factor));canvas.height=Math.max(1,Math.round(height*factor));
+   ctx.fillStyle='#ffffff';ctx.fillRect(0,0,canvas.width,canvas.height);
+   ctx.drawImage(image,0,0,canvas.width,canvas.height);
+   const quality=Math.max(.38,.73-i*.045);
+   last=canvas.toDataURL('image/jpeg',quality);
+   if(isSavedPhotoPreview(last)&&last.length<=120000)return last;
+   factor*=.8;
+  }
+  // A valid smaller thumbnail is better than a broken full-resolution preview.
+  return isSavedPhotoPreview(last)&&last.length<=170000?last:'';
+ }catch(error){console.info('Cover preview not supported by this browser:',error?.message||error);return ''}
+ finally{bitmap?.close?.();if(url)URL.revokeObjectURL(url)}
 }
 async function fetchCloudReview(owner){
  const all=[];
@@ -2215,7 +2267,7 @@ function renderBatch(){
  const corrected=$('reviewSaveCorrected');if(corrected)corrected.disabled=locked||!reviewItems.some(({x})=>batchValid(x));
  const bulkFill=$('reviewAutoFillAll');if(bulkFill)bulkFill.disabled=locked||(!reviewItems.some(({x})=>!hasBookTitle(x.title)&&(validIsbn(x.barcode)||x.file||x.thumbnailData))&&!books.some(b=>bookQuality(b).attention&&validIsbn(b.barcode)));
  const scanInbox=$('scanReviewCandidates');
- if(scanInbox){scanInbox.innerHTML=scanUnstaged.length?`<div class="scan-stage-actions"><span>${scanUnstaged.length} scan${scanUnstaged.length===1?'':'s'} waiting to be sent for correction</span><button type="button" class="light" data-stage-all-review>Save all to Review</button></div><div class="scan-stage-list">${scanUnstaged.slice(0,80).map(({x,i})=>`<article class="scan-stage-item"><div class="scan-stage-cover">${x.thumbnailData?`<img loading="lazy" alt="Scanned cover" src="${batchAttr(batchPreview(x))}">`:'▤'}</div><div class="scan-stage-detail"><strong>${esc(x.fileName||'Unnamed book cover')}</strong><small>${esc(x.barcode||'ISBN not found')} · Title needs attention</small></div><button type="button" data-stage-review="${i}" class="scan-stage-button">Save to Review</button></article>`).join('')}</div>${scanUnstaged.length>80?`<p>Showing first 80 scans. Save all to Review to manage the entire queue.</p>`:''}`:'<div class="scan-stage-empty"><span aria-hidden="true">✓</span><span>No unfinished scans on this screen. Check <strong>Review books</strong> for books already sent for correction.</span></div>';}
+ if(scanInbox){scanInbox.innerHTML=scanUnstaged.length?`<div class="scan-stage-actions"><span>${scanUnstaged.length} scan${scanUnstaged.length===1?'':'s'} waiting to be sent for correction</span><button type="button" class="light" data-stage-all-review>Save all to Review</button></div><div class="scan-stage-list">${scanUnstaged.slice(0,80).map(({x,i})=>`<article class="scan-stage-item"><div class="scan-stage-cover">${(x.file||x.thumbnailData)?batchPhotoMarkup(x,'scan-stage-photo','Scanned book cover'):'▤'}</div><div class="scan-stage-detail"><strong>${esc(x.fileName||'Unnamed book cover')}</strong><small>${esc(x.barcode||'ISBN not found')} · Title needs attention</small></div><button type="button" data-stage-review="${i}" class="scan-stage-button">Save to Review</button></article>`).join('')}</div>${scanUnstaged.length>80?`<p>Showing first 80 scans. Save all to Review to manage the entire queue.</p>`:''}`:'<div class="scan-stage-empty"><span aria-hidden="true">✓</span><span>No unfinished scans on this screen. Check <strong>Review books</strong> for books already sent for correction.</span></div>';}
  const readyContainer=$('batchReadyResults');
  if(readyContainer){
   readyContainer.innerHTML=identified.length?`<section class="scan-ready-section"><div class="scan-ready-heading"><div><span class="eyebrow">IDENTIFIED · READY FOR YOUR LIBRARY</span><h3>${identified.length} book${identified.length===1?'':'s'} ready to save</h3><p>Titles were recognized. These books can be saved without entering optional details.</p></div><span class="scan-ready-badge">${identified.length} recognized</span></div><div class="scan-ready-list">${identified.slice(0,150).map(({x,i})=>`<div class="scan-ready-item"><span class="scan-ready-symbol" aria-hidden="true">✓</span><div><strong>${esc(x.title)}</strong><small>${esc(x.authors||'Author optional')} · ${esc(x.shelf||'Shelf optional')}${x.duplicate?' · Additional copy':''}</small>${x.saveError?`<em role="alert">${esc(x.saveError)}</em>`:''}</div><label class="scan-ready-checkbox"><input type="checkbox" data-ready-select="${i}" ${x.selected?'checked':''} ${locked?'disabled':''}><span>Select</span></label><button type="button" class="scan-inline-save" data-save-ready="${i}" ${locked?'disabled':''}>${x.saveError?'Retry save':'Save book'}</button></div>`).join('')}</div></section>`:'<div class="scan-all-identified" role="status"><span aria-hidden="true">✓</span> Turn off automatic saving above to choose which recognized books to save. Only missing titles require review in the Review workspace.</div>';
@@ -2227,7 +2279,7 @@ function renderBatch(){
  unidentified.slice((reviewPage-1)*perPage,reviewPage*perPage).forEach(({x,i},position)=>{
   const field=(name,label,max)=>`<label class="batch-book-field"><span>${label}</span><input aria-label="${label} for ${batchAttr(x.fileName)}" data-batch-field="${name}" data-batch-index="${i}" maxlength="${max}" value="${batchAttr(x[name])}" ${locked||x.reviewBusy?'disabled':''}></label>`;
   h+=`<article role="listitem" class="batch-book scan-title-review-card" aria-label="Book cover ${i+1}: ${batchAttr(x.fileName)}"><div class="batch-book-head"><span class="scan-title-review-number">${(reviewPage-1)*perPage+position+1}</span><div class="batch-book-source"><strong>${esc(x.fileName||'Uploaded image')}</strong><span class="batch-path">${esc(x.path||'Book cover')}</span></div><span class="batch-book-state ${hasBookTitle(x.title)?'ready':'incomplete'}">${hasBookTitle(x.title)?'Ready to save':'Title needed'}</span></div>
-   <div class="batch-book-content">${(x.file||x.thumbnailData)?`<img class="batch-book-photo" loading="lazy" alt="Cover photo from ${batchAttr(x.fileName)}" src="${batchAttr(batchPreview(x))}">`:'<div class="batch-book-photo batch-photo-placeholder">No image preview</div>'}
+   <div class="batch-book-content">${batchPhotoMarkup(x,'batch-book-photo','Cover photo from '+(x.fileName||'book'))}
    <div class="batch-book-fields"><div class="review-smart-actions" role="group" aria-label="Fill details for ${batchAttr(x.fileName||'this book')}"><button class="review-smart-primary" type="button" data-review-smart="${i}" ${locked||x.reviewBusy?'disabled':''}>✦ Auto-fill details</button><button type="button" class="light" data-batch-ocr="${i}" ${locked||x.reviewBusy?'disabled':''}>▤ Read OCR</button><button type="button" class="light" data-batch-ai="${i}" ${locked||x.reviewBusy?'disabled':''}>✧ Read AI</button><button type="button" class="light" data-batch-retake="${i}" ${locked||x.reviewBusy?'disabled':''}>${(x.file||x.thumbnailData)?'Replace photo':'Add cover photo'}</button></div><div class="review-card-lookup-status" role="status">${esc(x.lookup_status||x.aiNotice||(x.file||x.thumbnailData?'Use Auto-fill to find missing details from your cover.':'Attach a cover photo for OCR, or enter an ISBN.'))}</div><div class="scan-title-primary">${field('title','Book title (required)',350)}</div><div class="scan-title-support">${field('authors','Author (optional)',350)}${field('barcode','ISBN (optional)',80)}<button type="button" class="scan-quick-isbn" data-batch-lookup="${i}" ${locked?'disabled':''}>✦ Fill from ISBN</button></div><details class="scan-card-more"><summary>More details and recognition tools</summary>${reviewShelfField(x,i,locked)}<div class="batch-extra-fields">${field('publisher','Publisher',250)}${field('publication_year','Publication year',20)}</div><div class="batch-action-row"><button type="button" class="light" data-batch-lookup="${i}" ${locked?'disabled':''}>Find details using ISBN</button><button type="button" class="light" data-batch-title="${i}" ${locked?'disabled':''}>Search title</button><button type="button" class="light" data-batch-crop="${i}" ${locked?'disabled':''}>Crop ISBN</button></div></details><div class="review-card-footer"><span class="review-card-save-note">Check details before saving.</span><button type="button" class="scan-inline-save green" data-save-title="${i}" ${locked?'disabled':''}>Save book</button></div></div></div><div class="batch-matches" id="batchMatch${i}">${batchCandidateMarkup(x,i)}</div>${x.ocrText?`<details class="ocr-text"><summary>Text found in photo</summary><pre>${esc(x.ocrText.slice(0,1600))}</pre></details>`:''}${x.error?`<p class="batch-book-hint">${esc(x.error)}</p>`:''}${x.aiNotice?`<p class="batch-book-hint">${esc(x.aiNotice)}</p>`:''}</article>`;
  });
  h+='</div>';
@@ -2339,29 +2391,58 @@ $('batchUseAI').addEventListener('change',()=>{saveScanDevicePreferences();syncR
 $('reviewUseOCR').addEventListener('change',e=>{$('batchUseOCR').checked=e.target.checked;saveScanDevicePreferences();if(e.target.checked)void warmupOCR()});
 $('reviewUseAI').addEventListener('change',e=>{$('batchUseAI').checked=e.target.checked;saveScanDevicePreferences()});
 $('batchAutoSave').addEventListener('change',saveScanDevicePreferences);
-async function preparedOCRImage(file,angle=0){
- const bitmap=await createImageBitmap(file);try{
-  const rotated=angle===90||angle===270;
-  // Resize huge camera photos once before recognition: fewer pixels mean faster local OCR.
-  const scale=Math.min(1,1280/Math.max(bitmap.width,bitmap.height));
-  const w=Math.max(1,Math.round(bitmap.width*scale)),h=Math.max(1,Math.round(bitmap.height*scale));
-  const canvas=document.createElement('canvas');canvas.width=rotated?h:w;canvas.height=rotated?w:h;
-  const ctx=canvas.getContext('2d',{alpha:false});ctx.translate(canvas.width/2,canvas.height/2);ctx.rotate(angle*Math.PI/180);
-  ctx.drawImage(bitmap,-w/2,-h/2,w,h);return canvas;
- }finally{bitmap.close?.()}
+// Fast first-pass recognition; enhanced and rotated retries run only on poor evidence.
+// The Tesseract worker is reused across images, and the UI remains responsive.
+async function preparedOCRImage(bitmap,angle=0,{enhanced=false}={}){
+ const rotated=angle===90||angle===270;
+ const quality=window.LibraryOCRQuality;
+ const side=quality?.maxSide({memory:navigator.deviceMemory||4,cores:navigator.hardwareConcurrency||2,enhanced})||(enhanced?1950:1600);
+ const scale=Math.min(1,side/Math.max(bitmap.width,bitmap.height));
+ const w=Math.max(1,Math.round(bitmap.width*scale)),h=Math.max(1,Math.round(bitmap.height*scale));
+ const canvas=document.createElement('canvas');canvas.width=rotated?h:w;canvas.height=rotated?w:h;
+ const ctx=canvas.getContext('2d',{alpha:false,willReadFrequently:false});
+ if(!ctx)throw Error('This browser cannot process the cover image.');
+ ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+ ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
+ ctx.translate(canvas.width/2,canvas.height/2);ctx.rotate(angle*Math.PI/180);
+ // Grayscale and measured contrast help pale print, but only on a low-confidence retry.
+ if(enhanced&&'filter' in ctx)ctx.filter='grayscale(1) contrast(1.26) brightness(1.06)';
+ ctx.drawImage(bitmap,-w/2,-h/2,w,h);
+ return canvas;
 }
 async function ocrText(file){
- const tesseract=await loadOCR(),entry=tesseract.createWorker?await acquireOCRWorker():null,worker=entry?.worker,texts=[];
+ const tesseract=await loadOCR(),entry=tesseract.createWorker?await acquireOCRWorker():null,worker=entry?.worker;
+ const quality=window.LibraryOCRQuality;
+ let bitmap=null,source=file,best=null;
  try{
-  // Pass 1 at original orientation; rotate only if no usable candidate is detected.
-  for(const angle of [0,90]){
-   const image=typeof createImageBitmap==='function'?await preparedOCRImage(file,angle):file;
-   const result=await (worker?worker.recognize(image):tesseract.recognize(image,'eng'));
-   const text=String(result?.data?.text||'').trim();if(text)texts.push(text);
-   if(scanHelper.isbnFromText(text).length||(text.length>=36&&scanHelper.titleCandidates(text).length)||text.length>=110)break;
+  if(typeof createImageBitmap==='function'){
+   try{bitmap=await createImageBitmap(file);source=await preparedOCRImage(bitmap,0)}catch(_){bitmap?.close?.();bitmap=null;source=file}
   }
-  return texts.sort((a,b)=>b.length-a.length)[0]||'';
- }finally{releaseOCRWorker(entry)}
+  const read=async image=>{
+   const result=await (worker?worker.recognize(image):tesseract.recognize(image,'eng'));
+   const text=String(result?.data?.text||'').trim();
+   const evidence={hasISBN:!!scanHelper.isbnFromText(text).length,hasTitle:!!scanHelper.titleCandidates(text).length};
+   if(quality)return quality.evaluate(result,evidence);
+   return {text,score:text.length/200,readable:text.length,hasISBN:evidence.hasISBN};
+  };
+  best=await read(source);
+  // Most clear book covers finish after a single pass. Only difficult covers pay for enhancement.
+  if(bitmap&&quality?.needsEnhancement(best)){
+   const improved=await read(await preparedOCRImage(bitmap,0,{enhanced:true}));
+   best=quality.prefer(best,improved);
+  }
+  // Sideways camera images: rotate only when both normal passes lack meaningful text.
+  if(bitmap&&quality?.needsOrientation(best)){
+   const turned=await read(await preparedOCRImage(bitmap,90,{enhanced:false}));
+   best=quality.prefer(best,turned);
+   // A last rotation is reserved for very unclear images on capable devices.
+   if(quality.needsOrientation(best)&&(navigator.deviceMemory||4)>=4){
+    const reverse=await read(await preparedOCRImage(bitmap,270,{enhanced:false}));
+    best=quality.prefer(best,reverse);
+   }
+  }
+  return best?.text||'';
+ }finally{bitmap?.close?.();releaseOCRWorker(entry)}
 }
 
 const scanTitleCache=new Map();
@@ -2661,6 +2742,7 @@ async function runBatch(){
     const row={file:item.file,sourceSignature:item.sourceSignature,saveRecordId:item.saveRecordId,fileName:item.file.name,path:item.path,shelf:item.shelf||'',barcode:'',title:'',authors:'',publisher:'',publication_year:'',language:'',pages:'',subject:'',lookup_status:'Manual',error:'',duplicate:false,selected:false,saved:false,ocrText:'',matches:[],thumbnailData:'',reviewUpdatedAt:Date.now()};
     try{
      row.thumbnailData=await reviewThumbnail(item.file);
+     if(!row.thumbnailData)row.lookup_status='Preview unavailable. This file may not be supported on this device. Try a JPEG or PNG cover.';
      row.barcode=await decodeBatchBarcode(item.file);
      if(row.barcode)await batchLookUp(row);
      if((!row.title||!row.barcode)&&$('batchUseOCR').checked)await enrichScanFromImage(row);
@@ -3011,7 +3093,7 @@ $("batchClear").onclick=clearBatch;
 async function cropBatchIsbn(index){
  const row=batchItems[index],owner=session?.user?.id,generation=authGeneration;
  if(!row||row.saved||row.reviewBusy||!owner||batchActive||batchSaving||batchZipLoading||batchExcelLoading)return;
- const src=batchPreview(row);if(!src)return;
+ const src=batchOriginalPreview(row);if(!src)return;
  await LibraryIsbnCrop.open({src,previewOnly:!row.file,onScan:async file=>{
   if(session?.user?.id!==owner||authGeneration!==generation||row.saved||!batchItems.includes(row))throw Error('Review session changed');
   batchActive=true;row.reviewApproval='';renderBatch();
@@ -3036,6 +3118,9 @@ $('batchRetakeFile').onchange=async e=>{
  batchActive=true;row.reviewApproval='';row.reviewUpdatedAt=Date.now();renderBatch();
  let claimedPhoto=null;
  try{
+  if(file.size>BATCH_MAX_IMAGE)throw new Error('The photo exceeds 60 MB. Choose a smaller JPEG or PNG.');
+  const thumbnail=await reviewThumbnail(file);
+  if(!thumbnail)throw new Error('This browser cannot display this image. Use JPEG, PNG or WebP, or convert HEIC/HEIF to JPEG before uploading.');
   const signature=await scanFileSignature(file);
   if(row.sourceSignature===signature){row.lookup_status='This is already the photo attached to this review. Nothing changed.';return;}
   if(batchItems.some(other=>other!==row&&other.sourceSignature===signature)){
@@ -3045,7 +3130,7 @@ $('batchRetakeFile').onchange=async e=>{
   const claim=await scanUploadGuard.register(sb,owner,[{sourceSignature:signature,saveRecordId:row.saveRecordId}]);
   if(!claim.accepted.length){row.lookup_status='That exact photo was already uploaded. Duplicate discarded; your previous cover is unchanged.';return;}
   claimedPhoto=claim.accepted[0];
-  const code=await decodeBatchBarcode(file),thumbnail=await reviewThumbnail(file);
+  const code=await decodeBatchBarcode(file);
   if(session?.user?.id!==owner||!batchItems.includes(row))return;
   const old=batchImageUrls.get(row.file);if(old){URL.revokeObjectURL(old);batchImageUrls.delete(row.file)}
   row.file=file;row.fileName=file.name;row.thumbnailData=thumbnail;row.sourceSignature=signature;row.ocrText='';row.matches=[];
@@ -3184,6 +3269,7 @@ async function proposeSavedReviewPhoto(recordId,file){
  const original=books.find(b=>b.record_id===recordId);
  if(!original||!file||!session?.user)return;
  if(!/^image\//.test(file.type)||file.size>15*1024*1024){savedReviewNotices.set(recordId,'Choose a JPEG, PNG or WebP image under 15 MB.');renderSavedAttentionReview();return}
+ if(!await reviewThumbnail(file)){savedReviewNotices.set(recordId,'This image cannot be displayed on this device. Please use JPEG, PNG or WebP.');renderSavedAttentionReview();return}
  savedReviewNotices.set(recordId,'Reading cover photo…');renderSavedAttentionReview();
  const candidate={title:'',authors:'',publisher:'',publication_year:'',barcode:normalizeIsbn(original.barcode),matches:[],ocrText:'',aiNotice:'',lookup_status:'',file,reviewStaged:true};
  try{

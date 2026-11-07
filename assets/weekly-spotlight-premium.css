@@ -63,3 +63,13 @@ body{background:var(--bg)!important;color:var(--ink)!important}
 @media(prefers-reduced-motion:reduce){.spotlight-primary-cta,.spotlight-chat-cta{transition:none!important;transform:none!important}}
 /* Flex-basis on the original desktop footer was creating a 220px blank area on phones. */
 @media(max-width:650px){.spotlight-footer-inner{min-height:0!important;height:auto!important;gap:9px!important;padding-top:24px!important;padding-bottom:25px!important}.spotlight-footer-inner p{flex:0 1 auto!important;width:100%;margin:0!important}.spotlight-footer-inner a{margin-top:4px}}
+
+/* v5.23: clear editorial link to a full book-specific reading guide */
+.weekly-guide-link{display:flex;align-items:center;gap:14px;text-decoration:none;color:var(--guide-ink,var(--ink));background:transparent;border:1px solid var(--week-rule);padding:15px;border-radius:14px;margin-top:19px;transition:border-color .16s,transform .16s,background .16s}
+.weekly-guide-link:hover{transform:translateY(-2px);border-color:#bf9451;background:rgba(200,156,89,.075)}
+.weekly-guide-link:focus-visible{outline:3px solid #c39857;outline-offset:3px}
+.weekly-guide-icon{display:inline-grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border-radius:11px;background:#123852;color:#f3d3a0;font-size:1.15rem}
+.weekly-guide-link span:nth-child(2){flex:1;min-width:0}.weekly-guide-link strong{display:block;font-size:.85rem;line-height:1.3;color:var(--ink);font-weight:850}.weekly-guide-link small{display:block;font-size:.74rem;line-height:1.45;margin-top:3px;color:var(--week-muted)}
+.weekly-guide-link>span:last-child{font-size:1.1rem;color:#a67938}
+@media(max-width:700px){.weekly-guide-link{padding:12px;gap:10px;margin-top:14px}.weekly-guide-icon{width:35px;height:35px;flex-basis:35px}.weekly-guide-link small{font-size:.7rem}}
+@media(prefers-reduced-motion:reduce){.weekly-guide-link{transition:none!important}}

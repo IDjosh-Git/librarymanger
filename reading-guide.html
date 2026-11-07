@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14354f">
+<meta name="description" content="Explore the Book of the Week with its catalogue description, a thoughtful reason to read, discussion prompts, and verified book sources.">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;family=Manrope:wght@500;600;700;800&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/spotlight.css">
+<link rel="stylesheet" href="assets/spotlight-premium.css">
+<link rel="stylesheet" href="assets/weekly-spotlight-premium.css?v=5.23.0">
+<link rel="stylesheet" href="assets/reading-guide.css?v=5.23.0">
+<title>Reading Guide · Book of the Week | Library Manager</title>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('library_manager_theme_v2')==='dark'?'dark':'light'}catch(_){document.documentElement.dataset.theme='light'}</script>
+<script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.115.0/dist/umd/supabase.min.js"></script>
+<script defer src="assets/reading-guide.js?v=5.23.0"></script>
+</head>
+<body class="reading-guide-page">
+<a href="#guideMain" class="skip-link">Skip to the reading guide</a>
+<header class="spotlight-topbar"><div class="spotlight-container spotlight-top-inner"><a href="index.html" class="spotlight-brand"><span class="spotlight-brand-icon"><img src="assets/book-logo.svg" alt="" width="42" height="42"></span><span><strong>Library Manager</strong><small>Reading room</small></span></a><nav class="spotlight-top-actions" aria-label="Reading guide navigation"><a href="book-of-the-week.html" class="spotlight-back">← Book of the Week</a><button type="button" id="guideTheme" aria-label="Change appearance">◐</button></nav></div></header>
+<main class="guide-main" id="guideMain">
+ <div class="spotlight-container">
+  <nav class="guide-crumb" aria-label="Breadcrumb"><a href="index.html">Library</a><span aria-hidden="true">/</span><a href="book-of-the-week.html">Book of the Week</a><span aria-hidden="true">/</span><span>Reading guide</span></nav>
+  <div class="guide-eyebrow"><span class="guide-spark" aria-hidden="true">✦</span> THE WEEKLY READING GUIDE</div>
+  <section class="guide-hero" aria-labelledby="guideTitle">
+   <div class="guide-cover-shell"><img id="guideCover" src="assets/book-stack-fallback.jpg" alt="Library books" decoding="async" loading="eager"><span class="guide-cover-note">A title from our collection</span></div>
+   <div class="guide-hero-copy"><div class="guide-edition" id="guideEdition">A new reading recommendation</div><h1 id="guideTitle">A closer look at this week’s book.</h1><p class="guide-author" id="guideByline">Discover its story and why it matters.</p><p class="guide-teaser" id="guideIntro">A considered pick from the library shelves, chosen to spark curiosity and conversation.</p><div class="guide-hero-actions"><a href="#guideWhy" class="guide-primary">Why it's worth reading <span aria-hidden="true">↓</span></a><a href="book-of-the-week.html" class="guide-secondary">Back to featured book</a><button id="guideShare" type="button" class="guide-secondary">Share guide ↗</button></div></div>
+  </section>
+  <div class="guide-status" id="guideStatus" role="status" aria-live="polite">Loading this week's reading guide…</div>
+  <div class="guide-content">
+   <div class="guide-story">
+    <section class="guide-panel" aria-labelledby="guideOverviewTitle"><span class="guide-step">01 / DISCOVER</span><h2 id="guideOverviewTitle">About the book</h2><p id="guideSummary">Checking trusted catalogue information…</p><div class="guide-evidence" id="guideEvidence">Descriptions and edition information are verified against public book records when available.</div></section>
+    <section class="guide-panel guide-why" id="guideWhy" aria-labelledby="guideWhyTitle"><span class="guide-step">02 / THE EDITORIAL NOTE</span><h2 id="guideWhyTitle">Why read this book now?</h2><p id="guideReason">The reason behind this week's choice will appear here.</p><p class="guide-smallprint">This is an editorial recommendation based on library catalogue details, not a claim that AI read the complete book.</p></section>
+    <section class="guide-panel" aria-labelledby="guideThemesTitle"><span class="guide-step">03 / EXPLORE</span><h2 id="guideThemesTitle">Topics to explore</h2><div class="guide-subjects" id="guideSubjects">Loading topics…</div><div class="guide-reading-tip"><strong>A better way to read</strong><p>Before you begin, note one question you hope the book answers. As you read, mark the passages that change or challenge your understanding. Share what you learned with another reader.</p></div></section>
+    <section class="guide-panel" aria-labelledby="guideDiscussionTitle"><span class="guide-step">04 / REFLECT</span><h2 id="guideDiscussionTitle">A question to take with you</h2><p class="guide-question" id="guideQuestion">What will you discover?</p><p class="guide-smallprint">Use this question for a reading group, classroom conversation, or a personal reading journal.</p></section>
+   </div>
+   <aside class="guide-side" aria-label="Guide details and references">
+    <section class="guide-aside-card"><span class="guide-aside-label">WHO IT'S FOR</span><h2>Who should read it?</h2><p id="guideAudience">Readers looking for a new perspective.</p></section>
+    <section class="guide-aside-card"><span class="guide-aside-label">IN OUR COLLECTION</span><h2>Find this book</h2><dl><div><dt>Shelf</dt><dd id="guideShelf">Ask the library</dd></div><div><dt>ISBN</dt><dd id="guideIsbn">Not listed</dd></div><div><dt>Selected by</dt><dd id="guideSource">Library editorial</dd></div></dl><a href="index.html" class="guide-source-link">Browse the collection ↗</a></section>
+    <section class="guide-aside-card"><span class="guide-aside-label">VERIFY THE DETAILS</span><h2>Sources &amp; editions</h2><p>Different editions can have different covers and publishers. Check the source record before relying on edition-specific information.</p><a id="guideSourceLink" class="guide-source-link" href="https://openlibrary.org" target="_blank" rel="noopener noreferrer">Find verified book details ↗</a><a id="guideSearchLink" class="guide-source-link guide-source-secondary" href="https://openlibrary.org" target="_blank" rel="noopener noreferrer">Browse editions ↗</a></section>
+   </aside>
+  </div>
+  <section class="guide-outro"><div><span class="guide-step">NEXT CHAPTER</span><h2>Every great read starts with curiosity.</h2><p>Discover this title in our library, then come back next week for another recommendation.</p></div><a class="guide-primary" href="book-of-the-week.html">See Book of the Week ↗</a></section>
+ </div>
+</main>
+<footer><div class="spotlight-container spotlight-footer-inner"><strong>Library Manager</strong><p>A reading guide grounded in the book's catalogue record. Descriptions are attributed to Open Library when available.</p><a href="index.html">Return to library ↗</a></div></footer>
+</body>
+</html>

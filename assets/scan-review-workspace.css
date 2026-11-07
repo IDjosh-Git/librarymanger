@@ -348,3 +348,12 @@
  #review .review-smart-actions{grid-template-columns:1fr}
  #review .review-smart-actions .review-smart-primary{grid-column:1}
 }
+/* Stable photo previews: never leave a broken image, including in compact scan inbox cards. */
+#review .batch-photo-placeholder,
+#shelfScan .batch-photo-placeholder{
+ display:flex;align-items:center;justify-content:center;text-align:center;
+ font-size:12px;line-height:1.45;padding:12px;color:var(--workspace-muted,var(--muted));
+ border:1px dashed var(--scan-line,var(--line));overflow-wrap:anywhere;
+}
+.scan-stage-cover .batch-photo-placeholder{font-size:23px;padding:0;border:0;width:100%;height:100%}
+#review .batch-book-photo.batch-photo-placeholder{min-height:105px;}

@@ -1,3 +1,91 @@
+# Library Manager v5.24 — Add Photo preview fix
+
+This release builds on v5.23 and fixes the broken cover-image preview when a photo is added or replaced in Review.
+
+- A small, browser-decodable JPEG thumbnail is generated first and used for the displayed preview and synced Review drafts. Temporary `blob:` URLs are no longer preferred for cards.
+- Thumbnail compression retries at lower sizes rather than dropping a large preview when the first encoded image is too big.
+- Unreadable, damaged or unsupported image formats show a clear placeholder/instruction instead of a broken-image icon. The Replace photo action preserves the previous photo if the new one cannot be displayed.
+- High-resolution source photos still feed OCR, AI recognition and ISBN cropping, so preview compression does not weaken recognition quality.
+- Image uploads that cannot be decoded may need conversion to JPEG, PNG or WebP; some browsers cannot display HEIC/HEIF or AVIF images. The UI reports the problem rather than pretending the photo was added.
+- No change to ISBN, deduplication, book inventory, cloud schema or existing library color scheme.
+
+## Deployment
+
+Deploy the ZIP's root files to the existing `librarymanger` Vercel project, preserving `assets/`, `api/`, `database/` and `lib/`. No new Supabase migration or environment variable is needed. Refresh the page after deployment, then use Review books → Add cover photo on an unfinished book and confirm that the thumbnail appears; refresh and confirm it remains visible. Test replacing the photo with another JPEG/PNG and verify the original remains unchanged if a corrupt image is selected.
+
+## Local validation
+
+The photo-preview browser tests passed at 390px and 1440px for a valid image, persistence after rehydration, and the broken-image fallback. The v5.23 OCR regression tests, application JavaScript syntax checks, and all JS asset syntax checks passed. Live production/browser-device testing has not yet been performed.
+
+---
+
+# Library Manager v5.23 — Fast Adaptive OCR & Premium Reading Guide
+
+This is a full application build based on v5.22. It preserves the existing mobile navigation and floating AI orb, Supabase Review and Inventory workflows, duplicate-upload guard, book chat, and weekly-pick features.
+
+## Faster, more accurate OCR (Scan + Review)
+
+- **Fast first pass:** Reuses an already-warmed Tesseract.js worker and recognizes the cover once at a device-aware image size. High-confidence results finish immediately.
+- **Conditional second pass:** Only low-confidence covers are retried with greater resolution and grayscale/contrast correction. Sideways retries run only when the initial results are exceptionally weak.
+- **Bibliographic evidence:** A valid ISBN (using the existing ISBN checksum extractor), plausible title lines, and OCR confidence help decide whether a second pass is worthwhile. Longer output is no longer automatically considered better.
+- **Constrained resource use:** Low-memory devices get smaller images and one worker; a second worker is available only on sufficiently capable devices. Worker reuse and cancellation paths are preserved.
+- **Human verification:** OCR still proposes text for Review; it cannot guarantee perfect recognition, especially on blurry images, ornate fonts, or poorly photographed barcodes. AI/ISBN lookup remains optional, and book details must be verified before saving.
+
+The OCR process runs on the device; no new OCR API key is required. Clear images normally require one pass, while difficult images can still take longer. Real-world time savings depend on phone hardware and photo quality.
+
+## Premium Book of the Week + detailed reading guide
+
+- The featured book card now links directly to **`reading-guide.html`** via **Explore the reading guide** and **Read the full book guide**.
+- The new responsive guide offers the title/author, verified description where available, the weekly recommendation and reader value, topic chips, intended audience, discussion prompt, shelf/ISBN, and outbound catalogue references.
+- The reading guide loads the existing public-safe `library_public_weekly_spotlight_v2()` Supabase RPC. It does **not** query private inventory or borrower records.
+- For a book description, the page checks a matching Open Library ISBN/work entry first, then a matching search result. If no synopsis is found, it optionally checks a matching Google Books entry. It never silently substitutes a mismatched title or claims AI has read the book. The first paint does not wait for those lookups.
+- If neither source has a description, it clearly says so and retains the verified weekly explanation and reading prompts. External metadata services can be slow, rate-limited, or unavailable; they do not block Book of the Week.
+- The page retains light/dark mode and the existing navy and warm-gold aesthetic.
+
+## Deployment
+
+1. Deploy the contents of this ZIP to the **same** Vercel `librarymanger` project, preserving `assets/`, `api/`, `lib/`, `database/`, `index.html`, `book-of-the-week.html`, and **`reading-guide.html`**.
+2. Keep the Supabase configuration and AI provider environment variables from your current installation. **No new environment variable or database migration is required for v5.23.** Older migrations such as `04_ai_weekly_spotlight.sql` and `05_duplicate_upload_guard.sql` must already be installed for those earlier features.
+3. After redeploying, hard-refresh your browser. Scan one clear photo and one difficult photo, check OCR suggestions in Review, then open Book of the Week → **Read the full book guide** on mobile.
+4. The featured book's AI recommendation still requires the existing weekly-pick server workflow. This release changes the reading experience, not the weekly scheduler.
+
+## Verification completed locally
+
+- Browser-rendered public pages at 320, 390, 768, and 1440 pixels: no horizontal overflow, correct book content and working guide link.
+- Mocked Open Library response: the guide displays the catalogue synopsis and topic chips, with direct source links. Google Books is used only as a fallback.
+- Mocked Tesseract worker: strong-cover recognition completes in one pass, poor initial recognition retries and selects the better result, and OCR resources are released. Inline application JS and new JS assets pass syntax checks.
+- Browser preview images illustrate the layout with *The Secret Garden* rather than a live production selection.
+
+**Not verified:** actual elapsed OCR performance on all phones, live third-party catalogue responses, the user's deployed weekly AI scheduler, or a new production deployment. Testing used deterministic mocks without accessing private library records.
+
+---
+
+# Library Manager v5.22 — Complete Mobile Navigation & AI Orb
+
+This UI update builds on v5.21 and retains its existing colors, roles, OCR/AI, scanning, inventory, Book of the Week, and duplicate-upload protection.
+
+## Changes
+
+- **Fixed clipped mobile navigation:** Removes an old horizontal translation that shifted the bottom navigation off-screen. Five administrator shortcuts now fit across mobile widths; circulation users have three evenly sized shortcuts.
+- **Complete More menu:** A taller, scrollable menu respects the top/bottom safe areas, keeps the header visible during scrolling, and provides access to every authorized page, quick tool, and account settings, even on short screens.
+- **Compact floating Library AI:** Replaces the large text pill with a single 51px animated orb on mobile (56px on desktop). The chat opens with the existing button; the orb disappears while the chat or the mobile navigation drawer is open.
+- **Accessible interaction:** The AI button retains its screen-reader label, visible focus state and keyboard activation. Animation is disabled when reduced motion is requested.
+- **No brand or data changes:** This is a UI-only release. No new Supabase migration, model key or server configuration is required beyond earlier features.
+
+## Deployment
+
+Deploy this ZIP's root contents to the same Vercel `librarymanger` project. Do not place the entire folder inside the site root; preserve the `assets/`, `api/`, `lib/` and `database/` directories. After deployment, refresh the page (and clear cached assets if an older navigation is still shown).
+
+The new stylesheet is `assets/mobile-navigation-ai-orb.css`, linked after the earlier navigation styles in both `index.html` and `book-of-the-week.html`.
+
+## Validation and limits
+
+- Static CSS browser checks at 320×568, 390×844, 768×960, and 1440×900 confirmed that the navigation stays within the viewport. The full menu can scroll on short phones.
+- The actual Book Guide JavaScript was tested for opening and closing via its new orb at mobile, tablet and desktop sizes.
+- Application JavaScript passed syntax checks. Signed-in production navigation and live Vercel behavior still need verification after deployment.
+
+---
+
 # Library Manager v5.21 — Premium Navigation, Access Controls & Compact Inventory
 
 This release builds on **v5.20** and preserves its duplicate upload protection, OCR/AI Review workspace, Book of the Week, Supabase data persistence, authentication and loan functions.

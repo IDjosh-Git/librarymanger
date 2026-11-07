@@ -1,6 +1,6 @@
 {
   "name": "library-manager",
-  "version": "5.21.0",
+  "version": "5.24.0",
   "private": true,
   "engines": {
     "node": ">=20"
