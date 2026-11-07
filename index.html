@@ -39,6 +39,7 @@
 <link rel="stylesheet" href="assets/page-hero-fade.css?v=5.16.0">
 <link rel="stylesheet" href="assets/compact-card-insights.css?v=5.17.0">
 <link rel="stylesheet" href="assets/premium-progress-upload.css?v=5.18.0">
+<link rel="stylesheet" href="assets/weekly-admin.css?v=5.19.0">
 <script defer src="assets/compact-card-insights.js?v=5.17.0"></script>
 <script defer src="assets/premium-progress-upload.js?v=5.18.0"></script>
 <script defer src="assets/book-guide-format.js"></script>
@@ -449,9 +450,15 @@
   </details>
 </section>
 </div>
-<div id="featuredAdmin" class="panel featured-admin-page" aria-labelledby="featuredAdminTitle"><div class="featured-admin-intro"><span class="shelf-kicker">LIBRARY EDITORIAL</span><h2 id="featuredAdminTitle">Book of the Week</h2><p>Curate the public spotlight from your existing inventory, or choose automatic weekly rotation.</p><a href="book-of-the-week.html" target="_blank" rel="noopener noreferrer">View the public feature ↗</a></div><details id="spotlightManager" class="spotlight-admin-manager" open>
-<summary><span class="spotlight-admin-icon" aria-hidden="true">✦</span><span><strong>Book of the Week</strong><small>Choose a title to feature, or leave the choice to the automatic weekly picker.</small></span></summary>
+<div id="featuredAdmin" class="panel featured-admin-page" aria-labelledby="featuredAdminTitle"><div class="featured-admin-intro"><span class="shelf-kicker">LIBRARY EDITORIAL</span><h2 id="featuredAdminTitle">Book of the Week</h2><p>Select a book yourself or let AI recommend one from your inventory each week.</p><a href="book-of-the-week.html" target="_blank" rel="noopener noreferrer">View the public feature ↗</a></div><details id="spotlightManager" class="spotlight-admin-manager" open>
+<summary><span class="spotlight-admin-icon" aria-hidden="true">✦</span><span><strong>Book of the Week</strong><small>A real inventory title, with a reason readers can understand.</small></span></summary>
 <div class="spotlight-admin-body">
+  <div class="spotlight-ai-workbench">
+    <div class="spotlight-ai-copy"><span class="spotlight-ai-kicker">✦ AI LIBRARY EDITOR</span><h3>Let the collection choose the story.</h3><p>AI considers books in Inventory and explains the weekly recommendation. It never invents a title or edits your books.</p></div>
+    <button id="spotlightAiPick" class="spotlight-ai-button" type="button"><span aria-hidden="true">✦</span> Choose this week’s book</button>
+  </div>
+  <div id="spotlightAiPreview" class="spotlight-ai-preview" aria-live="polite" hidden><span class="spotlight-ai-kicker" id="spotlightAiOrigin">WEEKLY RECOMMENDATION</span><h3 id="spotlightAiTitle"></h3><p id="spotlightAiReason"></p><span id="spotlightAiWeek" class="spotlight-ai-meta"></span></div>
+  <div class="spotlight-manual-caption"><span>OR CURATE MANUALLY</span><span class="spotlight-caption-rule"></span></div>
   <div class="spotlight-admin-fields">
     <label for="spotlightSearch">Find a book <input id="spotlightSearch" type="search" placeholder="Search the catalog by title or author…" autocomplete="off"></label>
     <label for="spotlightSelect">Select a title <select id="spotlightSelect"><option value="">Choose a book to feature…</option></select></label>
@@ -459,7 +466,7 @@
     <label for="spotlightCoverUrl" class="spotlight-field-full">Cover photo URL <span class="spotlight-optional">(optional; valid ISBN covers are used automatically)</span><input id="spotlightCoverUrl" type="url" placeholder="https://…/cover.jpg" autocomplete="url"></label>
   </div>
   <div class="spotlight-admin-footer"><button id="spotlightPublish" type="button" class="green">Publish chosen book</button><button id="spotlightAuto" type="button" class="light">Use automatic weekly pick</button><a href="book-of-the-week.html" target="_blank" rel="noopener noreferrer">Preview public page ↗</a></div>
-  <p id="spotlightPublishStatus" role="status" aria-live="polite" class="spotlight-admin-status">Without a manual selection, a catalog book is automatically featured and rotates weekly. Requires the discovery SQL upgrade.</p>
+  <p id="spotlightPublishStatus" role="status" aria-live="polite" class="spotlight-admin-status">An approved weekly pick stays fixed for seven days. Automatic Monday updates require the secure scheduler setup; offline AI uses a clearly labelled catalogue fallback.</p>
 </div>
 </details>
 </div>
@@ -801,7 +808,7 @@ $('adminRemoveSubmit').addEventListener('click',async()=>{
  }catch(error){delete button.dataset.busy;$('adminRemoveCancel').disabled=false;button.disabled=false;$('adminRemoveError').textContent=error?.message||'Unable to remove access';$('adminRemoveError').hidden=false;}
 });
 
-function tab(name){if(!canAccess(name)){if(memberRole)msg('Your account does not have access to that page.','warn');return}const workspaceTitles={dashboard:'Overview',inventory:'Inventory',shelfScan:'Scan books',review:'Review books',featuredAdmin:'Book of the Week',scanned:'Scanned books',lend:'Lend a book',return:'Return a book',notifications:'Notifications',history:'Loan history',contactSettings:'Contact & social links',adminDirectory:'Administrators'};const contextTitle=document.getElementById('headerContextName');if(contextTitle)contextTitle.textContent=workspaceTitles[name]||'Library workspace';if(location.hash.slice(1)!==name)history.replaceState(null,'','#'+name);requestAnimationFrame(updatePageControls);document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===name));document.querySelectorAll("[data-tab]").forEach(x=>{let a=x.dataset.tab===name;x.classList.toggle("active",a);x.setAttribute("aria-pressed",String(a));x.setAttribute("aria-current",a?"page":"false")});document.querySelectorAll("[data-gotab]").forEach(x=>{let a=x.dataset.gotab===name;x.classList.toggle("active",a);x.setAttribute("aria-current",a?"page":"false")});if(name==='inventory')scheduleAutomaticMetadataCheck();if(name==='shelfScan'||name==='review'){renderBatch();if(!lastRefresh||lastRefresh.uid!==session?.user?.id||Date.now()-lastRefresh.at>BACKGROUND_REFRESH_MS)void reloadAll({background:true})}window.LibraryBookGuide?.setVisible(true);if(name==='notifications')renderNotifications();if(name==='scanned')renderScannedBooks();if(name==='contactSettings')loadContactSettings();if(name==='adminDirectory')void loadAdminDirectory();document.querySelectorAll('[data-mobile-tab]').forEach(b=>{const active=b.dataset.mobileTab===name;b.classList.toggle('active',active);b.setAttribute('aria-current',active?'page':'false')});$('mobileMenuToggle').classList.toggle('active',!['dashboard','inventory','shelfScan','review','scanned','lend','return'].includes(name))}document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>tab(b.dataset.tab));document.querySelectorAll("[data-gotab]").forEach(b=>b.onclick=()=>tab(b.dataset.gotab));
+function tab(name){if(!canAccess(name)){if(memberRole)msg('Your account does not have access to that page.','warn');return}const workspaceTitles={dashboard:'Overview',inventory:'Inventory',shelfScan:'Scan books',review:'Review books',featuredAdmin:'Book of the Week',scanned:'Scanned books',lend:'Lend a book',return:'Return a book',notifications:'Notifications',history:'Loan history',contactSettings:'Contact & social links',adminDirectory:'Administrators'};const contextTitle=document.getElementById('headerContextName');if(contextTitle)contextTitle.textContent=workspaceTitles[name]||'Library workspace';if(location.hash.slice(1)!==name)history.replaceState(null,'','#'+name);requestAnimationFrame(updatePageControls);document.querySelectorAll(".panel").forEach(x=>x.classList.toggle("active",x.id===name));document.querySelectorAll("[data-tab]").forEach(x=>{let a=x.dataset.tab===name;x.classList.toggle("active",a);x.setAttribute("aria-pressed",String(a));x.setAttribute("aria-current",a?"page":"false")});document.querySelectorAll("[data-gotab]").forEach(x=>{let a=x.dataset.gotab===name;x.classList.toggle("active",a);x.setAttribute("aria-current",a?"page":"false")});if(name==='inventory')scheduleAutomaticMetadataCheck();if(name==='shelfScan'||name==='review'){renderBatch();if(!lastRefresh||lastRefresh.uid!==session?.user?.id||Date.now()-lastRefresh.at>BACKGROUND_REFRESH_MS)void reloadAll({background:true})}window.LibraryBookGuide?.setVisible(true);if(name==='notifications')renderNotifications();if(name==='scanned')renderScannedBooks();if(name==='contactSettings')loadContactSettings();if(name==='featuredAdmin')void loadCurrentWeeklyAIPick();if(name==='adminDirectory')void loadAdminDirectory();document.querySelectorAll('[data-mobile-tab]').forEach(b=>{const active=b.dataset.mobileTab===name;b.classList.toggle('active',active);b.setAttribute('aria-current',active?'page':'false')});$('mobileMenuToggle').classList.toggle('active',!['dashboard','inventory','shelfScan','review','scanned','lend','return'].includes(name))}document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>tab(b.dataset.tab));document.querySelectorAll("[data-gotab]").forEach(b=>b.onclick=()=>tab(b.dataset.gotab));
 
 async function signIn(){
  if(authBusy)return;let email=$("email").value.trim(),password=$("password").value;
@@ -980,15 +987,52 @@ $('spotlightPublish').addEventListener('click',async()=>{
  finally{button.disabled=false}
 });
 
-$('spotlightAuto').addEventListener('click',async()=>{
- if(!isAdmin()||!session?.user)return msg('Administrator access required.','err');
- const button=$('spotlightAuto'),feedback=$('spotlightPublishStatus');button.disabled=true;
- try{const {error}=await sb.from(SPOTLIGHT_TABLE).delete().eq('id',1);if(error)throw error;
- feedback.textContent='Automatic weekly selection is active. The public page now picks from your catalog.';
- msg('Automatic Book of the Week enabled.','ok');
- }catch(e){feedback.textContent='Unable to enable automatic pick: '+(e.message||e);msg(feedback.textContent,'err')}
- finally{button.disabled=false}
-});
+function spotlightWeekUTC(){const d=new Date();d.setUTCHours(0,0,0,0);d.setUTCDate(d.getUTCDate()-(d.getUTCDay()+6)%7);return d.toISOString().slice(0,10)}
+function showWeeklyAIPick(pick,week){
+ if(!pick||!String(pick.title||'').trim())return;
+ const preview=$('spotlightAiPreview');if(!preview)return;
+ $('spotlightAiOrigin').textContent=pick.selection_source==='ai'?'✦ AI-ASSISTED RECOMMENDATION':'✦ WEEKLY CATALOGUE PICK';
+ $('spotlightAiTitle').textContent=pick.title;
+ $('spotlightAiReason').textContent=pick.why_selected||'This title has been selected from your own inventory.';
+ $('spotlightAiWeek').textContent='Week of '+(week||spotlightWeekUTC())+(pick.selection_source==='ai'?' · AI chose from catalogue titles':' · Automatic fallback');
+ preview.hidden=false;
+}
+let weeklyPreviewLoaded=false;
+async function loadCurrentWeeklyAIPick(){
+ if(!isAdmin()||!session?.user||weeklyPreviewLoaded)return;
+ weeklyPreviewLoaded=true;
+ try{
+  const {data,error}=await sb.from('library_ai_weekly_picks').select('title,why_selected,selection_source,week_start').eq('week_start',spotlightWeekUTC()).maybeSingle();
+  if(!error&&data)showWeeklyAIPick(data,data.week_start);
+ }catch(_){}
+}
+async function enableWeeklySelection({regenerate=false}={}){
+ if(!isAdmin()||!session?.access_token)return msg('Administrator access required.','err');
+ const ai=$('spotlightAiPick'),auto=$('spotlightAuto'),feedback=$('spotlightPublishStatus');
+ ai.disabled=true;auto.disabled=true;
+ const original=ai.innerHTML;ai.textContent='Selecting from your catalogue…';
+ feedback.textContent='Comparing eligible titles from Inventory and preparing this week’s recommendation…';
+ try{
+  const response=await fetch('/api/weekly-pick',{
+   method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
+   body:JSON.stringify({regenerate})
+  });
+  const body=await response.json().catch(()=>({}));
+  if(!response.ok)throw Error(body.error||'The weekly recommendation could not be generated.');
+  if(!body.pick)throw Error(body.message||'There are no eligible books in Inventory.');
+  // Persist the selected week first; only clear an existing manual override once
+  // the new recommendation exists and was successfully saved.
+  const {error}=await sb.from(SPOTLIGHT_TABLE).delete().eq('id',1);
+  if(error)throw Error('The weekly recommendation was saved, but the manual feature is still active: '+error.message);
+  showWeeklyAIPick(body.pick,body.week);
+  const aiWorked=body.pick.selection_source==='ai';
+  feedback.textContent=(aiWorked?'AI picked ':'Catalogue picked ')+body.pick.title+'. Your public Book of the Week page now displays this week’s recommendation and its explanation.';
+  msg('Book of the Week updated: '+body.pick.title,'ok');
+ }catch(e){feedback.textContent=e.message||String(e);msg('Could not enable the weekly pick: '+feedback.textContent,'err')}
+ finally{ai.disabled=false;auto.disabled=false;ai.innerHTML=original}
+}
+$('spotlightAiPick').addEventListener('click',()=>enableWeeklySelection({regenerate:true}));
+$('spotlightAuto').addEventListener('click',()=>enableWeeklySelection({regenerate:false}));
 
 const PUBLIC_CONTACT_FIELDS=['library_name','email','phone','location','hours','website','whatsapp','facebook','instagram','youtube','tiktok','x_url'];
 let publicContactLoaded=false;

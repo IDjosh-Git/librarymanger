@@ -36,6 +36,15 @@
     },
     "api/isbn-ai.js": {
       "maxDuration": 30
+    },
+    "api/weekly-pick.js": {
+      "maxDuration": 30
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/weekly-pick",
+      "schedule": "0 2 * * 1"
+    }
+  ]
 }
