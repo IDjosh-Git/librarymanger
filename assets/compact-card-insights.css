@@ -1,0 +1,78 @@
+
+/* v5.17 — Lightweight, accessible information disclosure shared across the workspace. */
+#libraryArea .compact-insight-text{min-width:0;overflow-wrap:anywhere}
+#libraryArea .compact-insight-text:not(.is-expanded){display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-clamp:2;overflow:hidden!important}
+#libraryArea .compact-insight-toggle{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;justify-self:start;padding:4px 3px!important;min-height:28px!important;border:0!important;background:transparent!important;box-shadow:none!important;color:var(--accent)!important;line-height:1.25;font:inherit;font-size:11px!important;font-weight:750!important;letter-spacing:0;text-align:left;white-space:nowrap;cursor:pointer;transition:none!important}
+#libraryArea .compact-insight-toggle:hover{transform:none!important;text-decoration:underline;text-underline-offset:3px}
+#libraryArea .compact-insight-toggle:focus-visible,#libraryArea .compact-inline-help summary:focus-visible{outline:2px solid var(--accent)!important;outline-offset:2px}
+#libraryArea .compact-insight-symbol{width:19px;height:19px;display:inline-grid;place-items:center;border:1px solid var(--line);border-radius:6px;font-size:16px;font-weight:500;line-height:1;background:var(--surface);flex:0 0 19px}
+#libraryArea .compact-insight-toggle[hidden]{display:none!important}
+#libraryArea .compact-inline-help{border:0!important;box-shadow:none!important;background:transparent!important;margin:4px 0 0!important;min-width:0}
+#libraryArea .compact-inline-help summary{display:inline-flex;align-items:center;gap:7px;list-style:none;cursor:pointer;padding:5px 0;color:var(--accent);font-size:11px;font-weight:750;min-height:28px}
+#libraryArea .compact-inline-help summary::-webkit-details-marker{display:none}
+#libraryArea .compact-inline-help .help-mark{display:grid;place-items:center;width:20px;height:20px;border:1px solid var(--line);border-radius:6px;color:var(--accent);font-size:16px;line-height:1;font-weight:500}
+#libraryArea .compact-inline-help[open] .help-mark{font-size:0}
+#libraryArea .compact-inline-help[open] .help-mark::after{content:'−';font-size:16px}
+#libraryArea .compact-inline-help>p{font-size:12px!important;line-height:1.5!important;color:var(--muted)!important;padding:2px 0 7px;margin:0!important;max-width:85ch}
+/* Existing disclosures receive familiar + / − affordances without changing their click targets. */
+#libraryArea :is(.overview-insights-disclosure,.quick-add-drawer,.scan-card-more,.scan-more-actions,.scan-advanced-options,.scan-extra-exports,.ocr-text)>summary{position:relative}
+#libraryArea :is(.overview-insights-disclosure,.quick-add-drawer,.scan-card-more,.scan-more-actions,.scan-advanced-options,.scan-extra-exports,.ocr-text)>summary::after{content:'+'!important;display:grid!important;place-items:center!important;border:1px solid var(--line)!important;border-radius:7px!important;background:transparent!important;color:var(--accent)!important;transform:none!important;width:25px!important;height:25px!important;min-width:25px!important;font-family:inherit!important;font-size:19px!important;line-height:1!important;font-weight:500!important;margin:0 0 0 auto!important;box-sizing:border-box!important}
+#libraryArea :is(.overview-insights-disclosure,.quick-add-drawer,.scan-card-more,.scan-more-actions,.scan-advanced-options,.scan-extra-exports,.ocr-text)[open]>summary::after{content:'−'!important;transform:none!important;margin:0 0 0 auto!important}
+#libraryArea .quick-add-drawer>summary>.drawer-chevron,#libraryArea .scan-advanced-summary>.scan-advanced-chevron{display:none!important}
+#libraryArea .scan-advanced-summary>.scan-advanced-optional{margin-left:auto}
+/* Two switches and one primary action instead of a multi-line settings card. */
+#review .review-assist-toolbar{display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;gap:10px 12px!important;padding:11px 13px!important;margin:10px 0 0!important;min-height:0!important}
+#review .review-assist-copy{min-width:0!important;flex:initial!important;gap:8px!important}
+#review .review-assist-symbol{width:29px!important;height:29px!important;flex-basis:29px!important;font-size:16px!important;border-radius:9px!important}
+#review .review-assist-copy>div{gap:1px!important}
+#review .review-assist-copy strong{font-size:12px!important}
+#review .review-assist-copy small{font-size:10px!important;line-height:1.2!important}
+#review .review-assist-controls{display:flex!important;width:auto!important;align-items:center!important;gap:7px!important;flex-wrap:wrap!important}
+#review .review-assist-toggle{padding:5px 8px!important;min-height:34px!important;gap:6px!important;border-radius:9px!important;font-size:11px!important}
+#review .review-assist-toggle input{height:15px!important;width:15px!important}
+#review .review-auto-fill{grid-column:auto!important;min-height:36px!important;padding:8px 12px!important;border-radius:9px!important;font-size:11px!important;width:auto!important}
+#review .review-assist-help{margin:1px 0 5px!important}
+#review .review-assist-help summary{padding:3px 0!important}
+#review .review-action-status:empty{display:none!important}
+/* Compact scan options on all screens; controls remain always visible and tappable. */
+#shelfScan .scan-recognition-settings{padding:11px 12px!important;margin-top:12px!important}
+#shelfScan .scan-recognition-heading{gap:8px!important;margin-bottom:8px!important}
+#shelfScan .scan-recognition-heading h4{font-size:13px!important;line-height:1.25!important}
+#shelfScan .scan-recognition-heading .eyebrow{font-size:9px!important}
+#shelfScan .scan-recognition-heading p{display:none!important}
+#shelfScan .scan-recognition-status{font-size:10px!important;white-space:nowrap}
+#shelfScan .scan-recognition-grid{gap:8px!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}
+#shelfScan .scan-recognition-card{padding:8px 10px!important;min-height:46px!important;gap:8px!important;grid-template-columns:auto minmax(0,1fr) auto!important;align-items:center!important}
+#shelfScan .scan-recognition-icon{width:25px!important;height:25px!important;min-width:25px!important;font-size:14px!important}
+#shelfScan .scan-recognition-copy{min-width:0!important;gap:2px!important}
+#shelfScan .scan-recognition-copy strong{font-size:12px!important;line-height:1.2!important}
+#shelfScan .scan-recognition-copy small{font-size:10px!important;line-height:1.25!important}
+#shelfScan .scan-recognition-switch{margin-left:auto!important}
+#shelfScan .scan-recognition-help{margin:3px 0 0!important}
+@media(max-width:850px){
+ #review .review-assist-toolbar{grid-template-columns:minmax(0,1fr) auto!important}
+ #review .review-assist-controls{gap:5px!important}
+ #review .review-assist-copy small{display:none!important}
+ #review .review-assist-symbol{display:none!important}
+ #review .review-auto-fill{grid-column:1/-1!important;width:100%!important}
+ #review .review-assist-controls{display:contents!important}
+ #review .review-assist-toggle{justify-self:end;align-self:center}
+ #review .review-assist-toggle:first-child{grid-column:2!important}
+ #review .review-assist-toggle:nth-child(2){grid-column:3!important}
+ #review .review-assist-toolbar{grid-template-columns:minmax(0,1fr) auto auto!important;gap:8px!important;padding:9px 11px!important}
+ #review .review-assist-copy{grid-column:1!important}
+ #review .review-auto-fill{grid-column:1 / -1!important;min-height:38px!important}
+ #shelfScan .scan-recognition-icon{display:none!important}
+ #shelfScan .scan-recognition-card{grid-template-columns:minmax(0,1fr) auto!important;min-width:0!important;padding:7px 8px!important;gap:4px!important}
+ #shelfScan .scan-recognition-copy small{display:none!important}
+ #shelfScan .scan-recognition-status{display:none!important}
+ #shelfScan .scan-recognition-switch{flex-shrink:0!important}
+ #libraryArea .compact-insight-text:not(.is-expanded){-webkit-line-clamp:1;line-clamp:1}
+}
+@media(max-width:350px){
+ #review .review-assist-toolbar{gap:5px!important;padding:8px!important}
+ #review .review-assist-toggle{padding:5px 6px!important;font-size:10px!important}
+ #review .review-assist-copy strong{font-size:11px!important}
+ #shelfScan .scan-recognition-card{padding:7px 6px!important}
+}
+@media(prefers-reduced-motion:reduce){#libraryArea .compact-insight-toggle{transition:none!important}}

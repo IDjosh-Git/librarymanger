@@ -310,3 +310,41 @@
 #review .review-card-footer button{min-height:46px;min-width:140px}
 @media(max-width:650px){#review .review-card-footer{display:grid;grid-template-columns:1fr}#review .review-card-footer button{width:100%}}
 /* Remove old decorative overlay layers from the Scan hero, not merely the base fill. */
+
+/* v5.16 — First-class OCR and AI completion inside Review (palette unchanged). */
+#review .review-assist-toolbar{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:13px;padding:15px 16px;margin:12px 0 5px;border:1px solid var(--line);border-radius:15px;background:var(--surface);min-width:0}
+#review .review-assist-copy{display:flex;align-items:center;gap:11px;flex:1 1 230px;min-width:0}
+#review .review-assist-symbol{display:grid;place-items:center;flex:0 0 37px;width:37px;height:37px;border:1px solid var(--line);border-radius:11px;background:var(--soft);font-size:20px;color:var(--accent)}
+#review .review-assist-copy>div{display:grid;gap:4px;min-width:0}
+#review .review-assist-copy strong{color:var(--ink);font-size:13px;line-height:1.35}
+#review .review-assist-copy small{color:var(--muted);font-size:11px;line-height:1.5}
+#review .review-assist-controls{display:flex;align-items:center;flex-wrap:wrap;gap:9px;min-width:0}
+#review .review-assist-toggle{min-height:43px;display:inline-flex;align-items:center;gap:8px;padding:8px 11px;border:1px solid var(--line);border-radius:11px;background:var(--surface);font-size:12px;font-weight:750;color:var(--ink);white-space:nowrap;cursor:pointer}
+#review .review-assist-toggle input{height:17px;width:17px;margin:0;accent-color:var(--accent);cursor:pointer}
+#review .review-auto-fill,#review .review-smart-primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 15px;background:var(--accent);color:#fff!important;border:1px solid var(--accent);border-radius:11px;font-size:12px;font-weight:850;cursor:pointer;white-space:normal;line-height:1.35}
+#review .review-auto-fill:hover:not(:disabled),#review .review-smart-primary:hover:not(:disabled){filter:brightness(1.07)}
+#review .review-assist-note{font-size:11px;line-height:1.55;color:var(--muted);margin:6px 3px 10px;max-width:100ch}
+#review .review-action-status:not(:empty){font-size:12px;line-height:1.5;padding:11px 14px;border-radius:11px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}
+#review .review-smart-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px;width:100%;margin-bottom:9px;min-width:0}
+#review .review-smart-actions button{display:inline-flex;justify-content:center;align-items:center;flex:1 1 auto;min-width:110px;min-height:44px;padding:9px 13px;font-size:12px;font-weight:800;border-radius:11px}
+#review .review-smart-actions .review-smart-primary{flex:1 1 170px;min-width:145px}
+#review .review-smart-actions button.light{background:var(--surface)!important;border:1px solid var(--line)!important;color:var(--ink)!important}
+#review .review-card-lookup-status{width:100%;font-size:11px;line-height:1.55;color:var(--muted);padding:0 2px 8px;overflow-wrap:anywhere}
+#review .saved-review-photo-action{position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:43px;gap:6px;padding:10px 13px;border:1px solid var(--line);border-radius:11px;background:var(--surface);font-size:12px;line-height:1.2;font-weight:750;color:var(--ink);cursor:pointer;overflow:hidden;max-width:100%;text-align:center}
+#review .saved-review-photo-action:hover{border-color:var(--accent)}
+#review .saved-review-photo-action:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+#review .saved-review-photo-action input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer;font-size:0}
+#review .saved-review-notice{font-size:11px;line-height:1.55;color:var(--muted);margin:7px 0 0}
+@media(max-width:750px){
+ #review .review-assist-controls{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ #review .review-assist-toggle{justify-content:center}
+ #review .review-auto-fill{grid-column:1/-1;width:100%}
+ #review .review-smart-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+ #review .review-smart-actions .review-smart-primary{grid-column:1/-1;min-width:0}
+ #review .review-smart-actions button{min-width:0!important;width:100%;white-space:normal}
+ #review .scan-saved-actions .saved-review-photo-action{flex:1 1 130px}
+}
+@media(max-width:350px){
+ #review .review-smart-actions{grid-template-columns:1fr}
+ #review .review-smart-actions .review-smart-primary{grid-column:1}
+}

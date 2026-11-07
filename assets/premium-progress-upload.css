@@ -1,0 +1,127 @@
+/* v5.18 — Premium upload choices and meaningful progress displays.
+   Accent colors inherit the existing Library Manager theme. */
+#shelfScan .batch-picker{gap:10px!important;align-items:stretch}
+#shelfScan .batch-picker .premium-upload-choice{
+ position:relative!important;display:grid!important;
+ grid-template-columns:42px minmax(0,1fr) 19px!important;
+ align-items:center!important;justify-content:stretch!important;gap:11px!important;
+ padding:14px 14px!important;min-height:80px!important;
+ background:var(--surface)!important;color:var(--ink)!important;
+ border:1px solid var(--line)!important;border-radius:17px!important;
+ box-shadow:0 3px 12px rgba(31,49,89,.035)!important;
+ text-align:left!important;cursor:pointer!important;
+ transition:border-color .16s ease,box-shadow .16s ease,transform .16s ease!important;
+ overflow:hidden!important;isolation:isolate;
+}
+#shelfScan .batch-picker .premium-upload-choice:hover,
+#shelfScan .batch-picker .premium-upload-choice:focus-within{
+ border-color:var(--accent)!important;
+ box-shadow:0 7px 22px rgba(73,91,160,.10)!important;
+ transform:translateY(-1px)!important;
+}
+#shelfScan .batch-picker .premium-upload-choice:focus-within{outline:2px solid var(--accent);outline-offset:2px}
+#shelfScan .batch-picker .premium-upload-icon{
+ display:grid;place-items:center;width:42px;height:42px;border-radius:13px;
+ background:var(--soft,var(--surface2))!important;color:var(--accent,var(--navy))!important;
+ flex-shrink:0;pointer-events:none;
+}
+#shelfScan .batch-picker .premium-upload-icon svg{width:21px;height:21px;flex:none!important}
+#shelfScan .batch-picker .premium-upload-copy{display:grid;gap:3px;min-width:0;pointer-events:none}
+#shelfScan .batch-picker .premium-upload-copy strong{
+ color:var(--ink)!important;font-size:13.5px!important;font-weight:800;line-height:1.3;letter-spacing:-.016em;
+}
+#shelfScan .batch-picker .premium-upload-copy small{
+ display:block!important;font-size:11px!important;line-height:1.4!important;
+ color:var(--muted)!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+#shelfScan .batch-picker .premium-upload-chevron{font-size:17px;font-weight:700;color:var(--muted);justify-self:end;pointer-events:none}
+#shelfScan .batch-picker .premium-upload-choice:is(:hover,:focus-within) .premium-upload-chevron{color:var(--accent)}
+#shelfScan .batch-picker .premium-upload-choice input[type=file]{
+ position:absolute!important;inset:0!important;width:100%!important;height:100%!important;
+ display:block!important;opacity:0!important;z-index:3!important;
+ padding:0!important;margin:0!important;cursor:pointer!important;
+}
+#shelfScan .batch-picker .premium-upload-choice:after{display:none!important}
+#shelfScan .batch-picker .premium-upload-choice[data-selected="true"]{
+ border-color:var(--accent)!important;
+}
+#shelfScan .batch-picker .premium-upload-choice[data-selected="true"] .premium-upload-icon{color:var(--green,var(--accent))!important}
+#shelfScan .premium-progress{
+ display:grid!important;gap:10px!important;margin:14px 0!important;
+ padding:15px 16px!important;border:1px solid var(--line)!important;
+ border-radius:17px!important;background:var(--surface)!important;
+ background-image:none!important;box-shadow:none!important;min-width:0;
+}
+#shelfScan .premium-progress-header,#shelfScan .premium-progress-description{
+ display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;
+}
+#shelfScan .premium-progress-header{line-height:1.2}
+#shelfScan .premium-progress-stage{
+ display:inline-flex;align-items:center;gap:9px;color:var(--ink);font-weight:800;font-size:13px;
+}
+#shelfScan .premium-progress-pulse{
+ display:block;width:9px;height:9px;flex:0 0 9px;border-radius:50%;
+ background:var(--muted);box-shadow:0 0 0 3px rgba(114,128,155,.12)
+}
+#shelfScan .premium-progress[data-progress-state="working"] .premium-progress-pulse{
+ background:var(--accent);box-shadow:0 0 0 4px rgba(77,92,229,.13);
+ animation:premium-progress-pulse 1.45s ease-in-out infinite;
+}
+#shelfScan .premium-progress[data-progress-state="done"] .premium-progress-pulse{background:var(--green,#17845a)}
+#shelfScan .premium-progress[data-progress-state="error"] .premium-progress-pulse{background:var(--orange,#f27329)}
+#shelfScan .premium-progress-percent{font-size:15px;font-weight:850;color:var(--accent);font-variant-numeric:tabular-nums}
+#shelfScan .premium-progress-description{align-items:start;font-size:12px;line-height:1.55;color:var(--muted)!important}
+#shelfScan #batchStatus{display:block;min-width:0;overflow-wrap:anywhere;flex:1 1 auto;color:var(--muted)!important;}
+#shelfScan .premium-progress-count{white-space:nowrap;font-variant-numeric:tabular-nums;font-size:11px;color:var(--muted);font-weight:750;flex-shrink:0}
+#shelfScan .premium-progress progress{
+ appearance:none;-webkit-appearance:none;display:block!important;overflow:hidden;
+ width:100%!important;height:11px!important;min-height:11px!important;margin:0!important;
+ border:0!important;border-radius:999px!important;background:var(--soft,var(--surface2))!important;
+ box-shadow:inset 0 1px 2px rgba(21,36,60,.055);color:var(--accent);
+}
+#shelfScan .premium-progress progress::-webkit-progress-bar{border-radius:999px;background:var(--soft,var(--surface2))}
+#shelfScan .premium-progress progress::-webkit-progress-value{
+ border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--green,#17845a));
+ transition:width .22s ease;
+}
+#shelfScan .premium-progress progress::-moz-progress-bar{
+ border-radius:999px;background:linear-gradient(90deg,var(--accent),var(--green,#17845a));
+}
+#shelfScan .premium-progress-hint{display:block;color:var(--muted);font-size:10.5px!important;line-height:1.45;margin:0!important}
+#shelfScan .premium-progress[data-progress-state="done"] .premium-progress-percent{color:var(--green,#17845a)}
+#shelfScan .premium-progress[data-progress-state="error"] .premium-progress-percent{color:var(--orange,#f27329)}
+/* Secondary actions report activity; they do not invent percentages. */
+#inventory .smart-fill-progress,#review .review-action-status{
+ border:1px solid var(--line)!important;border-radius:12px!important;
+ background:var(--surface)!important;color:var(--ink)!important;
+ padding:11px 13px!important;line-height:1.5!important;
+ overflow-wrap:anywhere;
+}
+#inventory .smart-fill-progress:not([hidden]),#review .review-action-status:not(:empty){display:block}
+#dashboardCopyBar.dashboard-progress{height:12px!important;border-radius:999px!important;border:1px solid var(--line)!important;overflow:hidden}
+#dashboardCopyBar.dashboard-progress span{transition:width .25s ease}
+:root[data-theme="dark"] #shelfScan .premium-upload-choice,
+:root[data-theme="dark"] #shelfScan .premium-progress{box-shadow:none!important}
+:root[data-theme="dark"] #shelfScan .premium-upload-icon{background:var(--surface2)!important}
+@keyframes premium-progress-pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.57;transform:scale(.82)}}
+@media(max-width:900px){
+ #shelfScan .batch-picker{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ #shelfScan .batch-picker .premium-upload-choice{grid-template-columns:36px minmax(0,1fr)!important;gap:8px!important;padding:11px 9px!important;min-height:76px!important}
+ #shelfScan .batch-picker .premium-upload-icon{width:36px;height:36px;border-radius:11px}
+ #shelfScan .batch-picker .premium-upload-chevron{display:none}
+}
+@media(max-width:620px){
+ #shelfScan .batch-picker{grid-template-columns:1fr!important;gap:8px!important}
+ #shelfScan .batch-picker .premium-upload-choice{grid-template-columns:37px minmax(0,1fr) 20px!important;min-height:61px!important;padding:10px 12px!important;gap:11px!important}
+ #shelfScan .batch-picker .premium-upload-icon{width:37px;height:37px}
+ #shelfScan .batch-picker .premium-upload-chevron{display:block}
+ #shelfScan .premium-progress{padding:13px!important;gap:8px!important}
+ #shelfScan .premium-progress-description{gap:8px!important}
+ #shelfScan .premium-progress-stage{font-size:12px}
+ #shelfScan .premium-progress-percent{font-size:14px}
+}
+@media(prefers-reduced-motion:reduce){
+ #shelfScan .premium-progress-pulse{animation:none!important}
+ #shelfScan .premium-progress progress::-webkit-progress-value{transition:none!important}
+ #shelfScan .batch-picker .premium-upload-choice{transition:none!important;transform:none!important}
+}

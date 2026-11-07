@@ -35,8 +35,12 @@
 <script>try{document.documentElement.dataset.theme=localStorage.getItem("library_manager_theme_v2")==="dark"?"dark":"light"}catch{document.documentElement.dataset.theme="light"}</script>
 <link rel="stylesheet" href="assets/library-ui.css">
 <link rel="stylesheet" href="assets/book-guide.css">
-<link rel="stylesheet" href="assets/scan-review-workspace.css">
-<link rel="stylesheet" href="assets/page-hero-fade.css?v=5.15.1">
+<link rel="stylesheet" href="assets/scan-review-workspace.css?v=5.16.0">
+<link rel="stylesheet" href="assets/page-hero-fade.css?v=5.16.0">
+<link rel="stylesheet" href="assets/compact-card-insights.css?v=5.17.0">
+<link rel="stylesheet" href="assets/premium-progress-upload.css?v=5.18.0">
+<script defer src="assets/compact-card-insights.js?v=5.17.0"></script>
+<script defer src="assets/premium-progress-upload.js?v=5.18.0"></script>
 <script defer src="assets/book-guide-format.js"></script>
 <script defer src="assets/book-guide.js"></script>
 <script defer src="assets/public-contact.js"></script>
@@ -198,16 +202,16 @@
  </section>
  <div class="dashboard-section-header overview-stats-header"><div><span class="eyebrow">YOUR NUMBERS</span><h3>Collection snapshot</h3></div><span id="dashboardUpdated" class="dashboard-data-note" aria-live="polite">Showing your current loaded records</span></div>
  <section class="dashboard-metrics" aria-label="Library statistics">
-  <div class="dashboard-metric"><span class="dashboard-metric-icon"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#library"></use></svg></span><span>Distinct books</span><strong id="dashDistinctBooks">0</strong><small>Grouped titles and editions</small></div>
-  <div class="dashboard-metric"><span class="dashboard-metric-icon"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#book"></use></svg></span><span>Total copies</span><strong id="dashTotalCopies">0</strong><small>All physical copies</small></div>
+  <div class="dashboard-metric"><span class="dashboard-metric-icon"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#library"></use></svg></span><span>Distinct books</span><strong id="dashDistinctBooks">0</strong><small>Unique titles</small></div>
+  <div class="dashboard-metric"><span class="dashboard-metric-icon"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#book"></use></svg></span><span>Total copies</span><strong id="dashTotalCopies">0</strong><small>Books in collection</small></div>
   <div class="dashboard-metric"><span class="dashboard-metric-icon"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg></span><span>Available copies</span><strong id="dashAvailableCopies">0</strong><small>Ready for lending</small></div>
-  <div class="dashboard-metric"><span class="dashboard-metric-icon"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg></span><span>Copies on loan</span><strong id="dashBorrowedCopies">0</strong><small>Borrowed physical copies</small></div>
+  <div class="dashboard-metric"><span class="dashboard-metric-icon"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg></span><span>Copies on loan</span><strong id="dashBorrowedCopies">0</strong><small>Currently on loan</small></div>
  </section>
  <div class="dashboard-insight-strip" aria-label="Library performance indicators">
-  <div class="dashboard-insight"><span>Catalog completeness</span><strong id="dashCatalogPct">0%</strong><small>Distinct books with required details</small></div>
-  <div class="dashboard-insight"><span>Availability rate</span><strong id="dashAvailabilityPct">0%</strong><small>Copies currently available</small></div>
-  <div class="dashboard-insight"><span>New copies · 30 days</span><strong id="dashAdded30">0</strong><small>Physical copies added recently</small></div>
-  <div class="dashboard-insight"><span>Loans · 30 days</span><strong id="dashLoans30">0</strong><small>Borrowing transactions recorded</small></div>
+  <div class="dashboard-insight"><span>Catalog completeness</span><strong id="dashCatalogPct">0%</strong><small>Details completed</small></div>
+  <div class="dashboard-insight"><span>Availability rate</span><strong id="dashAvailabilityPct">0%</strong><small>Ready to lend</small></div>
+  <div class="dashboard-insight"><span>New copies · 30 days</span><strong id="dashAdded30">0</strong><small>Recently added</small></div>
+  <div class="dashboard-insight"><span>Loans · 30 days</span><strong id="dashLoans30">0</strong><small>Loans recorded</small></div>
  </div>
  <div class="dashboard-main-grid">
   <section class="dashboard-surface dashboard-trends" aria-labelledby="dashboardTrendTitle"><div class="dashboard-card-heading"><div><span class="eyebrow">CIRCULATION ACTIVITY</span><h3 id="dashboardTrendTitle">Last 7 days</h3></div><div class="dashboard-chart-legend"><span><i class="dashboard-legend-borrowed"></i>Borrowed</span><span><i class="dashboard-legend-returned"></i>Returned</span></div></div>
@@ -336,7 +340,7 @@
 <div id="shelfScan" class="panel shelf-scan-page" aria-labelledby="shelfScanTitle">
 <input id="inventoryCamera" type="file" accept="image/*" capture="environment" hidden><img id="inventoryPreview" class="preview">
  <section class="shelf-page-hero" aria-labelledby="shelfScanTitle">
-  <div class="shelf-page-copy"><span class="shelf-kicker">YOUR SCANNING WORKSPACE · ADMIN ONLY</span><h2 id="shelfScanTitle">Scan books, without the busywork.</h2><p>Upload cover photos, check identified titles and save them. Keep uncertain books in your Review queue.</p>
+  <div class="shelf-page-copy"><span class="shelf-kicker">YOUR SCANNING WORKSPACE · ADMIN ONLY</span><h2 id="shelfScanTitle">Scan books, without the busywork.</h2><p>Upload covers. Save identified books or review uncertain ones.</p>
    <div class="shelf-page-hero-actions"><button type="button" class="shelf-return" data-tab-go="inventory">← Back to inventory</button><button type="button" class="light" id="jumpQuickAdd"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#plus"></use></svg> Add book</button><button id="scanInventory" class="scanbtn"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg> Quick scan</button><span class="shelf-speed-tag">✦ Fast local recognition · Private by default</span></div>
   </div><div class="shelf-page-image"><img src="assets/library-shelves-fallback.jpg" alt="A warmly lit library aisle with bookshelves" loading="lazy"></div>
  </section>
@@ -371,26 +375,32 @@
 </section>
 <section class="scanned-review-section" aria-label="Inventory book scanning and review">
 <section class="batch-box" aria-labelledby="batchHeading">
- <div class="batch-head"><span class="batch-kicker"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg> ONE PLACE FOR ALL SCANNING</span><h3 id="batchHeading">Scan your books</h3><p>Select photos, a folder or ZIP. Review recognized titles, then save. If a title is missing, send the scan to Review books. <span class="scan-limit-note">Large uploads depend on your device memory.</span></p></div>
+ <div class="batch-head"><span class="batch-kicker"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg> ONE PLACE FOR ALL SCANNING</span><h3 id="batchHeading">Scan your books</h3><p>Add photos, a folder or ZIP. Review the titles, then save or send to Review.</p></div>
  <div class="batch-body">
   <div class="scan-command-bar" aria-label="Quick actions">
     <div class="scan-command-message"><span class="scan-command-orb" aria-hidden="true">✦</span><div><strong>Your scanning workbench</strong><small>One inventory on every device · Your scan settings stay on this device</small></div></div>
     <div class="scan-command-buttons"><button id="scanReviewJump" type="button" class="light">Open Review <span id="scanQuickAttentionCount">0</span></button><button id="scanAskResearch" type="button" class="light">✦ Ask AI anything</button></div>
   </div>
-  <div class="batch-picker">
-    <label><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg> Upload folder<input id="batchFolder" aria-label="Upload barcode folder" type="file" accept="image/*" webkitdirectory directory multiple></label>
-    <label><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#archive"></use></svg> Upload ZIP<input id="batchZip" aria-label="Upload ZIP containing shelf folders" type="file" accept=".zip,application/zip,application/x-zip-compressed"></label>
-    <label><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#image"></use></svg> Select photos<input id="batchPhotos" aria-label="Select multiple barcode photos" type="file" accept="image/*,.heic,.heif,.avif" multiple></label>
+  <div class="batch-picker" role="group" aria-label="Choose a scanning source">
+    <label class="premium-upload-choice" data-input-label="batchFolder"><span class="premium-upload-icon"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg></span><span class="premium-upload-copy"><strong>Choose folder</strong><small class="premium-upload-detail">Scan an image folder</small></span><span class="premium-upload-chevron" aria-hidden="true">↗</span><input id="batchFolder" aria-label="Choose a folder of book photos" type="file" accept="image/*" webkitdirectory directory multiple></label>
+    <label class="premium-upload-choice" data-input-label="batchZip"><span class="premium-upload-icon"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#archive"></use></svg></span><span class="premium-upload-copy"><strong>Choose ZIP</strong><small class="premium-upload-detail">Import a photo archive</small></span><span class="premium-upload-chevron" aria-hidden="true">↗</span><input id="batchZip" aria-label="Choose ZIP containing book photos" type="file" accept=".zip,application/zip,application/x-zip-compressed"></label>
+    <label class="premium-upload-choice" data-input-label="batchPhotos"><span class="premium-upload-icon"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#image"></use></svg></span><span class="premium-upload-copy"><strong>Choose photos</strong><small class="premium-upload-detail">Select one or more images</small></span><span class="premium-upload-chevron" aria-hidden="true">↗</span><input id="batchPhotos" aria-label="Choose book cover photos" type="file" accept="image/*,.heic,.heif,.avif" multiple></label>
   </div>
   <section class="scan-recognition-settings" aria-labelledby="scanRecognitionTitle">
-   <div class="scan-recognition-heading"><div><span class="eyebrow">SCAN OPTIONS</span><h4 id="scanRecognitionTitle">Choose how covers are read</h4><p>AI and OCR are on by default. Switch either off before uploading to control how your photos are processed.</p></div><span class="scan-recognition-status">Always visible · Device preference</span></div>
+   <div class="scan-recognition-heading"><div><span class="eyebrow">SCAN OPTIONS</span><h4 id="scanRecognitionTitle">Cover recognition</h4></div><span class="scan-recognition-status">Saved on this device</span></div>
    <div class="scan-recognition-grid">
-    <label class="scan-recognition-card" for="batchUseAI"><span class="scan-recognition-icon" aria-hidden="true">✦</span><span class="scan-recognition-copy"><strong>AI Cover Recognition</strong><small>Connected AI providers identify cover text and book details. When AI is on, images may be securely sent to a configured provider.</small></span><input id="batchUseAI" type="checkbox" checked aria-label="Enable AI cover recognition"><span class="scan-recognition-switch" aria-hidden="true"></span></label>
-    <label class="scan-recognition-card" for="batchUseOCR"><span class="scan-recognition-icon" aria-hidden="true">▤</span><span class="scan-recognition-copy"><strong>Local OCR</strong><small>Read printed cover text on this device. Useful when AI is unavailable or a title is difficult to recognise.</small></span><input id="batchUseOCR" type="checkbox" checked aria-label="Enable local OCR"><span class="scan-recognition-switch" aria-hidden="true"></span></label>
+    <label class="scan-recognition-card" for="batchUseAI"><span class="scan-recognition-icon" aria-hidden="true">✦</span><span class="scan-recognition-copy"><strong>AI</strong><small>Identify titles and details.</small></span><input id="batchUseAI" type="checkbox" checked aria-label="Enable AI cover recognition"><span class="scan-recognition-switch" aria-hidden="true"></span></label>
+    <label class="scan-recognition-card" for="batchUseOCR"><span class="scan-recognition-icon" aria-hidden="true">▤</span><span class="scan-recognition-copy"><strong>OCR</strong><small>Read text on your device.</small></span><input id="batchUseOCR" type="checkbox" checked aria-label="Enable local OCR"><span class="scan-recognition-switch" aria-hidden="true"></span></label>
    </div>
+   <details class="compact-inline-help scan-recognition-help"><summary><span class="help-mark" aria-hidden="true">+</span> How recognition works</summary><p>AI can identify book details using a configured provider. OCR reads cover text on this device. You can use either or both; review suggestions before saving.</p></details>
   </section>
 <div class="batch-details"><div><label for="batchDefaultShelf">Shelf / location <span class="quickadd-optional">optional</span></label><input id="batchDefaultShelf" maxlength="120" placeholder="e.g. Shelf A01 — leave blank if unsure"></div><label class="scan-autosave-switch" for="batchAutoSave"><input id="batchAutoSave" type="checkbox"><span><strong>Automatically save recognized books</strong><small>Off by default so you can review recognized books before saving. Turn on to save identified titles automatically.</small></span></label><button id="batchStart" class="alt" disabled>Retry selected upload</button></div>
-  <div class="batch-progress" role="status" aria-live="polite"><span id="batchStatus">Choose a folder, ZIP or photos. Scanning will start automatically.</span><progress id="batchProgress" max="100" value="0" aria-label="Scanning progress"></progress></div>
+  <div class="batch-progress premium-progress" data-progress-state="idle" role="group" aria-label="Book scanning progress">
+    <div class="premium-progress-header"><span class="premium-progress-stage"><span class="premium-progress-pulse" aria-hidden="true"></span><span id="batchProgressStage">Ready to scan</span></span><strong class="premium-progress-percent" id="batchProgressPercent" aria-hidden="true">0%</strong></div>
+    <div class="premium-progress-description"><span id="batchStatus" role="status" aria-live="polite" aria-atomic="true">Choose a folder, ZIP or photos to begin.</span><span id="batchProgressCount" class="premium-progress-count" aria-hidden="true">0 / 0</span></div>
+    <progress id="batchProgress" max="100" value="0" aria-label="Scanning progress: 0%"></progress>
+    <small class="premium-progress-hint" id="batchProgressHint">Scanning begins when you select your files.</small>
+  </div>
   <div class="scan-cloud-toolbar" aria-label="Shared inventory synchronization"><div class="scan-cloud-copy"><span class="scan-cloud-indicator" aria-hidden="true"></span><div><strong>Shared inventory · synchronized book copies</strong><small id="scanCloudLastSync">Reading the latest saved books from Supabase…</small></div></div><button id="scanRefreshCloud" type="button" class="scan-refresh-button"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#refresh"></use></svg> Refresh from cloud</button></div>
   <div id="batchSummary" class="batch-summary" aria-live="polite"></div>
   <div class="batch-actions scan-selection-tools" role="group" aria-label="Choose which recognized books to save">
@@ -410,23 +420,29 @@
 </section>
 </div>
 <div id="review" class="panel review-workspace" aria-labelledby="reviewWorkspaceTitle">
- <section class="review-workspace-hero"><div><span class="eyebrow">REVIEW · YOUR SHARED WORKSPACE</span><h2 id="reviewWorkspaceTitle">Every correction, in one calm place.</h2><p>Books needing attention live here instead of cluttering Scan. Inspect ISBN suggestions, update the details and save to inventory when ready.</p></div><div class="review-hero-actions"><button id="reviewBackToScan" type="button" class="light">← Scan more books</button><button id="reviewCloudRefresh" type="button">↻ Refresh Review</button></div></section>
+ <section class="review-workspace-hero"><div><span class="eyebrow">REVIEW · YOUR SHARED WORKSPACE</span><h2 id="reviewWorkspaceTitle">Every correction, in one calm place.</h2><p>Correct unfinished books, then save.</p></div><div class="review-hero-actions"><button id="reviewBackToScan" type="button" class="light">← Scan more books</button><button id="reviewCloudRefresh" type="button">↻ Refresh Review</button></div></section>
  <div class="review-stats" aria-live="polite"><span><strong id="reviewPendingCount">0</strong> Pending reviews</span><span><strong id="reviewSavedAttentionCount">0</strong> Saved books needing correction</span></div>
  <section class="review-editor-section" aria-label="Pending book corrections">
-  <div class="scan-review-heading"><div><span class="eyebrow">YOUR REVIEW QUEUE</span><h3>Correct and approve book details</h3><p>Update the title and ISBN, find missing information and save each book. Changes are backed up to your cloud review queue.</p></div><button id="reviewSaveCorrected" type="button" class="green">Save all corrected</button></div><p class="review-action-status" id="reviewActionStatus" role="status" aria-live="polite"></p>
+  <div class="scan-review-heading"><div><span class="eyebrow">YOUR REVIEW QUEUE</span><h3>Correct and approve book details</h3><p>Fill missing fields from ISBN or cover. Review before saving.</p></div><button id="reviewSaveCorrected" type="button" class="green">Save all corrected</button></div>
+  <div class="review-assist-toolbar" aria-label="Review book recognition tools">
+   <div class="review-assist-copy"><span class="review-assist-symbol" aria-hidden="true">✦</span><div><strong>Smart fill</strong><small>Complete missing details</small></div></div>
+   <div class="review-assist-controls"><label class="review-assist-toggle"><input type="checkbox" id="reviewUseOCR" checked><span>OCR</span></label><label class="review-assist-toggle"><input type="checkbox" id="reviewUseAI" checked><span>AI</span></label><button id="reviewAutoFillAll" type="button" class="review-auto-fill"><span aria-hidden="true">✦</span> Auto-fill books</button></div>
+  </div>
+  <details class="compact-inline-help review-assist-help"><summary><span class="help-mark" aria-hidden="true">+</span> How OCR and AI work</summary><p>OCR reads text on your device. AI may send a resized cover to your configured provider. Suggestions stay editable until you save them.</p></details>
+  <p class="review-action-status" id="reviewActionStatus" role="status" aria-live="polite"></p>
   <div class="scan-review-controls"><label for="scanReviewSearch">Search pending and saved attention</label><div class="review-search-input"><span class="review-search-icon" aria-hidden="true"><svg class="app-icon sm"><use href="assets/icons.svg#search"></use></svg></span><input id="scanReviewSearch" type="search" maxlength="180" autocomplete="off" placeholder="Search ISBN, filename, author or shelf…"><button id="scanReviewSearchClear" type="button" class="light">Clear search</button></div></div>
   <div id="batchResults" class="batch-review" aria-live="polite"><div class="empty">Loading your saved review queue…</div></div>
   <div id="savedReviewResults" class="saved-review-panel" aria-live="polite"></div>
  </section>
  <section class="review-tools-section" aria-label="Review advanced tools">  <details class="batch-excel-panel scan-advanced-options" id="scanAdvancedTools" open>
-   <summary class="scan-advanced-summary"><span class="scan-advanced-emblem" aria-hidden="true">✦</span><span class="scan-advanced-heading"><strong>Advanced tools</strong><small>Find missing details, manage Excel files, and sync your review queue</small></span><span class="scan-advanced-optional">Optional</span><span class="scan-advanced-chevron" aria-hidden="true">⌄</span></summary>
+   <summary class="scan-advanced-summary"><span class="scan-advanced-emblem" aria-hidden="true">✦</span><span class="scan-advanced-heading"><strong>Advanced tools</strong><small>ISBN search, import, export and sync</small></span><span class="scan-advanced-optional">Optional</span><span class="scan-advanced-chevron" aria-hidden="true">⌄</span></summary>
    <div class="scan-advanced-inner">
-    <div class="scan-advanced-intro"><div><span class="scan-advanced-label">YOUR PROFESSIONAL TOOLKIT</span><h4>One place for smarter library management.</h4><p>Batch enrichment, safe cloud recovery and spreadsheet editing — without leaving your review.</p></div><button type="button" id="scanResearchFromAdvanced" class="scan-ai-research">✦ Research anything with AI</button></div>
+    <div class="scan-advanced-intro"><div><span class="scan-advanced-label">YOUR PROFESSIONAL TOOLKIT</span><h4>One place for smarter library management.</h4><p>Find details, sync reviews and manage spreadsheets.</p></div><button type="button" id="scanResearchFromAdvanced" class="scan-ai-research">✦ Research anything with AI</button></div>
     <div class="scan-advanced-grid">
-     <section class="scan-tool-card scan-tool-intelligence"><span class="scan-tool-symbol" aria-hidden="true">✧</span><div><span class="scan-tool-eyebrow">SMART DETAILS</span><h4>Complete books with ISBN</h4><p>Automatically suggest ISBN-backed details on new or saved records. Inspect the proposed information before committing any saved-book changes.</p></div><button id="batchEnrichAll" type="button" class="scan-tool-primary">Find missing details</button></section>
-     <section class="scan-tool-card"><span class="scan-tool-symbol" aria-hidden="true">☁</span><div><span class="scan-tool-eyebrow">SHARED REVIEW QUEUE</span><h4>Continue on any device</h4><p>Refresh the cloud queue after saving from another phone or computer. Successfully saved copies will disappear from pending review.</p><p class="review-sync-status" id="reviewSyncStatus" role="status" aria-live="polite">Connecting to cloud review…</p></div><button id="refreshReviewCloud" type="button" class="light">Sync review queue</button></section>
-     <section class="scan-tool-card"><span class="scan-tool-symbol" aria-hidden="true">▤</span><div><span class="scan-tool-eyebrow">EXCEL BACKUP</span><h4>Export review books</h4><p>Download the list for bulk corrections. Keep the Review_Key column unchanged when importing your updates.</p><p class="review-export-status" id="reviewExportStatus" role="status" aria-live="polite">Loading review queue…</p></div><button id="batchExportExcel" type="button" class="light" disabled>Export review · Excel</button></section>
-     <section class="scan-tool-card"><span class="scan-tool-symbol" aria-hidden="true">↥</span><div><span class="scan-tool-eyebrow">BULK UPDATES</span><h4>Import corrected details</h4><p>Upload an edited Excel or CSV file to update existing books or add new copies.</p></div><label for="batchExcelFile" class="batch-excel-import scan-tool-import">Choose Excel or CSV<input id="batchExcelFile" type="file" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv" hidden></label></section>
+     <section class="scan-tool-card scan-tool-intelligence"><span class="scan-tool-symbol" aria-hidden="true">✧</span><div><span class="scan-tool-eyebrow">SMART DETAILS</span><h4>Complete books with ISBN</h4><p>Find book details by ISBN. Review before saving.</p></div><button id="batchEnrichAll" type="button" class="scan-tool-primary">Find missing details</button></section>
+     <section class="scan-tool-card"><span class="scan-tool-symbol" aria-hidden="true">☁</span><div><span class="scan-tool-eyebrow">SHARED REVIEW QUEUE</span><h4>Continue on any device</h4><p>Sync corrections across your devices.</p><p class="review-sync-status" id="reviewSyncStatus" role="status" aria-live="polite">Connecting to cloud review…</p></div><button id="refreshReviewCloud" type="button" class="light">Sync review queue</button></section>
+     <section class="scan-tool-card"><span class="scan-tool-symbol" aria-hidden="true">▤</span><div><span class="scan-tool-eyebrow">EXCEL BACKUP</span><h4>Export review books</h4><p>Download the list for bulk corrections. Keep Review_Key unchanged when importing.</p><p class="review-export-status" id="reviewExportStatus" role="status" aria-live="polite">Loading review queue…</p></div><button id="batchExportExcel" type="button" class="light" disabled>Export review · Excel</button></section>
+     <section class="scan-tool-card"><span class="scan-tool-symbol" aria-hidden="true">↥</span><div><span class="scan-tool-eyebrow">BULK UPDATES</span><h4>Import corrected details</h4><p>Import corrected Excel or CSV files.</p></div><label for="batchExcelFile" class="batch-excel-import scan-tool-import">Choose Excel or CSV<input id="batchExcelFile" type="file" accept=".xlsx,.xls,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.ms-excel,text/csv" hidden></label></section>
     </div>
     <details class="scan-extra-exports"><summary>More export options and spreadsheet instructions</summary><button id="savedAttentionExport" type="button" class="light" disabled>Export saved books missing titles · Excel</button><p>Keep <strong>Review_Key</strong> for existing copies. Use <strong>SAVE</strong> for new copies, <strong>UPDATE</strong> for existing saved copies, or <strong>SKIP</strong> to omit a row. Only books without an identified title require review.</p></details>
    </div>
@@ -448,7 +464,7 @@
 </details>
 </div>
 <div id="scanned" class="panel scanned-page" aria-labelledby="scannedPageTitle">
-<section class="scanned-hero"><div><span class="eyebrow">COLLECTION · SCANNED RECORDS</span><h2 id="scannedPageTitle">Every saved scan, beautifully organized.</h2><p>View all books saved from scans. Unfinished scans are corrected and approved in the Review books workspace.</p><div class="scanned-hero-actions"><button type="button" id="scannedBackInventory" class="light">← Back to Inventory</button><button type="button" id="scannedJumpReview">Open Review books →</button></div></div><div class="section-hero-art" aria-hidden="true"><img src="assets/library-shelves-fallback.jpg" alt="" loading="lazy" decoding="async"></div></section>
+<section class="scanned-hero"><div><span class="eyebrow">COLLECTION · SCANNED RECORDS</span><h2 id="scannedPageTitle">Scanned books, all in one place.</h2><p>Browse saved scans. Edit unfinished books in Review.</p><div class="scanned-hero-actions"><button type="button" id="scannedBackInventory" class="light">← Back to Inventory</button><button type="button" id="scannedJumpReview">Open Review books →</button></div></div><div class="section-hero-art" aria-hidden="true"><img src="assets/library-shelves-fallback.jpg" alt="" loading="lazy" decoding="async"></div></section>
 <section class="scanned-data-card" aria-labelledby="scannedTableTitle"><div class="scanned-data-heading"><div><span class="eyebrow">SAVED LIBRARY RECORDS</span><h3 id="scannedTableTitle">Saved scan register</h3><p>Saved books appear immediately. Review incomplete catalogue details without losing the record or its Book ID.</p></div><span id="scannedCount" class="scanned-count">0 records</span></div><div class="scanned-filters"><label>Search books <input id="scannedSearch" type="search" placeholder="Title, author, Book ID or ISBN…" autocomplete="off"></label><label>Condition <select id="scannedStatus"><option value="all">All statuses</option><option value="available">Available</option><option value="borrowed">On loan</option></select></label><label>Details <select id="scannedQuality"><option value="all">All saved scans</option><option value="full">Identified titles</option><option value="attention">Needs title</option></select></label><label>Shelf <select id="scannedShelf"><option value="all">Every shelf</option></select></label><button id="scannedClear" type="button" class="light">Reset filters</button></div><p class="table-scroll-hint" id="scannedTableScrollHelp">Scroll horizontally to see the complete scanned-book register.</p><div id="scannedTable" class="scanned-table-wrap" aria-live="polite" tabindex="0" role="region" aria-label="Scanned books table" aria-describedby="scannedTableScrollHelp"></div><div class="scanned-table-bottom"><p id="scannedTableMeta">Showing saved scanned records</p><div id="scannedPager" class="pager"></div></div></section>
 </div>
 
@@ -1789,7 +1805,7 @@ const batchMetadataCache=new Map();
 // Only compressed thumbnail previews are retained, not full-resolution photographs.
 let reviewDraftLoadedFor=null,reviewSaveTimer=null,reviewDraftVersion=0;
 let reviewCloudStatus='loading',reviewCloudFailure='',reviewCloudSync=Promise.resolve();
-const autoISBNChecked=new Set(),savedISBNSuggestions=new Map();
+const autoISBNChecked=new Set(),savedISBNSuggestions=new Map(),savedReviewNotices=new Map();
 let isbnAutoJob=null,lastCloudScanAt=0;
 const reviewRemoteHashes=new Map();
 let reviewDraftLastSignature='',savedAttentionPage=1;
@@ -1832,11 +1848,12 @@ async function reviewThumbnail(file){
   const url=URL.createObjectURL(file);
   try{
    const picture=new Image();picture.decoding='async';picture.src=url;await picture.decode();
-   const ratio=Math.min(1,320/Math.max(picture.naturalWidth,picture.naturalHeight)),canvas=document.createElement('canvas');
+   const maxEdge=720,ratio=Math.min(1,maxEdge/Math.max(picture.naturalWidth,picture.naturalHeight)),canvas=document.createElement('canvas');
    canvas.width=Math.max(1,Math.round(picture.naturalWidth*ratio));canvas.height=Math.max(1,Math.round(picture.naturalHeight*ratio));
    canvas.getContext('2d',{alpha:false}).drawImage(picture,0,0,canvas.width,canvas.height);
-   const data=canvas.toDataURL('image/jpeg',.57);
-   return data.length<=110000?data:'';
+   let data=canvas.toDataURL('image/jpeg',.56);
+   if(data.length>125000){canvas.width=Math.max(1,Math.round(canvas.width*.65));canvas.height=Math.max(1,Math.round(canvas.height*.65));canvas.getContext('2d',{alpha:false}).drawImage(picture,0,0,canvas.width,canvas.height);data=canvas.toDataURL('image/jpeg',.50)}
+   return data.length<=125000?data:'';
   }finally{URL.revokeObjectURL(url)}
  }catch{return ''}
 }
@@ -1986,7 +2003,7 @@ function batchShelf(path,fallback="",source="photos"){
 }
 function batchAttr(v){return esc(v).replace(/"/g,"&quot;").replace(/'/g,"&#39;")}
 function batchImageName(name){return /\.(?:jpe?g|png|webp|bmp|gif|tif|tiff|avif|heic|heif)$/i.test(String(name||""))}
-function batchOutput(message){$("batchStatus").textContent=message}
+function batchOutput(message){$("batchStatus").textContent=message;window.LibraryProgressUI?.refresh()}
 function reviewFingerprint(x){return JSON.stringify(['title','authors','publisher','publication_year','barcode','shelf','importAction','updateTargetId'].map(k=>String(x[k]||'').trim()))}
 function batchValid(x){return !!(!x.saved&&!x.reviewBusy&&hasBookTitle(x.title))}
 function reviewShelfNames(){return [...new Set([...books.map(b=>b.shelf_location),...batchItems.map(x=>x.shelf)].map(v=>String(v||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b))}
@@ -2127,9 +2144,9 @@ function renderSavedAttentionReview(reviewQuery=''){
  const pages=Math.max(1,Math.ceil(attention.length/SAVED_ATTENTION_PAGE_SIZE));savedAttentionPage=Math.max(1,Math.min(savedAttentionPage,pages));
  const cards=attention.slice((savedAttentionPage-1)*SAVED_ATTENTION_PAGE_SIZE,savedAttentionPage*SAVED_ATTENTION_PAGE_SIZE).map(b=>{
   const hint=savedISBNSuggestions.get(b.record_id),isbn=validIsbn(b.barcode);
-  return `<article class="saved-review-book"><div class="saved-review-icon">${uiIcon('book')}</div><div class="saved-review-detail"><strong>${esc(b.title||'Title missing')}</strong><small>${esc(b.book_id||'Copy')} · ${esc(b.barcode||'No ISBN')}</small><span>${hint?`${hint._unverified?'AI suggestion — check edition':'Verified catalogue title'}: ${esc(hint.title)}`:isbn?'ISBN available · the app can find its title':'Enter the book title to complete this record'}</span>${hint?`<div class="saved-isbn-preview"><small>${esc([hint.authors,hint.publisher,hint.publication_year].filter(Boolean).join(' · '))}</small><button type="button" class="scan-tool-primary" data-apply-saved-isbn="${esc(b.record_id)}">Apply details to saved book</button></div>`:''}</div><div class="scan-saved-actions">${isbn?`<button type="button" class="light smallbtn" data-find-saved-isbn="${esc(b.record_id)}">${hint?'Find again':'Find title by ISBN'}</button>`:''}<button type="button" class="light smallbtn" data-edit-book="${esc(b.record_id)}">Edit</button></div></article>`;
+  return `<article class="saved-review-book"><div class="saved-review-icon">${uiIcon('book')}</div><div class="saved-review-detail"><strong>${esc(b.title||'Title missing')}</strong><small>${esc(b.book_id||'Copy')} · ${esc(b.barcode||'No ISBN')}</small><span>${hint?`${hint._unverified?'Photo/AI suggestion — verify against your copy':'Verified catalogue suggestion'}: ${esc(hint.title)}`:isbn?'ISBN available · use the lookup or scan the cover':'Attach a cover photo, or enter the title manually'}</span>${savedReviewNotices.has(b.record_id)?`<p class="saved-review-notice" role="status">${esc(savedReviewNotices.get(b.record_id))}</p>`:''}${hint?`<div class="saved-isbn-preview"><small>${esc([hint.authors,hint.publisher,hint.publication_year].filter(Boolean).join(' · '))}</small><button type="button" class="scan-tool-primary" data-apply-saved-isbn="${esc(b.record_id)}">Apply suggested details</button></div>`:''}</div><div class="scan-saved-actions">${isbn?`<button type="button" class="light smallbtn" data-find-saved-isbn="${esc(b.record_id)}">${hint?'Find again':'Find by ISBN'}</button>`:''}<label class="saved-review-photo-action">▤ Read cover photo<input type="file" data-saved-review-photo="${esc(b.record_id)}" accept="image/jpeg,image/png,image/webp,image/*" aria-label="Upload a cover image to suggest details for ${batchAttr(b.book_id||'this saved book')}"></label><button type="button" class="light smallbtn" data-edit-book="${esc(b.record_id)}">Edit</button></div></article>`;
  }).join('');
- el.innerHTML=`<div class="saved-review-heading"><div><h3>Saved books needing attention <span>${attention.length}</span></h3><p>These inventory copies need a title. Update the existing record without creating a new copy.</p></div><span class="review-view-count">${(savedAttentionPage-1)*SAVED_ATTENTION_PAGE_SIZE+1}–${Math.min(attention.length,savedAttentionPage*SAVED_ATTENTION_PAGE_SIZE)} of ${attention.length}</span></div><div class="saved-review-list">${cards}</div>${pages>1?`<nav class="review-pager" aria-label="Saved books requiring attention pages"><button type="button" class="light smallbtn" data-saved-attention-page="${savedAttentionPage-1}" ${savedAttentionPage===1?'disabled':''}>Previous</button><span>Page ${savedAttentionPage} of ${pages}</span><button type="button" class="light smallbtn" data-saved-attention-page="${savedAttentionPage+1}" ${savedAttentionPage===pages?'disabled':''}>Next</button></nav>`:''}`;
+ el.innerHTML=`<div class="saved-review-heading"><div><h3>Saved books needing attention <span>${attention.length}</span></h3><p>Correct these saved copies — no duplicates.</p></div><span class="review-view-count">${(savedAttentionPage-1)*SAVED_ATTENTION_PAGE_SIZE+1}–${Math.min(attention.length,savedAttentionPage*SAVED_ATTENTION_PAGE_SIZE)} of ${attention.length}</span></div><div class="saved-review-list">${cards}</div>${pages>1?`<nav class="review-pager" aria-label="Saved books requiring attention pages"><button type="button" class="light smallbtn" data-saved-attention-page="${savedAttentionPage-1}" ${savedAttentionPage===1?'disabled':''}>Previous</button><span>Page ${savedAttentionPage} of ${pages}</span><button type="button" class="light smallbtn" data-saved-attention-page="${savedAttentionPage+1}" ${savedAttentionPage===pages?'disabled':''}>Next</button></nav>`:''}`;
 }
 function renderBatch(){
  batchSummary();
@@ -2147,6 +2164,7 @@ function renderBatch(){
  if($('reviewSavedAttentionCount'))$('reviewSavedAttentionCount').textContent=String(reviewCounts.saved);
  const navBadge=$('reviewNavCount');if(navBadge)navBadge.textContent=String(reviewCounts.pending+reviewCounts.saved);
  const corrected=$('reviewSaveCorrected');if(corrected)corrected.disabled=locked||!reviewItems.some(({x})=>batchValid(x));
+ const bulkFill=$('reviewAutoFillAll');if(bulkFill)bulkFill.disabled=locked||(!reviewItems.some(({x})=>!hasBookTitle(x.title)&&(validIsbn(x.barcode)||x.file||x.thumbnailData))&&!books.some(b=>bookQuality(b).attention&&validIsbn(b.barcode)));
  const scanInbox=$('scanReviewCandidates');
  if(scanInbox){scanInbox.innerHTML=scanUnstaged.length?`<div class="scan-stage-actions"><span>${scanUnstaged.length} scan${scanUnstaged.length===1?'':'s'} waiting to be sent for correction</span><button type="button" class="light" data-stage-all-review>Save all to Review</button></div><div class="scan-stage-list">${scanUnstaged.slice(0,80).map(({x,i})=>`<article class="scan-stage-item"><div class="scan-stage-cover">${x.thumbnailData?`<img loading="lazy" alt="Scanned cover" src="${batchAttr(batchPreview(x))}">`:'▤'}</div><div class="scan-stage-detail"><strong>${esc(x.fileName||'Unnamed book cover')}</strong><small>${esc(x.barcode||'ISBN not found')} · Title needs attention</small></div><button type="button" data-stage-review="${i}" class="scan-stage-button">Save to Review</button></article>`).join('')}</div>${scanUnstaged.length>80?`<p>Showing first 80 scans. Save all to Review to manage the entire queue.</p>`:''}`:'<div class="scan-stage-empty"><span aria-hidden="true">✓</span><span>No unfinished scans on this screen. Check <strong>Review books</strong> for books already sent for correction.</span></div>';}
  const readyContainer=$('batchReadyResults');
@@ -2161,7 +2179,7 @@ function renderBatch(){
   const field=(name,label,max)=>`<label class="batch-book-field"><span>${label}</span><input aria-label="${label} for ${batchAttr(x.fileName)}" data-batch-field="${name}" data-batch-index="${i}" maxlength="${max}" value="${batchAttr(x[name])}" ${locked||x.reviewBusy?'disabled':''}></label>`;
   h+=`<article role="listitem" class="batch-book scan-title-review-card" aria-label="Book cover ${i+1}: ${batchAttr(x.fileName)}"><div class="batch-book-head"><span class="scan-title-review-number">${(reviewPage-1)*perPage+position+1}</span><div class="batch-book-source"><strong>${esc(x.fileName||'Uploaded image')}</strong><span class="batch-path">${esc(x.path||'Book cover')}</span></div><span class="batch-book-state ${hasBookTitle(x.title)?'ready':'incomplete'}">${hasBookTitle(x.title)?'Ready to save':'Title needed'}</span></div>
    <div class="batch-book-content">${(x.file||x.thumbnailData)?`<img class="batch-book-photo" loading="lazy" alt="Cover photo from ${batchAttr(x.fileName)}" src="${batchAttr(batchPreview(x))}">`:'<div class="batch-book-photo batch-photo-placeholder">No image preview</div>'}
-   <div class="batch-book-fields"><div class="scan-title-primary">${field('title','Book title (required)',350)}</div><div class="scan-title-support">${field('authors','Author (optional)',350)}${field('barcode','ISBN (optional)',80)}<button type="button" class="scan-quick-isbn" data-batch-lookup="${i}" ${locked?'disabled':''}>✦ Fill from ISBN</button></div><details class="scan-card-more"><summary>More details and recognition tools</summary>${reviewShelfField(x,i,locked)}<div class="batch-extra-fields">${field('publisher','Publisher',250)}${field('publication_year','Publication year',20)}</div><div class="batch-action-row"><button type="button" class="light" data-batch-lookup="${i}" ${locked?'disabled':''}>Find details using ISBN</button><button type="button" class="light" data-batch-title="${i}" ${locked?'disabled':''}>Search title</button><button type="button" class="light" data-batch-ocr="${i}" ${locked?'disabled':''}>Read photo text</button><button type="button" class="light" data-batch-ai="${i}" ${locked?'disabled':''}>Try AI recognition</button><button type="button" class="light" data-batch-retake="${i}" ${locked?'disabled':''}>Replace photo</button><button type="button" class="light" data-batch-crop="${i}" ${locked?'disabled':''}>Crop ISBN</button></div></details><div class="review-card-footer"><span class="review-card-save-note">Check the details above before adding this copy to inventory.</span><button type="button" class="scan-inline-save green" data-save-title="${i}" ${locked?'disabled':''}>Save book</button></div></div></div><div class="batch-matches" id="batchMatch${i}">${batchCandidateMarkup(x,i)}</div>${x.ocrText?`<details class="ocr-text"><summary>Text found in photo</summary><pre>${esc(x.ocrText.slice(0,1600))}</pre></details>`:''}${x.error?`<p class="batch-book-hint">${esc(x.error)}</p>`:''}${x.aiNotice?`<p class="batch-book-hint">${esc(x.aiNotice)}</p>`:''}</article>`;
+   <div class="batch-book-fields"><div class="review-smart-actions" role="group" aria-label="Fill details for ${batchAttr(x.fileName||'this book')}"><button class="review-smart-primary" type="button" data-review-smart="${i}" ${locked||x.reviewBusy?'disabled':''}>✦ Auto-fill details</button><button type="button" class="light" data-batch-ocr="${i}" ${locked||x.reviewBusy?'disabled':''}>▤ Read OCR</button><button type="button" class="light" data-batch-ai="${i}" ${locked||x.reviewBusy?'disabled':''}>✧ Read AI</button><button type="button" class="light" data-batch-retake="${i}" ${locked||x.reviewBusy?'disabled':''}>${(x.file||x.thumbnailData)?'Replace photo':'Add cover photo'}</button></div><div class="review-card-lookup-status" role="status">${esc(x.lookup_status||x.aiNotice||(x.file||x.thumbnailData?'Use Auto-fill to find missing details from your cover.':'Attach a cover photo for OCR, or enter an ISBN.'))}</div><div class="scan-title-primary">${field('title','Book title (required)',350)}</div><div class="scan-title-support">${field('authors','Author (optional)',350)}${field('barcode','ISBN (optional)',80)}<button type="button" class="scan-quick-isbn" data-batch-lookup="${i}" ${locked?'disabled':''}>✦ Fill from ISBN</button></div><details class="scan-card-more"><summary>More details and recognition tools</summary>${reviewShelfField(x,i,locked)}<div class="batch-extra-fields">${field('publisher','Publisher',250)}${field('publication_year','Publication year',20)}</div><div class="batch-action-row"><button type="button" class="light" data-batch-lookup="${i}" ${locked?'disabled':''}>Find details using ISBN</button><button type="button" class="light" data-batch-title="${i}" ${locked?'disabled':''}>Search title</button><button type="button" class="light" data-batch-crop="${i}" ${locked?'disabled':''}>Crop ISBN</button></div></details><div class="review-card-footer"><span class="review-card-save-note">Check details before saving.</span><button type="button" class="scan-inline-save green" data-save-title="${i}" ${locked?'disabled':''}>Save book</button></div></div></div><div class="batch-matches" id="batchMatch${i}">${batchCandidateMarkup(x,i)}</div>${x.ocrText?`<details class="ocr-text"><summary>Text found in photo</summary><pre>${esc(x.ocrText.slice(0,1600))}</pre></details>`:''}${x.error?`<p class="batch-book-hint">${esc(x.error)}</p>`:''}${x.aiNotice?`<p class="batch-book-hint">${esc(x.aiNotice)}</p>`:''}</article>`;
  });
  h+='</div>';
  if(pages>1)h+=`<nav class="review-pager" aria-label="Unidentified cover pages"><button type="button" class="light smallbtn" data-review-page="${reviewPage-1}" ${reviewPage<=1?'disabled':''}>Previous</button><span>${reviewPage} / ${pages}</span><button type="button" class="light smallbtn" data-review-page="${reviewPage+1}" ${reviewPage>=pages?'disabled':''}>Next</button></nav>`;
@@ -2262,8 +2280,15 @@ try{
    if(typeof prefs[key]==='boolean')$(id).checked=prefs[key];
  }
 }catch{}
-$('batchUseOCR').addEventListener('change',e=>{saveScanDevicePreferences();if(e.target.checked)void warmupOCR()});
-$('batchUseAI').addEventListener('change',saveScanDevicePreferences);
+function syncReviewRecognitionPreferences(){
+ if($('reviewUseOCR'))$('reviewUseOCR').checked=!!$('batchUseOCR').checked;
+ if($('reviewUseAI'))$('reviewUseAI').checked=!!$('batchUseAI').checked;
+}
+syncReviewRecognitionPreferences();
+$('batchUseOCR').addEventListener('change',e=>{saveScanDevicePreferences();syncReviewRecognitionPreferences();if(e.target.checked)void warmupOCR()});
+$('batchUseAI').addEventListener('change',()=>{saveScanDevicePreferences();syncReviewRecognitionPreferences()});
+$('reviewUseOCR').addEventListener('change',e=>{$('batchUseOCR').checked=e.target.checked;saveScanDevicePreferences();if(e.target.checked)void warmupOCR()});
+$('reviewUseAI').addEventListener('change',e=>{$('batchUseAI').checked=e.target.checked;saveScanDevicePreferences()});
 $('batchAutoSave').addEventListener('change',saveScanDevicePreferences);
 async function preparedOCRImage(file,angle=0){
  const bitmap=await createImageBitmap(file);try{
@@ -2358,20 +2383,31 @@ async function readCoverWithAI(row,file=row.file,force=false){
   let result={};try{result=await response.json()}catch{}
   if(!response.ok){
    const reason=response.status===501||response.status===404?'AI cover reading is not configured in this deployment.':response.status===429?'AI scanning is temporarily rate-limited.':response.status===401?'Sign in again to use AI scanning.':response.status===408||response.status===504?'The AI reader took too long.':String(result?.error||'AI cover reading is temporarily unavailable.').slice(0,160);
-   row.aiNotice=reason+' Local OCR will be attempted.';return false;
+   row.aiNotice=reason+' Try local OCR if needed.';return false;
   }
   const info=result.metadata||{};
-  if(info.isbn&&validIsbn(info.isbn)&&!row.barcode){row.barcode=normalizeIsbn(info.isbn);await batchLookUp(row)}
+  // A previously filled ISBN or title is not evidence that the AI read the photo.
+  // If the photo conflicts with an ISBN/title already entered, do NOT replace it.
+  const coverTitle=String(info.title||'').trim(),existingTitle=String(row.title||'').trim();
+  const printedISBN=validIsbn(info.isbn)?normalizeIsbn(info.isbn):'';
+  if((coverTitle&&existingTitle&&scanHelper.similarity(coverTitle,existingTitle)<.5)||
+     (printedISBN&&validIsbn(row.barcode)&&printedISBN!==normalizeIsbn(row.barcode))){
+   row.coverMismatch=true;
+   row.aiNotice='The book title or ISBN read from this cover differs from the current record. Check that the photo belongs to this copy.';
+   row.lookup_status='Cover/ISBN mismatch — check the physical book before applying details.';
+   return false;
+  }
+  if(printedISBN&&!row.barcode){row.barcode=printedISBN;await batchLookUp(row)}
   for(const field of ['title','authors','publisher','publication_year']){
    if(info[field]&&!row[field])row[field]=String(info[field]).trim().slice(0,field==='publication_year'?20:350);
   }
-  if(row.title||row.barcode){
+  if(coverTitle||printedISBN){
    row.lookup_status='Cover details extracted by AI; verify the text and edition before saving.';
    return true;
   }
   row.aiNotice='AI could not read enough text on this photo. Try a sharper cover or title page.';
   return false;
- }catch(error){row.aiNotice=error?.name==='AbortError'?'AI reading timed out. Try a clearer image or local OCR.':'AI unavailable; local OCR will be attempted.';return false}
+ }catch(error){row.aiNotice=error?.name==='AbortError'?'AI reading timed out. Try a clearer image or local OCR.':'AI unavailable. Local OCR may still work.';return false}
 }
 function applyCoverCatalogMatch(row){
  // A title search can return many editions. Only apply bibliographic data when one title clearly wins.
@@ -2385,16 +2421,24 @@ function applyCoverCatalogMatch(row){
  row.lookup_status='High-confidence title match from '+(best.source||'book catalogue')+'. Verify the edition before saving.';
  row.matches=[];return true;
 }
-async function enrichScanFromImage(row,{forceAI=false}={}){
- row.lookup_status='Reading book cover and title-page text…';
+async function enrichScanFromImage(row,{mode='auto'}={}){
+ row.lookup_status=mode==='ocr'?'Reading photo with local OCR…':mode==='ai'?'Reading photo with AI…':'Reading book cover with AI / OCR…';
  try{
   const file=await reviewSourceFile(row);
-  const usedAI=await readCoverWithAI(row,file,forceAI);
+  const usedAI=mode!=='ocr'&&await readCoverWithAI(row,file,mode==='ai');
   // Image AI often reads front covers that have no barcode. Enrich by title too.
   if(usedAI&&row.title){
    row.matches=await findOCRCatalogMatches(row);
    if(applyCoverCatalogMatch(row))return;
    row.lookup_status=row.matches.length?'Cover text extracted; compare the suggested catalogue matches below.':'Cover text extracted; verify the title and author before saving.';
+   return;
+  }
+  if(mode==='ai'){
+   row.lookup_status=row.aiNotice||'AI could not identify this photo. Try local OCR or attach a clearer cover.';
+   return;
+  }
+  if(mode==='auto'&&!$('batchUseOCR')?.checked){
+   row.lookup_status=row.aiNotice||'AI could not read this cover and local OCR is switched off.';
    return;
   }
   row.ocrText=await ocrText(file);
@@ -2425,7 +2469,7 @@ async function batchTitleSearch(index,withOCR=false){
  row.matches=[];row.error='';row.lookup_status=withOCR?'Reading image…':'Searching by title…';
  const button=$('batchResults').querySelector(`[data-batch-${withOCR==='ai'?'ai':withOCR?'ocr':'title'}="${index}"]`);if(button){button.disabled=true;button.textContent='Searching…'}
  try{
-  if(withOCR)await enrichScanFromImage(row,{forceAI:withOCR==='ai'});
+  if(withOCR)await enrichScanFromImage(row,{mode:withOCR==='ai'?'ai':'ocr'});
   else{
    if(!row.title){row.error='Enter the title printed on this page, or choose Read text from photo.';return}
    row.matches=scanHelper.scoreCandidates(await findTitleCandidates(row.title,row.authors),row.title,row.title,row.authors).slice(0,8);
@@ -2954,6 +2998,104 @@ $("batchSelectAll").onclick=batchSelectAll;
 $("batchSelectDuplicates").onclick=batchSelectDuplicates;
 $("batchDeselectAll").onclick=batchDeselectAll;
 $("batchRemoveSelected").onclick=batchRemoveSelected;
+
+// Review autofill never writes library_books; the user must approve the proposed title.
+// The preview image was compressed to persist between devices, so a fresh photo may
+// be needed for very small print. An ISBN lookup always runs before image recognition.
+async function completeReviewRow(row,{mode='auto',index=-1,refresh=true}={}){
+ if(!row||row.saved||row.reviewBusy)return false;
+ const hasImage=!!(row.file||row.thumbnailData),canISBN=validIsbn(row.barcode);
+ if(mode==='auto'&&!canISBN&&!hasImage){row.lookup_status='Add a cover photo or enter a valid ISBN to complete this book.';if(refresh)renderBatch();return false}
+ row.reviewStaged=true;row.reviewApproval='';row.error='';row.aiNotice='';row.matches=[];
+ const originalTitle=String(row.title||'').trim();
+ try{
+  if(mode==='auto'){
+   if(canISBN)await batchLookUp(row);
+   if(!hasBookTitle(row.title)&&hasImage&&($('reviewUseAI').checked||$('reviewUseOCR').checked)){
+    await enrichScanFromImage(row,{mode:'auto'});
+   }
+   if(!hasBookTitle(row.title)&&canISBN&&$('reviewUseAI').checked){
+    const suggestion=await lookupAIIsbnSuggestion(row.barcode).catch(()=>null);
+    if(suggestion?.title){for(const key of ['title','authors','publisher','publication_year','language','pages','subject'])if(!row[key]&&suggestion[key])row[key]=String(suggestion[key]);row.lookup_status='AI suggested book details from ISBN; verify the edition before saving.';row.aiNotice='These details are not verified against the physical book.'}
+   }
+   if(!hasBookTitle(row.title)&&!row.lookup_status)row.lookup_status='No reliable title found. Attach a clearer cover or enter the title manually.';
+  }else if(!hasImage){row.lookup_status='Attach a cover image first to use '+(mode==='ocr'?'local OCR':'AI recognition')+'.';}
+  else await enrichScanFromImage(row,{mode});
+ }catch(error){row.lookup_status='Recognition failed: '+String(error?.message||error).slice(0,150)}
+ finally{
+  row.reviewUpdatedAt=Date.now();row.reviewStaged=true;
+  // A suggestion must not silently mark a book for bulk saving.
+  if(!originalTitle&&hasBookTitle(row.title))row.selected=false;
+  if(refresh)renderBatch();
+ }
+ return hasBookTitle(row.title);
+}
+let reviewAutofillRunning=false;
+async function runSingleReviewAutofill(index,mode='auto'){
+ const row=batchItems[index];if(!row||row.saved||batchActive||batchSaving||batchZipLoading||batchExcelLoading||reviewAutofillRunning)return;
+ for(const key of ['title','authors','barcode','publisher','publication_year']){
+  const input=$('batchResults').querySelector(`[data-batch-index="${index}"][data-batch-field="${key}"]`);
+  if(input)row[key]=key==='barcode'?clean(input.value):input.value.trim();
+ }
+ reviewAutofillRunning=true;batchActive=true;
+ const progress=$('reviewActionStatus');progress.textContent='Reading '+(row.fileName||'book')+'…';renderBatch();
+ try{await completeReviewRow(row,{mode,index,refresh:false});progress.textContent=hasBookTitle(row.title)?'Details suggested. Check the title, author and ISBN, then click Save book.':(row.lookup_status||'Recognition finished. Add the missing details manually if needed.');}
+ finally{reviewAutofillRunning=false;batchActive=false;renderBatch()}
+}
+async function runReviewAutoFillAll(){
+ if(reviewAutofillRunning||batchActive||batchSaving||batchZipLoading||batchExcelLoading)return;
+ const pending=batchItems.filter(row=>!row.saved&&(row.reviewStaged||!hasBookTitle(row.title))&&!hasBookTitle(row.title)&&(validIsbn(row.barcode)||row.file||row.thumbnailData));
+ // Inventory records never become new review copies: ISBN suggestions are attached
+ // to their existing record IDs and require a separate Apply action.
+ const savedPending=books.filter(b=>bookQuality(b).attention&&validIsbn(b.barcode)&&!savedISBNSuggestions.has(b.record_id));
+ if(!pending.length&&!savedPending.length){$('reviewActionStatus').textContent='Nothing to complete automatically. Attach a cover photo or enter an ISBN on an incomplete book.';return}
+ const queue=pending.slice(0,10),savedQueue=savedPending.slice(0,5),total=queue.length+savedQueue.length;let filled=0;
+ reviewAutofillRunning=true;batchActive=true;
+ const progress=$('reviewActionStatus');renderBatch();
+ try{
+  for(let i=0;i<queue.length;i++){
+   if(!session?.user){progress.textContent='Signed out; completion stopped.';break}
+   progress.textContent=`Auto-filling ${i+1} of ${total}: ${queue[i].fileName||'book'}…`;
+   if(await completeReviewRow(queue[i],{mode:'auto',refresh:false}))filled++;
+  }
+  for(let i=0;i<savedQueue.length&&session?.user;i++){
+   progress.textContent=`Checking saved book ${queue.length+i+1} of ${total}: ${savedQueue[i].book_id||'inventory copy'}…`;
+   await findSavedISBNDetails(savedQueue[i].record_id,{automatic:false});
+   if(savedISBNSuggestions.has(savedQueue[i].record_id))filled++;
+  }
+  progress.textContent=`${filled} of ${total} books have suggested details. Check and approve the results before saving.${pending.length>10||savedPending.length>5?' Run again for the remaining records.':''}`;
+ }finally{reviewAutofillRunning=false;batchActive=false;renderBatch()}
+}
+// Existing inventory records are updated IN PLACE after explicit approval.
+// A newly uploaded photo is used for this suggestion only; it is not saved on the book.
+async function proposeSavedReviewPhoto(recordId,file){
+ const original=books.find(b=>b.record_id===recordId);
+ if(!original||!file||!session?.user)return;
+ if(!/^image\//.test(file.type)||file.size>15*1024*1024){savedReviewNotices.set(recordId,'Choose a JPEG, PNG or WebP image under 15 MB.');renderSavedAttentionReview();return}
+ savedReviewNotices.set(recordId,'Reading cover photo…');renderSavedAttentionReview();
+ const candidate={title:'',authors:'',publisher:'',publication_year:'',barcode:normalizeIsbn(original.barcode),matches:[],ocrText:'',aiNotice:'',lookup_status:'',file,reviewStaged:true};
+ try{
+  if(validIsbn(candidate.barcode))await batchLookUp(candidate);
+  await enrichScanFromImage(candidate,{mode:'auto'});
+  if(candidate.coverMismatch){savedReviewNotices.set(recordId,candidate.aiNotice||'The uploaded photo does not match this inventory copy. Please verify the book.');return}
+  if(validIsbn(original.barcode)&&validIsbn(candidate.barcode)&&normalizeIsbn(original.barcode)!==normalizeIsbn(candidate.barcode)){
+   savedReviewNotices.set(recordId,'The photo shows a different ISBN from this inventory record. Check the physical copy before applying changes.');return;
+  }
+  if(!hasBookTitle(candidate.title)&&validIsbn(candidate.barcode)&&$('reviewUseAI').checked){
+   const info=await lookupAIIsbnSuggestion(candidate.barcode).catch(()=>null);
+   if(info?.title)Object.assign(candidate,info);
+  }
+  if(!hasBookTitle(candidate.title)){savedReviewNotices.set(recordId,candidate.lookup_status||'No readable title detected. Try a clearer cover, or use Edit to enter it manually.');return}
+  savedISBNSuggestions.set(recordId,{title:candidate.title,authors:candidate.authors,publisher:candidate.publisher,publication_year:candidate.publication_year,language:candidate.language||'',pages:candidate.pages||'',subject:candidate.subject||'',_unverified:true,_sources:['Photo OCR / AI — verify']});
+  savedReviewNotices.set(recordId,'Suggested from the cover. Check the details, then select Apply suggested details to update this existing book.');
+ }catch(error){savedReviewNotices.set(recordId,'Could not process the photo: '+String(error?.message||error).slice(0,150))}
+ finally{renderSavedAttentionReview(String($('scanReviewSearch')?.value||'').trim().toLowerCase())}
+}
+$('reviewAutoFillAll').onclick=runReviewAutoFillAll;
+$('savedReviewResults').addEventListener('change',e=>{
+ const input=e.target.closest('[data-saved-review-photo]');if(!input)return;
+ const file=input.files?.[0];if(file)void proposeSavedReviewPhoto(input.dataset.savedReviewPhoto,file);
+});
 async function batchLookupInCard(index){
  const x=batchItems[index];
  if(!x||x.saved||x.reviewBusy||batchActive||batchSaving||batchZipLoading||batchExcelLoading)return;
@@ -2988,13 +3130,14 @@ $("batchResults").addEventListener('click',e=>{
  }
 
  const reviewPageButton=e.target.closest('[data-review-page]');if(reviewPageButton){reviewPage=Number(reviewPageButton.dataset.reviewPage);renderBatch();return}
+ const smart=e.target.closest('[data-review-smart]');if(smart)return runSingleReviewAutofill(Number(smart.dataset.reviewSmart),'auto');
  const button=e.target.closest('[data-batch-lookup]');
  if(button)return batchLookupInCard(Number(button.dataset.batchLookup));
  const find=e.target.closest('[data-batch-title]');if(find)return batchTitleSearch(Number(find.dataset.batchTitle));
  const crop=e.target.closest('[data-batch-crop]');if(crop)return cropBatchIsbn(Number(crop.dataset.batchCrop));
  const retake=e.target.closest('[data-batch-retake]');if(retake){if(batchActive||batchSaving||batchZipLoading||batchExcelLoading)return;const row=batchItems[Number(retake.dataset.batchRetake)];if(!row||row.saved)return;batchRetakeRow=row;$('batchRetakeFile').click();return}
- const read=e.target.closest('[data-batch-ocr]');if(read)return batchTitleSearch(Number(read.dataset.batchOcr),true);
- const aiRead=e.target.closest('[data-batch-ai]');if(aiRead)return batchTitleSearch(Number(aiRead.dataset.batchAi),'ai');
+ const read=e.target.closest('[data-batch-ocr]');if(read)return runSingleReviewAutofill(Number(read.dataset.batchOcr),'ocr');
+ const aiRead=e.target.closest('[data-batch-ai]');if(aiRead)return runSingleReviewAutofill(Number(aiRead.dataset.batchAi),'ai');
  const match=e.target.closest('[data-batch-match]');if(match){
   const row=batchItems[Number(match.dataset.batchMatch)],item=row?.matches?.[Number(match.dataset.matchIndex)];
   if(!item||row.saved)return;

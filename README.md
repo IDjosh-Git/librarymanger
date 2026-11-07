@@ -1,3 +1,51 @@
+# Library Manager v5.18 — Premium Progress & Upload Controls
+
+This release retains the v5.17 functionality and color scheme. It improves the **Scan books** file-selection tiles (folder, ZIP, individual photos) and scanning progress display without changing the scanning engine or database.
+
+- New accessible **Choose folder**, **Choose ZIP**, **Choose photos** tiles with consistent icon alignment, short descriptions, focus states and selection feedback.
+- Scanning progress now shows a measured percentage, completed/total image count and a clear status. It uses real values from the existing `batchProgress` element; it does **not** simulate progress.
+- ZIP preparation, scanning, saving, completion and recoverable errors have distinct labels. Unmeasured ZIP preparation does not invent a percentage.
+- The dashboard copy-availability bar and Smart Fill/Review activity messages use clearer, consistent styling.
+- Mobile styling uses single-column upload selections while larger viewports use a three-column row. The existing theme colors are preserved.
+
+Files added: `assets/premium-progress-upload.css` and `assets/premium-progress-upload.js`. They load **after** the v5.17 design assets. No Supabase migrations or AI settings need to be changed for this release.
+
+Verification: JavaScript syntax checked; scoped browser tests at 320, 390, 768 and 1440 pixels passed; file selection, scanning counters, completion status and ZIP preparation state passed. Actual end-to-end Supabase scanning and third-party API timing were not tested here.
+
+---
+
+# Library Manager v5.16 — Review OCR + AI Auto-fill
+
+This release upgrades **Review books** in the existing Library Manager application without changing your design colors, authentication model, Supabase inventory IDs or previous photographed headers.
+
+## New review workflow
+
+1. In navigation, open **Review books**. Use **Auto-fill missing details** to process the first 10 pending incomplete records (ISBN and/or cover image available), plus up to 5 saved inventory records with an ISBN. Run again for the remainder.
+2. OCR and AI toggles are visible beside this action; their states stay synchronized with the Scan page and with each device's existing settings. With the AI toggle off, automatic cover recognition uses local OCR only. With OCR off, it uses AI only. Both off means ISBN catalog lookup only.
+3. Every pending review card has **Auto-fill details**, **Read OCR**, **Read AI**, and **Replace photo / Add cover photo**. Auto-fill checks a valid ISBN first; if the title is still missing, it attempts image recognition based on the toggles. **Read OCR always uses local Tesseract OCR**, even when AI is enabled; **Read AI** explicitly requests the AI vision provider even if the global toggle is off.
+4. Suggested titles, authors, publisher, and publication year remain editable on the card; review them against the physical book before clicking **Save book** or **Save all corrected**. Auto-fill never calls the inventory save function or creates a duplicate copy on its own.
+5. Under **Saved books needing attention**, **Find by ISBN** creates a proposal for the existing saved copy. **Read cover photo** lets you attach a fresh photo and get an AI/OCR suggestion; select **Apply suggested details** to update the **existing** Supabase record. This action does not insert a new inventory record. A suspected cover/ISBN mismatch is flagged for manual verification.
+6. If a Review record has no original image (or only a low-resolution restored thumbnail), use **Add/Replace photo** for the most accurate OCR result. A compressed photo preview persists with pending Review rows so cross-device review remains possible, but full-resolution photos are not stored there.
+
+## Deployment
+
+- Upload the **ZIP contents** to the existing Vercel project, keeping `index.html`, `assets/`, `lib/`, `api/`, and `vercel.json` at the project root.
+- Keep your existing Supabase configuration and previous database migrations. **No new SQL migration is needed** for v5.16.
+- Local OCR recognition uses Tesseract.js, loaded on demand from its CDN; a connection is required to download its engine and language data if they are not cached. The image is processed on your device.
+- AI vision uses `/api/book-vision` and requires at least one valid **Production** key in Vercel (`OPENROUTER_API_KEY`, `GROQ_API_KEY`, or `GEMINI_API_KEY`) with access to a vision-capable model. Free providers can be rate-limited, unavailable, or incompatible with photos. If no AI provider works, local OCR, ISBN catalogue search and manual editing remain usable.
+- Adding or changing a key requires a **new Production deployment**. Do not put API keys in public JavaScript or share them in chat.
+
+## Validation and limitations
+
+- Automated Node regression tests confirm mode separation (OCR-only vs AI-only), ISBN-first completion, fallback to local OCR and explicit approval before saved inventory changes. The existing provider fallback diagnostic tests passed.
+- Browser layout checks passed at widths 320, 390, 768 and 1440 pixels in light/dark themes with no horizontal overflow and accessible per-book actions. These tests use representative review records.
+- Actual OCR accuracy depends on lighting, language and cover resolution; AI suggestions are not verified facts. Always check edition and ISBN before saving.
+- No live provider-token calls, live Vercel redeployment or two-device Supabase integration test was performed in this release.
+
+---
+
+## Existing release functionality
+
 # Library Manager v5.15 — Visible Photo Headers & AI Chat Diagnostics
 
 ## What changed in v5.15
@@ -39,3 +87,12 @@ Sign in on Windows and mobile with the **same Supabase account**. Scan a cover, 
 ## Assets and attribution
 
 The fallback library photographs are derived from Unsplash (https://unsplash.com/license): Isaac Benhesed's reading-room photograph (photo-1557818288-320deebced6c), library interior (photo-1548453282-29d422a7025a), and book-stack image (photo-1520467795206-62e33627e6ce). The app may retrieve other library photographs from Unsplash CDN and book covers from Open Library.
+
+
+## v5.17 — Compact messages and recognition switches
+
+- AI and OCR remain enabled/disabled exactly as in v5.16, but use a compact two-switch layout on mobile.
+- The Scan and Review recognition explanations are behind **+ How it works**, with a **−** control to close.
+- Longer informational notes on cards in Overview, Inventory, Scan, Review, circulation, and scanned-books pages display a short preview with **+ Read more / − Show less**. Statuses and editing controls are not collapsed.
+- The existing accordion sections also show **+ / −** instead of ambiguous chevrons.
+- No database migration or changes to provider keys are required for this visual update.
