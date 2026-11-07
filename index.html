@@ -12,6 +12,7 @@
 <title>Library Manager | Modern Library Workspace</title>
 <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="assets/scan-extraction.js"></script>
+<script src="assets/scan-upload-dedup.js?v=5.20.0"></script>
 <script src="assets/isbn-crop.js"></script>
 <script src="assets/review-excel.js"></script>
 <script src="assets/scanned-books.js"></script>
@@ -40,6 +41,7 @@
 <link rel="stylesheet" href="assets/compact-card-insights.css?v=5.17.0">
 <link rel="stylesheet" href="assets/premium-progress-upload.css?v=5.18.0">
 <link rel="stylesheet" href="assets/weekly-admin.css?v=5.19.0">
+<link rel="stylesheet" href="assets/premium-navigation-filters.css?v=5.21.0">
 <script defer src="assets/compact-card-insights.js?v=5.17.0"></script>
 <script defer src="assets/premium-progress-upload.js?v=5.18.0"></script>
 <script defer src="assets/book-guide-format.js"></script>
@@ -100,7 +102,7 @@
       <p id="signupInviteLinked" class="invite-link-status" hidden><span aria-hidden="true">✓</span> Secure invitation link detected.</p>
       <label id="signupInviteCodeLabel" for="signupInviteCode">Administrator access code</label>
       <input id="signupInviteCode" type="password" spellcheck="false" autocomplete="off" maxlength="160" placeholder="Enter the private code from your administrator">
-      <p class="auth-hint">The server validates this code after sign-in and email verification. Selecting Administrator alone never grants access.</p>
+      <p class="auth-hint">Admin access requires a valid invitation and a verified email.</p>
     </div>
     <button id="authSubmit" type="submit">Sign In</button>
   </form>
@@ -118,7 +120,7 @@
   </div>
 </div>
 <nav class="workspace-nav" aria-label="Library workspace">
-  <div class="workspace-nav-header"><span class="workspace-nav-eyebrow">WORKSPACE MENU</span><strong>Explore your library</strong><p>Everything in the right place.</p></div>
+  <div class="workspace-nav-header"><span class="workspace-nav-eyebrow">YOUR WORKSPACE</span><strong>Library navigation</strong><p>Navigate your collection with ease.</p></div>
   <div class="workspace-nav-section nav-admin-only">
     <p class="workspace-nav-label">OVERVIEW</p>
     <button class="tab active" type="button" data-tab="dashboard" aria-pressed="true" aria-current="page"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg><span>Overview</span><span class="nav-current-mark" aria-hidden="true"></span></button>
@@ -159,19 +161,19 @@
     <a class="workspace-spotlight-link" href="book-of-the-week.html"><span class="spotlight-nav-mark" aria-hidden="true">✦</span><span>Book of the week<small>Featured reading pick</small></span><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg></a>
   </div>
 </nav>
-<details class="account-tools"><summary><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span class="account-tools-label">Account &amp; access</span></summary><div class="account-tools-body"><div class="row"><button id="reload" class="green">Reload Database</button><button id="signOut" class="light">Sign Out</button></div>
+<details class="account-tools"><summary><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span class="account-tools-label">Account settings</span></summary><div class="account-tools-body"><div class="row"><button id="reload" class="green">Reload Database</button><button id="signOut" class="light">Sign Out</button></div>
 <details id="adminInvitePanel" class="admin-invite-panel" hidden>
-  <summary>Administrator registration code</summary>
+  <summary><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span>Generate access code</span></summary>
   <div class="admin-invite-panel-body">
-    <button id="createAdminInvite" type="button" class="green">Generate / rotate admin code</button>
-    <div id="createdAdminInvite" hidden class="admin-invite-result" role="status"><strong>New administrator code — copy it now</strong><p id="adminInviteDeliveryStatus">This code is displayed once. Save it securely.</p><code id="adminAccessCodeResult" class="admin-access-result"></code><button id="copyAdminAccessCode" class="light" type="button">Copy access code</button></div>
+    <p class="admin-panel-intro">Create a private code for a new administrator. The previous code will stop working.</p><button id="createAdminInvite" type="button" class="green"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#plus"></use></svg> Generate new code</button>
+    <div id="createdAdminInvite" hidden class="admin-invite-result" role="status"><strong>Code generated</strong><p id="adminInviteDeliveryStatus">Copy now. This code appears only once.</p><code id="adminAccessCodeResult" class="admin-access-result"></code><button id="copyAdminAccessCode" class="light" type="button"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#copy"></use></svg> Copy code</button></div>
   </div>
 </details>
 <details id="activateAdminPanel" class="admin-invite-panel" hidden>
-  <summary>Activate administrator access</summary>
-  <div class="admin-invite-panel-body"><p>Have a private administrator registration code? Enter it to upgrade your signed-in, email-verified account.</p>
+  <summary><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg><span>Activate admin access</span></summary>
+  <div class="admin-invite-panel-body"><p>Enter your invitation code to activate administrator access.</p>
     <label for="existingAdminInviteCode">Administrator access code</label><input id="existingAdminInviteCode" type="password" autocomplete="off" spellcheck="false" placeholder="Enter private code">
-    <button id="activateAdminInvite" type="button" class="light">Verify and activate</button>
+    <button id="activateAdminInvite" type="button" class="light">Activate access</button>
   </div>
 </details>
 </div></details>
@@ -179,12 +181,13 @@
 <div id="status" class="status">Ready.</div>
 
 <details class="lookupbox">
-  <summary class="lookuphead"><span class="lookuphead-icon" aria-hidden="true"><svg class="app-icon"><use href="assets/icons.svg#search"></use></svg></span><span class="lookuphead-copy"><strong>Book details lookup</strong><small>Catalog providers &amp; API settings</small></span><span class="lookuphead-status">Tools</span></summary>
+  <summary class="lookuphead"><span class="lookuphead-icon" aria-hidden="true"><svg class="app-icon"><use href="assets/icons.svg#search"></use></svg></span><span class="lookuphead-copy"><strong>Book lookup settings</strong><small>Optional API connection</small></span><span class="lookuphead-status">Optional</span></summary>
   <div class="lookupbody">
-    <div class="lookupnote">ISBN lookup checks Google Books, Open Library Search, Edition and Books API, HathiTrust, Crossref, DataCite, Internet Archive and Wikidata; Library of Congress provides a final fallback. Optional ISBNdb adds another catalog if you have a paid key. It keeps checking when fields are missing, accepts only matching ISBNs, and never overwrites details you entered.</div>
-    <label for="googleBooksKey">Google Books key on this browser (legacy fallback only)</label>
-    <input id="googleBooksKey" type="password" placeholder="Optional Google Books API key">
-    <p class="lookupnote">For Vercel, add <code>GOOGLE_BOOKS_API_KEY</code> or optional paid <code>ISBNDB_API_KEY</code> under Project → Settings → Environment Variables, then redeploy. Never put an ISBNdb key in this page, GitHub, or your browser.</p><div class="row" style="margin-top:8px"><button id="saveBooksKey" class="light">Save API Key</button><button id="clearBooksKey" class="light">Clear Key</button></div>
+    <p class="lookupnote lookup-intro">Complete book information using catalogue data.</p>
+    <label for="googleBooksKey">Optional browser API key</label>
+    <div class="lookup-key-input"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#settings"></use></svg><input id="googleBooksKey" type="password" autocomplete="off" spellcheck="false" placeholder="Google Books key (optional)"></div>
+    <div class="row lookup-actions"><button id="saveBooksKey" class="light" type="button"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg> Save key</button><button id="clearBooksKey" class="light" type="button">Remove key</button></div>
+    <details class="lookup-provider-help"><summary>API setup &amp; privacy <svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#chevron-down"></use></svg></summary><p>For shared lookup, configure <code>GOOGLE_BOOKS_API_KEY</code> in Vercel and redeploy. A browser key is saved on this device only. Never paste a private server key here.</p><p>Other book catalogues are also checked. Existing book details are not overwritten.</p></details>
   </div>
 </details>
 </div></section>
@@ -267,7 +270,7 @@
     <h2>One organized place for every book.</h2>
     <p>Find books fast, review available copies, and keep your collection accurate. Search the catalog first, then add or scan books whenever you need to.</p>
     <div class="hero-actions"><button type="button" class="light" id="jumpCatalog"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg> Browse catalog</button><button type="button" id="jumpBatch" class="light">
-<svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg> Open Scan &amp; Review</button></div>
+<svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg> Open Scan</button></div>
     <div class="hero-highlights" aria-label="Inventory highlights"><span><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg> Grouped copy counts</span><span><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg> Powerful catalogue filters</span><span><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export inventory</span></div>
   </div>
   <div class="hero-visual">
@@ -279,28 +282,30 @@
 <div class="grid3 inventory-stats-grid"><div class="stat"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#book"></use></svg><b id="totalBooks">0</b><span>Total books</span></div><div class="stat"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg><b id="availableBooks">0</b><span>Available</span></div><div class="stat warning"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg><b id="borrowedBooks">0</b><span>On loan</span></div></div>
 <div id="overdueAlert" class="alert-banner" hidden><div style="display:flex;gap:9px;align-items:center"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#alert"></use></svg><div><strong id="overdueAlertTitle">Overdue loans</strong><p>Review loans that have passed their due date.</p></div></div><button id="overdueAlertAction" type="button">View loans →</button></div>
 
-<div class="inventory-studio-link"><span><strong>Adding or scanning books?</strong><small>Upload a shelf, read ISBNs, and approve book details in a dedicated review studio.</small></span><button type="button" data-tab-go="shelfScan">Open Scan &amp; Review <span aria-hidden="true">↗</span></button></div>
+<div class="inventory-studio-link"><span><strong>Adding or scanning books?</strong><small>Upload shelves and review new scans.</small></span><button type="button" data-tab-go="shelfScan">Open Scan <span aria-hidden="true">↗</span></button></div>
 <section class="inventory-workspace-card" id="inventoryCatalog" aria-labelledby="inventoryCatalogTitle">
-  <div class="inventory-panel-heading inventory-panel-heading-inline"><div><span class="eyebrow">Explore inventory</span><h3 id="inventoryCatalogTitle">Explore your book collection</h3></div><p>Find every title, view copy availability and manage catalogue details—no scanning tools cluttering your inventory.</p></div>
-  <div class="toolbar inventory-toolbar"><div class="search-wrap"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input id="bookSearch" type="search" placeholder="Search title, author, ISBN, ID, borrower or shelf…" aria-label="Search inventory"></div><button id="toggleColumnFilters" type="button" class="inventory-filter-launch" aria-haspopup="dialog" aria-expanded="false" aria-controls="columnFiltersPanel"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#filter"></use></svg> Filters <span id="columnFilterBadge" class="column-filter-badge" hidden>0</span><span aria-hidden="true">↗</span></button><span id="columnFilterSummary" class="column-filter-summary" role="status" aria-live="polite">All books</span></div>
-  <div class="quality-filters"><div class="quality-head"><strong>Book details</strong><button type="button" id="smartFillBooks" class="smart-fill-action" aria-describedby="smartFillNote">✦ Fill missing book details now</button></div>
- <label class="auto-fill-control" for="autoFillVerified"><input type="checkbox" id="autoFillVerified" checked><span class="auto-fill-switch" aria-hidden="true"></span><span class="auto-fill-copy"><strong>Automatically complete verified missing details</strong><small>Runs quietly when you open Inventory. Only fills blanks for confident catalog matches; never replaces existing data. Turn off at any time.</small></span></label>
- <p class="smart-fill-note" id="smartFillNote">Uses free book catalogs and confirmed ISBN or title matches. Only records without readable titles need attention. Optional author, shelf and publisher details can be completed later.</p><div class="smart-fill-progress" id="smartFillProgress" role="status" aria-live="polite" hidden></div><p class="quality-hint">Duplicate books are combined into one inventory line with <strong>Available Copies</strong> and <strong>Total Copies</strong>. Expand an entry to edit, lend, return or remove a specific physical copy. Books without ISBNs can be saved by title.</p></div>
+  <div class="inventory-panel-heading inventory-panel-heading-inline"><div><span class="eyebrow">Explore inventory</span><h3 id="inventoryCatalogTitle">Your collection</h3></div><p>Search and manage books in seconds.</p></div>
+  <div class="toolbar inventory-toolbar"><div class="search-wrap"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input id="bookSearch" type="search" placeholder="Search books, authors, ISBN or shelf…" aria-label="Search inventory"></div><button id="toggleColumnFilters" type="button" class="inventory-filter-launch" aria-haspopup="dialog" aria-expanded="false" aria-controls="columnFiltersPanel"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#filter"></use></svg> Filter <span id="columnFilterBadge" class="column-filter-badge" hidden>0</span><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#chevron-right"></use></svg></button><span id="columnFilterSummary" class="column-filter-summary" role="status" aria-live="polite">All books</span></div>
+  <details class="quality-filters quality-disclosure">
+  <summary><span class="quality-summary-icon"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg></span><span class="quality-summary-copy"><strong>Data quality tools</strong><small>Auto-fill missing book details</small></span><svg class="app-icon sm quality-summary-chevron" aria-hidden="true"><use href="assets/icons.svg#chevron-down"></use></svg></summary>
+  <div class="quality-disclosure-body"><div class="quality-head"><strong>Book details</strong><button type="button" id="smartFillBooks" class="smart-fill-action" aria-describedby="smartFillNote">✦ Fill missing details</button></div>
+ <details class="inventory-quality-options"><summary>Auto-fill settings <svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#chevron-down"></use></svg></summary><label class="auto-fill-control" for="autoFillVerified"><input type="checkbox" id="autoFillVerified" checked><span class="auto-fill-switch" aria-hidden="true"></span><span class="auto-fill-copy"><strong>Auto-fill verified details</strong><small>Fills blanks only. Your existing details stay unchanged.</small></span></label>
+ <p class="smart-fill-note" id="smartFillNote">Matches titles and ISBNs against book catalogues.</p><div class="smart-fill-progress" id="smartFillProgress" role="status" aria-live="polite" hidden></div><p class="quality-hint">Copies are grouped by title. Open a book to manage each copy.</p></details></div></details>
   <div class="inventory-options"><div class="select-control"><label for="bookSort">Sort by</label><select id="bookSort" aria-label="Sort inventory"><option value="newest">Recently added</option><option value="oldest">Oldest added</option><option value="title">Title A–Z</option><option value="shelf">Shelf A–Z</option><option value="due">Due date</option></select></div><div class="select-control"><label for="bookPageSize">Per page</label><select id="bookPageSize" aria-label="Books per page"><option value="5">5</option><option value="10">10</option><option value="15">15</option><option value="20">20</option><option value="25">25</option><option value="30">30</option><option value="40">40</option><option value="50">50</option><option value="100">100</option></select></div><div class="view-switch" role="group" aria-label="Inventory view"><button type="button" id="viewTable" aria-pressed="true" title="Table view" aria-label="Table view"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#list"></use></svg></button><button type="button" id="viewGrid" aria-pressed="false" title="Card view" aria-label="Card view"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg></button></div></div><dialog id="columnFiltersPanel" class="column-filters-panel inventory-filter-dialog" aria-modal="true" aria-labelledby="inventoryFilterTitle" aria-describedby="inventoryFilterDescription">
   <div class="inventory-filter-shell">
     <div class="column-filters-heading inventory-filter-head">
-      <div class="inventory-filter-head-copy"><span class="eyebrow">YOUR COLLECTION · FILTERS</span><h2 id="inventoryFilterTitle">Filter inventory</h2><p id="inventoryFilterDescription">Find exactly the books you need, without cluttering your collection.</p></div>
+      <div class="inventory-filter-head-copy"><span class="eyebrow">YOUR COLLECTION · FILTERS</span><h2 id="inventoryFilterTitle">Filter inventory</h2><p id="inventoryFilterDescription">Refine your collection in a few taps.</p></div>
       <button type="button" id="columnFiltersClose" class="light inventory-filter-close" aria-label="Close filters and discard changes">✕</button>
     </div>
     <div class="inventory-filter-body" id="inventoryFilterBody">
       <section class="inventory-filter-group" aria-label="Book availability"><div class="inventory-filter-group-heading"><strong>Availability</strong><span>Choose one</span></div>
         <div class="filter-row" role="group" aria-label="Filter books"><button class="filter-chip active" type="button" data-book-filter="all" aria-pressed="true">All books</button><button class="filter-chip" type="button" data-book-filter="available" aria-pressed="false">Available</button><button class="filter-chip" type="button" data-book-filter="borrowed" aria-pressed="false">On loan</button><button class="filter-chip" type="button" data-book-filter="overdue" aria-pressed="false">Overdue</button></div>
       </section>
-      <section class="inventory-filter-group" aria-label="Book title completeness"><div class="inventory-filter-group-heading"><strong>Book details</strong><span>Only missing titles need attention</span></div>
+      <section class="inventory-filter-group" aria-label="Book title completeness"><div class="inventory-filter-group-heading"><strong>Book details</strong><span>Find incomplete records</span></div>
         <div class="filter-row" role="group" aria-label="Book details completeness"><button class="filter-chip active" type="button" data-quality-filter="all" aria-pressed="true">All details</button><button class="filter-chip" type="button" data-quality-filter="attention" aria-pressed="false">Needs title <span id="attentionCount"></span></button><button class="filter-chip" type="button" data-quality-filter="no-title" aria-pressed="false">Without title <span id="noTitleCount"></span></button><button class="filter-chip" type="button" data-quality-filter="full" aria-pressed="false">Identified <span id="fullCount"></span></button></div>
       </section>
       <section class="inventory-filter-group inventory-filter-fields" aria-label="Specific field filters">
-        <div class="inventory-filter-group-heading"><strong>Filter by field</strong><span>Optional · Combine fields to refine results</span></div>
+        <div class="inventory-filter-group-heading"><strong>Filter by field</strong><span>Search selected fields</span></div>
   <div class="column-picker-shortcuts" role="group" aria-label="Choose a column to filter">
     <button type="button" data-show-column-values="isbn">ISBN / Barcode</button>
     <button type="button" data-show-column-values="title">Title</button>
@@ -321,10 +326,10 @@
     <p id="columnValueMore" class="column-value-more" aria-live="polite"></p>
   </div>
   <div class="inventory-filter-field-tools"><button type="button" id="resetColumnFilters" class="inventory-clear-fields" hidden>Clear field filters</button></div>
-  <details class="column-advanced-filters"><summary>More options · Text search and copy ranges</summary>
+  <details class="column-advanced-filters"><summary>Advanced filters <svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#chevron-down"></use></svg></summary>
   <div class="column-filters-grid"><div class="column-filter-field"><label for="column_isbn">ISBN / Barcode</label><input id="column_isbn" data-column-filter="isbn" type="search" placeholder="ISBN or barcode…" autocomplete="off"></div><div class="column-filter-field"><label for="column_title">Title</label><input id="column_title" data-column-filter="title" type="search" placeholder="Book title…" autocomplete="off"></div><div class="column-filter-field"><label for="column_authors">Authors</label><input id="column_authors" data-column-filter="authors" type="search" placeholder="Author name…" autocomplete="off"></div><div class="column-filter-field"><label for="column_shelf">Shelf</label><input id="column_shelf" data-column-filter="shelf" type="search" placeholder="Shelf number…" autocomplete="off"></div><div class="column-filter-field"><label>Available Copies</label><div class="column-filter-range"><input data-column-filter="availableMin" aria-label="Available Copies minimum" type="number" min="0" step="1" inputmode="numeric" placeholder="Min"><span>to</span><input data-column-filter="availableMax" aria-label="Available Copies maximum" type="number" min="0" step="1" inputmode="numeric" placeholder="Max"></div></div><div class="column-filter-field"><label>Total Copies</label><div class="column-filter-range"><input data-column-filter="totalMin" aria-label="Total Copies minimum" type="number" min="0" step="1" inputmode="numeric" placeholder="Min"><span>to</span><input data-column-filter="totalMax" aria-label="Total Copies maximum" type="number" min="0" step="1" inputmode="numeric" placeholder="Max"></div></div><div class="column-filter-field"><label>On Loan</label><div class="column-filter-range"><input data-column-filter="loanMin" aria-label="On Loan minimum" type="number" min="0" step="1" inputmode="numeric" placeholder="Min"><span>to</span><input data-column-filter="loanMax" aria-label="On Loan maximum" type="number" min="0" step="1" inputmode="numeric" placeholder="Max"></div></div><div class="column-filter-field"><label for="column_status">Status</label><select id="column_status" data-column-filter="status"><option value="">Any status</option><option value="available">At least one available</option><option value="borrowed">At least one on loan</option><option value="overdue">Has overdue copies</option><option value="fully-available">All copies available</option><option value="all-on-loan">All copies on loan</option><option value="mixed">Mixed: available and on loan</option></select></div><div class="column-filter-field"><label for="column_details">Details</label><select id="column_details" data-column-filter="details"><option value="">Any completeness</option><option value="full">Identified</option><option value="attention">Needs title</option><option value="no-title">Without title</option></select></div></div>
   </details>
-      <p class="column-filter-help">Filter choices are based on all saved book titles, not just the current page. You can combine multiple choices.</p>
+      <p class="column-filter-help">Filters work across your full inventory.</p>
       </section>
     </div>
     <footer class="inventory-filter-foot">
@@ -334,7 +339,7 @@
     </footer>
   </div>
 </dialog>
-<div class="inventory-scanned-link"><div><strong>Completed Scanned Books</strong><span>View completed scanned books. Unfinished scans remain in Scan & Review.</span></div><button id="viewScannedBooks" type="button">View scanned books →</button></div>
+<div class="inventory-scanned-link"><div><strong>Scanned books</strong><span>Open completed scans</span></div><button id="viewScannedBooks" type="button">Open scanned →</button></div>
 <div class="table-actions"><span id="bookTableMeta" class="table-meta" aria-live="polite">Newest books first</span><div class="row"><button id="clearFilters" type="button" class="light smallbtn">Clear all filters</button><button id="exportBooks" type="button" class="light smallbtn"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export all · Excel</button></div></div><p class="table-scroll-hint" id="inventoryTableScrollHelp">Scroll horizontally to see all inventory columns. Book titles may wrap; other values stay on one line.</p><div id="bookTable" class="tablewrap" tabindex="0" role="region" aria-label="Inventory table" aria-describedby="inventoryTableScrollHelp"></div><div id="bookPager" class="pager" aria-label="Inventory pages"></div>
 </section>
 </div>
@@ -409,8 +414,8 @@
     <button id="batchSaveAllReady" type="button" class="scan-save-all" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check"></use></svg> Save all ready books</button>
 
   </div>
-  <div class="scan-action-label"><strong>Save and manage</strong><span id="scanSelectionHint" aria-live="polite">Select identified books to save or retry. Matching ISBNs can represent different physical copies; identical photo uploads are skipped.</span></div><div class="batch-actions batch-actions-secondary"><button id="batchSave" type="button" class="green" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg> Save selected books</button><button id="batchStop" type="button" class="light" disabled>Stop scan</button><details class="scan-more-actions"><summary>More actions</summary><div><button id="batchSelectDuplicates" type="button" class="light" disabled>Select other ISBN copies <span id="batchDuplicateCount" class="batch-count">0</span></button><button id="batchSelectReady" type="button" class="light" disabled>Mark verified titles</button><button id="batchDeselectAll" type="button" class="light" disabled>Clear marked books</button><button id="batchRemoveSelected" type="button" class="light" disabled>Remove marked scans</button><button id="batchClear" type="button" class="light" disabled>Clear upload</button></div></details></div>
-  <p class="batch-info">Recognized books can be saved here. Unfinished books can be sent to <strong>Review books</strong>. Matching ISBNs may be different physical copies; an identical photo is skipped when re-uploaded in the same scan queue.</p><input id="batchRetakeFile" type="file" accept="image/*" hidden>
+  <div class="scan-action-label"><strong>Save and manage</strong><span id="scanSelectionHint" aria-live="polite">Select identified books to save or retry. Matching ISBNs may be separate physical copies. Repeated photo uploads are discarded across devices.</span></div><div class="batch-actions batch-actions-secondary"><button id="batchSave" type="button" class="green" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg> Save selected books</button><button id="batchStop" type="button" class="light" disabled>Stop scan</button><details class="scan-more-actions"><summary>More actions</summary><div><button id="batchSelectDuplicates" type="button" class="light" disabled>Select other ISBN copies <span id="batchDuplicateCount" class="batch-count">0</span></button><button id="batchSelectReady" type="button" class="light" disabled>Mark verified titles</button><button id="batchDeselectAll" type="button" class="light" disabled>Clear marked books</button><button id="batchRemoveSelected" type="button" class="light" disabled>Remove marked scans</button><button id="batchClear" type="button" class="light" disabled>Clear upload</button></div></details></div>
+  <p class="batch-info">Recognized books can be saved here. Unfinished books can be sent to <strong>Review books</strong>. Matching ISBNs may be different physical copies. The same photo is accepted only once, even if uploaded again from another folder, ZIP or device.</p><input id="batchRetakeFile" type="file" accept="image/*" hidden>
   <div id="batchReadyResults" class="scan-ready-results" aria-live="polite"></div>
   <section class="scan-review-inbox" aria-labelledby="scanReviewInboxTitle">
    <div class="scan-review-inbox-head"><div><span class="eyebrow">UNIDENTIFIED SCANS</span><h3 id="scanReviewInboxTitle">Books needing attention <span id="scanNeedsTitleCount">0</span></h3><p>Keep this screen for scanning. Send a book to the Review workspace to correct its details later.</p></div><button id="scanOpenReview" type="button" class="light">Open Review →</button></div>
@@ -565,15 +570,15 @@
 <nav class="bottomnav" aria-label="Quick mobile navigation">
   <button class="active nav-admin-only" type="button" data-gotab="dashboard"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg><span>Overview</span></button>
   <button class="nav-admin-only" type="button" data-gotab="inventory"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#book"></use></svg><span>Inventory</span></button>
-  <button class="nav-admin-only" type="button" data-gotab="shelfScan"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg><span>Scan &amp; Review</span></button>
-  <button class="nav-admin-only" type="button" data-gotab="scanned"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg><span>Saved Books</span></button>
+  <button class="nav-admin-only" type="button" data-gotab="shelfScan"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg><span>Scan</span></button>
+  <button class="nav-admin-only" type="button" data-gotab="review"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg><span>Review</span></button>
   <button class="nav-user-only" type="button" data-gotab="lend"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg><span>Lend</span></button>
   <button class="nav-user-only" type="button" data-gotab="return"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-down-left"></use></svg><span>Return</span></button>
-  <button id="mobileMenuToggle" type="button" aria-haspopup="dialog" aria-controls="mobileNavSheet" aria-expanded="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#list"></use></svg><span>More</span></button>
+  <button id="mobileMenuToggle" type="button" aria-label="More navigation pages" aria-haspopup="dialog" aria-controls="mobileNavSheet" aria-expanded="false"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#list"></use></svg><span>More</span></button>
 </nav>
 <div id="mobileMenuBackdrop" class="mobile-menu-backdrop" hidden></div>
 <section id="mobileNavSheet" class="mobile-menu-sheet" role="dialog" aria-modal="true" aria-labelledby="mobileNavTitle" hidden>
-  <div class="mobile-sheet-top"><div><span class="workspace-nav-eyebrow">QUICK NAVIGATION</span><h2 id="mobileNavTitle">Where to?</h2></div><button id="mobileMenuClose" type="button" class="mobile-menu-close" aria-label="Close navigation"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#x"></use></svg></button></div>
+  <div class="mobile-sheet-top"><div><span class="workspace-nav-eyebrow">LIBRARY WORKSPACE</span><h2 id="mobileNavTitle">Explore pages</h2></div><button id="mobileMenuClose" type="button" class="mobile-menu-close" aria-label="Close navigation"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#x"></use></svg></button></div>
   <div class="mobile-sheet-links nav-admin-only" aria-label="Administrator destinations">
     <button type="button" data-mobile-tab="dashboard"><svg class="app-icon"><use href="assets/icons.svg#grid"></use></svg>Overview</button>
     <button type="button" data-mobile-tab="inventory"><svg class="app-icon"><use href="assets/icons.svg#book"></use></svg>Inventory</button>
@@ -2595,19 +2600,10 @@ async function batchLookUpDetails(row){
  }
 }
 function batchDuplicate(code,row){return !!code&&(books.some(b=>clean(b.barcode)===code)||batchItems.some(b=>b!==row&&b.barcode===code))}
-// Identical cover photographs are not added repeatedly to this device's scan queue.
-// The digest includes file bytes, not an ISBN: separate physical copies can share one ISBN.
-async function scanFileSignature(file){
- if(!file||!globalThis.crypto?.subtle)return '';
- const limit=8*1024*1024,sample=256*1024;
- const parts=file.size<=limit?[await file.arrayBuffer()]:[await file.slice(0,sample).arrayBuffer(),await file.slice(-sample).arrayBuffer()];
- const total=parts.reduce((length,part)=>length+part.byteLength,0),bytes=new Uint8Array(total+12);
- let offset=0;for(const part of parts){bytes.set(new Uint8Array(part),offset);offset+=part.byteLength}
- new DataView(bytes.buffer).setBigUint64(total,BigInt(file.size));
- bytes.set([0x53,0x43,0x41,0x4e],total+8);
- const hash=await crypto.subtle.digest('SHA-256',bytes);
- return 'sha256:'+Array.from(new Uint8Array(hash),v=>v.toString(16).padStart(2,'0')).join('');
-}
+// SHA-256 fingerprints cover every file byte and are checked with Supabase before OCR.
+// Only the fingerprint is stored in the cloud; photographs remain on this device.
+const scanUploadGuard=globalThis.LibraryScanDedup;
+async function scanFileSignature(file){return scanUploadGuard.fingerprint(file)}
 // Throttled, durable checkpoints keep completed scans recoverable after tab closure.
 let scanCheckpointAt=0;
 let scanCheckpointSync=Promise.resolve();
@@ -2619,55 +2615,96 @@ function checkpointCompletedScan(owner){
 }
 async function runBatch(){
  if(!session?.user||batchActive||batchSaving||batchZipLoading||!batchQueue.length)return;
- const uploader=session.user.id,queue=batchQueue.slice(),newRecords=new Set(),knownPhotos=new Set(batchItems.map(x=>x.sourceSignature).filter(Boolean));let skippedPhotos=0;batchActive=true;batchStopRequested=false;
- $('batchProgress').max=queue.length;$('batchProgress').value=0;renderBatch();
- if($('batchUseOCR').checked)void warmupOCR();
- let next=0,done=0;
- const lane=async()=>{
-  while(!batchStopRequested&&session?.user?.id===uploader){
-   const i=next++;if(i>=queue.length)return;
-   const item=queue[i];
-   let signature='';try{signature=await scanFileSignature(item.file)}catch{}
-   // Claim the digest before the next OCR worker starts: two equal uploads cannot race.
-   if(signature&&knownPhotos.has(signature)){skippedPhotos++;done++;$('batchProgress').value=done;batchOutput(`${skippedPhotos} exact duplicate photo${skippedPhotos===1?'':'s'} skipped. No extra Review rows created.`);continue}
-   if(signature)knownPhotos.add(signature);
-   const row={file:item.file,sourceSignature:signature,saveRecordId:uuid(),fileName:item.file.name,path:item.path,shelf:item.shelf||'',barcode:'',title:'',authors:'',publisher:'',publication_year:'',language:'',pages:'',subject:'',lookup_status:'Manual',error:'',duplicate:false,selected:false,saved:false,ocrText:'',matches:[],thumbnailData:'',reviewUpdatedAt:Date.now()};
-   try{
-    row.thumbnailData=await reviewThumbnail(item.file);
-    row.barcode=await decodeBatchBarcode(item.file);
-    if(row.barcode)await batchLookUp(row);
-    if((!row.title||!row.barcode)&&$('batchUseOCR').checked)await enrichScanFromImage(row);
-    row.error=!hasBookTitle(row.title)?'Title not identified. Type it below or try the AI cover reader.':'';
-   }catch(err){row.error='Could not read this image; enter a title or retry OCR. '+String(err?.message||err)}
-   if(session?.user?.id!==uploader)return;
-   // Checkpoint each completed image immediately. A stopped/crashed batch retains
-   // every row already processed, and retry IDs remain stable for physical copies.
-   row.reviewUpdatedAt=Date.now();row.duplicate=batchDuplicate(row.barcode,row);
-   row.selected=!!$('batchAutoSave')?.checked&&batchValid(row);batchItems.push(row);newRecords.add(row.saveRecordId);
-   checkpointCompletedScan(uploader);
-   done++;$('batchProgress').value=done;
-   batchOutput(`Recognised ${done} of ${queue.length} images · ${item.path}`);
-   if(done%6===0){renderBatch();await new Promise(requestAnimationFrame)}
-  }
- };
+ const uploader=session.user.id,originalQueue=batchQueue.slice(),newRecords=new Set(),processedUploads=[],claimedUploads=[];
+ const knownPhotos=new Set(batchItems.map(x=>x.sourceSignature).filter(Boolean));
+ let skippedPhotos=0,cloudSkipped=0,done=0,activeQueue=[];
+ batchActive=true;batchStopRequested=false;
+ $('batchProgress').max=originalQueue.length;$('batchProgress').value=0;renderBatch();
  try{
-  // Recycled OCR workers; limited concurrency avoids exhausting mobile memory.
-  await Promise.all(Array.from({length:Math.min(maxOCRWorkers(),queue.length)},lane));
-  if(session?.user?.id===uploader){
-   refreshBatchDuplicates();reviewPage=1;
-   batchOutput(batchStopRequested?`Stopped after ${done} of ${queue.length} covers; ${skippedPhotos} repeated image(s) skipped.`:$('batchAutoSave')?.checked?`Finished reading ${done} photos. Saving identified titles automatically…`:`Finished reading ${done} photos. Choose Select all identified, or select duplicate copies, then Save selected books.`);
-   // Always flush the final checkpoint, even when stopped early.
-   await scanCheckpointSync.catch(()=>{});
-   await persistReviewDraft(uploader,reviewDraftVersion);
+  if(!scanUploadGuard)throw Error('The upload verifier did not load. Reload the page and try again.');
+  batchOutput(`Checking ${originalQueue.length} photo${originalQueue.length===1?'':'s'} for duplicates…`);
+  // Same bytes (regardless of name, ZIP container or folder path) are never read twice.
+  const prepared=await scanUploadGuard.prepare(originalQueue,knownPhotos,(checked,total,skipped)=>{
+   if(batchStopRequested)throw Error('Scan cancelled before new photos were registered.');
+   $('batchProgress').max=total;$('batchProgress').value=checked;
+   batchOutput(`Checking files: ${checked} of ${total} · ${skipped} repeated photo${skipped===1?'':'s'} skipped`);
+  });
+  skippedPhotos=prepared.skipped;
+  if(batchStopRequested)throw Error('Scan cancelled.');
+  if(session?.user?.id!==uploader)throw Error('Account changed during upload. Select the folder again.');
+  // Atomic inserts with ON CONFLICT DO NOTHING prevent races across devices.
+  // Existing scanned/saved photos are not added to the review queue again.
+  const candidates=prepared.accepted.map(item=>({...item,saveRecordId:uuid()}));
+  if(candidates.length){
+   batchOutput(`Checking ${candidates.length} new-looking photo${candidates.length===1?'':'s'} against shared Inventory…`);
+   let claimed;
+   try{claimed=await scanUploadGuard.register(sb,uploader,candidates)}
+   catch(error){claimedUploads.push(...(error.claimedUploads||[]));throw error}
+   claimedUploads.push(...claimed.accepted);
+   cloudSkipped=claimed.skipped.length;
+   skippedPhotos+=cloudSkipped;
+   activeQueue=claimed.accepted;
   }
- }finally{batchActive=false;batchQueue=[];renderBatch()}
- // Newly scanned ISBNs are enriched immediately; the user still approves saving.
+  if(!activeQueue.length){
+   $('batchProgress').max=originalQueue.length;$('batchProgress').value=originalQueue.length;
+   batchOutput(`All ${originalQueue.length} photo${originalQueue.length===1?'s were':' was'} already uploaded. Nothing was added or scanned again.`);
+   return;
+  }
+  if($('batchUseOCR').checked)void warmupOCR();
+  $('batchProgress').max=activeQueue.length;$('batchProgress').value=0;
+  batchOutput(`${activeQueue.length} new photo${activeQueue.length===1?'':'s'} ready · ${skippedPhotos} duplicate${skippedPhotos===1?'':'s'} skipped. Scanning…`);
+  let next=0;
+  const lane=async()=>{
+   while(!batchStopRequested&&session?.user?.id===uploader){
+    const i=next++;if(i>=activeQueue.length)return;
+    const item=activeQueue[i];
+    const row={file:item.file,sourceSignature:item.sourceSignature,saveRecordId:item.saveRecordId,fileName:item.file.name,path:item.path,shelf:item.shelf||'',barcode:'',title:'',authors:'',publisher:'',publication_year:'',language:'',pages:'',subject:'',lookup_status:'Manual',error:'',duplicate:false,selected:false,saved:false,ocrText:'',matches:[],thumbnailData:'',reviewUpdatedAt:Date.now()};
+    try{
+     row.thumbnailData=await reviewThumbnail(item.file);
+     row.barcode=await decodeBatchBarcode(item.file);
+     if(row.barcode)await batchLookUp(row);
+     if((!row.title||!row.barcode)&&$('batchUseOCR').checked)await enrichScanFromImage(row);
+     row.error=!hasBookTitle(row.title)?'Title not identified. Type it below or try the AI cover reader.':'';
+    }catch(err){row.error='Could not read this image; enter a title or retry OCR. '+String(err?.message||err)}
+    if(session?.user?.id!==uploader)return;
+    row.reviewUpdatedAt=Date.now();row.duplicate=batchDuplicate(row.barcode,row);
+    row.selected=!!$('batchAutoSave')?.checked&&batchValid(row);
+    batchItems.push(row);processedUploads.push(item);newRecords.add(row.saveRecordId);
+    checkpointCompletedScan(uploader);
+    done++;$('batchProgress').value=done;
+    batchOutput(`Scanned ${done} of ${activeQueue.length} new photos · ${skippedPhotos} duplicate${skippedPhotos===1?'':'s'} skipped`);
+    if(done%6===0){renderBatch();await new Promise(requestAnimationFrame)}
+   }
+  };
+  await Promise.all(Array.from({length:Math.min(maxOCRWorkers(),activeQueue.length)},lane));
+  if(session?.user?.id!==uploader)throw Error('Account changed. Scanning stopped.');
+  refreshBatchDuplicates();reviewPage=1;
+  // The Review queue is durable before marking photo claims as pending.
+  await scanCheckpointSync.catch(()=>{});
+  await persistReviewDraft(uploader,reviewDraftVersion);
+  if(processedUploads.length)await scanUploadGuard.changeStatus(sb,uploader,processedUploads,'pending');
+  const skippedText=skippedPhotos?` · ${skippedPhotos} duplicate photo${skippedPhotos===1?'':'s'} discarded`:'';
+  batchOutput(batchStopRequested?`Stopped after ${done} of ${activeQueue.length} new photos${skippedText}.`:
+   $('batchAutoSave')?.checked?`Finished scanning ${done} new photos${skippedText}. Saving identified books…`:
+   `Finished scanning ${done} new photos${skippedText}. Review and save the recognized books.`);
+ }catch(error){
+  batchOutput('Upload stopped safely: '+String(error?.message||error)+'. No duplicate book copies were created.');
+  return;
+ }finally{
+  // A cancelled batch must not reserve photos it never processed.
+  // The cleanup operates only on our own still-processing claims.
+  const completed=new Set(processedUploads.map(item=>item.sourceSignature));
+  const unused=claimedUploads.filter(item=>!completed.has(item.sourceSignature));
+  if(unused.length&&session?.user?.id===uploader){
+   try{await scanUploadGuard.releaseProcessing(sb,uploader,unused)}catch(error){console.warn('Unused scan claims cleanup:',error)}
+  }
+  batchActive=false;batchQueue=[];renderBatch();
+ }
  if(session?.user?.id===uploader&&newRecords.size&&typeof autoEnrichISBNReviews==='function')void autoEnrichISBNReviews();
- // New identified books save automatically only when that device opts in.
  const eligible=batchItems.filter(x=>newRecords.has(x.saveRecordId)&&batchValid(x));
  if(eligible.length&&$('batchAutoSave')?.checked){eligible.forEach(x=>x.selected=true);await saveBatch(false,{auto:true,ids:newRecords});}
- else if(eligible.length){batchOutput(`${eligible.length} recognized book${eligible.length===1?'':'s'} ready. Select all or choose duplicate copies, then click Save selected books.`);renderBatch();}
- else if(newRecords.size)batchOutput(`${newRecords.size} cover${newRecords.size===1?'':'s'} scanned. No readable titles found; add titles in the cards below.`);
+ else if(eligible.length){batchOutput(`${eligible.length} identified new book${eligible.length===1?'':'s'} ready · ${skippedPhotos} duplicate photo${skippedPhotos===1?'':'s'} discarded. Save verified books or send unfinished ones to Review.`);renderBatch();}
+ else if(newRecords.size)batchOutput(`${newRecords.size} new photo${newRecords.size===1?'':'s'} scanned · ${skippedPhotos} duplicate photo${skippedPhotos===1?'':'s'} discarded. Add missing titles in Review.`);
 }
 
 function batchSelectAll(){batchItems.forEach(x=>{if(batchValid(x)&&!x.reviewStaged)x.selected=true});batchOutput('All identified books selected, including physical duplicate copies. Books without titles can be sent to Review.');renderBatch()}
@@ -2856,7 +2893,7 @@ async function saveBatch(allowIncomplete=false,options={}){
  const uploader=session.user.id;
  batchSaving=true;renderBatch();
  batchOutput(`Saving ${selected.length} selected records${duplicates?' (including '+duplicates+' possible duplicates)':''}…`);
- let count=0,updatedCount=0,fail=0;
+ let count=0,updatedCount=0,fail=0;const rejectedSamePhotos=[];
  const val=value=>String(value??'').trim();
  const nullable=value=>val(value)||null;
  function recordSuccess(item,data){
@@ -2895,6 +2932,7 @@ async function saveBatch(allowIncomplete=false,options={}){
     user_id:uploader,
     // Stable across retries, but unique for *each photo*, even if barcodes match.
     record_id:x.saveRecordId||(x.saveRecordId=uuid()),
+    source_signature:x.sourceSignature||null,
     scan_date:n.toLocaleDateString(),scan_time:n.toLocaleTimeString(),
     // Existing database requires barcode NOT NULL. '' represents no scanned code;
     // it is still treated as missing by the inventory's Needs Attention filter.
@@ -2928,8 +2966,13 @@ async function saveBatch(allowIncomplete=false,options={}){
      if(result.data){recordSuccess(item,result.data);continue}
      if(await recoverPreviouslySaved(item,row))continue;
      const error=result.error||{message:'No response from database'};
+     // Last-line defense: another device may have saved this image between
+     // cloud claim and Inventory insert. Discard the second review row.
+     if(error.code==='23505'&&/library_books_source_signature_unique|source_signature/i.test(String(error.message||'')+' '+String(error.details||''))){
+      rejectedSamePhotos.push(item);item.selected=false;continue;
+     }
      item.saveError=error.code==='23505'?
-      'Database rejected this copy because of a unique key. ISBN/barcode duplicates are allowed in the connected library; check the named constraint: '+(error.message||''):
+      (String(error.message||'').includes('library_books_source_signature_unique')?'The same photo is already saved in Inventory. This duplicate was not created.':'Database rejected this copy because of a unique key. ISBN/barcode duplicates are allowed; check the constraint: '+(error.message||'')):
       'Supabase: '+(error.message||'Save failed');
      // Keep the checkbox selected so Save can retry after an intermittent failure.
      fail++;
@@ -2938,8 +2981,16 @@ async function saveBatch(allowIncomplete=false,options={}){
    $('batchProgress').max=selected.length;$('batchProgress').value=Math.min(i+slice.length+updatedCount,selected.length);
    batchOutput(`Saved ${count} of ${selected.length} selected copies${fail?' · '+fail+' need retry':''}.`);renderBatch();
   }
-  batchOutput(`${count-updatedCount} new copies saved, ${updatedCount} existing copies updated. Matching ISBNs/barcodes remain grouped in Inventory.${fail?' '+fail+' need retry — see their cards.':''}`);
+  if(rejectedSamePhotos.length){
+   const dropped=new Set(rejectedSamePhotos);
+   batchItems=batchItems.filter(x=>!dropped.has(x));
+   await deleteCloudReview(rejectedSamePhotos.map(x=>x.saveRecordId),uploader);
+   try{await scanUploadGuard.changeStatus(sb,uploader,rejectedSamePhotos,'saved')}catch(error){console.warn('Duplicate file status:',error)}
+  }
+  batchOutput(`${count-updatedCount} new copies saved, ${updatedCount} existing copies updated${rejectedSamePhotos.length?' · '+rejectedSamePhotos.length+' duplicate photo(s) discarded':''}. Matching ISBNs remain grouped in Inventory.${fail?' '+fail+' need retry — see their cards.':''}`);
   if(count){
+   const committed=selected.filter(x=>x.saved&&x.sourceSignature&&x.importAction!=='UPDATE');
+   if(committed.length)try{await scanUploadGuard.changeStatus(sb,uploader,committed,'saved')}catch(error){console.warn('Upload saved-status sync:',error)}
    // Saved corrections are no longer pending queue entries. Incomplete saved books
    // remain visible in the Saved Needs Attention list, sourced from Inventory.
    await deleteCloudReview(selected.filter(x=>x.saved).map(x=>x.saveRecordId),uploader);
@@ -2983,16 +3034,33 @@ $('batchRetakeFile').onchange=async e=>{
  if(!file||!row||row.saved||!batchItems.includes(row)||batchActive||batchSaving||batchZipLoading||batchExcelLoading)return;
  const owner=session?.user?.id;if(!owner)return;
  batchActive=true;row.reviewApproval='';row.reviewUpdatedAt=Date.now();renderBatch();
+ let claimedPhoto=null;
  try{
+  const signature=await scanFileSignature(file);
+  if(row.sourceSignature===signature){row.lookup_status='This is already the photo attached to this review. Nothing changed.';return;}
+  if(batchItems.some(other=>other!==row&&other.sourceSignature===signature)){
+   row.lookup_status='That exact photo is already attached to another review. Duplicate discarded.';return;
+  }
+  // Reserve the new photo before accepting it; replacing a cover never creates a copy.
+  const claim=await scanUploadGuard.register(sb,owner,[{sourceSignature:signature,saveRecordId:row.saveRecordId}]);
+  if(!claim.accepted.length){row.lookup_status='That exact photo was already uploaded. Duplicate discarded; your previous cover is unchanged.';return;}
+  claimedPhoto=claim.accepted[0];
   const code=await decodeBatchBarcode(file),thumbnail=await reviewThumbnail(file);
   if(session?.user?.id!==owner||!batchItems.includes(row))return;
   const old=batchImageUrls.get(row.file);if(old){URL.revokeObjectURL(old);batchImageUrls.delete(row.file)}
-  row.file=file;row.fileName=file.name;row.thumbnailData=thumbnail;row.ocrText='';row.matches=[];
+  row.file=file;row.fileName=file.name;row.thumbnailData=thumbnail;row.sourceSignature=signature;row.ocrText='';row.matches=[];
   if(code){row.barcode=normalizeIsbn(code);await batchLookUp(row)}
   else row.lookup_status='No barcode read from the new photo. Existing details and shelf were kept. Type the printed ISBN or use title search.';
   row.reviewUpdatedAt=Date.now();
- }catch(error){row.lookup_status='Photo could not be read. Existing details and shelf were kept. Enter the printed ISBN manually.'}
- finally{batchActive=false;renderBatch()}
+  await persistReviewDraft(owner,reviewDraftVersion);
+  await scanUploadGuard.changeStatus(sb,owner,[claimedPhoto],'pending');
+ }catch(error){row.lookup_status='Could not replace the photo: '+String(error?.message||error).slice(0,180)+'. Existing details were kept.'}
+ finally{
+  if(claimedPhoto&&row.sourceSignature!==claimedPhoto.sourceSignature&&session?.user?.id===owner){
+   try{await scanUploadGuard.releaseProcessing(sb,owner,[claimedPhoto])}catch(error){console.warn('Replacement claim cleanup:',error)}
+  }
+  batchActive=false;renderBatch();
+ }
 };
 $('scanAskResearch').onclick=()=>window.LibraryBookGuide?.openGeneral?.({search:true});
 $('scanResearchFromAdvanced').onclick=()=>window.LibraryBookGuide?.openGeneral?.({search:true});

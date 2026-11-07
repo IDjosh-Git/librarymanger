@@ -1,45 +1,64 @@
-# Library Manager v5.19 — AI Book of the Week
+# Library Manager v5.21 — Premium Navigation, Access Controls & Compact Inventory
 
-This clean release builds on v5.18 without changing the existing library colors, inventory IDs, authentication, Scan, Review, OCR or chat.
+This release builds on **v5.20** and preserves its duplicate upload protection, OCR/AI Review workspace, Book of the Week, Supabase data persistence, authentication and loan functions.
 
-## What's new
+## What improved in v5.21
 
-- **Real-inventory weekly recommendations.** The server retrieves only allowed catalogue columns, deduplicates physical copies by title/author, prefers available books, samples eligible books by week, avoids recently featured titles, and asks an AI provider to choose ONE exact catalogue record ID. The AI cannot submit an invented title.
-- **Explain the selection.** The AI returns a concise reason, a reading invitation, who may enjoy it, and a discussion question. These public-safe details are saved with the selected week and displayed on `book-of-the-week.html`.
-- **Premium editorial design.** A navy/gold featured-book hero, clear cover, week indicator, a dedicated "Why this book, this week?" section, short reading notes, accessible buttons, and responsive desktop/mobile layouts.
-- **Administrator control.** Book of the Week has **Choose this week's book**. A verified admin can generate/re-generate the recommendation. The previously supported manual featured book still takes priority until the admin enables an automatic pick.
-- **Weekly scheduling.** A Vercel Cron Job runs every Monday at 02:00 UTC. It creates a stable weekly pick without a person signing in. If a manual feature exists, it leaves it alone. If the pick for the current week exists, it does not generate a duplicate.
-- **Honest fallback.** When Gemini, OpenRouter and Groq are missing/unavailable or reject a response, the system selects a real catalogue title deterministically and labels the result **Weekly catalogue pick**, NOT AI selected. It never invents a book, reason or fake provider success.
+- **Desktop sidebar:** Clear navigation groups, consistent icon alignment, readable light/dark text, improved active-page indicators, and refined Quick Actions.
+- **Mobile navigation:** A five-item, safe-area-aware bottom dock for administrators, a compact two-column More menu, and role-specific page visibility. Buttons and labels remain reachable at phone widths.
+- **Book API settings:** The optional browser Google Books key form now uses concise labels, accessible inputs and compact Save/Remove actions. Longer provider instructions are under **API setup & privacy**. Private server keys must remain in Vercel environment variables; the browser key is only an optional legacy fallback.
+- **Administrator access codes:** A compact, expandable Generate access code section with a prominent Generate new code button, a one-time code display, and Copy code action. Generating a new code still revokes the previous one.
+- **Inventory search & filters:** The search field is full-width on phones, with compact Filter, Sort, Per page and view controls. The Data quality tools section can expand only when needed, and Scanned books appears as a single-row shortcut rather than a large card. The filter dialog has clearer chips and dropdowns.
+- **No theme replacement:** Existing light/dark colors and the established accent gradient are retained. One final stylesheet (`assets/premium-navigation-filters.css`) handles these refinements.
 
-## Deployment — required steps
+## Deploy
 
-1. **Back up Supabase.** In your existing Supabase project, run `database/04_ai_weekly_spotlight.sql` in **SQL Editor** once (after your existing Featured Book / Public Discovery tables and functions have been installed). This creates a RLS-protected weekly recommendations table and a restricted public read function. It does **not** edit inventory or loan records. Run the read-only verification queries at the bottom of that SQL script after applying. Do not rerun old numbered migrations already installed.
-2. **Deploy the ZIP contents** to your existing Vercel project, preserving `index.html`, `book-of-the-week.html`, `assets/`, `lib/`, `api/`, `database/`, and `vercel.json` at project root. The new API endpoint is `/api/weekly-pick`.
-3. **AI connection (required for AI to choose):** In Vercel Settings → Environment Variables → Production, configure at least one *valid* provider key: `OPENROUTER_API_KEY`, `GEMINI_API_KEY`, or `GROQ_API_KEY`. Existing provider keys may be reused. These are free-tier services with quota limits; configure more than one for redundancy. The model can be set using `GEMINI_CHAT_MODEL`, `GEMINI_MODEL`, or `GROQ_CHAT_MODEL`. Do not paste secret keys into HTML, GitHub, or the chat. Redeploy after modifying environment variables.
-4. **True unattended weekly updates (required for Cron):** In the same Vercel Production settings, add server-only `SUPABASE_SERVICE_ROLE_KEY` from your Supabase API keys and a random, long `CRON_SECRET` (at least 16 characters; 32+ recommended). Both are private secrets and MUST never appear in frontend code. These are needed for Vercel's protected Monday Cron Job to read inventory and write a weekly recommendation without a signed-in administrator. Redeploy after adding them. If not configured, the administrator's **Choose this week's book** button still works, but *unattended Monday updates will not*.
-5. **First pick:** Sign in as an admin → Book of the Week → **Choose this week's book**. Open the public `book-of-the-week.html` and check the featured title and explanation. Clicking **Publish chosen book** manually overrides AI. Clicking **Choose this week's book** or **Use automatic weekly pick** clears the manual override after the weekly pick has been saved.
+1. Keep your existing Supabase project and Vercel environment variables. No new migration is needed **for the v5.21 interface changes**.
+2. **Important for v5.20 users:** the prior `database/05_duplicate_upload_guard.sql` migration must already be applied before scan uploads can use cloud duplicate protection. Similarly, the AI weekly spotlight needs its earlier migration/configuration.
+3. Deploy the files from this ZIP to your existing `librarymanger` Vercel project, maintaining the file/folder structure.
+4. Redeploy and verify the Inventory search/filter, mobile More menu, Book API settings, administrator code controls, and dark mode on a signed-in account.
 
-## Data and authorization
+## Verification
 
-- The `/api/weekly-pick` POST route verifies a real Supabase Auth token and an administrator's role before accessing inventory. The scheduled GET route requires Vercel's `CRON_SECRET` and the server-only Supabase service role key. Public users cannot request AI generation through that endpoint.
-- The weekly table is **not** readable by anonymous clients. Only a public-safe RPC exposes title, author, ISBN, shelf and editorial text. No borrower names, account information, loan histories, or private inventory record IDs are returned to public users.
-- Do not let AI edit, delete or add inventory. Only a selected public-facing snapshot is published. The same physical book remains identified by its existing unique record ID; books with the same ISBN are not deleted or merged.
-- The weekly choice is fixed for each UTC Monday–Sunday, unless an admin deliberately regenerates it. The feature prefers not to repeat titles selected in the previous eight weekly AI editions.
+- Inline application JavaScript passed Node syntax validation.
+- Responsive/rendered-control checks passed at 320, 390, 768 and 1440 pixels, including opening Data quality tools, role-specific mobile navigation, and checking form IDs.
+- Eight upload deduplication regression tests still pass.
+- Live user/account API requests and production Vercel deployment have **not** been performed in this release; the controls reuse the existing event handlers.
 
-## Troubleshooting
+---
 
-- **AI did not pick / "Weekly catalogue pick":** An AI provider was unavailable, not configured, out of quota, or gave an invalid book ID. Check Production environment keys, redeploy, then use **Choose this week's book** again.
-- **Unable to save / database missing:** Install `database/04_ai_weekly_spotlight.sql` first. If anonymous users can view the old Book of the Week but never see the AI explanation, confirm the new `library_public_weekly_spotlight_v2()` RPC exists and is callable by `anon`.
-- **No automatic Monday update:** Verify `CRON_SECRET` and `SUPABASE_SERVICE_ROLE_KEY` are present in Production and that the new Cron Job appears in Vercel Settings → Cron Jobs. A manual administrator feature intentionally suspends automatic publishing.
-- **No cover:** The page uses the ISBN-based Open Library cover when available, or its built-in book-stack image.
-- **Provider is slow:** One provider is attempted, then another starts after a short delay. Free model availability and quotas are outside the application's control.
+## Previous v5.20 release and database notes
 
-## Validation (local)
+This is the complete production-oriented source bundle, based on v5.19, preserving AI Book of the Week, Scan, Review, Inventory, OCR and other existing pages.
 
-- JavaScript syntax check passed for the new public script, selection engine, admin inline code and endpoint.
-- Mocked Node API tests passed for authenticated administrator generation, unauthorized calls, protected Cron requests, deterministic fallback and database save payloads.
-- Pure selection checks passed for duplicate-copy grouping, eligibility, stable UTC week, previous-pick avoidance, rejecting nonexistent AI-selected inventory IDs, and public-safe fields.
-- Headless Chromium layout checks passed at 320, 390, 768 and 1440 pixels in light and dark modes, with no horizontal overflow. Screenshots used illustrative *demo data*, not the user's real book records.
-- **Not live-verified:** This ZIP has not been deployed, its SQL has not been applied, and third-party AI keys have not been tested against the live project. Do these steps before claiming the AI feature is live.
+## What changed
 
-**Other database scripts** (`01`–`03` and `optional_*`) are retained for existing deployments. Apply only if your environment is missing their prerequisite changes; do not apply them blindly to an existing database.
+- **Upload-once protection** across **Choose photos**, **Choose folder** and **Choose ZIP**. Every image is identified using an SHA-256 digest of **all file bytes** (not the name, path, timestamp or ISBN).
+- The same exact image can appear many times in a folder, in a ZIP, or be re-uploaded later from another device: **only the first upload is admitted**; subsequent copies are skipped before OCR/AI.
+- A new, access-controlled Supabase `library_scan_files` registry holds the hash across browser sessions and staff accounts. Atomic database uniqueness avoids a race if two devices upload the exact image at once.
+- Once the image is saved to Inventory, `library_books.source_signature` adds another unique constraint, so duplicate photos cannot create extra saved physical copies even if a save is retried.
+- **Different cover photographs** of separate physical copies with the same ISBN are still allowed. Never deduplicate library books purely by ISBN or title.
+- Stopped scans release the reservations for **unprocessed** images. Recognized images remain in the durable Review queue; replaced cover photos are also checked.
+- Scan status reports how many **new** photos are scanned and how many **repeated** photos were discarded, without claiming OCR/AI was run for skipped images.
+- Cloud verification is **fail-closed**: if the new table is missing or Supabase cannot be reached, scanning stops with a specific message rather than risking duplicate inventory records.
+
+## Required setup before deploying
+
+1. In the **DataLearning** Supabase project, back up the database and run **`database/05_duplicate_upload_guard.sql`** in SQL Editor. It is additive and does not remove old inventory or history.
+2. Ensure your prior database upgrades (`01` through `04` as applicable) are already in place.
+3. Upload/deploy the files in this ZIP to the existing `librarymanger` Vercel application. No new API key is necessary for duplicate detection; regular Supabase user authentication is used.
+4. Redeploy and sign in. Test by uploading a photograph, uploading that exact file again under a different filename, and then uploading a ZIP containing that same photo. Later attempts should show **duplicate discarded** with **no additional Review or Inventory record**.
+5. Test the same photograph from a second signed-in device. Only one new record should be accepted.
+
+## Important scope and recovery notes
+
+- **Historical limitation:** Older saved books generally do not have the original photograph or a hash stored. The new guard cannot reconstruct fingerprints for photos already saved before this upgrade. New uploads are protected from the moment the migration is installed.
+- **Exact duplicate** means same image bytes. A retaken, cropped, edited, recompressed or rotated picture is technically a different file and may not be detected as the same book. Barcode/ISBN equality is not used as proof of duplicate physical copies.
+- If an upload is interrupted by closing the browser before a photo is added to Review, a temporary `processing` claim may remain. Such a claim should only be cleared by an administrator after confirming that neither Review nor Inventory contains the image. Never delete saved fingerprints to bypass this guard.
+- Photo bytes are **not sent to the duplicate registry**. Only SHA-256 fingerprints, record IDs and status are sent to Supabase; OCR and cover recognition retain their existing data-handling behavior.
+- The cloud table is guarded with authenticated Row Level Security policies. Do **not** expose service-role keys in browser code.
+- The new migration has **not been run on your live database by this ZIP**. The app will show a setup error until it is applied.
+
+## Verification
+
+The new duplicate-guard module passed local automated tests for identical bytes with different names, renamed ZIP/folder files, one-byte changes, concurrent device claims, saved-record reuploads, cancellation cleanup, missing database migration, and valid different-copy photos sharing an ISBN. The application inline JavaScript and updated scripts passed syntax checks. Live production behavior needs verification after migration and deployment.
