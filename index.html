@@ -13,8 +13,10 @@
 <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="assets/scan-extraction.js"></script>
 <script src="assets/ocr-quality.js?v=5.23.0"></script>
-<script src="assets/scan-upload-dedup.js?v=5.30.0"></script>
-<script src="assets/scan-stream.js?v=5.31.0"></script>
+<script src="assets/scan-upload-dedup.js?v=5.32.0"></script>
+<script src="assets/scan-stream.js?v=5.32.0"></script>
+<script src="assets/scan-progress.js?v=5.32.0"></script>
+<script src="assets/scan-inventory-match.js?v=5.32.0"></script>
 <script src="assets/isbn-crop.js"></script>
 <script src="assets/review-excel.js"></script>
 <script src="assets/scanned-books.js"></script>
@@ -47,7 +49,7 @@
 <link rel="stylesheet" href="assets/mobile-navigation-ai-orb.css?v=5.22.0">
 <link rel="stylesheet" href="assets/daily-visit-register.css?v=5.26.0">
 <script defer src="assets/compact-card-insights.js?v=5.17.0"></script>
-<script defer src="assets/premium-progress-upload.js?v=5.31.0"></script>
+<script defer src="assets/premium-progress-upload.js?v=5.32.0"></script>
 <script defer src="assets/book-guide-format.js"></script>
 <script defer src="assets/book-guide.js?v=5.29.0"></script>
 <script defer src="assets/public-contact.js"></script>
@@ -2355,7 +2357,7 @@ function setBatchQueue(files,source){
  batchMetadataCache.clear();
  batchQueue=eligible.map(x=>({...x,shelf:batchShelf(x.path,fallback,source),source}));
  batchStopRequested=false;
- $("batchProgress").max=batchQueue.length;$("batchProgress").value=0;
+ delete $("batchProgress").dataset.scanMode;$("batchProgress").max=batchQueue.length;$("batchProgress").value=0;
  batchOutput(`${batchQueue.length} photos selected. Scanning starts now…`);
  if($('batchUseOCR').checked)void warmupOCR();
  renderBatch();
@@ -2460,7 +2462,7 @@ async function preparedOCRImage(bitmap,angle=0,{enhanced=false}={}){
  ctx.drawImage(bitmap,-w/2,-h/2,w,h);
  return canvas;
 }
-async function ocrText(file){
+async function ocrText(file,{fast=false}={}){
  const tesseract=await loadOCR(),entry=tesseract.createWorker?await acquireOCRWorker():null,worker=entry?.worker;
  const quality=window.LibraryOCRQuality;
  let bitmap=null,source=file,best=null;
@@ -2477,12 +2479,12 @@ async function ocrText(file){
   };
   best=await read(source);
   // Most clear book covers finish after a single pass. Only difficult covers pay for enhancement.
-  if(bitmap&&quality?.needsEnhancement(best)){
+  if(bitmap&&quality?.needsEnhancement(best)&&(!fast||best.readable<20)){
    const improved=await read(await preparedOCRImage(bitmap,0,{enhanced:true}));
    best=quality.prefer(best,improved);
   }
   // Sideways camera images: rotate only when both normal passes lack meaningful text.
-  if(bitmap&&quality?.needsOrientation(best)){
+  if(bitmap&&!fast&&quality?.needsOrientation(best)){
    const turned=await read(await preparedOCRImage(bitmap,90,{enhanced:false}));
    best=quality.prefer(best,turned);
    // A last rotation is reserved for very unclear images on capable devices.
@@ -2496,30 +2498,39 @@ async function ocrText(file){
 }
 
 const scanTitleCache=new Map();
-async function findTitleCandidates(title,author=''){
+async function findTitleCandidates(title,author='',{fast=false}={}){
  title=String(title||'').trim().slice(0,150);author=String(author||'').trim().slice(0,100);
  if(title.length<3)return [];
- const key=(title+'|'+author).toLocaleLowerCase();if(scanTitleCache.has(key))return scanTitleCache.get(key);
+ const key=(title+'|'+author+'|'+(fast?'fast':'full')).toLocaleLowerCase();if(scanTitleCache.has(key))return scanTitleCache.get(key);
  const task=(async()=>{
-  try{const result=await fetch('/api/title-search?'+new URLSearchParams({title,author}),{headers:{Accept:'application/json'}});
+  const fastFetch=async(url,ms)=>{const ctrl=new AbortController(),timer=setTimeout(()=>ctrl.abort(),ms);try{return await fetch(url,{headers:{Accept:'application/json'},signal:ctrl.signal})}finally{clearTimeout(timer)}};
+  try{const result=await (fast?fastFetch('/api/title-search?'+new URLSearchParams({title,author,fast:'1'}),3400):fetch('/api/title-search?'+new URLSearchParams({title,author}),{headers:{Accept:'application/json'}}));
    if(result.ok){const payload=await result.json();return payload.candidates||[]}}
   catch{}
   // Direct Open Library fallback for a local preview or a temporarily unavailable backend.
   try{const qs=new URLSearchParams({title,limit:'8',fields:'title,author_name,publisher,first_publish_year'});
    if(author)qs.set('author',author);
-   const payload=await browserMetaRequest('https://openlibrary.org/search.json?'+qs);
+   const payload=await (fast?fastFetch('https://openlibrary.org/search.json?'+qs,1800).then(r=>r.ok?r.json():Promise.reject(Error('Catalog unavailable'))):browserMetaRequest('https://openlibrary.org/search.json?'+qs));
    return (payload.docs||[]).map(x=>({title:x.title,authors:(x.author_name||[]).slice(0,4).join(', '),publisher:(x.publisher||[])[0]||'',publication_year:String(x.first_publish_year||''),source:'Open Library'}))}
   catch{return []}
  })();scanTitleCache.set(key,task);task.then(result=>{if(!result?.length&&scanTitleCache.get(key)===task)scanTitleCache.delete(key)},()=>{if(scanTitleCache.get(key)===task)scanTitleCache.delete(key)});if(scanTitleCache.size>200)scanTitleCache.delete(scanTitleCache.keys().next().value);return task;
 }
-async function findOCRCatalogMatches(row){
+async function findOCRCatalogMatches(row,{fast=false}={}){
  const titles=scanHelper.titleCandidates(row.ocrText);
  const proposed=row.title?[row.title,...titles]:titles;
+ const list=[...new Set(proposed)].slice(0,fast?2:3);
  let candidates=[];
- for(const title of [...new Set(proposed)].slice(0,3)){
-  const result=await findTitleCandidates(title,row.authors);
-  candidates.push(...result);
-  if(result.some(x=>scanHelper.similarity(x.title,title)>.92))break;
+ if(fast){
+  // Search just two plausible titles in parallel; do not wait for seven
+  // remote providers per candidate on every image in a 100+ cover batch.
+  const settled=await Promise.allSettled(list.map(title=>findTitleCandidates(title,row.authors,{fast:true})));
+  candidates=settled.flatMap(result=>result.status==='fulfilled'?result.value:[]);
+ }else{
+  for(const title of list){
+   const result=await findTitleCandidates(title,row.authors);
+   candidates.push(...result);
+   if(result.some(x=>scanHelper.similarity(x.title,title)>.92))break;
+  }
  }
  const unique=new Map();for(const book of candidates){const key=String(book.title+'|'+book.authors).toLowerCase();if(!unique.has(key))unique.set(key,book)}
  return scanHelper.scoreCandidates([...unique.values()],row.ocrText,row.title,row.authors).filter(m=>m.score>=.40).slice(0,8);
@@ -2556,7 +2567,7 @@ async function readCoverWithAI(row,file=row.file,force=false){
  if(!session?.access_token){row.aiNotice='Sign in to use AI book-cover scanning.';return false}
  row.lookup_status='Reading visible text on the cover with AI…';row.aiNotice='';
  try{
-  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),26500);
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),force?26500:10500);
   let response;
   try{response=await fetch('/api/book-vision',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({image:await imageForAI(file)}),signal:controller.signal})}
   finally{clearTimeout(timer)}
@@ -2603,18 +2614,27 @@ function applyCoverCatalogMatch(row){
 }
 // OCR first is usually much faster than sending every photo to cloud AI.
 // Cloud AI is a fallback for covers whose title was not identified locally.
-async function recognizeCoverLocally(row,file){
+async function recognizeCoverLocally(row,file,{fast=false}={}){
  try{
   row.lookup_status='Reading text on this device…';
-  row.ocrText=await ocrText(file);
+  row.ocrText=await ocrText(file,{fast});
   if(!row.ocrText){row.lookup_status='No readable cover text found. Try a sharper image or AI cover reader.';return false}
   if(!row.barcode){
    const isbn=scanHelper.isbnFromText(row.ocrText)[0];
    if(isbn){row.barcode=isbn;await batchLookUp(row)}
   }
   if(!row.authors)row.authors=scanHelper.authorFromText(row.ocrText);
+  // Instant local match: if this exact title already exists in the signed-in
+  // inventory, do not wait for an outside catalogue. Never copy edition data
+  // unless the photographed ISBN matches that same record.
+  if(fast&&inventoryScanMatch){
+   const local=inventoryScanMatch.match(row.ocrText,books,scanHelper,row.barcode);
+   if(local){for(const field of ['title','authors','publisher','publication_year','language','pages','subject'])if(local[field]&&!row[field])row[field]=String(local[field]);
+    row.lookup_status=local.editionMatched?'Matched a verified existing inventory edition.':'Matched an existing inventory title and author; verify the physical edition.';
+    row.matches=[];return true}
+  }
   if(!row.title||!row.publisher||!row.publication_year){
-   row.matches=await findOCRCatalogMatches(row);
+   row.matches=await findOCRCatalogMatches(row,{fast});
    if(applyCoverCatalogMatch(row))return true;
    if(!row.title){
     const possible=scanHelper.titleCandidates(row.ocrText)[0];
@@ -2629,13 +2649,13 @@ async function recognizeCoverLocally(row,file){
   return false;
  }
 }
-async function enrichScanFromImage(row,{mode='auto'}={}){
+async function enrichScanFromImage(row,{mode='auto',fast=false}={}){
  try{
   const file=await reviewSourceFile(row);
   const local=mode==='ocr'||(mode==='auto'&&$('batchUseOCR')?.checked);
   const cloud=mode==='ai'||(mode==='auto'&&$('batchUseAI')?.checked);
   if(local){
-   const found=await recognizeCoverLocally(row,file);
+   const found=await recognizeCoverLocally(row,file,{fast});
    if(found||mode==='ocr')return;
   }
   if(!cloud)return;
@@ -2643,7 +2663,7 @@ async function enrichScanFromImage(row,{mode='auto'}={}){
   const usedAI=await readCoverWithAI(row,file,mode==='ai');
   if(usedAI&&row.title){
    // Do not erase locally detected text; use catalog matches to verify the edition.
-   row.matches=await findOCRCatalogMatches(row);
+   row.matches=await findOCRCatalogMatches(row,{fast});
    if(applyCoverCatalogMatch(row))return;
    row.lookup_status=row.matches.length?'AI cover text extracted; confirm the catalogue match.':'AI cover text extracted; verify title and author before saving.';
   }else if(mode==='ai'||!hasBookTitle(row.title)){
@@ -2683,7 +2703,7 @@ function supportedBarcodeFormats(){
  if(!barcodeFormatsReady)barcodeFormatsReady=Promise.resolve().then(()=>BarcodeDetector.getSupportedFormats?.()||[]).catch(()=>[]);
  return barcodeFormatsReady;
 }
-async function decodeBatchBarcode(file){
+async function decodeBatchBarcode(file,{fast=false}={}){
  // Accept multiple barcodes, arbitrary rotation and ordinary cover images. The image is
  // never rejected merely for its shape; unreadable photos go to manual review.
  const candidates=[];
@@ -2693,12 +2713,12 @@ async function decodeBatchBarcode(file){
   if(typeof createImageBitmap==='function')bitmap=await createImageBitmap(file);
   if(bitmap&&typeof BarcodeDetector!=='undefined'){
    const supported=await supportedBarcodeFormats();
-   const formats=['ean_13','ean_8','upc_a','upc_e','code_128','code_39','code_93','itf','codabar','qr_code','data_matrix','pdf417','aztec'].filter(f=>supported.includes(f));
+   const formats=(fast?['ean_13','upc_a','code_128']:['ean_13','ean_8','upc_a','upc_e','code_128','code_39','code_93','itf','codabar','qr_code','data_matrix','pdf417','aztec']).filter(f=>supported.includes(f));
    if(formats.length){
     const detector=new BarcodeDetector({formats});
     try{add(await detector.detect(bitmap))}catch{}
     // Rotate and downscale only when needed; scan both the whole photo and its central crop.
-    if(!candidates.some(c=>validIsbn(c))){
+    if(!fast&&!candidates.some(c=>validIsbn(c))){
      const maxSide=2200,scale=Math.min(1,maxSide/Math.max(bitmap.width,bitmap.height));
      for(const degrees of [0,90,180,270]){
       if(candidates.some(c=>validIsbn(c)))break;
@@ -2714,7 +2734,7 @@ async function decodeBatchBarcode(file){
   }
  }catch{}finally{bitmap?.close?.()}
  const preferred=candidates.find(c=>validIsbn(c));if(preferred)return normalizeIsbn(preferred);
- if(window.Html5Qrcode){
+ if(window.Html5Qrcode&&!fast){
   // HTML5 QR uses the same hidden DOM node: serialize this fallback only.
   const task=barcodeFallbackChain.catch(()=>{}).then(async()=>{
    const reader=new Html5Qrcode('decoder',{verbose:false});
@@ -2753,6 +2773,8 @@ function batchDuplicate(code,row){return !!code&&(books.some(b=>clean(b.barcode)
 // Only the fingerprint is stored in the cloud; photographs remain on this device.
 const scanUploadGuard=globalThis.LibraryScanDedup;
 const scanStream=globalThis.LibraryScanStream;
+const scanProgress=globalThis.LibraryScanProgress;
+const inventoryScanMatch=globalThis.LibraryInventoryScanMatch;
 async function scanFileSignature(file){return scanUploadGuard.fingerprint(file)}
 // Incremental Review checkpoints: do not resend 100+ thumbnails every 1–2 seconds.
 // Local OCR starts as soon as the first small cloud-verified group is accepted.
@@ -2777,15 +2799,21 @@ async function runBatch(){
  if(!session?.user||batchActive||batchSaving||batchZipLoading||!batchQueue.length)return;
  const uploader=session.user.id,originalQueue=batchQueue.slice(),newRecords=new Set(),processedUploads=[],claimedUploads=[];
  const knownPhotos=new Set(batchItems.map(x=>x.sourceSignature).filter(Boolean));
- let skippedPhotos=0,done=0,checked=0,claimedCount=0,recovered=0,retryUnresolved=false;
+ let skippedPhotos=0,done=0,prepared=0,checked=0,claimedCount=0,recovered=0,retryUnresolved=false;
  const reasons={alreadySaved:0,inReview:0,inProgress:0,local:0};
  let lastRender=0;
  batchActive=true;batchStopRequested=false;
  scanCheckpointAt=Date.now();scanCheckpointMarked=0;scanCheckpointQueued=0;
- $('batchProgress').max=originalQueue.length;$('batchProgress').value=0;renderBatch();
+ $('batchProgress').max=1000;$('batchProgress').value=0;renderBatch();
  const progress=()=>{
-  $('batchProgress').max=originalQueue.length;
-  $('batchProgress').value=Math.min(originalQueue.length,done+skippedPhotos);
+  const stats=scanProgress?.snapshot({total:originalQueue.length,prepared,checked,finished:done+skippedPhotos});
+  const bar=$('batchProgress');
+  bar.max=1000;bar.value=stats?stats.percentage*10:0;
+  bar.dataset.scanMode='true';bar.dataset.scanPrepared=String(prepared);
+  bar.dataset.scanChecked=String(checked);bar.dataset.scanFinished=String(done+skippedPhotos);
+  bar.dataset.scanScanned=String(done);bar.dataset.scanSkipped=String(skippedPhotos);
+  bar.dataset.scanTotal=String(originalQueue.length);
+  window.LibraryProgressUI?.refresh();
  };
  try{
   if(!scanUploadGuard||!scanStream)throw Error('The scanner did not load. Reload the page and try again.');
@@ -2804,9 +2832,14 @@ async function runBatch(){
      ready.push({...item,file:new File([blob],item.path.split('/').pop(),{type:batchMime(item.path)}),size:blob.size,zipEntry:null});
     }else ready.push(item);
    }
-   const prepared=await scanUploadGuard.prepare(ready,knownPhotos);
-   for(const item of prepared.accepted)knownPhotos.add(item.sourceSignature);
-   return prepared;
+   const prior=prepared;
+   const result=await scanUploadGuard.prepare(ready,knownPhotos,part=>{
+    prepared=prior+part;
+    progress();
+    if(part===1||part===ready.length||part%4===0)batchOutput(`Preparing photos ${prepared} of ${originalQueue.length} while scanning ${done}…`);
+   });
+   for(const item of result.accepted)knownPhotos.add(item.sourceSignature);
+   return result;
   };
   const claim=async accepted=>{
    const candidates=accepted.map(item=>({...item,saveRecordId:uuid()}));
@@ -2818,11 +2851,11 @@ async function runBatch(){
    try{
     row.thumbnailData=await reviewThumbnail(item.file);
     if(!row.thumbnailData)row.lookup_status='Preview unavailable. Try a JPEG or PNG cover.';
-    row.barcode=await decodeBatchBarcode(item.file);
+    row.barcode=await decodeBatchBarcode(item.file,{fast:true});
     if(row.barcode)await batchLookUp(row);
     // A verified title is sufficient to save; do not force slow AI/OCR merely
     // because an optional ISBN is absent from a front-cover photo.
-    if(!hasBookTitle(row.title)&&($('batchUseOCR').checked||$('batchUseAI').checked))await enrichScanFromImage(row);
+    if(!hasBookTitle(row.title)&&($('batchUseOCR').checked||$('batchUseAI').checked))await enrichScanFromImage(row,{fast:true});
     row.error=!hasBookTitle(row.title)?'Title not identified. Enter the title or use the AI cover reader.':'';
    }catch(error){row.error='Could not read this image; enter a title or retry OCR. '+String(error?.message||error)}
    if(session?.user?.id!==uploader)return;
@@ -2835,7 +2868,7 @@ async function runBatch(){
    const now=Date.now();if(done===1||done%4===0||now-lastRender>1600){lastRender=now;renderBatch();await new Promise(requestAnimationFrame)}
   };
   await scanStream.run({items:originalQueue,
-   chunkSize:offset=>offset===0?3:(window.matchMedia?.("(max-width: 800px)")?.matches?10:18),
+   chunkSize:offset=>offset===0?1:(window.matchMedia?.("(max-width: 800px)")?.matches?8:12),
    bufferLimit:window.matchMedia?.("(max-width: 800px)")?.matches?12:24,workers:maxOCRWorkers(),
    shouldStop:()=>batchStopRequested||session?.user?.id!==uploader,
    prepare,claim,scan,
@@ -2905,7 +2938,7 @@ async function runBatch(){
  }
  if(session?.user?.id===uploader&&newRecords.size&&typeof autoEnrichISBNReviews==='function')void autoEnrichISBNReviews();
  const eligible=batchItems.filter(x=>newRecords.has(x.saveRecordId)&&batchValid(x));
- if(eligible.length&&$('batchAutoSave')?.checked){eligible.forEach(x=>x.selected=true);await saveBatch(false,{auto:true,ids:newRecords})}
+ if(eligible.length&&$('batchAutoSave')?.checked){delete $('batchProgress').dataset.scanMode;eligible.forEach(x=>x.selected=true);await saveBatch(false,{auto:true,ids:newRecords})}
  else if(eligible.length){batchOutput(`${eligible.length} recognized book${eligible.length===1?'':'s'} ready to save · ${skippedPhotos} repeated photos skipped. Save the ready books or send unfinished ones to Review.`);renderBatch()}
  else if(newRecords.size){batchOutput(`${newRecords.size} photos scanned. ${skippedPhotos} repeated photos skipped. Correct missing titles in Review before saving.`)}
 }
@@ -3094,7 +3127,7 @@ async function saveBatch(allowIncomplete=false,options={}){
  refreshBatchDuplicates();
  const duplicates=selected.filter(x=>x.duplicate).length;
  const uploader=session.user.id;
- batchSaving=true;renderBatch();
+ batchSaving=true;delete $('batchProgress').dataset.scanMode;$('batchProgress').max=selected.length;$('batchProgress').value=0;renderBatch();
  batchOutput(`Saving ${selected.length} selected records${duplicates?' (including '+duplicates+' possible duplicates)':''}…`);
  let count=0,updatedCount=0,fail=0;const rejectedSamePhotos=[];
  const val=value=>String(value??'').trim();
@@ -3204,7 +3237,7 @@ async function saveBatch(allowIncomplete=false,options={}){
  }catch(err){batchOutput('Batch save stopped: '+String(err?.message||err)+'. Successfully saved rows remain saved; unsaved selections can be retried.')}
  finally{batchSaving=false;renderBatch()}
 }
-function clearBatch(){if(batchActive||batchSaving||batchZipLoading||batchExcelLoading)return;batchQueue=[];batchStopRequested=false;$("batchFolder").value='';$("batchZip").value='';$("batchPhotos").value='';$("batchProgress").value=0;batchOutput('Scan selection cleared. All unfinished Review books remain saved.');renderBatch()}
+function clearBatch(){if(batchActive||batchSaving||batchZipLoading||batchExcelLoading)return;batchQueue=[];batchStopRequested=false;$("batchFolder").value='';$("batchZip").value='';$("batchPhotos").value='';delete $("batchProgress").dataset.scanMode;$("batchProgress").value=0;batchOutput('Scan selection cleared. All unfinished Review books remain saved.');renderBatch()}
 $("batchFolder").onchange=e=>{const f=Array.from(e.target.files||[]);setBatchQueue(f.map(file=>({file,path:file.webkitRelativePath||file.name,size:file.size})),'folder');e.target.value=''};
 $("batchZip").onchange=e=>{const f=e.target.files?.[0];batchZipFiles(f);e.target.value=''};
 $("batchPhotos").onchange=e=>{const f=Array.from(e.target.files||[]);setBatchQueue(f.map(file=>({file,path:file.name,size:file.size})),'photos');e.target.value=''};

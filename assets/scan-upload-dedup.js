@@ -23,7 +23,7 @@
       const fingerprintValue=await fingerprint(items[i].file);
       if(known.has(fingerprintValue))skipped++;
       else{known.add(fingerprintValue);accepted.push({...items[i],sourceSignature:fingerprintValue});}
-      if((i+1)%5===0||i===items.length-1)onProgress(i+1,items.length,skipped);
+      onProgress(i+1,items.length,skipped);
     }
     return {accepted,skipped};
   }

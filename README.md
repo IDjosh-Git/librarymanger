@@ -1,3 +1,7 @@
+# Library Manager v5.32 — Streaming Scan Progress and Fast Book Identification
+
+See `LIBRARY_SCAN_PROGRESS_AND_SPEED_V532_20261112.md` for the progress fix, automatic fast recognition, verification and deployment steps. This is a source release; it is not deployed to the live website.
+
 # Library Manager v5.31 — Stream scans during photo upload (12 November 2026)
 
 This release restores immediate, overlapping scanning: recognize the first few verified images **while** later photos are hashed, deduplicated, and (for ZIPs) decompressed. It prevents the former wait for the whole batch before recognition, favors local OCR before slower AI when both are enabled, reduces cloud checkpoint overhead, and preserves v5.30 duplicate protection and interrupted-scan recovery. See `LIBRARY_SCAN_SPEED_STREAMING_V531_20261112.md` for technical details, safeguards, testing and deployment steps.
