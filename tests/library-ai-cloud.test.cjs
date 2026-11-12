@@ -6,6 +6,7 @@ const path=require('node:path');
 const history=require('../api/library-ai-history.js');
 const chat=require('../api/book-chat.js');
 const cloud=require('../lib/library-ai-cloud.cjs');
+const appContext=require('../lib/library-ai-context.cjs');
 function res(){return {statusCode:200,body:null,headers:{},setHeader(k,v){this.headers[k]=v;return this;},status(c){this.statusCode=c;return this;},json(b){this.body=b;return this;}};}
 let conversations=[],messages=[],next=0;
 const member='11111111-1111-4111-8111-111111111111';
@@ -13,13 +14,23 @@ const other='22222222-2222-4222-8222-222222222222';
 function reply(body,status=200){return {ok:status>=200&&status<300,status,json:async()=>body};}
 let caller=member,failSaving=false,failAssistantSave=false,writeCount=0;
 const articles=[{slug:'scan-books',title:'Scan books',answer:'Open Scan books and select photos, folders or ZIP files, then check OCR suggestions in Review books before saving to Supabase.',keywords:['scan','upload','review'],sort_order:1,enabled:true}];
+let weeklyRecord={title:'Immigrant, Inc.',authors:'Richard T. Herman; Robert L. Smith',isbn:'9780470455715',description:'Explore Business & Economics. A featured title from our library collection.',shelf:'25',published_at:'2026-11-09T00:00:00Z',selection_source:'automatic',why_selected:'Explore Business & Economics. A featured title from our library collection.',reading_hook:'',ideal_for:'',discussion_question:'',week_start:'2026-11-09'};
+let weeklyRpcBroken=false, lastProviderRequest=null;
 const nativeFetch=global.fetch;
 function mockFetch(url,options={}){
  const u=new URL(url),p=u.pathname,h=options.headers||{},token=String(h.Authorization||'');
+ if(u.hostname==='generativelanguage.googleapis.com'){
+  lastProviderRequest=JSON.parse(options.body);
+  return Promise.resolve(reply({candidates:[{content:{parts:[{text:'Here is a grounded explanation using the provided library information.'}]}}]}));
+ }
  if(token!=='Bearer valid-token')return Promise.resolve(reply({message:'Unauthorized'},401));
  if(p==='/auth/v1/user')return Promise.resolve(reply({id:caller,is_anonymous:false}));
  if(p==='/rest/v1/library_member_roles')return Promise.resolve(reply([{role:'admin'}]));
  if(p==='/rest/v1/library_manager_ai_knowledge')return Promise.resolve(reply(articles));
+ if(p==='/rest/v1/rpc/library_public_weekly_spotlight_v2'||p==='/rest/v1/rpc/library_public_featured_book'){
+  if(weeklyRpcBroken)return Promise.resolve(reply({message:'RPC temporarily unavailable'},503));
+  return Promise.resolve(reply(weeklyRecord?[weeklyRecord]:[]));
+ }
  if(p==='/rest/v1/library_manager_ai_conversations'){
   if(options.method==='DELETE'){const ids=new Set(conversations.filter(x=>x.user_id===caller).map(x=>x.id));conversations=conversations.filter(x=>x.user_id!==caller);messages=messages.filter(x=>!ids.has(x.conversation_id));return Promise.resolve(reply(null,204));}
   if(options.method==='POST'){const body=JSON.parse(options.body),row={id:String(++next),...body};conversations.push(row);return Promise.resolve(reply([row],201));}
@@ -63,6 +74,66 @@ test('each question is saved immediately and each assistant reply saved; both re
  assert.deepEqual(Object.keys(messages[0]).sort(),Object.keys(messages[1]).sort());
  const loaded=res();await history(authReq('GET'),loaded);assert.equal(loaded.statusCode,200);assert.equal(loaded.body.messages.length,2);
  assert.equal(loaded.body.messages[0].content,'How do I scan books and review uploads?');
+});
+test('live Book of the Week is answered from the published Supabase RPC without any AI provider',async()=>{
+ caller=member;
+ const count=messages.length;
+ const r=res();await chat(authReq('POST',{question:'What is the current Book of the Week?'}),r);
+ assert.equal(r.statusCode,200,JSON.stringify(r.body));
+ assert.equal(r.body.mode,'live-catalogue');assert.equal(r.body.grounded,true);
+ assert.match(r.body.reply,/Immigrant, Inc\./);assert.match(r.body.reply,/Richard T\. Herman/);
+ assert.match(r.body.reply,/9 November 2026/);assert.match(r.body.reply,/published catalogue details/i);
+ assert.doesNotMatch(r.body.reply,/I do not have access to real-time/i);
+ assert.equal(messages.length,count+2);
+ assert.equal(messages.at(-1).mode,'live-catalogue');
+});
+test('a follow-up asking who wrote it uses the last weekly topic in cloud conversation',async()=>{
+ caller=member;const r=res();await chat(authReq('POST',{question:'Who wrote it?'}),r);
+ assert.equal(r.statusCode,200,JSON.stringify(r.body));assert.equal(r.body.mode,'live-catalogue');
+ assert.match(r.body.reply,/Richard T\. Herman/);assert.match(r.body.reply,/Robert L\. Smith/);
+});
+test('weekly pick changes are retrieved live without stale hardcoded book data',async()=>{
+ caller=member;
+ weeklyRecord={...weeklyRecord,title:'A Newly Published Book',authors:'Another Author',selection_source:'manual',week_start:'2026-11-16'};
+ const r=res();await chat(authReq('POST',{question:'Which book is featured this week?'}),r);
+ assert.equal(r.statusCode,200,JSON.stringify(r.body));assert.match(r.body.reply,/A Newly Published Book/);
+ assert.doesNotMatch(r.body.reply,/Immigrant, Inc/);
+ assert.match(r.body.reply,/chosen by the library team/);
+ weeklyRecord={...weeklyRecord,title:'Immigrant, Inc.',authors:'Richard T. Herman; Robert L. Smith',selection_source:'automatic',week_start:'2026-11-09'};
+});
+test('more detailed weekly questions send the verified live record as provider context',async()=>{
+ caller=member;lastProviderRequest=null;
+ process.env.GEMINI_API_KEY='mock-test-key';
+ try{
+  const r=res();await chat(authReq('POST',{question:'Analyze the themes of this week’s featured book'}),r);
+  assert.equal(r.statusCode,200,JSON.stringify(r.body));
+  assert.equal(r.body.mode,'gemini');
+  const prompt=lastProviderRequest?.systemInstruction?.parts?.[0]?.text||'';
+  assert.match(prompt,/CURRENT PUBLISHED BOOK OF THE WEEK/);
+  assert.match(prompt,/Immigrant, Inc\./);
+  assert.match(prompt,/VERIFIED PRODUCT CAPABILITIES/);
+  assert.match(prompt,/published weekly spotlight/i);
+  assert.doesNotMatch(prompt,/borrower.name|borrower.email|service_role/i);
+ }finally{delete process.env.GEMINI_API_KEY;}
+});
+test('no featured title never generates a fake weekly book',async()=>{
+ caller=member;const original=weeklyRecord;weeklyRecord=null;
+ const r=res();await chat(authReq('POST',{question:'What is the Book of the Week?'}),r);
+ assert.equal(r.statusCode,200,JSON.stringify(r.body));assert.match(r.body.reply,/No Book of the Week is currently published/);
+ weeklyRecord=original;
+});
+test('temporary Supabase spotlight failure is reported without fabricated book details',async()=>{
+ caller=member;weeklyRpcBroken=true;
+ const r=res();await chat(authReq('POST',{question:'What is the Book of the Week?'}),r);
+ assert.equal(r.statusCode,200,JSON.stringify(r.body));assert.match(r.body.reply,/could not retrieve/i);
+ assert.doesNotMatch(r.body.reply,/Immigrant, Inc/);
+ weeklyRpcBroken=false;
+});
+test('weekly management help stays in the app guide workflow',()=>{
+ assert.equal(appContext.referencesWeekly('How do I change the Book of the Week?',[]),false);
+ assert.equal(appContext.referencesWeekly('What is the Book of the Week?',[]),true);
+ assert.equal(appContext.referencesWeekly('Who wrote it?',[{role:'assistant',content:'Book of the Week: Example'}]),true);
+ assert.equal(appContext.referencesWeekly('Who wrote it?',[{role:'assistant',content:'Book of the Week: Example'}],true),false);
 });
 test('no AI provider still preserves the question in Supabase',async()=>{
  caller=member;const count=messages.length;

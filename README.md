@@ -1,3 +1,11 @@
+# Library Manager v5.28 — Live Book of the Week in Library AI
+
+Library AI is now connected to the **published** Book of the Week through the existing Supabase `library_public_weekly_spotlight_v2()` RPC, the same public-safe source used by the featured-book page. Direct factual questions are answered from that record instead of generic disclaimers. The assistant is also grounded in verified app workflows and relevant Supabase help articles. See `LIBRARY_AI_LIVE_SPOTLIGHT_V528_20261112.md` for changes, privacy boundaries and deployment tests.
+
+**Release note:** This ZIP is a code release. Upload/deploy its contents to the existing Vercel `librarymanger` project to activate the updated chat endpoint. No new database migration is needed for the currently connected Supabase project. Local tests: `npm test` (25 passing).
+
+---
+
 # Library Manager v5.27 — Supabase floating AI chat persistence repair (12 November 2026)
 
 - **Fixed confirmed PostgREST PGRST102 (HTTP 400):** The former bulk insert sent a user record and AI record with different JSON keys. Supabase rejected the batch. The new server saves each message with one consistent JSON shape and checks that Supabase returned the inserted record.
