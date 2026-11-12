@@ -1,3 +1,11 @@
+# Library Manager v5.31 — Stream scans during photo upload (12 November 2026)
+
+This release restores immediate, overlapping scanning: recognize the first few verified images **while** later photos are hashed, deduplicated, and (for ZIPs) decompressed. It prevents the former wait for the whole batch before recognition, favors local OCR before slower AI when both are enabled, reduces cloud checkpoint overhead, and preserves v5.30 duplicate protection and interrupted-scan recovery. See `LIBRARY_SCAN_SPEED_STREAMING_V531_20261112.md` for technical details, safeguards, testing and deployment steps.
+
+**Source release only; not yet deployed.** Deploy the ZIP root contents to the existing Vercel `librarymanger` project, preserving existing configuration. No new Supabase migration or secret is needed. Local tests: **60 passed**. Layout tested at six desktop/mobile viewport widths. Full real-world upload timings and physical-device scanning require validation after deployment.
+
+---
+
 # Library Manager v5.30 — Photo upload recovery and responsive Save controls (12 November 2026)
 
 This release fixes abandoned photo scan reservations that previously caused repeated uploads to be rejected as already uploaded before their book details reached Review or Inventory. The **111 old processing claims** observed in the connected Supabase project were verified to have no matching Inventory or pending Review records. The updated uploader **recovers stale, owned, orphaned claims automatically when those same files are selected again**. The database records themselves are not deleted or rewritten by installing this ZIP.

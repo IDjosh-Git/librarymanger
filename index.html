@@ -14,6 +14,7 @@
 <script src="assets/scan-extraction.js"></script>
 <script src="assets/ocr-quality.js?v=5.23.0"></script>
 <script src="assets/scan-upload-dedup.js?v=5.30.0"></script>
+<script src="assets/scan-stream.js?v=5.31.0"></script>
 <script src="assets/isbn-crop.js"></script>
 <script src="assets/review-excel.js"></script>
 <script src="assets/scanned-books.js"></script>
@@ -46,7 +47,7 @@
 <link rel="stylesheet" href="assets/mobile-navigation-ai-orb.css?v=5.22.0">
 <link rel="stylesheet" href="assets/daily-visit-register.css?v=5.26.0">
 <script defer src="assets/compact-card-insights.js?v=5.17.0"></script>
-<script defer src="assets/premium-progress-upload.js?v=5.18.0"></script>
+<script defer src="assets/premium-progress-upload.js?v=5.31.0"></script>
 <script defer src="assets/book-guide-format.js"></script>
 <script defer src="assets/book-guide.js?v=5.29.0"></script>
 <script defer src="assets/public-contact.js"></script>
@@ -2374,13 +2375,9 @@ async function batchZipFiles(file){
   if(entries.length>BATCH_MAX_FILES)return batchOutput(`ZIP contains over ${BATCH_MAX_FILES} photos. Split it into smaller ZIPs.`);
   const sizes=entries.map(x=>Number(x._data?.uncompressedSize)||0);
   if(sizes.some(n=>n>BATCH_MAX_IMAGE)||sizes.reduce((a,b)=>a+b,0)>BATCH_MAX_TOTAL)return batchOutput('ZIP contains an image over 60 MB or more than 4 GB unpacked.');
-  const rows=[];
-  for(const x of entries){
-   const blob=await x.async('blob');
-   if(blob.size>BATCH_MAX_IMAGE)return batchOutput('An image in ZIP exceeds 60 MB.');
-   const path=x.name.replace(/\\/g,'/');
-   rows.push({file:new File([blob],path.split('/').pop(),{type:batchMime(path)}),path,size:blob.size});
-  }
+  // Keep entries lazy: streaming scan will decompress the first few images,
+  // then continue decompressing while those covers are being recognized.
+  const rows=entries.map(x=>({zipEntry:x,path:x.name.replace(/\\/g,'/'),size:Number(x._data?.uncompressedSize)||0}));
   if(session?.user?.id!==uploader)return batchOutput('Account changed. ZIP import cancelled.');
   setBatchQueue(rows,'ZIP');zipPrepared=!!batchQueue.length;
  }catch(err){batchOutput('Could not open ZIP: '+String(err?.message||err))}
@@ -2604,42 +2601,60 @@ function applyCoverCatalogMatch(row){
  row.lookup_status='High-confidence title match from '+(best.source||'book catalogue')+'. Verify the edition before saving.';
  row.matches=[];return true;
 }
-async function enrichScanFromImage(row,{mode='auto'}={}){
- row.lookup_status=mode==='ocr'?'Reading photo with local OCR…':mode==='ai'?'Reading photo with AI…':'Reading book cover with AI / OCR…';
+// OCR first is usually much faster than sending every photo to cloud AI.
+// Cloud AI is a fallback for covers whose title was not identified locally.
+async function recognizeCoverLocally(row,file){
  try{
-  const file=await reviewSourceFile(row);
-  const usedAI=mode!=='ocr'&&await readCoverWithAI(row,file,mode==='ai');
-  // Image AI often reads front covers that have no barcode. Enrich by title too.
-  if(usedAI&&row.title){
-   row.matches=await findOCRCatalogMatches(row);
-   if(applyCoverCatalogMatch(row))return;
-   row.lookup_status=row.matches.length?'Cover text extracted; compare the suggested catalogue matches below.':'Cover text extracted; verify the title and author before saving.';
-   return;
-  }
-  if(mode==='ai'){
-   row.lookup_status=row.aiNotice||'AI could not identify this photo. Try local OCR or attach a clearer cover.';
-   return;
-  }
-  if(mode==='auto'&&!$('batchUseOCR')?.checked){
-   row.lookup_status=row.aiNotice||'AI could not read this cover and local OCR is switched off.';
-   return;
-  }
+  row.lookup_status='Reading text on this device…';
   row.ocrText=await ocrText(file);
-  if(!row.ocrText){row.lookup_status='No readable cover text found. Try a brighter, sharper photo or enter details manually.';return}
-  if(!row.barcode){const isbn=scanHelper.isbnFromText(row.ocrText)[0];if(isbn){row.barcode=isbn;await batchLookUp(row)}}
+  if(!row.ocrText){row.lookup_status='No readable cover text found. Try a sharper image or AI cover reader.';return false}
+  if(!row.barcode){
+   const isbn=scanHelper.isbnFromText(row.ocrText)[0];
+   if(isbn){row.barcode=isbn;await batchLookUp(row)}
+  }
   if(!row.authors)row.authors=scanHelper.authorFromText(row.ocrText);
   if(!row.title||!row.publisher||!row.publication_year){
    row.matches=await findOCRCatalogMatches(row);
-   if(applyCoverCatalogMatch(row))return;
-   // OCR-only photos can still prefill a possible title; mark it explicitly for review.
+   if(applyCoverCatalogMatch(row))return true;
    if(!row.title){
     const possible=scanHelper.titleCandidates(row.ocrText)[0];
     if(possible&&possible.length>=4&&possible.length<=100)row.title=possible;
    }
-   row.lookup_status=row.matches.length?'Possible cover details found. Compare the matching books below.':'Cover text detected. Check and correct the suggested title before saving.';
+   row.lookup_status=row.matches.length?'Possible cover details found. Confirm the title in Review.':'Cover text detected. Verify the suggested title before saving.';
   }
- }catch(error){row.lookup_status='Text recognition unavailable: '+String(error?.message||error).slice(0,180);row.error=row.title?'':'Try another photo or enter the title manually.'}
+  return hasBookTitle(row.title);
+ }catch(error){
+  row.lookup_status='Text recognition unavailable: '+String(error?.message||error).slice(0,180);
+  row.error=row.title?'':'Try another photo or enter the title manually.';
+  return false;
+ }
 }
+async function enrichScanFromImage(row,{mode='auto'}={}){
+ try{
+  const file=await reviewSourceFile(row);
+  const local=mode==='ocr'||(mode==='auto'&&$('batchUseOCR')?.checked);
+  const cloud=mode==='ai'||(mode==='auto'&&$('batchUseAI')?.checked);
+  if(local){
+   const found=await recognizeCoverLocally(row,file);
+   if(found||mode==='ocr')return;
+  }
+  if(!cloud)return;
+  row.lookup_status='Reading cover with AI after local recognition…';
+  const usedAI=await readCoverWithAI(row,file,mode==='ai');
+  if(usedAI&&row.title){
+   // Do not erase locally detected text; use catalog matches to verify the edition.
+   row.matches=await findOCRCatalogMatches(row);
+   if(applyCoverCatalogMatch(row))return;
+   row.lookup_status=row.matches.length?'AI cover text extracted; confirm the catalogue match.':'AI cover text extracted; verify title and author before saving.';
+  }else if(mode==='ai'||!hasBookTitle(row.title)){
+   row.lookup_status=row.aiNotice||'The cover could not be identified; try a sharper image or enter the title.';
+  }
+ }catch(error){
+  row.lookup_status='Recognition unavailable: '+String(error?.message||error).slice(0,180);
+  row.error=row.title?'':'Try another photo or enter the title manually.';
+ }
+}
+
 async function batchTitleSearch(index,withOCR=false){
  const row=batchItems[index];if(!row||row.saved||batchActive||batchSaving||batchZipLoading||batchExcelLoading)return;
  row.reviewStaged=true;
@@ -2737,120 +2752,150 @@ function batchDuplicate(code,row){return !!code&&(books.some(b=>clean(b.barcode)
 // SHA-256 fingerprints cover every file byte and are checked with Supabase before OCR.
 // Only the fingerprint is stored in the cloud; photographs remain on this device.
 const scanUploadGuard=globalThis.LibraryScanDedup;
+const scanStream=globalThis.LibraryScanStream;
 async function scanFileSignature(file){return scanUploadGuard.fingerprint(file)}
-// Throttled, durable checkpoints keep completed scans recoverable after tab closure.
-let scanCheckpointAt=0;
+// Incremental Review checkpoints: do not resend 100+ thumbnails every 1–2 seconds.
+// Local OCR starts as soon as the first small cloud-verified group is accepted.
+let scanCheckpointAt=0,scanCheckpointQueued=0,scanCheckpointMarked=0;
 let scanCheckpointSync=Promise.resolve();
 function checkpointCompletedScan(owner,processedUploads){
- const version=reviewDraftVersion,now=Date.now();
- if(now-scanCheckpointAt<1400)return;
- scanCheckpointAt=now;
- const snapshot=processedUploads.slice();
+ const now=Date.now(),count=processedUploads.length;
+ if(!count||(count-scanCheckpointQueued<8&&now-scanCheckpointAt<15000))return;
+ scanCheckpointAt=now;scanCheckpointQueued=count;
+ const version=reviewDraftVersion;
  scanCheckpointSync=scanCheckpointSync.catch(error=>console.warn('Previous scan checkpoint:',error))
   .then(async()=>{
-    const synced=await persistReviewDraft(owner,version);
-    // Mark only copies backed up to Supabase Review. An interrupted browser
-    // never leaves the whole batch marked as completed.
-    if(synced&&snapshot.length&&session?.user?.id===owner&&version===reviewDraftVersion){
-      await scanUploadGuard.changeStatus(sb,owner,snapshot,'pending');
-    }
+   if(session?.user?.id!==owner||version!==reviewDraftVersion)return;
+   const synced=await persistReviewDraft(owner,version);
+   if(synced&&count>scanCheckpointMarked&&session?.user?.id===owner){
+    await scanUploadGuard.changeStatus(sb,owner,processedUploads.slice(scanCheckpointMarked,count),'pending');
+    scanCheckpointMarked=count;
+   }
   });
 }
 async function runBatch(){
  if(!session?.user||batchActive||batchSaving||batchZipLoading||!batchQueue.length)return;
  const uploader=session.user.id,originalQueue=batchQueue.slice(),newRecords=new Set(),processedUploads=[],claimedUploads=[];
  const knownPhotos=new Set(batchItems.map(x=>x.sourceSignature).filter(Boolean));
- let skippedPhotos=0,cloudSkipped=0,done=0,activeQueue=[],retryUnresolved=false,recovered=0,skipBreakdown=null;
+ let skippedPhotos=0,done=0,checked=0,claimedCount=0,recovered=0,retryUnresolved=false;
+ const reasons={alreadySaved:0,inReview:0,inProgress:0,local:0};
+ let lastRender=0;
  batchActive=true;batchStopRequested=false;
+ scanCheckpointAt=Date.now();scanCheckpointMarked=0;scanCheckpointQueued=0;
  $('batchProgress').max=originalQueue.length;$('batchProgress').value=0;renderBatch();
+ const progress=()=>{
+  $('batchProgress').max=originalQueue.length;
+  $('batchProgress').value=Math.min(originalQueue.length,done+skippedPhotos);
+ };
  try{
-  if(!scanUploadGuard)throw Error('The upload verifier did not load. Reload the page and try again.');
-  batchOutput(`Checking ${originalQueue.length} photo${originalQueue.length===1?'':'s'} for duplicates…`);
-  // Same bytes (regardless of name, ZIP container or folder path) are never read twice.
-  const prepared=await scanUploadGuard.prepare(originalQueue,knownPhotos,(checked,total,skipped)=>{
-   if(batchStopRequested)throw Error('Scan cancelled before new photos were registered.');
-   $('batchProgress').max=total;$('batchProgress').value=checked;
-   batchOutput(`Checking files: ${checked} of ${total} · ${skipped} repeated photo${skipped===1?'':'s'} skipped`);
-  });
-  skippedPhotos=prepared.skipped;
-  if(batchStopRequested)throw Error('Scan cancelled.');
-  if(session?.user?.id!==uploader)throw Error('Account changed during upload. Select the folder again.');
-  // Atomic inserts with ON CONFLICT DO NOTHING prevent races across devices.
-  // Existing scanned/saved photos are not added to the review queue again.
-  const candidates=prepared.accepted.map(item=>({...item,saveRecordId:uuid()}));
-  if(candidates.length){
-   batchOutput(`Checking ${candidates.length} new-looking photo${candidates.length===1?'':'s'} against shared Inventory…`);
-   let claimed;
-   try{claimed=await scanUploadGuard.register(sb,uploader,candidates,{onProgress:(checked,total,info)=>{
-    if(batchStopRequested)return;
-    batchOutput(`Checking cloud uploads: ${checked} of ${total} · ${info.recovered} interrupted photo(s) recovered · ${info.skipped} already recorded`);
-   }})}
-   catch(error){claimedUploads.push(...(error.claimedUploads||[]));throw error}
-   claimedUploads.push(...claimed.accepted);
-   cloudSkipped=claimed.skipped.length;
-   recovered=claimed.recovered||0;
-   skipBreakdown=claimed;
-   skippedPhotos+=cloudSkipped;
-   activeQueue=claimed.accepted;
-   if(recovered)batchOutput(`Recovered ${recovered} interrupted photo${recovered===1?'':'s'}; scanning can continue safely.`);
-  }
-  if(!activeQueue.length){
-   retryUnresolved=true;
-   $('batchProgress').max=originalQueue.length;$('batchProgress').value=originalQueue.length;
-   const stages=skipBreakdown;
-   const reasons=[stages?.alreadySaved?`${stages.alreadySaved} already in Inventory`:null,
-    stages?.inReview?`${stages.inReview} in Review`:null,
-    stages?.inProgress?`${stages.inProgress} still reserved by another scan`:null,
-    prepared.skipped?`${prepared.skipped} already in your Review list`:null].filter(Boolean);
-   batchOutput(`No new photos to scan (${originalQueue.length} checked). ${reasons.join(' · ')||'Previously uploaded files were found'}. Open Review, or select different photos. If a scan was interrupted less than 10 minutes ago, use Retry selected upload after recovery becomes safe.`);
-   return;
-  }
+  if(!scanUploadGuard||!scanStream)throw Error('The scanner did not load. Reload the page and try again.');
   if($('batchUseOCR').checked)void warmupOCR();
-  $('batchProgress').max=activeQueue.length;$('batchProgress').value=0;
-  batchOutput(`${activeQueue.length} photo${activeQueue.length===1?'':'s'} to scan (${recovered} recovered from an interrupted upload) · ${skippedPhotos} existing photo${skippedPhotos===1?'':'s'} skipped. Scanning…`);
-  let next=0;
-  const lane=async()=>{
-   while(!batchStopRequested&&session?.user?.id===uploader){
-    const i=next++;if(i>=activeQueue.length)return;
-    const item=activeQueue[i];
-    const row={file:item.file,sourceSignature:item.sourceSignature,saveRecordId:item.saveRecordId,fileName:item.file.name,path:item.path,shelf:item.shelf||'',barcode:'',title:'',authors:'',publisher:'',publication_year:'',language:'',pages:'',subject:'',lookup_status:'Manual',error:'',duplicate:false,selected:false,saved:false,ocrText:'',matches:[],thumbnailData:'',reviewUpdatedAt:Date.now()};
-    try{
-     row.thumbnailData=await reviewThumbnail(item.file);
-     if(!row.thumbnailData)row.lookup_status='Preview unavailable. This file may not be supported on this device. Try a JPEG or PNG cover.';
-     row.barcode=await decodeBatchBarcode(item.file);
-     if(row.barcode)await batchLookUp(row);
-     if((!row.title||!row.barcode)&&($('batchUseOCR').checked||$('batchUseAI').checked))await enrichScanFromImage(row);
-     row.error=!hasBookTitle(row.title)?'Title not identified. Type it below or try the AI cover reader.':'';
-    }catch(err){row.error='Could not read this image; enter a title or retry OCR. '+String(err?.message||err)}
-    if(session?.user?.id!==uploader)return;
-    row.reviewUpdatedAt=Date.now();row.duplicate=batchDuplicate(row.barcode,row);
-    row.selected=!!$('batchAutoSave')?.checked&&batchValid(row);
-    batchItems.push(row);processedUploads.push(item);newRecords.add(row.saveRecordId);
-    checkpointCompletedScan(uploader,processedUploads);
-    done++;$('batchProgress').value=done;
-    batchOutput(`Scanned ${done} of ${activeQueue.length} new photos · ${skippedPhotos} duplicate${skippedPhotos===1?'':'s'} skipped`);
-    if(done%6===0){renderBatch();await new Promise(requestAnimationFrame)}
+  batchOutput(`Preparing the first book covers and scanning as the rest are checked… 0 of ${originalQueue.length} scanned.`);
+  const prepare=async input=>{
+   if(batchStopRequested)throw Error('Scan cancelled.');
+   // ZIP entries are decompressed only when their chunk reaches the scanner,
+   // rather than unpacking the entire archive before starting recognition.
+   const ready=[];
+   for(const item of input){
+    if(batchStopRequested)break;
+    if(item.zipEntry){
+     const blob=await item.zipEntry.async('blob');
+     if(blob.size>BATCH_MAX_IMAGE)throw Error('An image in ZIP exceeds 60 MB.');
+     ready.push({...item,file:new File([blob],item.path.split('/').pop(),{type:batchMime(item.path)}),size:blob.size,zipEntry:null});
+    }else ready.push(item);
    }
+   const prepared=await scanUploadGuard.prepare(ready,knownPhotos);
+   for(const item of prepared.accepted)knownPhotos.add(item.sourceSignature);
+   return prepared;
   };
-  await Promise.all(Array.from({length:Math.min(maxOCRWorkers(),activeQueue.length)},lane));
+  const claim=async accepted=>{
+   const candidates=accepted.map(item=>({...item,saveRecordId:uuid()}));
+   try{return await scanUploadGuard.register(sb,uploader,candidates)}
+   catch(error){claimedUploads.push(...(error.claimedUploads||[]));throw error}
+  };
+  const scan=async item=>{
+   const row={file:item.file,sourceSignature:item.sourceSignature,saveRecordId:item.saveRecordId,fileName:item.file.name,path:item.path,shelf:item.shelf||'',barcode:'',title:'',authors:'',publisher:'',publication_year:'',language:'',pages:'',subject:'',lookup_status:'Manual',error:'',duplicate:false,selected:false,saved:false,ocrText:'',matches:[],thumbnailData:'',reviewUpdatedAt:Date.now()};
+   try{
+    row.thumbnailData=await reviewThumbnail(item.file);
+    if(!row.thumbnailData)row.lookup_status='Preview unavailable. Try a JPEG or PNG cover.';
+    row.barcode=await decodeBatchBarcode(item.file);
+    if(row.barcode)await batchLookUp(row);
+    // A verified title is sufficient to save; do not force slow AI/OCR merely
+    // because an optional ISBN is absent from a front-cover photo.
+    if(!hasBookTitle(row.title)&&($('batchUseOCR').checked||$('batchUseAI').checked))await enrichScanFromImage(row);
+    row.error=!hasBookTitle(row.title)?'Title not identified. Enter the title or use the AI cover reader.':'';
+   }catch(error){row.error='Could not read this image; enter a title or retry OCR. '+String(error?.message||error)}
+   if(session?.user?.id!==uploader)return;
+   row.reviewUpdatedAt=Date.now();row.duplicate=batchDuplicate(row.barcode,row);
+   row.selected=!!$('batchAutoSave')?.checked&&batchValid(row);
+   batchItems.push(row);processedUploads.push(item);newRecords.add(row.saveRecordId);
+   checkpointCompletedScan(uploader,processedUploads);
+   done++;progress();
+   batchOutput(`Scanning while photos are prepared: ${done} scanned · ${skippedPhotos} duplicates skipped · ${checked} of ${originalQueue.length} checked`);
+   const now=Date.now();if(done===1||done%4===0||now-lastRender>1600){lastRender=now;renderBatch();await new Promise(requestAnimationFrame)}
+  };
+  await scanStream.run({items:originalQueue,
+   chunkSize:offset=>offset===0?3:(window.matchMedia?.("(max-width: 800px)")?.matches?10:18),
+   bufferLimit:window.matchMedia?.("(max-width: 800px)")?.matches?12:24,workers:maxOCRWorkers(),
+   shouldStop:()=>batchStopRequested||session?.user?.id!==uploader,
+   prepare,claim,scan,
+   onChunk:({prepared,claimed,checked:checkedCount})=>{
+    checked=checkedCount;
+    skippedPhotos+=prepared.skipped+(claimed.skipped?.length||0);
+    reasons.local+=prepared.skipped;
+    reasons.alreadySaved+=claimed.alreadySaved||0;
+    reasons.inReview+=claimed.inReview||0;
+    reasons.inProgress+=claimed.inProgress||0;
+    claimedCount+=claimed.accepted.length;
+    recovered+=claimed.recovered||0;
+    claimedUploads.push(...claimed.accepted);
+    progress();
+    batchOutput(`Scanning while photos are prepared: ${done} scanned · ${skippedPhotos} duplicates skipped · ${checked} of ${originalQueue.length} checked`);
+   }
+  });
   if(session?.user?.id!==uploader)throw Error('Account changed. Scanning stopped.');
   refreshBatchDuplicates();reviewPage=1;
-  // The Review queue is durable before marking photo claims as pending.
-  await scanCheckpointSync.catch(()=>{});
-  const cloudBackedUp=await persistReviewDraft(uploader,reviewDraftVersion);
-  if(processedUploads.length&&cloudBackedUp)await scanUploadGuard.changeStatus(sb,uploader,processedUploads,'pending');
-  if(!cloudBackedUp&&processedUploads.length)reviewStatus('Scans are backed up locally, but cloud Review did not sync. Keep this tab open and retry cloud sync.','error');
-  const skippedText=skippedPhotos?` · ${skippedPhotos} duplicate photo${skippedPhotos===1?'':'s'} discarded`:'';
-  batchOutput(batchStopRequested?`Stopped after ${done} of ${activeQueue.length} new photos${skippedText}.`:
-   $('batchAutoSave')?.checked?`Finished scanning ${done} new photos${skippedText}. Saving identified books…`:
-   `Finished scanning ${done} new photos${skippedText}. Review and save the recognized books.`);
+  await scanCheckpointSync.catch(error=>console.warn('Scan checkpoint error:',error));
+  if(processedUploads.length){
+   const cloudBackedUp=await persistReviewDraft(uploader,reviewDraftVersion);
+   if(cloudBackedUp){
+    if(scanCheckpointMarked<processedUploads.length)
+     await scanUploadGuard.changeStatus(sb,uploader,processedUploads.slice(scanCheckpointMarked),'pending');
+    scanCheckpointMarked=processedUploads.length;
+   }else reviewStatus('Scans were saved locally, but cloud Review is not synchronized. Keep the tab open and retry.','error');
+  }
+  progress();
+  if(!claimedCount){
+   const details=[reasons.alreadySaved?`${reasons.alreadySaved} saved in Inventory`:null,
+    reasons.inReview?`${reasons.inReview} already in Review`:null,
+    reasons.inProgress?`${reasons.inProgress} reserved by another scan`:null,
+    reasons.local?`${reasons.local} duplicates in this selection`:null].filter(Boolean);
+   batchOutput(`No new photos to scan (${checked} checked). ${details.join(' · ')||'These photos were previously recorded'}. Interrupted scans can be retried after the recovery interval.`);
+  }else if(batchStopRequested){
+   retryUnresolved=true;batchOutput(`Stopped after ${done} scanned photos. Processed covers are kept in Review; reselect unfinished photos to resume safely.`);
+  }else{
+   $('batchProgress').value=originalQueue.length;
+   batchOutput($('batchAutoSave')?.checked?`Scanned ${done} books while checking ${originalQueue.length} photos. Saving identified books…`:
+    `Finished scanning ${done} photos · ${skippedPhotos} existing photos skipped. Review and save the recognized titles.`);
+  }
  }catch(error){
   retryUnresolved=true;
-  batchOutput('Upload stopped safely: '+String(error?.message||error)+'. Your files are kept for Retry selected upload; no duplicate book copies were created.');
-  return;
+  batchOutput('Scan paused: '+String(error?.message||error)+'. Already scanned covers remain in Review; reselect remaining photos to retry.');
  }finally{
-  // A cancelled batch must not reserve photos it never processed.
-  // The cleanup operates only on our own still-processing claims.
+  // A later photo can fail during preparation after earlier covers were scanned.
+  // Persist the completed covers even when the producer stopped with an error.
+  if(processedUploads.length&&session?.user?.id===uploader&&scanCheckpointMarked<processedUploads.length){
+   try{
+    await scanCheckpointSync.catch(error=>console.warn('Scan checkpoint failure:',error));
+    const persisted=await persistReviewDraft(uploader,reviewDraftVersion);
+    if(persisted&&scanCheckpointMarked<processedUploads.length){
+     await scanUploadGuard.changeStatus(sb,uploader,processedUploads.slice(scanCheckpointMarked),'pending');
+     scanCheckpointMarked=processedUploads.length;
+    }
+   }catch(error){console.warn('Partial scan backup failed:',error);reviewStatus('Some scanned photos are only in this browser. Keep this tab open and retry cloud sync.','error')}
+  }
+  // Only unprocessed claims owned by this session can be released; protected
+  // saved/pending records are never removed by the uploader.
   const completed=new Set(processedUploads.map(item=>item.sourceSignature));
   const unused=claimedUploads.filter(item=>!completed.has(item.sourceSignature));
   if(unused.length&&session?.user?.id===uploader){
@@ -2860,9 +2905,9 @@ async function runBatch(){
  }
  if(session?.user?.id===uploader&&newRecords.size&&typeof autoEnrichISBNReviews==='function')void autoEnrichISBNReviews();
  const eligible=batchItems.filter(x=>newRecords.has(x.saveRecordId)&&batchValid(x));
- if(eligible.length&&$('batchAutoSave')?.checked){eligible.forEach(x=>x.selected=true);await saveBatch(false,{auto:true,ids:newRecords});}
- else if(eligible.length){batchOutput(`${eligible.length} identified new book${eligible.length===1?'':'s'} ready · ${skippedPhotos} duplicate photo${skippedPhotos===1?'':'s'} discarded. Save verified books or send unfinished ones to Review.`);renderBatch();}
- else if(newRecords.size)batchOutput(`${newRecords.size} new photo${newRecords.size===1?'':'s'} scanned · ${skippedPhotos} duplicate photo${skippedPhotos===1?'':'s'} discarded. Add missing titles in Review.`);
+ if(eligible.length&&$('batchAutoSave')?.checked){eligible.forEach(x=>x.selected=true);await saveBatch(false,{auto:true,ids:newRecords})}
+ else if(eligible.length){batchOutput(`${eligible.length} recognized book${eligible.length===1?'':'s'} ready to save · ${skippedPhotos} repeated photos skipped. Save the ready books or send unfinished ones to Review.`);renderBatch()}
+ else if(newRecords.size){batchOutput(`${newRecords.size} photos scanned. ${skippedPhotos} repeated photos skipped. Correct missing titles in Review before saving.`)}
 }
 
 function batchSelectAll(){const ready=batchItems.filter(batchValid);if(!ready.length){batchOutput('Nothing ready to mark. Finish scanning, then add missing titles in Review before saving.');renderBatch();return}ready.forEach(x=>x.selected=true);batchOutput(`${ready.length} identified book(s) marked for saving. Check details and select Save selected books.`);renderBatch()}

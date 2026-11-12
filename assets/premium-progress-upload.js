@@ -29,7 +29,7 @@
       stage.textContent=state==='error'?'Needs attention':state==='done'?'Completed':preparingZip?'Preparing ZIP':checking?'Checking duplicates':saving?'Saving books':state==='working'?'Scanning books':'Ready to scan';
       percent.textContent=hasRealCount?`${pct}%`:(preparingZip?'Preparing…':'0%');
       count.textContent=hasRealCount?`${value} / ${max} ${saving?'books':'photos'}`:'';
-      hint.textContent=state==='error'?'Check the message above, then retry.':state==='done'?'Review the results and save the books you want.':preparingZip?'Opening the archive and checking images.':checking?'Repeated photos are skipped before scanning.':saving?'Saving confirmed books to your library.':state==='working'?'Results appear as the images are processed.':'Scanning begins when you select files.';
+      hint.textContent=state==='error'?'Check the message above, then retry.':state==='done'?'Review the results and save the books you want.':preparingZip?'Opening the archive and checking images.':checking?'Repeated photos are skipped before scanning.':saving?'Saving confirmed books to your library.':state==='working'?'Books appear as photos are scanned. Mark and Save controls become available when this batch finishes.':'Scanning begins when you select files.';
       progress.setAttribute('aria-label',`${stage.textContent}: ${pct}%${max?`, ${value} of ${max} photos`:''}`);
     };
     const observer=new MutationObserver(refresh);
