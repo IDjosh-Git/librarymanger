@@ -1,3 +1,17 @@
+# Library Manager v5.27 — Supabase floating AI chat persistence repair (12 November 2026)
+
+- **Fixed confirmed PostgREST PGRST102 (HTTP 400):** The former bulk insert sent a user record and AI record with different JSON keys. Supabase rejected the batch. The new server saves each message with one consistent JSON shape and checks that Supabase returned the inserted record.
+- **Automatic cloud history:** Opening the assistant initializes/reuses an owned conversation in Supabase. User questions are persisted **before** AI generation and AI replies are persisted separately. If the AI provider fails, the user's question remains saved. Reloading the assistant reads private history from Supabase, never from browser storage.
+- **Minimal connection status:** The former text banner and its “Not saved · Check Supabase or your connection” warning are gone. Only a small status dot appears beside **Library AI**: **green** after confirmed Supabase access and **grey** when signed out, offline, loading or disconnected. The dot includes a screen-reader label and hover description.
+- **Reliability:** Server-side Supabase errors now log the HTTP status and PostgREST code for diagnosis without exposing database internals to readers. Failed writes no longer falsely claim an answer was saved, and the AI reset remains account-scoped.
+- **Database:** Reuses existing `library_manager_ai_*` tables and RLS in the linked Supabase project. **No database migration or credential change is needed.** A safe signed-in-role database insert test passed inside a rolled-back transaction; no production conversation content was modified.
+- **Validation:** `npm test` passes all 18 checks, including save/reload, failed provider, failed user save, failed assistant save, reset isolation, and the dot-only UI. Syntax checks pass.
+- **Deployment:** This ZIP is the corrected source build; it has **not** been deployed to the live Vercel `librarymanger` project. Deploy the ZIP contents (not the containing folder) to the existing project, retaining its environment variables and directory structure. Hard-refresh afterward to load the cache-busted `book-guide.js?v=5.27.0` and `book-guide.css?v=5.27.0` assets.
+
+See `LIBRARY_AI_PERSISTENCE_FIX_V527_20261112.md` for the technical fix, smoke test and release checklist.
+
+---
+
 
 ## v5.26 — Daily Usage Register (Supabase-backed)
 

@@ -113,6 +113,11 @@ module.exports=async function handler(req,res){
   history=saved.filter(x=>x?.role==='user'||x?.role==='assistant').map(x=>({role:x.role,content:clean(x.content,900)})).filter(x=>x.content);
   matching=cloud.matchKnowledge(question,articles,4);
  }catch(e){return res.status(e.status||503).json({error:e.message||'Cloud chat history is currently unavailable.',code:e.code||'AI_CLOUD_ERROR'});}
+ // Persist the visitor's question immediately, independently of AI availability.
+ // If the AI service fails, the question is still recoverable on the next visit.
+ try{await cloud.insertUserMessage(member,thread,question)}
+ catch(e){return res.status(e.status||503).json({error:e.message||'Unable to save your question.',code:e.code||'AI_CLOUD_ERROR',userSaved:false});}
+ const userSaved=true;
  const appQuestion=/(?:\b(?:app|library manager|dashboard|admin|administrator|inventory|scan|review|upload|photo|duplicate|lend|return|loan|borrow|overdue|notification|account|role|sign in|login|register|book of the week|reading guide|cloud|supabase|ai chat|chat reset)\b)/i.test(question);
  const reliableKnowledge=appQuestion&&matching.length&&matching[0].score>=4;
  const references=matching.map(x=>({title:x.title,content:x.answer}));
@@ -131,7 +136,7 @@ module.exports=async function handler(req,res){
  const providers=availableProviders();let result;
  try{
   if(!providers.length){
-   if(!reliableKnowledge)return res.status(503).json({error:'The AI providers are not configured. App help remains available for supported Library Manager questions.',code:'AI_NOT_CONFIGURED'});
+   if(!reliableKnowledge)return res.status(503).json({error:'The AI providers are not configured. App help remains available for supported Library Manager questions.',code:'AI_NOT_CONFIGURED',userSaved});
    result={reply:matching[0].answer,mode:'app-help',sources:[],searchRequested,searchUnavailable:true,grounded:false};
   }else{
    try{result=await failover(providers,base,messages,searchRequested)}
@@ -140,18 +145,19 @@ module.exports=async function handler(req,res){
     result={reply:matching[0].answer,mode:'app-help',sources:[],searchRequested,searchUnavailable:true,grounded:false};
    }
   }
-  // Only acknowledge success AFTER the cloud confirms both messages were saved.
-  await cloud.insertMessages(member,thread,question,result);
-  return res.status(200).json({...result,cloud:true});
+  // Confirm the AI reply has also been persisted before acknowledging success.
+  await cloud.insertAssistantMessage(member,thread,result);
+  return res.status(200).json({...result,cloud:true,userSaved:true});
  }catch(e){
-  if(e.code==='AI_CLOUD_ERROR'||e.code==='AI_CLOUD_UNAVAILABLE'||e.code==='AUTH_REQUIRED')return res.status(e.status||503).json({error:e.message,code:e.code});
+  if(e.code==='AI_CLOUD_ERROR'||e.code==='AI_CLOUD_UNAVAILABLE'||e.code==='AUTH_REQUIRED')return res.status(e.status||503).json({error:e.message,code:e.code,userSaved});
   const failures=Array.isArray(e?.providerFailures)?e.providerFailures:[];
   const status=e?.status===429?429:503;
   const label=failures.map(x=>x.name+': '+x.problem).join('; ');
   return res.status(status).json({
    error:label?'AI services could not respond. '+label+'.':'AI services are temporarily unavailable. Please retry.',
    code:status===429?'AI_QUOTA_LIMIT':'AI_PROVIDER_FAILURE',
-   providers:failures.map(({provider,problem})=>({provider,problem}))
+   providers:failures.map(({provider,problem})=>({provider,problem})),
+   userSaved
   });
  }
 };

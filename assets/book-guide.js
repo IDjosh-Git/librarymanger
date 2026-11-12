@@ -13,10 +13,9 @@ function init(){if(ready)return;ready=true;
  <div class="book-guide-backdrop" id="bookGuideBackdrop" hidden aria-hidden="true"></div>
  <button type="button" class="book-guide-fab" id="bookGuideFab" aria-controls="bookGuidePanel" aria-expanded="false" aria-label="Open Library AI assistant" title="Chat with Library AI"><span class="book-guide-fab-symbol" aria-hidden="true">✦</span><span class="book-guide-fab-glow" aria-hidden="true"></span></button>
  <section class="book-guide-panel" id="bookGuidePanel" aria-labelledby="bookGuideTitle" role="dialog" aria-modal="false" hidden>
-  <header class="book-guide-head"><div class="book-guide-icon" aria-hidden="true">✦</div><div class="book-guide-title-wrap"><h2 id="bookGuideTitle">Library AI</h2><p id="bookGuideProvider">Private chat · Saved in Supabase</p></div><div class="book-guide-head-actions"><button class="book-guide-new-chat" type="button" id="bookGuideNewChat" aria-label="Reset cloud conversation" title="Reset conversation saved in Supabase">↻ <span>Reset</span></button><button class="book-guide-close" type="button" id="bookGuideClose" aria-label="Close book assistant">×</button></div></header>
+  <header class="book-guide-head"><div class="book-guide-icon" aria-hidden="true">✦</div><div class="book-guide-title-wrap"><h2 id="bookGuideTitle">Library AI <span id="bookGuideCloudStatus" class="book-guide-cloud-status" data-connected="false" role="status" aria-label="Supabase disconnected" title="Supabase disconnected"><span class="book-guide-cloud-dot" aria-hidden="true"></span></span></h2><p id="bookGuideProvider">Private AI assistant</p></div><div class="book-guide-head-actions"><button class="book-guide-new-chat" type="button" id="bookGuideNewChat" aria-label="Reset cloud conversation" title="Reset conversation saved in Supabase">↻ <span>Reset</span></button><button class="book-guide-close" type="button" id="bookGuideClose" aria-label="Close book assistant">×</button></div></header>
   <details class="book-guide-settings" id="bookGuideSettings"><summary>⚙ <span>Chat options</span><small>Web search · Book context</small></summary><div class="book-guide-settings-body"><details class="book-guide-context" id="bookGuideContext"><summary><span>Library book context <small>Optional</small></span><span id="bookGuideContextLabel">Add a book</span></summary><div class="book-guide-selection"><div class="book-guide-selection-top"><label for="bookGuideSelect">OPTIONAL BOOK CONTEXT</label><span class="book-guide-count" id="bookGuideCount" role="status" aria-live="polite">Loading books…</span></div><label class="sr-only" for="bookGuideSearch">Search the library catalogue</label><input type="search" id="bookGuideSearch" autocomplete="off" placeholder="Find a library title (optional)…" aria-label="Search library titles and authors"><select id="bookGuideSelect" aria-label="Select optional book context"><option value="">No book selected — ask anything</option></select><p id="bookGuideDetails" class="book-guide-book-note">No book required. Select a title only when you want the AI to use its catalogue details.</p></div></details>
   <div class="book-guide-capabilities"><span class="book-guide-live"><span aria-hidden="true">●</span> Provider selected automatically</span><label for="bookGuideWebSearch" class="book-guide-web-switch"><input id="bookGuideWebSearch" type="checkbox"><span class="book-guide-web-slider" aria-hidden="true"></span><span class="book-guide-web-copy"><strong>Search the web</strong><small>For current information and external sources. Optional; availability depends on your provider.</small></span></label></div></div></details>
-  <p id="bookGuideCloudStatus" class="book-guide-cloud-status" role="status" aria-live="polite">Sign in to sync your AI conversation securely.</p>
   <div id="bookGuideMessages" class="book-guide-messages" role="log" aria-live="polite" aria-relevant="additions text"></div>
   <div class="book-guide-prompts" id="bookGuidePrompts"><button type="button" data-prompt="How do I use Library Manager?">App guide</button><button type="button" data-prompt="How do I scan, review and save a book?">Scan workflow</button><button type="button" data-prompt="How do I lend or return a library book?">Lend &amp; return</button><button type="button" data-prompt="How do I check in, record books read, and check out of the library?">Visit log</button><button type="button" data-prompt="Recommend three beginner-friendly books about data analysis.">Book ideas</button><button type="button" data-prompt="Explain the difference between a novel and a biography.">Ask a question</button><button type="button" data-prompt="What are some current developments in digital libraries?">Current research</button><button type="button" data-prompt="What is this book about?">Selected book</button></div>
   <form class="book-guide-compose" id="bookGuideForm"><label for="bookGuideInput" class="sr-only">Ask Library AI anything</label><textarea id="bookGuideInput" rows="1" maxlength="1200" autocomplete="off" placeholder="Message Library AI…" required></textarea><button type="submit" id="bookGuideSend" aria-label="Send question" title="Send question"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form>
@@ -117,15 +116,21 @@ function addSources(messageNode,answer){
  }
 }
 const greeting='Hi! I can guide you through Library Manager, help you scan books, manage inventory, or explore a title. Your AI conversation is saved privately in Supabase.';
-function showCloudStatus(message,kind='info'){
- if(!ready)return;const node=$('bookGuideCloudStatus');node.textContent=message;node.dataset.state=kind;
+// A quiet, accessible connection indicator: green for confirmed cloud access,
+// grey when signed out, loading, offline, or a cloud operation has failed.
+function setCloudConnected(connected){
+ if(!ready)return;
+ const node=$('bookGuideCloudStatus'),up=!!connected && navigator.onLine!==false;
+ node.dataset.connected=up?'true':'false';
+ const label=up?'Supabase connected':'Supabase disconnected';
+ node.setAttribute('aria-label',label);node.title=label;
 }
 function clearChatView(){
  if(!ready)return;$('bookGuideMessages').replaceChildren();$('bookGuidePanel').classList.remove('has-conversation');
 }
 function authNotice(){
- clearChatView();showCloudStatus('Sign in to Library Manager to use private, cloud-saved AI chat.','warn');
- $('bookGuideProvider').textContent='Account required · Cloud chat';
+ clearChatView();setCloudConnected(false);
+ $('bookGuideProvider').textContent='Private AI assistant';
  addMessage('assistant','Sign in on the Library Manager homepage to use this assistant. Conversations are stored in Supabase, never in this browser.');
  $('bookGuideSend').disabled=true;
 }
@@ -133,16 +138,21 @@ async function cloudRequest(method,path,payload){
  if(!activeSession?.access_token)throw Error('Sign in with your Library Manager account to use cloud AI.');
  const headers={'Authorization':'Bearer '+activeSession.access_token};
  if(payload!==undefined)headers['Content-Type']='application/json';
- const response=await fetch(path,{method,headers,cache:'no-store',...(payload===undefined?{}:{body:JSON.stringify(payload)}),signal:AbortSignal.timeout(60000)});
+ let response;
+ try{response=await fetch(path,{method,headers,cache:'no-store',...(payload===undefined?{}:{body:JSON.stringify(payload)}),signal:AbortSignal.timeout(60000)});}
+ catch{const error=Error('Connection to Supabase unavailable.');error.code='AI_CLOUD_UNAVAILABLE';throw error;}
  const data=await response.json().catch(()=>({error:'Unexpected server response'}));
- if(!response.ok)throw Error(data.error||'The Supabase conversation is unavailable.');
+ if(!response.ok){
+  const error=Error(data.error||'The Supabase conversation is unavailable.');
+  error.code=data.code||'AI_REQUEST_FAILED';error.userSaved=data.userSaved===true;throw error;
+ }
  return data;
 }
 async function loadCloud(){
  if(!ready)init();if(!activeSession?.user?.id){authNotice();return;}
  if(cloudLoading)return cloudLoading;
  const epoch=chatEpoch;
- showCloudStatus('Restoring your private Supabase conversation…');$('bookGuideSend').disabled=true;
+ setCloudConnected(false);$('bookGuideSend').disabled=true;
  cloudLoading=(async()=>{
   try{
    const data=await cloudRequest('GET','/api/library-ai-history');
@@ -152,13 +162,13 @@ async function loadCloud(){
     if(m.role==='assistant' && Array.isArray(m.sources)&&m.sources.length)addSources(node,{sources:m.sources});
    }
    if(!(data.messages||[]).length)addMessage('assistant',greeting);
-   cloudLoaded=true;showCloudStatus('● Synced with Supabase · Private to your account','ok');
-   $('bookGuideProvider').textContent='Your private Library AI · Supabase synced';
+   cloudLoaded=true;setCloudConnected(true);
+   $('bookGuideProvider').textContent='Private AI assistant';
    $('bookGuideSend').disabled=false;
   }catch(err){
    if(epoch!==chatEpoch)return;
-   cloudLoaded=false;showCloudStatus('Cloud unavailable · '+(err.message||'Try again later'),'error');
-   $('bookGuideProvider').textContent='Cloud connection required';
+   cloudLoaded=false;setCloudConnected(false);
+   $('bookGuideProvider').textContent='Private AI assistant';
    clearChatView();addMessage('assistant','I could not load your Supabase chat. Please check the connection and reopen this panel. Chat is paused to avoid losing messages.');
    $('bookGuideSend').disabled=true;
   }
@@ -180,15 +190,15 @@ async function resetConversation(){
  if(!root.confirm('Reset Library AI conversation? This will permanently delete your AI chat history from Supabase on all devices. Your library books and loans will not be affected.'))return;
  const epoch=chatEpoch;
  $('bookGuideNewChat').disabled=true;$('bookGuideSend').disabled=true;
- showCloudStatus('Resetting your Supabase conversation…');
+ // Retain the last confirmed connection state while the reset is in flight.
  try{
   await cloudRequest('DELETE','/api/library-ai-history');if(epoch!==chatEpoch)return;chatEpoch++;cloudLoaded=true;
   clearChatView();current=null;$('bookGuideContextLabel').textContent='Add a book';
   $('bookGuideDetails').textContent='No book selected. Choose a title to add context.';
-  $('bookGuideProvider').textContent='New conversation · Supabase synced';
-  showCloudStatus('● Cloud conversation reset · Synced across devices','ok');
+  $('bookGuideProvider').textContent='Private AI assistant';
+  setCloudConnected(true);
   addMessage('assistant',greeting);$('bookGuideSend').disabled=false;$('bookGuideInput').focus({preventScroll:true});
- }catch(err){showCloudStatus('Reset failed: '+(err.message||'Cloud not available'),'error');$('bookGuideSend').disabled=!cloudLoaded;}
+ }catch(err){setCloudConnected(false);cloudLoaded=false;addMessage('assistant','Unable to reset this conversation. Please reconnect and try again.');$('bookGuideSend').disabled=true;}
  finally{$('bookGuideNewChat').disabled=false;}
 }
 async function ask(question){
@@ -206,12 +216,15 @@ async function ask(question){
   if(!response.cloud||typeof response.reply!=='string')throw Error('Cloud persistence was not confirmed.');
   setMessageText(pending,response.reply);addSources(pending,response);
   const names={gemini:'Gemini',openrouter:'OpenRouter',groq:'Groq','app-help':'Verified app guide'};
-  $('bookGuideProvider').textContent='Answered with '+(names[response.mode]||'Library AI')+' · Saved in Supabase';
-  showCloudStatus('● Saved in Supabase · Private to your account','ok');
+  $('bookGuideProvider').textContent='Answered with '+(names[response.mode]||'Library AI');
+  setCloudConnected(true);
  }catch(error){
   if(epoch!==chatEpoch)return;
-  setMessageText(pending,'Your message was not saved. '+String(error?.message||'Please retry.').slice(0,190));
-  showCloudStatus('Not saved · Check Supabase or your connection','error');
+  const saved=error?.userSaved===true;
+  const cloudFailure=['AI_CLOUD_ERROR','AI_CLOUD_UNAVAILABLE','AUTH_REQUIRED'].includes(error?.code);
+  setMessageText(pending,saved?'Your question was saved in Supabase, but I could not finish the reply. You can retry.':'I could not confirm this message was saved. Reconnect to restore your conversation before retrying.');
+  setCloudConnected(saved&&!cloudFailure);
+  if(cloudFailure)cloudLoaded=false;
  }finally{
   busy=false;$('bookGuideNewChat').disabled=false;$('bookGuideSend').disabled=!cloudLoaded;
   if($('bookGuidePanel')&&!$('bookGuidePanel').hidden)$('bookGuideInput').focus({preventScroll:true});
@@ -306,6 +319,8 @@ async function loadPublicCatalog(){
  return publicCatalogPromise;
 }
 root.LibraryBookGuide={setVisible,setBooks,addBook,openBook,openGeneral,loadPublicCatalog,setSession};
+root.addEventListener('offline',()=>{setCloudConnected(false);cloudLoaded=false;if(ready)$('bookGuideSend').disabled=true;});
+root.addEventListener('online',()=>{if(activeSession?.user && !busy && !cloudLoading)void loadCloud();});
 document.addEventListener('DOMContentLoaded',()=>{init();setVisible(true);
  if(document.body.dataset.publicSpotlight==='true' && root.supabase?.createClient){
   const db=root.supabase.createClient('https://hotysnqorkqbiconjskl.supabase.co','sb_publishable_OL7r2hmR6n7OOWY5m-3bRw_Peft2X9q',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});

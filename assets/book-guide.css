@@ -291,13 +291,12 @@ body[data-account="in"] #accountCard .workspace-nav .tab.active :is(span,strong,
  .book-guide-root .book-guide-disclaimer{display:none}
 }
 
-/* v5.25: Private Supabase AI assistant with a clear reset action. */
-.book-guide-root .book-guide-cloud-status{margin:0;padding:9px 17px;border-bottom:1px solid var(--guide-border);font-size:10.5px;line-height:1.4;font-weight:750;color:var(--guide-muted);background:var(--guide-soft);flex-shrink:0}
-.book-guide-root .book-guide-cloud-status[data-state="ok"]{color:#267b64;background:color-mix(in srgb,#35a38a 9%,var(--guide-paper))}
-.book-guide-root .book-guide-cloud-status[data-state="warn"]{color:#aa751d;background:color-mix(in srgb,#ffbf59 12%,var(--guide-paper))}
-.book-guide-root .book-guide-cloud-status[data-state="error"]{color:#af4656;background:color-mix(in srgb,#ef6c81 10%,var(--guide-paper))}
+/* v5.27: unobtrusive Supabase state dot in the panel title (no status text). */
+.book-guide-root .book-guide-cloud-status{display:inline-flex!important;vertical-align:middle;align-items:center;justify-content:center;margin-left:5px;width:13px;height:13px;border:0!important;background:transparent!important;box-shadow:none!important;flex:none}
+.book-guide-root .book-guide-cloud-dot{display:block;width:8px;height:8px;border-radius:50%;background:#a6a9b3;box-shadow:0 0 0 2px rgba(166,169,179,.16);transition:background .18s ease,box-shadow .18s ease}
+.book-guide-root .book-guide-cloud-status[data-connected="true"] .book-guide-cloud-dot{background:#39d38c;box-shadow:0 0 0 3px rgba(57,211,140,.19)}
 .book-guide-root .book-guide-head-actions .book-guide-new-chat{display:flex;align-items:center;justify-content:center;gap:5px;width:auto;min-width:76px;max-width:90px;padding:0 10px;font-size:18px;font-weight:750;line-height:1}
 .book-guide-root .book-guide-head-actions .book-guide-new-chat span{font-size:11px;letter-spacing:.01em}
 .book-guide-root .book-guide-head-actions .book-guide-new-chat:disabled{opacity:.5;cursor:wait}
-.book-guide-root .book-guide-cloud-status+ .book-guide-messages{min-height:105px}
-@media(max-width:390px){.book-guide-root .book-guide-head-actions{gap:5px}.book-guide-root .book-guide-head-actions .book-guide-new-chat{min-width:70px;padding:0 8px}.book-guide-root .book-guide-title-wrap h2{font-size:18px!important}.book-guide-root .book-guide-cloud-status{padding:7px 13px}}
+.book-guide-root .book-guide-messages{min-height:105px}
+@media(max-width:390px){.book-guide-root .book-guide-head-actions{gap:5px}.book-guide-root .book-guide-head-actions .book-guide-new-chat{min-width:70px;padding:0 8px}.book-guide-root .book-guide-title-wrap h2{font-size:18px!important}.book-guide-root .book-guide-cloud-status{margin-left:4px}}
