@@ -1,3 +1,18 @@
+
+## v5.26 — Daily Usage Register (Supabase-backed)
+
+- **For members:** New **Check in / out** page (`#dailyLog`) with a real server-stamped daily visit, an optional visit purpose, up to 12 books read, notes, check-out confirmation and private history. The logged-in user sees only their own visit records. The user is not checked into the reading room merely by signing into the website.
+- **For administrators:** **Daily usage log** (`#attendance`) in **Monitor & Reports**, with server-side pagination, WAT date and time, verified member email, duration, open/finished status, purpose, reading details, date/status/book/name filters and CSV export. Accounts without a visit check-in do not appear in this report.
+- **Security:** Supabase enforces RLS by `library_member_roles` and `auth.uid()`. Database-generated timestamps cannot be set by the client; only an explicit member check-in creates a record. Privileged changes to other application tables are not required. Existing Library Manager features and Library AI history remain intact.
+- **Migration:** `database/08_library_daily_visit_register.sql` (already applied to the connected `DataLearning` Supabase project `hotysnqorkqbiconjskl`; run when deploying to another Supabase project).
+- **Live deployment:** Not performed. Upload/deploy this updated project to the existing Vercel `librarymanger` project before expecting live users to see the two new pages.
+
+# Library Manager v5.25 — Supabase AI assistant, Reset & app knowledge
+
+This is the complete v5.24 Library Manager project updated with **Library AI cloud chat**, a working **Reset** button, and 30 verified app-help articles in Supabase. Read [LIBRARY_AI_SUPABASE_RELEASE_20261112.md](LIBRARY_AI_SUPABASE_RELEASE_20261112.md) for implementation, security, tests and deployment instructions. The Supabase migration is already applied to the connected project; the Vercel frontend/API deployment remains pending.
+
+---
+
 # Library Manager v5.24 — Add Photo preview fix
 
 This release builds on v5.23 and fixes the broken cover-image preview when a photo is added or replaced in Review.

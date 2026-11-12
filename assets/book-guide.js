@@ -2,7 +2,8 @@
    The public page passes only already-published featured-book metadata; never borrower records. */
 (function(root){
 'use strict';
-let books=[],current=null,visible=true,ready=false,busy=false,history=[],publicCatalogCache=null,publicCatalogPromise=null,featured=null;
+let books=[],current=null,visible=true,ready=false,busy=false,publicCatalogCache=null,publicCatalogPromise=null,featured=null;
+let activeSession=null,cloudLoaded=false,cloudLoading=null,chatEpoch=0,cloudUser=null;
 let lockedPage=null,returnFocus=null;
 const $=id=>document.getElementById(id);
 const norm=s=>String(s||'').trim().slice(0,350);
@@ -12,18 +13,19 @@ function init(){if(ready)return;ready=true;
  <div class="book-guide-backdrop" id="bookGuideBackdrop" hidden aria-hidden="true"></div>
  <button type="button" class="book-guide-fab" id="bookGuideFab" aria-controls="bookGuidePanel" aria-expanded="false" aria-label="Open Library AI assistant" title="Chat with Library AI"><span class="book-guide-fab-symbol" aria-hidden="true">✦</span><span class="book-guide-fab-glow" aria-hidden="true"></span></button>
  <section class="book-guide-panel" id="bookGuidePanel" aria-labelledby="bookGuideTitle" role="dialog" aria-modal="false" hidden>
-  <header class="book-guide-head"><div class="book-guide-icon" aria-hidden="true">✦</div><div class="book-guide-title-wrap"><h2 id="bookGuideTitle">Library AI</h2><p id="bookGuideProvider">Ready to help · Automatic AI fallback</p></div><div class="book-guide-head-actions"><button class="book-guide-new-chat" type="button" id="bookGuideNewChat" aria-label="Start a new chat" title="New chat">＋</button><button class="book-guide-close" type="button" id="bookGuideClose" aria-label="Close book assistant">×</button></div></header>
+  <header class="book-guide-head"><div class="book-guide-icon" aria-hidden="true">✦</div><div class="book-guide-title-wrap"><h2 id="bookGuideTitle">Library AI</h2><p id="bookGuideProvider">Private chat · Saved in Supabase</p></div><div class="book-guide-head-actions"><button class="book-guide-new-chat" type="button" id="bookGuideNewChat" aria-label="Reset cloud conversation" title="Reset conversation saved in Supabase">↻ <span>Reset</span></button><button class="book-guide-close" type="button" id="bookGuideClose" aria-label="Close book assistant">×</button></div></header>
   <details class="book-guide-settings" id="bookGuideSettings"><summary>⚙ <span>Chat options</span><small>Web search · Book context</small></summary><div class="book-guide-settings-body"><details class="book-guide-context" id="bookGuideContext"><summary><span>Library book context <small>Optional</small></span><span id="bookGuideContextLabel">Add a book</span></summary><div class="book-guide-selection"><div class="book-guide-selection-top"><label for="bookGuideSelect">OPTIONAL BOOK CONTEXT</label><span class="book-guide-count" id="bookGuideCount" role="status" aria-live="polite">Loading books…</span></div><label class="sr-only" for="bookGuideSearch">Search the library catalogue</label><input type="search" id="bookGuideSearch" autocomplete="off" placeholder="Find a library title (optional)…" aria-label="Search library titles and authors"><select id="bookGuideSelect" aria-label="Select optional book context"><option value="">No book selected — ask anything</option></select><p id="bookGuideDetails" class="book-guide-book-note">No book required. Select a title only when you want the AI to use its catalogue details.</p></div></details>
   <div class="book-guide-capabilities"><span class="book-guide-live"><span aria-hidden="true">●</span> Provider selected automatically</span><label for="bookGuideWebSearch" class="book-guide-web-switch"><input id="bookGuideWebSearch" type="checkbox"><span class="book-guide-web-slider" aria-hidden="true"></span><span class="book-guide-web-copy"><strong>Search the web</strong><small>For current information and external sources. Optional; availability depends on your provider.</small></span></label></div></div></details>
+  <p id="bookGuideCloudStatus" class="book-guide-cloud-status" role="status" aria-live="polite">Sign in to sync your AI conversation securely.</p>
   <div id="bookGuideMessages" class="book-guide-messages" role="log" aria-live="polite" aria-relevant="additions text"></div>
-  <div class="book-guide-prompts" id="bookGuidePrompts"><button type="button" data-prompt="Recommend three beginner-friendly books about data analysis.">Book ideas</button><button type="button" data-prompt="Explain the difference between a novel and a biography.">Ask a question</button><button type="button" data-prompt="What are some current developments in digital libraries?">Current research</button><button type="button" data-prompt="What is this book about?">Selected book</button></div>
+  <div class="book-guide-prompts" id="bookGuidePrompts"><button type="button" data-prompt="How do I use Library Manager?">App guide</button><button type="button" data-prompt="How do I scan, review and save a book?">Scan workflow</button><button type="button" data-prompt="How do I lend or return a library book?">Lend &amp; return</button><button type="button" data-prompt="How do I check in, record books read, and check out of the library?">Visit log</button><button type="button" data-prompt="Recommend three beginner-friendly books about data analysis.">Book ideas</button><button type="button" data-prompt="Explain the difference between a novel and a biography.">Ask a question</button><button type="button" data-prompt="What are some current developments in digital libraries?">Current research</button><button type="button" data-prompt="What is this book about?">Selected book</button></div>
   <form class="book-guide-compose" id="bookGuideForm"><label for="bookGuideInput" class="sr-only">Ask Library AI anything</label><textarea id="bookGuideInput" rows="1" maxlength="1200" autocomplete="off" placeholder="Message Library AI…" required></textarea><button type="submit" id="bookGuideSend" aria-label="Send question" title="Send question"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form>
   <p class="book-guide-disclaimer" id="bookGuideDisclaimer">AI may make mistakes. Check important information.</p>
  </section>`;document.body.appendChild(node);
  $('bookGuideFab').addEventListener('click',()=>open());$('bookGuideClose').addEventListener('click',close);
- $('bookGuideNewChat').addEventListener('click',()=>{current=null;history=[];$('bookGuideMessages').replaceChildren();$('bookGuideSettings').open=false;$('bookGuideContext').open=false;$('bookGuideContextLabel').textContent='Add a book';$('bookGuideProvider').textContent='New conversation · Automatic AI fallback';$('bookGuidePanel').classList.remove('has-conversation');addMessage('assistant','What can I help you explore today?');$('bookGuideInput').focus();});
+ $('bookGuideNewChat').addEventListener('click',()=>{void resetConversation();});
  $('bookGuideBackdrop').addEventListener('click',close);
- $('bookGuideSelect').addEventListener('change',e=>{const index=Number(e.target.value);if(e.target.value!==''&&books[index])selectBook(books[index]);else{current=null;history=[];$('bookGuideContextLabel').textContent='Add a book';$('bookGuideDetails').textContent='General questions are welcome. No library title is needed.';$('bookGuideMessages').replaceChildren();addMessage('assistant','You can ask me about any topic. Enable Search the web when you need recent facts or external sources.');}});
+ $('bookGuideSelect').addEventListener('change',e=>{const index=Number(e.target.value);if(e.target.value!==''&&books[index])selectBook(books[index]);else{current=null;$('bookGuideContextLabel').textContent='Add a book';$('bookGuideDetails').textContent='General questions are welcome. No library title is needed.';}});
  $('bookGuideSearch').addEventListener('input',renderOptions);
  $('bookGuidePrompts').addEventListener('click',e=>{const b=e.target.closest('[data-prompt]');if(b)void ask(b.dataset.prompt);});
  $('bookGuideForm').addEventListener('submit',e=>{e.preventDefault();const v=$('bookGuideInput').value.trim();if(v){$('bookGuideInput').value='';fitComposer();void ask(v);}});
@@ -78,27 +80,15 @@ function addMessage(role,message){
  if(role==='user'){$('bookGuidePanel').classList.add('has-conversation');$('bookGuideSettings').open=false;}
  $('bookGuideMessages').scrollTop=$('bookGuideMessages').scrollHeight;return m;
 }
-function selectBook(value){current=safeBook(value);history=[];if(!ready)init();$('bookGuideSettings').open=true;$('bookGuideContext').open=true;$('bookGuideContextLabel').textContent=current.title.slice(0,34);$('bookGuideMessages').replaceChildren();$('bookGuideDetails').textContent=[current.authors?'By '+current.authors:'Author unknown',current.shelf?'Shelf '+current.shelf:'Shelf not listed'].join(' · ');addMessage('assistant','I can help you explore “'+(current.title||'this title')+'”, or answer unrelated questions. Switch on web search for current information.');renderOptions();}
+function selectBook(value){current=safeBook(value);if(!ready)init();$('bookGuideSettings').open=true;$('bookGuideContext').open=true;$('bookGuideContextLabel').textContent=current.title.slice(0,34);$('bookGuideDetails').textContent=[current.authors?'By '+current.authors:'Author unknown',current.shelf?'Shelf '+current.shelf:'Shelf not listed'].join(' · ')+' · Book context applies to your next question only.';renderOptions();}
 function openGeneral({search=false}={}){
  if(!ready)init();
- current=null;history=[];$('bookGuidePanel').classList.remove('has-conversation');$('bookGuideSettings').open=false;
+ current=null;$('bookGuideSettings').open=false;
  $('bookGuideContextLabel').textContent='No book selected';
  $('bookGuideContext').open=false;
  $('bookGuideDetails').textContent='Ask about any topic; no library title is required.';
- $('bookGuideMessages').replaceChildren();
- addMessage('assistant','Ask anything. External web research is '+(search?'enabled':'optional')+'; check linked sources for current information.');
  $('bookGuideWebSearch').checked=!!search;
  renderOptions();open();
-}
-function localAnswer(question){const q=question.toLowerCase(),b=current;if(!b)return'Live AI is unavailable right now. Please retry later. You can still search the book catalogue without the AI.';const intro=b.title+(b.authors?' by '+b.authors:'');
- if(/(author|wrote|writer|who.*(write|wrote|written))/.test(q))return b.authors?'The catalogue credits '+b.authors+' as the author of “'+b.title+'”.':'The author is not listed in the available catalogue data. Check the title page to confirm.';
- if(/(isbn|edition|barcode|identifier)/.test(q))return b.isbn?'The listed ISBN or barcode is '+b.isbn+'. Check the physical copy for the exact edition.':'There is no verified ISBN or barcode on file for this book.';
- if(/(where|shelf|location|find|available|borrow|loan)/.test(q))return b.shelf?'The recorded shelf is '+b.shelf+'. Availability can change, so confirm with the librarian.':'The shelf is not specified. Please ask the library team for its location and borrowing availability.';
- if(/(page|length|how long)/.test(q))return b.pages?'The catalogue lists '+b.pages+' pages.':'The catalogue does not specify a page count.';
- if(/(publisher|publish|year|when)/.test(q))return [b.publisher?'Publisher: '+b.publisher:null,b.year?'Year: '+b.year:null].filter(Boolean).join('. ')||'Publisher and publication year are not verified in the current catalogue.';
- if(/(topic|subject|genre|category|about|summary|plot|story|describe|theme)/.test(q))return b.description?'The published description says: '+b.description:(b.subject?'The catalogue lists these subjects: '+b.subject+'.':'There is no book summary in the catalogue for '+intro+'. I can share verified details, but I won’t invent its plot or topics.');
- if(/(recommend|read|tip|before|start|difficulty|good for)/.test(q))return'To decide if '+intro+' suits you, read the introduction or first chapter, check the subject or edition, and ask the librarian for a preview. '+(b.subject?'Its listed subject is '+b.subject+'.':'The catalogue does not list a subject yet.');
- return'I can help with '+intro+' using catalogue information: author, title, ISBN, shelf, publisher, year and subjects. For deeper discussion, try a specific question about this title or consult your librarian.';
 }
 function addSources(messageNode,answer){
  messageNode.querySelector('.book-guide-sources')?.remove();
@@ -126,27 +116,104 @@ function addSources(messageNode,answer){
   suggestions.srcdoc=answer.searchSuggestions.slice(0,10000);messageNode.querySelector('.book-guide-message-body')?.appendChild(suggestions);
  }
 }
+const greeting='Hi! I can guide you through Library Manager, help you scan books, manage inventory, or explore a title. Your AI conversation is saved privately in Supabase.';
+function showCloudStatus(message,kind='info'){
+ if(!ready)return;const node=$('bookGuideCloudStatus');node.textContent=message;node.dataset.state=kind;
+}
+function clearChatView(){
+ if(!ready)return;$('bookGuideMessages').replaceChildren();$('bookGuidePanel').classList.remove('has-conversation');
+}
+function authNotice(){
+ clearChatView();showCloudStatus('Sign in to Library Manager to use private, cloud-saved AI chat.','warn');
+ $('bookGuideProvider').textContent='Account required · Cloud chat';
+ addMessage('assistant','Sign in on the Library Manager homepage to use this assistant. Conversations are stored in Supabase, never in this browser.');
+ $('bookGuideSend').disabled=true;
+}
+async function cloudRequest(method,path,payload){
+ if(!activeSession?.access_token)throw Error('Sign in with your Library Manager account to use cloud AI.');
+ const headers={'Authorization':'Bearer '+activeSession.access_token};
+ if(payload!==undefined)headers['Content-Type']='application/json';
+ const response=await fetch(path,{method,headers,cache:'no-store',...(payload===undefined?{}:{body:JSON.stringify(payload)}),signal:AbortSignal.timeout(60000)});
+ const data=await response.json().catch(()=>({error:'Unexpected server response'}));
+ if(!response.ok)throw Error(data.error||'The Supabase conversation is unavailable.');
+ return data;
+}
+async function loadCloud(){
+ if(!ready)init();if(!activeSession?.user?.id){authNotice();return;}
+ if(cloudLoading)return cloudLoading;
+ const epoch=chatEpoch;
+ showCloudStatus('Restoring your private Supabase conversation…');$('bookGuideSend').disabled=true;
+ cloudLoading=(async()=>{
+  try{
+   const data=await cloudRequest('GET','/api/library-ai-history');
+   if(epoch!==chatEpoch)return;
+   clearChatView();for(const m of data.messages||[]){
+    const node=addMessage(m.role,m.content);
+    if(m.role==='assistant' && Array.isArray(m.sources)&&m.sources.length)addSources(node,{sources:m.sources});
+   }
+   if(!(data.messages||[]).length)addMessage('assistant',greeting);
+   cloudLoaded=true;showCloudStatus('● Synced with Supabase · Private to your account','ok');
+   $('bookGuideProvider').textContent='Your private Library AI · Supabase synced';
+   $('bookGuideSend').disabled=false;
+  }catch(err){
+   if(epoch!==chatEpoch)return;
+   cloudLoaded=false;showCloudStatus('Cloud unavailable · '+(err.message||'Try again later'),'error');
+   $('bookGuideProvider').textContent='Cloud connection required';
+   clearChatView();addMessage('assistant','I could not load your Supabase chat. Please check the connection and reopen this panel. Chat is paused to avoid losing messages.');
+   $('bookGuideSend').disabled=true;
+  }
+ })().finally(()=>{cloudLoading=null;});
+ return cloudLoading;
+}
+function setSession(next){
+ const oldId=cloudUser,nowId=next?.user?.id||null;
+ activeSession=next?.user?.id&&next?.access_token?next:null;
+ cloudUser=activeSession?.user?.id||null;
+ if(oldId!==cloudUser){chatEpoch++;cloudLoaded=false;cloudLoading=null;busy=false;
+  if(ready){$('bookGuideSend').disabled=true;clearChatView();}
+  if(cloudUser){void loadCloud();}else if(ready){authNotice();}
+ }else if(cloudUser&&!cloudLoaded&&!cloudLoading){void loadCloud();}
+}
+async function resetConversation(){
+ if(!activeSession?.user){authNotice();return;}
+ if(busy)return;
+ if(!root.confirm('Reset Library AI conversation? This will permanently delete your AI chat history from Supabase on all devices. Your library books and loans will not be affected.'))return;
+ const epoch=chatEpoch;
+ $('bookGuideNewChat').disabled=true;$('bookGuideSend').disabled=true;
+ showCloudStatus('Resetting your Supabase conversation…');
+ try{
+  await cloudRequest('DELETE','/api/library-ai-history');if(epoch!==chatEpoch)return;chatEpoch++;cloudLoaded=true;
+  clearChatView();current=null;$('bookGuideContextLabel').textContent='Add a book';
+  $('bookGuideDetails').textContent='No book selected. Choose a title to add context.';
+  $('bookGuideProvider').textContent='New conversation · Supabase synced';
+  showCloudStatus('● Cloud conversation reset · Synced across devices','ok');
+  addMessage('assistant',greeting);$('bookGuideSend').disabled=false;$('bookGuideInput').focus({preventScroll:true});
+ }catch(err){showCloudStatus('Reset failed: '+(err.message||'Cloud not available'),'error');$('bookGuideSend').disabled=!cloudLoaded;}
+ finally{$('bookGuideNewChat').disabled=false;}
+}
 async function ask(question){
  if(!ready)init();if(busy)return;question=String(question||'').trim().slice(0,1200);if(!question)return;
+ if(!activeSession?.user){authNotice();return;}
+ if(!cloudLoaded){await loadCloud();if(!cloudLoaded)return;}
+ const epoch=chatEpoch;
  addMessage('user',question);
  const searchRequested=!!$('bookGuideWebSearch')?.checked;
  const pending=addMessage('assistant',searchRequested?'Searching and preparing your answer…':'Thinking…');
- busy=true;$('bookGuideSend').disabled=true;
+ busy=true;$('bookGuideSend').disabled=true;$('bookGuideNewChat').disabled=true;
  try{
-  const body={book:current||null,question,history:history.slice(-8),searchWeb:searchRequested};
-  const response=await fetch('/api/book-chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(25000)});
-  const json=await response.json().catch(()=>({error:'The AI service returned an unexpected response.'}));
-  if(!response.ok||!json.reply||typeof json.reply!=='string')throw new Error(String(json.error||'The AI service is temporarily unavailable.').slice(0,180));
-  setMessageText(pending,json.reply);addSources(pending,json);
-  const names={gemini:'Gemini',openrouter:'OpenRouter free',groq:'Groq'};
-  $('bookGuideProvider').textContent='Answered with '+(names[json.mode]||'Library AI')+(json.searchUnavailable&&searchRequested?' · Live search unavailable':'');
+  const response=await cloudRequest('POST','/api/book-chat',{book:current||null,question,searchWeb:searchRequested});
+  if(epoch!==chatEpoch)return;
+  if(!response.cloud||typeof response.reply!=='string')throw Error('Cloud persistence was not confirmed.');
+  setMessageText(pending,response.reply);addSources(pending,response);
+  const names={gemini:'Gemini',openrouter:'OpenRouter',groq:'Groq','app-help':'Verified app guide'};
+  $('bookGuideProvider').textContent='Answered with '+(names[response.mode]||'Library AI')+' · Saved in Supabase';
+  showCloudStatus('● Saved in Supabase · Private to your account','ok');
  }catch(error){
-  const detail=String(error?.message||'This request could not be completed. Please retry.');
-  const offline=current?localAnswer(question)+'\n\nAI lookup unavailable: ':'AI lookup unavailable: ';
-  setMessageText(pending,offline+detail);
+  if(epoch!==chatEpoch)return;
+  setMessageText(pending,'Your message was not saved. '+String(error?.message||'Please retry.').slice(0,190));
+  showCloudStatus('Not saved · Check Supabase or your connection','error');
  }finally{
-  history.push({role:'user',text:question},{role:'assistant',text:pending.dataset.messageText||''});
-  history=history.slice(-10);busy=false;$('bookGuideSend').disabled=false;
+  busy=false;$('bookGuideNewChat').disabled=false;$('bookGuideSend').disabled=!cloudLoaded;
   if($('bookGuidePanel')&&!$('bookGuidePanel').hidden)$('bookGuideInput').focus({preventScroll:true});
  }
 }
@@ -182,7 +249,7 @@ function open(){
  $('bookGuidePanel').hidden=false;$('bookGuideFab').setAttribute('aria-expanded','true');
  if(isMobileSheet())lockBackground();else unlockBackground();
  $('bookGuideSettings').open=false;
- if(!$('bookGuideMessages').children.length)addMessage('assistant','Hello! Ask me anything. You can also choose a library book for context or enable web search for current information.');
+ if(!activeSession?.user)authNotice();else if(!cloudLoaded&&!cloudLoading)void loadCloud();
  (isMobileSheet() ? $('bookGuideClose') : $('bookGuideInput')).focus({preventScroll:true});
 }
 function close(){
@@ -197,7 +264,7 @@ function setBooks(list){
  books=Array.isArray(list)?list.filter(b=>b&&String(b.title||'').trim()).map(safeBook)
   .filter((b,i,a)=>a.findIndex(v=>v.title===b.title&&v.isbn===b.isbn&&v.authors===b.authors)===i)
   .sort((a,b)=>a.title.localeCompare(b.title)):[];
- if(!books.length){current=null;history=[];if(ready){$('bookGuideContextLabel').textContent='Add a book';$('bookGuideMessages').replaceChildren();$('bookGuideDetails').textContent='Ask any question, or select a library title for context.';}}
+ if(!books.length){current=null;if(ready){$('bookGuideContextLabel').textContent='Add a book';$('bookGuideDetails').textContent='Ask any question, or select a library title for context.';}}
  if(featured&&document.body.dataset.publicSpotlight==='true'&& !books.some(b=>b.title===featured.title&&b.isbn===featured.isbn))books.unshift(featured);
  if(!ready)init();renderOptions();
 }
@@ -238,6 +305,12 @@ async function loadPublicCatalog(){
  })().finally(()=>{publicCatalogPromise=null;});
  return publicCatalogPromise;
 }
-root.LibraryBookGuide={setVisible,setBooks,addBook,openBook,openGeneral,loadPublicCatalog};
-document.addEventListener('DOMContentLoaded',()=>{init();setVisible(true);});
+root.LibraryBookGuide={setVisible,setBooks,addBook,openBook,openGeneral,loadPublicCatalog,setSession};
+document.addEventListener('DOMContentLoaded',()=>{init();setVisible(true);
+ if(document.body.dataset.publicSpotlight==='true' && root.supabase?.createClient){
+  const db=root.supabase.createClient('https://hotysnqorkqbiconjskl.supabase.co','sb_publishable_OL7r2hmR6n7OOWY5m-3bRw_Peft2X9q',{auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:false}});
+  db.auth.onAuthStateChange((_event,next)=>setSession(next));
+  void db.auth.getSession().then(({data})=>setSession(data?.session||null)).catch(()=>setSession(null));
+ }else if(!activeSession)authNotice();
+});
 })(window);

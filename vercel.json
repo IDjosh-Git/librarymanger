@@ -39,6 +39,9 @@
     },
     "api/weekly-pick.js": {
       "maxDuration": 30
+    },
+    "api/library-ai-history.js": {
+      "maxDuration": 30
     }
   },
   "crons": [
