@@ -357,3 +357,16 @@
 }
 .scan-stage-cover .batch-photo-placeholder{font-size:23px;padding:0;border:0;width:100%;height:100%}
 #review .batch-book-photo.batch-photo-placeholder{min-height:105px;}
+
+/* v5.30: reliable touch targets for scan actions on phones/tablets. */
+#shelfScan .scan-selection-tools{display:flex!important;flex-wrap:wrap!important;min-width:0!important}
+#shelfScan .scan-selection-tools button{flex:1 1 195px;min-width:0!important;white-space:normal!important;overflow-wrap:anywhere;min-height:46px!important;padding:9px 12px!important;line-height:1.35!important}
+#shelfScan .batch-actions-secondary>button{min-height:46px!important;white-space:normal!important}
+#shelfScan #batchStart{min-height:46px!important;white-space:normal!important}
+@media(max-width:650px){
+ #shelfScan .scan-selection-tools{display:grid!important;grid-template-columns:minmax(0,1fr)!important}
+ #shelfScan .scan-selection-tools button{width:100%!important;min-height:50px!important}
+ #shelfScan .batch-actions-secondary>button{width:100%!important}
+ #shelfScan .batch-details{grid-template-columns:minmax(0,1fr)!important}
+ #shelfScan #batchStart{width:100%!important}
+}

@@ -23,10 +23,32 @@ function mockFetch(url,options={}){
   lastProviderRequest=JSON.parse(options.body);
   return Promise.resolve(reply({candidates:[{content:{parts:[{text:'Here is a grounded explanation using the provided library information.'}]}}]}));
  }
+ if(u.hostname==='www.googleapis.com' && p==='/books/v1/volumes'){
+  const item={id:'matched-vol',volumeInfo:{title:'Immigrant, Inc.: Why Immigrant Entrepreneurs Are Driving the New Economy',authors:['Richard T. Herman','Robert L. Smith'],publisher:'Wiley',description:'A verified publisher description of immigrant entrepreneurship.',industryIdentifiers:[{identifier:'9780470455715'}]}};
+  const payload={items:[item]};return Promise.resolve({ok:true,status:200,headers:{get:()=>null},text:async()=>JSON.stringify(payload)});
+ }
+ if(u.hostname==='openlibrary.org' && /^\/isbn\//.test(p)){
+  const payload={key:'/books/OL555M',title:'Immigrant, Inc.',isbn_13:['9780470455715'],description:'A book on economic contributions by immigrants.'};
+  return Promise.resolve({ok:true,status:200,headers:{get:()=>null},text:async()=>JSON.stringify(payload)});
+ }
  if(token!=='Bearer valid-token')return Promise.resolve(reply({message:'Unauthorized'},401));
  if(p==='/auth/v1/user')return Promise.resolve(reply({id:caller,is_anonymous:false}));
  if(p==='/rest/v1/library_member_roles')return Promise.resolve(reply([{role:'admin'}]));
  if(p==='/rest/v1/library_manager_ai_knowledge')return Promise.resolve(reply(articles));
+ if(p==='/rest/v1/library_books'){
+  const sample=[
+   {record_id:'inv-1',book_id:'BK-001',title:'Immigrant, Inc.',authors:'Richard T. Herman; Robert L. Smith',barcode:'9780470455715',publisher:'Wiley',publication_year:'2009',subject:'Entrepreneurship',shelf_location:'25',book_status:'Available',borrower_name:'DO NOT EXPOSE'},
+   {record_id:'inv-2',book_id:'BK-002',title:'Immigrant, Inc.',authors:'Richard T. Herman; Robert L. Smith',barcode:'9780470455715',publisher:'Wiley',publication_year:'2009',subject:'Entrepreneurship',shelf_location:'26',book_status:'Borrowed',borrower_name:'DO NOT EXPOSE'}
+  ];
+  const title=u.searchParams.get('title')?.slice(3)||'';
+  const barcode=u.searchParams.get('barcode')?.slice(3)||'';
+  const rec=u.searchParams.get('record_id')?.slice(3)||'';
+  const pattern=u.searchParams.get('or')||'';
+  const terms=[...pattern.matchAll(/title\.ilike\.\*([^*]*)\*/g)].map(m=>m[1].toLowerCase());
+  const matches=sample.filter(b=>rec?b.record_id===rec:barcode?b.barcode===barcode:title?b.title===title:terms.some(t=>b.title.toLowerCase().includes(t)));
+  return Promise.resolve(reply(matches));
+ }
+
  if(p==='/rest/v1/rpc/library_public_weekly_spotlight_v2'||p==='/rest/v1/rpc/library_public_featured_book'){
   if(weeklyRpcBroken)return Promise.resolve(reply({message:'RPC temporarily unavailable'},503));
   return Promise.resolve(reply(weeklyRecord?[weeklyRecord]:[]));
@@ -180,4 +202,52 @@ test('cloud history remains separated from unrelated apps and datasets',()=>{
  assert.match(svc,/library_manager_ai_messages/);
  assert.match(svc,/library_manager_ai_knowledge/);
  assert.doesNotMatch(svc,/prompt_atelier_ai_messages/);
+});
+
+test('Floating AI verifies a selected inventory record against Supabase and automatically enriches it externally',async()=>{
+ caller=other;
+ const r=res();await chat(authReq('POST',{question:'What is this book about?',book:{recordId:'inv-1',title:'INACCURATE BROWSER TITLE',authors:'Wrong Author'}}),r);
+ assert.equal(r.statusCode,200,JSON.stringify(r.body));
+ assert.equal(r.body.mode,'inventory-research');assert.equal(r.body.grounded,true);
+ assert.match(r.body.reply,/Inventory record: \*\*Immigrant, Inc\.\*\*/);
+ assert.match(r.body.reply,/Richard T\. Herman/);assert.match(r.body.reply,/2; 1 available; 1 on loan/);
+ assert.match(r.body.reply,/verified publisher description/i);
+ assert.doesNotMatch(r.body.reply,/INACCURATE BROWSER TITLE|DO NOT EXPOSE|Wrong Author/);
+ assert.equal(r.body.sources.length,2);assert.match(r.body.sources[0].url,/books.google.com/);
+});
+test('inventory book can be found by name even with no book selected',async()=>{
+ caller=other;
+ const r=res();await chat(authReq('POST',{question:'Who wrote Immigrant, Inc.?'}),r);
+ assert.equal(r.statusCode,200,JSON.stringify(r.body));assert.match(r.body.reply,/Richard T\. Herman/);
+ assert.equal(r.body.mode,'inventory-research');
+});
+test('inventory title not found stays truthful rather than inventing an external title',async()=>{
+ caller=other;
+ const r=res();await chat(authReq('POST',{question:'Tell me about The Unpublished Impossible Book'}),r);
+ assert.equal(r.statusCode,200,JSON.stringify(r.body));assert.equal(r.body.mode,'inventory');
+ assert.match(r.body.reply,/could not verify/i);assert.equal(r.body.sources.length,0);
+});
+test('inventory questions work with no external AI model key and are persisted',async()=>{
+ caller=other;
+ const r=res();await chat(authReq('POST',{question:'What is the ISBN of Immigrant, Inc.?'}),r);
+ assert.equal(r.statusCode,200,JSON.stringify(r.body));assert.equal(r.body.cloud,true);
+ assert.match(r.body.reply,/9780470455715/);assert.doesNotMatch(r.body.reply,/DO NOT EXPOSE/);
+});
+test('opted-in broad web research invokes Gemini Google Search and preserves verified inventory facts',async()=>{
+ caller=other;lastProviderRequest=null;process.env.GEMINI_API_KEY='mock-test-key';
+ try{
+  const r=res();await chat(authReq('POST',{question:'What is this book about?',book:{recordId:'inv-1',title:'Immigrant, Inc.'},searchWeb:true}),r);
+  assert.equal(r.statusCode,200,JSON.stringify(r.body));
+  assert.equal(r.body.searchRequested,true);
+  assert.deepEqual(lastProviderRequest?.tools,[{google_search:{}}]);
+  assert.match(r.body.reply,/Inventory record: \*\*Immigrant, Inc\.\*\*/);
+  assert.match(r.body.reply,/AI-generated/);
+  assert.equal(r.body.sources.length,2);
+ }finally{delete process.env.GEMINI_API_KEY;}
+});
+test('broad web unavailable status is truthful even if verified book catalogues matched',async()=>{
+ caller=other;
+ const r=res();await chat(authReq('POST',{question:'What is this book about?',book:{recordId:'inv-1',title:'Immigrant, Inc.'},searchWeb:true}),r);
+ assert.equal(r.statusCode,200,JSON.stringify(r.body));assert.equal(r.body.searchUnavailable,true);
+ assert.equal(r.body.sources.length,2);
 });

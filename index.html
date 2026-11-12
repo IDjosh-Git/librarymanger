@@ -13,7 +13,7 @@
 <script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script src="assets/scan-extraction.js"></script>
 <script src="assets/ocr-quality.js?v=5.23.0"></script>
-<script src="assets/scan-upload-dedup.js?v=5.20.0"></script>
+<script src="assets/scan-upload-dedup.js?v=5.30.0"></script>
 <script src="assets/isbn-crop.js"></script>
 <script src="assets/review-excel.js"></script>
 <script src="assets/scanned-books.js"></script>
@@ -37,7 +37,7 @@
 <script>try{document.documentElement.dataset.theme=localStorage.getItem("library_manager_theme_v2")==="dark"?"dark":"light"}catch{document.documentElement.dataset.theme="light"}</script>
 <link rel="stylesheet" href="assets/library-ui.css">
 <link rel="stylesheet" href="assets/book-guide.css?v=5.27.0">
-<link rel="stylesheet" href="assets/scan-review-workspace.css?v=5.24.0">
+<link rel="stylesheet" href="assets/scan-review-workspace.css?v=5.30.0">
 <link rel="stylesheet" href="assets/page-hero-fade.css?v=5.16.0">
 <link rel="stylesheet" href="assets/compact-card-insights.css?v=5.17.0">
 <link rel="stylesheet" href="assets/premium-progress-upload.css?v=5.18.0">
@@ -48,7 +48,7 @@
 <script defer src="assets/compact-card-insights.js?v=5.17.0"></script>
 <script defer src="assets/premium-progress-upload.js?v=5.18.0"></script>
 <script defer src="assets/book-guide-format.js"></script>
-<script defer src="assets/book-guide.js?v=5.27.0"></script>
+<script defer src="assets/book-guide.js?v=5.29.0"></script>
 <script defer src="assets/public-contact.js"></script>
 </head>
 <body data-account="out">
@@ -422,8 +422,8 @@
     <button id="batchSaveAllReady" type="button" class="scan-save-all" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check"></use></svg> Save all ready books</button>
 
   </div>
-  <div class="scan-action-label"><strong>Save and manage</strong><span id="scanSelectionHint" aria-live="polite">Select identified books to save or retry. Matching ISBNs may be separate physical copies. Repeated photo uploads are discarded across devices.</span></div><div class="batch-actions batch-actions-secondary"><button id="batchSave" type="button" class="green" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg> Save selected books</button><button id="batchStop" type="button" class="light" disabled>Stop scan</button><details class="scan-more-actions"><summary>More actions</summary><div><button id="batchSelectDuplicates" type="button" class="light" disabled>Select other ISBN copies <span id="batchDuplicateCount" class="batch-count">0</span></button><button id="batchSelectReady" type="button" class="light" disabled>Mark verified titles</button><button id="batchDeselectAll" type="button" class="light" disabled>Clear marked books</button><button id="batchRemoveSelected" type="button" class="light" disabled>Remove marked scans</button><button id="batchClear" type="button" class="light" disabled>Clear upload</button></div></details></div>
-  <p class="batch-info">Recognized books can be saved here. Unfinished books can be sent to <strong>Review books</strong>. Matching ISBNs may be different physical copies. The same photo is accepted only once, even if uploaded again from another folder, ZIP or device.</p><input id="batchRetakeFile" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,image/avif,.jpg,.jpeg,.png,.webp,.heic,.heif,.avif" hidden>
+  <div class="scan-action-label"><strong>Save and manage</strong><span id="scanSelectionHint" aria-live="polite">Select identified books to save or retry. Matching ISBNs may be separate physical copies. Previously saved photos are skipped; interrupted scans can be recovered.</span></div><div class="batch-actions batch-actions-secondary"><button id="batchSave" type="button" class="green" disabled><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg> Save selected books</button><button id="batchStop" type="button" class="light" disabled>Stop scan</button><details class="scan-more-actions"><summary>More actions</summary><div><button id="batchSelectDuplicates" type="button" class="light" disabled>Select other ISBN copies <span id="batchDuplicateCount" class="batch-count">0</span></button><button id="batchSelectReady" type="button" class="light" disabled>Mark verified titles</button><button id="batchDeselectAll" type="button" class="light" disabled>Clear marked books</button><button id="batchRemoveSelected" type="button" class="light" disabled>Remove marked scans</button><button id="batchClear" type="button" class="light" disabled>Clear upload</button></div></details></div>
+  <p class="batch-info">Recognized books can be saved here. Unfinished books can be sent to <strong>Review books</strong>. Matching ISBNs may be different physical copies. Already-saved photos are protected against duplicates. Interrupted scans can be safely resumed by reselecting the same files.</p><input id="batchRetakeFile" type="file" accept="image/jpeg,image/png,image/webp,image/heic,image/heif,image/avif,.jpg,.jpeg,.png,.webp,.heic,.heif,.avif" hidden>
   <div id="batchReadyResults" class="scan-ready-results" aria-live="polite"></div>
   <section class="scan-review-inbox" aria-labelledby="scanReviewInboxTitle">
    <div class="scan-review-inbox-head"><div><span class="eyebrow">UNIDENTIFIED SCANS</span><h3 id="scanReviewInboxTitle">Books needing attention <span id="scanNeedsTitleCount">0</span></h3><p>Keep this screen for scanning. Send a book to the Review workspace to correct its details later.</p></div><button id="scanOpenReview" type="button" class="light">Open Review →</button></div>
@@ -1134,7 +1134,7 @@ $('publicContactForm').addEventListener('submit',async event=>{
  finally{button.disabled=false}
 });
 
-function renderAll(){if(window.LibraryBookGuide)window.LibraryBookGuide.setBooks(books.map(b=>({title:b.title,authors:b.authors,isbn:b.barcode,shelf:b.shelf_location,publisher:b.publisher,year:b.publication_year,subject:b.subject,pages:b.pages})));refreshSpotlightChoices();renderBooks();renderLoans();renderBookPicker("lend");renderBookPicker("return");renderDashboard();renderNotifications()}
+function renderAll(){if(window.LibraryBookGuide)window.LibraryBookGuide.setBooks(books.map(b=>({title:b.title,authors:b.authors,isbn:b.barcode,shelf:b.shelf_location,publisher:b.publisher,year:b.publication_year,subject:b.subject,pages:b.pages,recordId:b.record_id})));refreshSpotlightChoices();renderBooks();renderLoans();renderBookPicker("lend");renderBookPicker("return");renderDashboard();renderNotifications()}
 let scannedPage=1;
 function renderScannedBooks(){
  const table=$('scannedTable');if(!table)return;
@@ -2077,8 +2077,8 @@ async function persistReviewDraft(owner,version){
  catch(error){console.warn('Review draft persistence unavailable:',error);reviewStatus('Browser backup unavailable. Cloud sync still attempted.','error')}
  if(version!==reviewDraftVersion||session?.user?.id!==owner)return;
  reviewCloudSync=reviewCloudSync.catch(()=>{}).then(()=>syncCloudReview(owner,rows));
- try{await reviewCloudSync}
- catch(error){console.warn('Cloud Review sync failed:',error);reviewStatus('Offline/local only — Supabase Review not synced. '+(error.message||'Check connection or install persistent_review_queue.sql'),'error')}
+ try{await reviewCloudSync;return true}
+ catch(error){console.warn('Cloud Review sync failed:',error);reviewStatus('Offline/local only — Supabase Review not synced. '+(error.message||'Check connection or install persistent_review_queue.sql'),'error');return false}
 }
 function scheduleReviewDraftSave(){
  if(!session?.user||reviewDraftLoadedFor!==session.user.id||batchActive||batchSaving||batchZipLoading)return;
@@ -2178,7 +2178,7 @@ function refreshBatchDuplicates(){
 function batchSummary(){
  refreshBatchDuplicates();
  const done=batchItems.filter(x=>x.saved).length;
- const ready=batchItems.filter(x=>batchValid(x)&&!x.reviewStaged).length;
+ const ready=batchItems.filter(x=>batchValid(x)).length;
  const failed=batchItems.filter(x=>!x.saved&&!batchValid(x)).length;
  const selected=batchItems.filter(x=>!x.saved&&x.selected).length;
  const dup=batchItems.filter(x=>!x.saved&&x.duplicate).length;
@@ -2192,13 +2192,13 @@ function batchSummary(){
  $("reviewExportStatus").textContent=`Review: ${pending} unsaved ${pending===1?'book':'books'} · Saved needs attention: ${savedAttention} ${savedAttention===1?'copy':'copies'}. ${!pending?'No unsaved Review books currently.':''}`;
  $("batchExcelFile").disabled=locked;
  $("batchSummary").innerHTML=`<span class="scan-counter-ready"><strong>${ready}</strong> ready to save</span><span class="scan-counter-review"><strong>${failed}</strong> need a title</span><span class="scan-counter-duplicates"><strong>${dup}</strong> additional copies</span><span class="scan-counter-selected"><strong>${selected}</strong> selected</span><span class="scan-counter-saved"><strong>${done}</strong> saved this session</span>`;
- const selectionHint=$('scanSelectionHint');if(selectionHint)selectionHint.textContent=selected?`${selected} selected · ${batchItems.filter(x=>x.selected&&batchValid(x)).length} eligible to save`:'Select all, choose duplicates, or save an individual identified book.';
- $("batchSave").disabled=locked||!batchItems.some(x=>x.selected&&batchValid(x));
- $("batchSaveAllReady").disabled=locked||!ready;
+ const selectionHint=$('scanSelectionHint');if(selectionHint)selectionHint.textContent=selected?`${selected} selected · ${batchItems.filter(x=>x.selected&&batchValid(x)).length} eligible to save`:ready?`${ready} book(s) ready to select or save.`:'No identified books yet. Choose photos, or open Review to add missing titles. Buttons explain what is needed.';
+ $("batchSave").disabled=locked;
+ $("batchSaveAllReady").disabled=locked;
  $("batchEnrichAll").disabled=locked||!batchItems.some(x=>!x.saved&&!hasBookTitle(x.title)&&validIsbn(x.barcode))&&!books.some(b=>bookQuality(b).attention&&validIsbn(b.barcode));
 
  $("batchStart").disabled=locked||!batchQueue.length;
- $("batchSelectAll").disabled=locked||!batchItems.some(x=>batchValid(x));
+ $("batchSelectAll").disabled=locked;
  $("batchSelectDuplicates").disabled=locked||!batchItems.some(x=>x.duplicate&&batchValid(x));
  $("batchDuplicateCount").textContent=String(selectableDuplicates);
  $("batchSelectReady").disabled=locked||!batchItems.some(x=>batchValid(x));
@@ -2323,11 +2323,11 @@ function renderBatch(){
  if(scanInbox){scanInbox.innerHTML=scanUnstaged.length?`<div class="scan-stage-actions"><span>${scanUnstaged.length} scan${scanUnstaged.length===1?'':'s'} waiting to be sent for correction</span><button type="button" class="light" data-stage-all-review>Save all to Review</button></div><div class="scan-stage-list">${scanUnstaged.slice(0,80).map(({x,i})=>`<article class="scan-stage-item"><div class="scan-stage-cover">${(x.file||x.thumbnailData)?batchPhotoMarkup(x,'scan-stage-photo','Scanned book cover'):'▤'}</div><div class="scan-stage-detail"><strong>${esc(x.fileName||'Unnamed book cover')}</strong><small>${esc(x.barcode||'ISBN not found')} · Title needs attention</small></div><button type="button" data-stage-review="${i}" class="scan-stage-button">Save to Review</button></article>`).join('')}</div>${scanUnstaged.length>80?`<p>Showing first 80 scans. Save all to Review to manage the entire queue.</p>`:''}`:'<div class="scan-stage-empty"><span aria-hidden="true">✓</span><span>No unfinished scans on this screen. Check <strong>Review books</strong> for books already sent for correction.</span></div>';}
  const readyContainer=$('batchReadyResults');
  if(readyContainer){
-  readyContainer.innerHTML=identified.length?`<section class="scan-ready-section"><div class="scan-ready-heading"><div><span class="eyebrow">IDENTIFIED · READY FOR YOUR LIBRARY</span><h3>${identified.length} book${identified.length===1?'':'s'} ready to save</h3><p>Titles were recognized. These books can be saved without entering optional details.</p></div><span class="scan-ready-badge">${identified.length} recognized</span></div><div class="scan-ready-list">${identified.slice(0,150).map(({x,i})=>`<div class="scan-ready-item"><span class="scan-ready-symbol" aria-hidden="true">✓</span><div><strong>${esc(x.title)}</strong><small>${esc(x.authors||'Author optional')} · ${esc(x.shelf||'Shelf optional')}${x.duplicate?' · Additional copy':''}</small>${x.saveError?`<em role="alert">${esc(x.saveError)}</em>`:''}</div><label class="scan-ready-checkbox"><input type="checkbox" data-ready-select="${i}" ${x.selected?'checked':''} ${locked?'disabled':''}><span>Select</span></label><button type="button" class="scan-inline-save" data-save-ready="${i}" ${locked?'disabled':''}>${x.saveError?'Retry save':'Save book'}</button></div>`).join('')}</div></section>`:'<div class="scan-all-identified" role="status"><span aria-hidden="true">✓</span> Turn off automatic saving above to choose which recognized books to save. Only missing titles require review in the Review workspace.</div>';
+  readyContainer.innerHTML=identified.length?`<section class="scan-ready-section"><div class="scan-ready-heading"><div><span class="eyebrow">IDENTIFIED · READY FOR YOUR LIBRARY</span><h3>${identified.length} book${identified.length===1?'':'s'} ready to save</h3><p>Titles were recognized. These books can be saved without entering optional details.</p></div><span class="scan-ready-badge">${identified.length} recognized</span></div><div class="scan-ready-list">${identified.slice(0,150).map(({x,i})=>`<div class="scan-ready-item"><span class="scan-ready-symbol" aria-hidden="true">✓</span><div><strong>${esc(x.title)}</strong><small>${esc(x.authors||'Author optional')} · ${esc(x.shelf||'Shelf optional')}${x.duplicate?' · Additional copy':''}</small>${x.saveError?`<em role="alert">${esc(x.saveError)}</em>`:''}</div><label class="scan-ready-checkbox"><input type="checkbox" data-ready-select="${i}" ${x.selected?'checked':''} ${locked?'disabled':''}><span>Select</span></label><button type="button" class="scan-inline-save" data-save-ready="${i}" ${locked?'disabled':''}>${x.saveError?'Retry save':'Save book'}</button></div>`).join('')}</div></section>`:'<div class="scan-all-identified" role="status"><span aria-hidden="true">ⓘ</span> No identified books ready yet. Upload or retry photos, then check Review for covers requiring a title.</div>';
  }
  const counter=$('scanNeedsTitleCount');if(counter)counter.textContent=String(allUnidentified.length);
  const perPage=12,pages=Math.max(1,Math.ceil(unidentified.length/perPage));reviewPage=Math.min(Math.max(1,reviewPage),pages);
- if(!unidentified.length){$('batchResults').innerHTML=reviewQuery?'<div class="scan-empty-review"><strong>No matching review books</strong><p>Try another ISBN, filename, author or shelf.</p></div>':'<div class="scan-empty-review"><span aria-hidden="true">✓</span><strong>All reviews completed</strong><p>New books needing correction will appear here. Scan another book or import a review spreadsheet.</p></div>';scheduleReviewDraftSave();return}
+ if(!unidentified.length){$('batchResults').innerHTML=reviewQuery?'<div class="scan-empty-review"><strong>No matching review books</strong><p>Try another ISBN, filename, author or shelf.</p></div>':'<div class="scan-empty-review"><span aria-hidden="true">✓</span><strong>No books awaiting title correction</strong><p>Upload photos to scan, or check the identified books above. Previously interrupted uploads can be reselected safely.</p></div>';scheduleReviewDraftSave();return}
  let h=`<div class="batch-review-toolbar"><strong>${unidentified.length}${reviewQuery?' matching':''} book${unidentified.length===1?'':'s'} waiting for review</strong><span>Page ${reviewPage} of ${pages}</span></div><div class="batch-book-list" role="list">`;
  unidentified.slice((reviewPage-1)*perPage,reviewPage*perPage).forEach(({x,i},position)=>{
   const field=(name,label,max)=>`<label class="batch-book-field"><span>${label}</span><input aria-label="${label} for ${batchAttr(x.fileName)}" data-batch-field="${name}" data-batch-index="${i}" maxlength="${max}" value="${batchAttr(x[name])}" ${locked||x.reviewBusy?'disabled':''}></label>`;
@@ -2400,7 +2400,7 @@ function loadOCR(){
  }).catch(error=>{ocrEngineReady=null;throw error});
  return ocrEngineReady;
 }
-function maxOCRWorkers(){return (navigator.hardwareConcurrency||2)>=4&&(navigator.deviceMemory||4)>=4?2:1}
+function maxOCRWorkers(){const mobile=window.matchMedia?.("(max-width: 800px)")?.matches;return !mobile&&(navigator.hardwareConcurrency||2)>=4&&(navigator.deviceMemory||4)>=6?2:1}
 // One worker is warmed up while files are selected; a second is created only on capable devices.
 async function warmupOCR(){
  try{
@@ -2741,17 +2741,26 @@ async function scanFileSignature(file){return scanUploadGuard.fingerprint(file)}
 // Throttled, durable checkpoints keep completed scans recoverable after tab closure.
 let scanCheckpointAt=0;
 let scanCheckpointSync=Promise.resolve();
-function checkpointCompletedScan(owner){
+function checkpointCompletedScan(owner,processedUploads){
  const version=reviewDraftVersion,now=Date.now();
  if(now-scanCheckpointAt<1400)return;
  scanCheckpointAt=now;
- scanCheckpointSync=scanCheckpointSync.catch(()=>{}).then(()=>persistReviewDraft(owner,version));
+ const snapshot=processedUploads.slice();
+ scanCheckpointSync=scanCheckpointSync.catch(error=>console.warn('Previous scan checkpoint:',error))
+  .then(async()=>{
+    const synced=await persistReviewDraft(owner,version);
+    // Mark only copies backed up to Supabase Review. An interrupted browser
+    // never leaves the whole batch marked as completed.
+    if(synced&&snapshot.length&&session?.user?.id===owner&&version===reviewDraftVersion){
+      await scanUploadGuard.changeStatus(sb,owner,snapshot,'pending');
+    }
+  });
 }
 async function runBatch(){
  if(!session?.user||batchActive||batchSaving||batchZipLoading||!batchQueue.length)return;
  const uploader=session.user.id,originalQueue=batchQueue.slice(),newRecords=new Set(),processedUploads=[],claimedUploads=[];
  const knownPhotos=new Set(batchItems.map(x=>x.sourceSignature).filter(Boolean));
- let skippedPhotos=0,cloudSkipped=0,done=0,activeQueue=[];
+ let skippedPhotos=0,cloudSkipped=0,done=0,activeQueue=[],retryUnresolved=false,recovered=0,skipBreakdown=null;
  batchActive=true;batchStopRequested=false;
  $('batchProgress').max=originalQueue.length;$('batchProgress').value=0;renderBatch();
  try{
@@ -2772,21 +2781,33 @@ async function runBatch(){
   if(candidates.length){
    batchOutput(`Checking ${candidates.length} new-looking photo${candidates.length===1?'':'s'} against shared Inventory…`);
    let claimed;
-   try{claimed=await scanUploadGuard.register(sb,uploader,candidates)}
+   try{claimed=await scanUploadGuard.register(sb,uploader,candidates,{onProgress:(checked,total,info)=>{
+    if(batchStopRequested)return;
+    batchOutput(`Checking cloud uploads: ${checked} of ${total} · ${info.recovered} interrupted photo(s) recovered · ${info.skipped} already recorded`);
+   }})}
    catch(error){claimedUploads.push(...(error.claimedUploads||[]));throw error}
    claimedUploads.push(...claimed.accepted);
    cloudSkipped=claimed.skipped.length;
+   recovered=claimed.recovered||0;
+   skipBreakdown=claimed;
    skippedPhotos+=cloudSkipped;
    activeQueue=claimed.accepted;
+   if(recovered)batchOutput(`Recovered ${recovered} interrupted photo${recovered===1?'':'s'}; scanning can continue safely.`);
   }
   if(!activeQueue.length){
+   retryUnresolved=true;
    $('batchProgress').max=originalQueue.length;$('batchProgress').value=originalQueue.length;
-   batchOutput(`All ${originalQueue.length} photo${originalQueue.length===1?'s were':' was'} already uploaded. Nothing was added or scanned again.`);
+   const stages=skipBreakdown;
+   const reasons=[stages?.alreadySaved?`${stages.alreadySaved} already in Inventory`:null,
+    stages?.inReview?`${stages.inReview} in Review`:null,
+    stages?.inProgress?`${stages.inProgress} still reserved by another scan`:null,
+    prepared.skipped?`${prepared.skipped} already in your Review list`:null].filter(Boolean);
+   batchOutput(`No new photos to scan (${originalQueue.length} checked). ${reasons.join(' · ')||'Previously uploaded files were found'}. Open Review, or select different photos. If a scan was interrupted less than 10 minutes ago, use Retry selected upload after recovery becomes safe.`);
    return;
   }
   if($('batchUseOCR').checked)void warmupOCR();
   $('batchProgress').max=activeQueue.length;$('batchProgress').value=0;
-  batchOutput(`${activeQueue.length} new photo${activeQueue.length===1?'':'s'} ready · ${skippedPhotos} duplicate${skippedPhotos===1?'':'s'} skipped. Scanning…`);
+  batchOutput(`${activeQueue.length} photo${activeQueue.length===1?'':'s'} to scan (${recovered} recovered from an interrupted upload) · ${skippedPhotos} existing photo${skippedPhotos===1?'':'s'} skipped. Scanning…`);
   let next=0;
   const lane=async()=>{
    while(!batchStopRequested&&session?.user?.id===uploader){
@@ -2798,14 +2819,14 @@ async function runBatch(){
      if(!row.thumbnailData)row.lookup_status='Preview unavailable. This file may not be supported on this device. Try a JPEG or PNG cover.';
      row.barcode=await decodeBatchBarcode(item.file);
      if(row.barcode)await batchLookUp(row);
-     if((!row.title||!row.barcode)&&$('batchUseOCR').checked)await enrichScanFromImage(row);
+     if((!row.title||!row.barcode)&&($('batchUseOCR').checked||$('batchUseAI').checked))await enrichScanFromImage(row);
      row.error=!hasBookTitle(row.title)?'Title not identified. Type it below or try the AI cover reader.':'';
     }catch(err){row.error='Could not read this image; enter a title or retry OCR. '+String(err?.message||err)}
     if(session?.user?.id!==uploader)return;
     row.reviewUpdatedAt=Date.now();row.duplicate=batchDuplicate(row.barcode,row);
     row.selected=!!$('batchAutoSave')?.checked&&batchValid(row);
     batchItems.push(row);processedUploads.push(item);newRecords.add(row.saveRecordId);
-    checkpointCompletedScan(uploader);
+    checkpointCompletedScan(uploader,processedUploads);
     done++;$('batchProgress').value=done;
     batchOutput(`Scanned ${done} of ${activeQueue.length} new photos · ${skippedPhotos} duplicate${skippedPhotos===1?'':'s'} skipped`);
     if(done%6===0){renderBatch();await new Promise(requestAnimationFrame)}
@@ -2816,14 +2837,16 @@ async function runBatch(){
   refreshBatchDuplicates();reviewPage=1;
   // The Review queue is durable before marking photo claims as pending.
   await scanCheckpointSync.catch(()=>{});
-  await persistReviewDraft(uploader,reviewDraftVersion);
-  if(processedUploads.length)await scanUploadGuard.changeStatus(sb,uploader,processedUploads,'pending');
+  const cloudBackedUp=await persistReviewDraft(uploader,reviewDraftVersion);
+  if(processedUploads.length&&cloudBackedUp)await scanUploadGuard.changeStatus(sb,uploader,processedUploads,'pending');
+  if(!cloudBackedUp&&processedUploads.length)reviewStatus('Scans are backed up locally, but cloud Review did not sync. Keep this tab open and retry cloud sync.','error');
   const skippedText=skippedPhotos?` · ${skippedPhotos} duplicate photo${skippedPhotos===1?'':'s'} discarded`:'';
   batchOutput(batchStopRequested?`Stopped after ${done} of ${activeQueue.length} new photos${skippedText}.`:
    $('batchAutoSave')?.checked?`Finished scanning ${done} new photos${skippedText}. Saving identified books…`:
    `Finished scanning ${done} new photos${skippedText}. Review and save the recognized books.`);
  }catch(error){
-  batchOutput('Upload stopped safely: '+String(error?.message||error)+'. No duplicate book copies were created.');
+  retryUnresolved=true;
+  batchOutput('Upload stopped safely: '+String(error?.message||error)+'. Your files are kept for Retry selected upload; no duplicate book copies were created.');
   return;
  }finally{
   // A cancelled batch must not reserve photos it never processed.
@@ -2833,7 +2856,7 @@ async function runBatch(){
   if(unused.length&&session?.user?.id===uploader){
    try{await scanUploadGuard.releaseProcessing(sb,uploader,unused)}catch(error){console.warn('Unused scan claims cleanup:',error)}
   }
-  batchActive=false;batchQueue=[];renderBatch();
+  batchActive=false;batchQueue=(retryUnresolved||batchStopRequested)?originalQueue:[];renderBatch();
  }
  if(session?.user?.id===uploader&&newRecords.size&&typeof autoEnrichISBNReviews==='function')void autoEnrichISBNReviews();
  const eligible=batchItems.filter(x=>newRecords.has(x.saveRecordId)&&batchValid(x));
@@ -2842,7 +2865,7 @@ async function runBatch(){
  else if(newRecords.size)batchOutput(`${newRecords.size} new photo${newRecords.size===1?'':'s'} scanned · ${skippedPhotos} duplicate photo${skippedPhotos===1?'':'s'} discarded. Add missing titles in Review.`);
 }
 
-function batchSelectAll(){batchItems.forEach(x=>{if(batchValid(x)&&!x.reviewStaged)x.selected=true});batchOutput('All identified books selected, including physical duplicate copies. Books without titles can be sent to Review.');renderBatch()}
+function batchSelectAll(){const ready=batchItems.filter(batchValid);if(!ready.length){batchOutput('Nothing ready to mark. Finish scanning, then add missing titles in Review before saving.');renderBatch();return}ready.forEach(x=>x.selected=true);batchOutput(`${ready.length} identified book(s) marked for saving. Check details and select Save selected books.`);renderBatch()}
 function batchSelectDuplicates(){refreshBatchDuplicates();batchItems.forEach(x=>{if(!x.saved)x.selected=!!(x.duplicate&&batchValid(x)&&!x.reviewStaged)});batchOutput('Selected additional physical copies with matching ISBN/barcode. Each receives a unique Book ID.');renderBatch()}
 function batchSelectReady(){refreshBatchDuplicates();batchItems.forEach(x=>{if(!x.saved)x.selected=!!batchValid(x)&&!x.reviewStaged});batchOutput('Selected all books with a title, including additional copies.');renderBatch()}
 function batchDeselectAll(){batchItems.forEach(x=>{if(!x.saved)x.selected=false});batchOutput('Selection cleared; no book records changed.');renderBatch()}
@@ -3017,7 +3040,7 @@ $("batchExcelFile").onchange=e=>{const f=e.target.files?.[0];if(f)importBatchRev
 async function saveBatch(allowIncomplete=false,options={}){
  if(batchActive||batchSaving||batchZipLoading||batchExcelLoading||!session?.user)return;
  const plan=reviewSavePlan(batchItems,false),selected=options.ids?plan.selected.filter(x=>options.ids.has(x.saveRecordId)):plan.selected;
- if(!selected.length)return batchOutput('No identified books to save. Add the missing titles below first.');
+ if(!selected.length)return batchOutput('No eligible books selected. Scan photos, use Mark all ready, or add titles in Review. Already-saved photos cannot be added again.');
  refreshBatchDuplicates();
  // Save is deliberate. Every selected photo creates a distinct physical copy,
  // including photos with an ISBN already present in Inventory.
@@ -3612,7 +3635,7 @@ $("loanTable").addEventListener("click",e=>{
 });
 $("bookTable").addEventListener("click",async e=>{
  const manage=e.target.closest('[data-manage-copies]');if(manage)return openInventoryCopies(manage.dataset.manageCopies);
- const chat=e.target.closest('[data-book-chat]');if(chat){const b=books.find(x=>String(x.record_id)===chat.dataset.bookChat);if(b)window.LibraryBookGuide?.openBook({title:b.title,authors:b.authors,isbn:b.barcode,shelf:b.shelf_location,publisher:b.publisher,year:b.publication_year,subject:b.subject,pages:b.pages});return}
+ const chat=e.target.closest('[data-book-chat]');if(chat){const b=books.find(x=>String(x.record_id)===chat.dataset.bookChat);if(b)window.LibraryBookGuide?.openBook({title:b.title,authors:b.authors,isbn:b.barcode,shelf:b.shelf_location,publisher:b.publisher,year:b.publication_year,subject:b.subject,pages:b.pages,recordId:b.record_id});return}
  const enrich=e.target.closest("[data-enrich-book]");if(enrich)return enrichBook(enrich.dataset.enrichBook);
  const del=e.target.closest("[data-delete-book]");if(del)return deleteBookRecord(del.dataset.deleteBook);
  const lend=e.target.closest("[data-lend-book]");if(lend){const b=books.find(x=>x.record_id===lend.dataset.lendBook);if(b)return setSelectedBook("lend",b)}

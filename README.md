@@ -1,3 +1,21 @@
+# Library Manager v5.30 — Photo upload recovery and responsive Save controls (12 November 2026)
+
+This release fixes abandoned photo scan reservations that previously caused repeated uploads to be rejected as already uploaded before their book details reached Review or Inventory. The **111 old processing claims** observed in the connected Supabase project were verified to have no matching Inventory or pending Review records. The updated uploader **recovers stale, owned, orphaned claims automatically when those same files are selected again**. The database records themselves are not deleted or rewritten by installing this ZIP.
+
+Changes: safe 10-minute stale-claim recovery across devices, bulk cloud recovery for large folders, reliable scan checkpoints to Review, an AI-only recognition fix, retryable file selections, actionable Mark all/Save buttons, clearer scan-status messages and improved mobile/tablet touch layout. See `LIBRARY_SCAN_RECOVERY_V530_20261112.md` for the root cause, validation steps, limitations and deployment instructions.
+
+**Deploy this ZIP root to the existing Vercel `librarymanger` project and hard-refresh.** No new Supabase schema migration, credential or destructive database reset is required. 49 automated tests pass. The release was validated with a mocked browser layout at six viewport widths; actual camera/photo recognition on specific physical devices and live Vercel deployment remain to be verified.
+
+---
+
+# Library Manager v5.29 — Inventory-grounded AI and verified outside-book research (12 November 2026)
+
+Floating Library AI now validates every requested inventory book against the real `library_books` records for the signed-in member, instead of relying on browser context or unverified model guesses. It reports live bibliographic/copy information and enriches it using **verified Google Books/Open Library records**. The existing **Search the web** option remains available for broader Gemini-grounded research, when configured. No private borrower records are sent to the model. See `LIBRARY_AI_INVENTORY_EXTERNAL_RESEARCH_V529_20261112.md` for exact implementation, privacy boundaries, limitations and smoke tests.
+
+**Deployment required:** This is a complete ZIP code release for the existing Vercel `librarymanger` project, not a live deployment. Deploy the ZIP root contents, keep existing Supabase and AI keys, hard-refresh after deployment. No required SQL schema change; optional updated app-help text is in `database/09_library_ai_inventory_knowledge_update.sql`. `npm test` currently passes **41** tests.
+
+---
+
 # Library Manager v5.28 — Live Book of the Week in Library AI
 
 Library AI is now connected to the **published** Book of the Week through the existing Supabase `library_public_weekly_spotlight_v2()` RPC, the same public-safe source used by the featured-book page. Direct factual questions are answered from that record instead of generic disclaimers. The assistant is also grounded in verified app workflows and relevant Supabase help articles. See `LIBRARY_AI_LIVE_SPOTLIGHT_V528_20261112.md` for changes, privacy boundaries and deployment tests.
