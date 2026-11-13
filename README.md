@@ -1,3 +1,21 @@
+# Library Manager v5.42 — Unified Stylesheet & Premium Sidebar (13 November 2026)
+
+**Current source release:** v5.42.
+
+The previously fragmented stylesheets have been consolidated into three page-entry CSS bundles under `assets/`:
+
+- `library-manager-v542.css` — all authenticated app, Scan, Review, Inventory, Settings, and mobile workspace styling; includes a final, canonical premium sidebar layer.
+- `book-of-week-v542.css` — public Book of the Week page.
+- `reading-v542.css` — public Reading Guide page.
+
+All 16 former CSS files have been removed from the release directory; HTML pages now link only the appropriate current bundle. The original cascade was carried forward in order to preserve existing page behaviour, with a single final sidebar override for the modern design. Earlier release documentation may mention retired stylesheet names for historical context only.
+
+The sidebar retains the wider 312px/284px desktop dimensions, gains a navy account card, understated teal selection, focus-visible accessibility, consistent spacing, and independent desktop scrolling. Signed-out access and mobile navigation are unchanged. No scan recognition, AI, OCR, weekly selection, Supabase logic, or manual-add form logic was modified.
+
+**Validation:** 132 automated Node tests; 8 viewport-width app smoke checks; 4 widths for each public reading page; no measured page-wide horizontal overflow in those checks. Production deployment and authenticated end-to-end testing on real devices remain outstanding.
+
+---
+
 ## Library Manager v5.41 — Recognition settings card layout (13 November 2026)
 
 The **Account settings → Book recognition settings** panel now has two generous, accessible cards, named simply **AI** and **OCR**. Each card has at least 100px of height (106px outside small-screen breakpoint), balanced typography, correctly positioned on/off switches, and independent touch/keyboard toggle behaviour. This is a **visual/layout-only change**: API priority, recognition behaviour, cloud saving, Review and Inventory workflows and the sidebar sizing from v5.40 are unchanged.

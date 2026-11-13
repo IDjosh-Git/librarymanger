@@ -187,7 +187,7 @@ test('reset permanently deletes only the signed-in member chat history',async()=
 });
 test('chat UI shows only a green or grey status dot, never legacy warning text',()=>{
  const app=fs.readFileSync(path.join(__dirname,'../assets/book-guide.js'),'utf8');
- const css=fs.readFileSync(path.join(__dirname,'../assets/book-guide.css'),'utf8');
+ const css=fs.readFileSync(path.join(__dirname,'../assets/library-manager-v542.css'),'utf8');
  assert.match(app,/id="bookGuideCloudStatus"/);
  assert.match(app,/data-connected="false"/);
  assert.match(app,/setCloudConnected\(true\)/);
