@@ -21,7 +21,7 @@ test('Member keeps sign out, while Admin keeps account menu and shared actions',
  assert.match(html,/id="mobileMemberSignOut"/);
  assert.match(html,/id="mobileAccountJump"/);
  assert.match(html,/id="signOut"/);
- assert.match(html,/id="activateAdminPanel"/);
+ assert.doesNotMatch(html,/id="activateAdminPanel"/);
  assert.match(html,/\$\('memberSignOut'\)\.addEventListener\('click'/);
  assert.match(html,/\$\('mobileMemberSignOut'\)\.addEventListener\('click'/);
 });

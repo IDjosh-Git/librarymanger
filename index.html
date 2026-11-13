@@ -183,13 +183,6 @@
 </div></details>
 <div id="memberAccountFooter" class="member-account-footer" hidden aria-label="Library Member session">
   <button id="memberSignOut" type="button" class="member-signout-button"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg> Sign Out</button>
-  <details id="activateAdminPanel" class="admin-invite-panel" hidden>
-  <summary><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg><span>Activate admin access</span></summary>
-  <div class="admin-invite-panel-body"><p>Enter your invitation code to activate administrator access.</p>
-    <label for="existingAdminInviteCode">Administrator access code</label><input id="existingAdminInviteCode" type="password" autocomplete="off" spellcheck="false" placeholder="Enter private code">
-    <button id="activateAdminInvite" type="button" class="light">Activate access</button>
-  </div>
-</details>
 </div>
 </div>
 <div id="status" class="status">Ready.</div>
@@ -676,7 +669,7 @@ function canAccess(page,role=memberRole){return role==='admin'?ADMIN_PAGES.has(p
 function isAdmin(){return memberRole==='admin'}
 function isCirculationUser(){return memberRole==='user'}
 function roleLanding(){const wanted=decodeURIComponent(location.hash.slice(1));return canAccess(wanted)?wanted:(isAdmin()?'dashboard':'dailyLog')}
-function authUI(){const signedIn=!!session?.user,ready=signedIn&&(memberRole==='admin'||memberRole==='user');window.LibraryBookGuide?.setSession(ready?session:null);document.body.dataset.account=signedIn?'in':'out';document.body.dataset.role=memberRole||'pending';$('authBadge').textContent=ready?(isAdmin()?'Administrator':'Library Member'):signedIn?'Checking access':'Own account required';$('authBadge').className=ready?'badge ok':'badge';$('loggedOut').hidden=signedIn;$('loggedIn').hidden=!ready;$('libraryArea').hidden=!ready;$('notificationBell').hidden=!ready||!isAdmin();$('who').textContent=ready?session.user.email||'Signed in':'';$('memberRolePill').textContent=isAdmin()?'ADMIN WORKSPACE':'LIBRARY MEMBER';$('roleGate').hidden=!signedIn||ready;$('adminInvitePanel').hidden=!ready||!isAdmin();$('activateAdminPanel').hidden=!ready||isAdmin();const adminSettingsVisible=ready&&isAdmin();$('accountCard').querySelector('.account-tools').hidden=!adminSettingsVisible;$('accountCard').querySelector('.lookupbox').hidden=!adminSettingsVisible;$('memberAccountFooter').hidden=!ready||isAdmin();$('mobileAccountJump').hidden=!adminSettingsVisible;$('mobileMemberSignOut').hidden=!ready||isAdmin();if(!adminSettingsVisible)$('accountCard').querySelector('.account-tools').open=false;$('roleGateText').textContent=signedIn&&!ready?'Checking account permissions…':'';
+function authUI(){const signedIn=!!session?.user,ready=signedIn&&(memberRole==='admin'||memberRole==='user');window.LibraryBookGuide?.setSession(ready?session:null);document.body.dataset.account=signedIn?'in':'out';document.body.dataset.role=memberRole||'pending';$('authBadge').textContent=ready?(isAdmin()?'Administrator':'Library Member'):signedIn?'Checking access':'Own account required';$('authBadge').className=ready?'badge ok':'badge';$('loggedOut').hidden=signedIn;$('loggedIn').hidden=!ready;$('libraryArea').hidden=!ready;$('notificationBell').hidden=!ready||!isAdmin();$('who').textContent=ready?session.user.email||'Signed in':'';$('memberRolePill').textContent=isAdmin()?'ADMIN WORKSPACE':'LIBRARY MEMBER';$('roleGate').hidden=!signedIn||ready;$('adminInvitePanel').hidden=!ready||!isAdmin();const adminSettingsVisible=ready&&isAdmin();$('accountCard').querySelector('.account-tools').hidden=!adminSettingsVisible;$('accountCard').querySelector('.lookupbox').hidden=!adminSettingsVisible;$('memberAccountFooter').hidden=!ready||isAdmin();$('mobileAccountJump').hidden=!adminSettingsVisible;$('mobileMemberSignOut').hidden=!ready||isAdmin();if(!adminSettingsVisible)$('accountCard').querySelector('.account-tools').open=false;$('roleGateText').textContent=signedIn&&!ready?'Checking account permissions…':'';
  window.LibraryDailyVisits?.setContext(ready?session:null,ready?memberRole:null);
  document.querySelectorAll('[data-tab],[data-gotab],[data-mobile-tab]').forEach(b=>{b.hidden=!canAccess(b.dataset.tab||b.dataset.gotab||b.dataset.mobileTab)});
  $('navImportShelf').hidden=!isAdmin();
@@ -788,21 +781,8 @@ async function redeemPendingAdminInvite(uid){
  const pending=readPendingAdminInvite();if(!pending||!session?.user||session.user.id!==uid)return false;
  if(pending.email!==String(session.user.email||'').toLowerCase()||Date.now()-(pending.createdAt||0)>48*3600000){clearPendingAdminInvite();return false}
  const {error}=await sb.rpc('library_redeem_admin_invite',{p_code:pending.code});
- if(error){msg('Your invitation was not activated: '+authError(error)+'. You can enter a new code in your workspace after confirming your email.','warn');return false}
+ if(error){msg('Your invitation was not activated: '+authError(error)+'. Ask the library administrator for a new invitation if the code has expired.','warn');return false}
  clearPendingAdminInvite();msg('Administrator invitation accepted. Your admin workspace is now available.','ok');return true;
-}
-async function activateAdminInvite(){
- if(!session?.user||isAdmin())return;
- const code=$('existingAdminInviteCode').value.trim();if(!code)return msg('Enter the private administrator access code.','warn');
- const button=$('activateAdminInvite');button.disabled=true;
- try{
-   const {data,error}=await sb.rpc('library_claim_admin_access_code',{p_code:code});if(error)throw error;
-   if(data!==true)throw Error('Code invalid, administrator setup incomplete, or too many attempts. Ask your administrator for a current code.');
-   clearPendingAdminAccess();$('existingAdminInviteCode').value='';memberRole=null;authUI();
-   await ensureMemberRole();if(!isAdmin())throw Error('Role change could not be verified. Sign in again.');
-   await reloadAll();msg('Administrator access activated.','ok');
- }catch(e){msg('Administrator activation failed: '+authError(e),'err')}
- finally{button.disabled=false}
 }
 async function createAdminInvite(){
  if(!session?.user||!isAdmin())return msg('Only an existing administrator can generate the registration code.','err');
@@ -4036,7 +4016,7 @@ $('inventoryCopiesBackdrop').addEventListener('focusout',async e=>{
 });
 $("showSignIn").onclick=()=>setAuthMode("signin");$("showSignUp").onclick=()=>setAuthMode("signup");
 document.querySelectorAll('[data-select-role]').forEach(button=>button.addEventListener('click',()=>{$('signupAccessRole').value=button.dataset.selectRole;updateSignupRole()}));$('signupAccessRole').addEventListener('change',updateSignupRole);$('email').addEventListener('input',()=>{if(authMode==='signup')updateSignupRole()});
-$('createAdminInvite').onclick=createAdminInvite;$('activateAdminInvite').onclick=activateAdminInvite;
+$('createAdminInvite').onclick=createAdminInvite;
 $('copyAdminAccessCode').onclick=async()=>{const code=$('adminAccessCodeResult').textContent;try{await navigator.clipboard.writeText(code);msg('Administrator code copied. Share it privately.','ok')}catch{msg('Clipboard unavailable. Select and copy the displayed code.','warn')}};
 
 $("passwordReveal").onclick=()=>{const field=$("password"),revealed=field.type==="text";field.type=revealed?"password":"text";$("passwordReveal").textContent=revealed?"Show":"Hide";$("passwordReveal").setAttribute("aria-label",revealed?"Show password":"Hide password");$("passwordReveal").setAttribute("aria-pressed",String(!revealed));};

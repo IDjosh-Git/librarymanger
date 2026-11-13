@@ -31,6 +31,8 @@ with sync_playwright() as p:
   page=b.new_page(viewport={'width':width,'height':920},device_scale_factor=1)
   page.set_content(base,wait_until='domcontentloaded')
   page.add_script_tag(content=setup)
+  assert page.locator('#activateAdminPanel, #activateAdminInvite, #existingAdminInviteCode').count()==0, (width,'old-member-admin-activation-present')
+  assert page.get_by_text('Activate admin access',exact=True).count()==0, (width,'old-member-admin-label-present')
   for role in ['user','admin']:
    page.evaluate('(role)=>window.testRole(role)',role)
    vis=page.evaluate('''() => {const ids=['#accountCard .account-tools','#accountCard .lookupbox','#memberAccountFooter','#memberSignOut','#mobileAccountJump','#mobileMemberSignOut'];return ids.map(q=>({q,visible:!!document.querySelector(q)?.getClientRects().length,hidden:document.querySelector(q)?.hidden}))}''')

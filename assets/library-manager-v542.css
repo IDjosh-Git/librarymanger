@@ -3242,14 +3242,6 @@ body[data-account="in"] #accountCard .account-tools-body {padding:10px!important
 body[data-account="in"] #accountCard .account-tools-body>.row {display:grid!important;grid-template-columns:1fr 1fr;gap:7px!important;margin:0!important;}
 body[data-account="in"] #accountCard .account-tools-body>.row>button {margin:0!important;min-height:43px!important;padding:8px!important;border-radius:11px!important;font-size:.72rem!important;}
 body[data-account="in"] #accountCard .account-tools-body button {min-width:0!important;align-items:center!important;justify-content:center!important;gap:7px!important;}
-body[data-account="in"] #accountCard .admin-invite-panel {border:1px solid var(--lp-stroke)!important;border-radius:12px!important;margin:9px 0 0!important;padding:0!important;background:var(--lp-paper)!important;box-shadow:none!important;overflow:hidden;}
-body[data-account="in"] #accountCard .admin-invite-panel>summary {display:flex!important;align-items:center!important;gap:9px!important;padding:12px!important;min-height:44px!important;background:var(--lp-soft)!important;color:var(--lp-ink)!important;font-size:.77rem!important;font-weight:780!important;}
-body[data-account="in"] #accountCard .admin-invite-panel>summary .app-icon {width:17px!important;height:17px!important;color:var(--lp-accent)!important;}
-body[data-account="in"] #accountCard .admin-invite-panel-body {padding:12px!important;background:var(--lp-paper)!important;}
-body[data-account="in"] #accountCard .admin-invite-panel-body :is(.admin-panel-intro,p) {font-size:.72rem!important;line-height:1.5!important;margin:0 0 10px!important;color:var(--lp-muted)!important;}
-body[data-account="in"] #accountCard .admin-invite-panel-body>label {font-size:.72rem!important;font-weight:740!important;margin:0 0 5px!important;}
-body[data-account="in"] #accountCard .admin-invite-panel-body>input {width:100%;box-sizing:border-box;min-height:44px!important;margin:0 0 9px!important;border-radius:11px!important;border-color:var(--lp-stroke)!important;background:var(--lp-paper)!important;color:var(--lp-ink)!important;}
-body[data-account="in"] #accountCard .admin-invite-panel-body>button {display:inline-flex!important;width:100%!important;min-height:44px!important;padding:8px 10px!important;border-radius:11px!important;font-size:.76rem!important;font-weight:800!important;}
 body[data-account="in"] #accountCard #createAdminInvite {background:var(--lp-gradient)!important;border-color:transparent!important;color:#fff!important;box-shadow:0 5px 13px rgba(72,76,174,.15)!important;}
 body[data-account="in"] #accountCard .admin-invite-result {margin-top:9px!important;padding:12px!important;border:1px solid var(--lp-stroke)!important;background:var(--lp-soft)!important;border-radius:12px!important;overflow-wrap:anywhere;}
 body[data-account="in"] #accountCard .admin-invite-result strong {font-size:.78rem!important;color:var(--lp-ink)!important;}
@@ -3332,9 +3324,9 @@ body[data-account="in"] #accountCard #copyAdminAccessCode {background:var(--lp-p
 #inventory .inventory-filter-count {font-size:.72rem!important;color:var(--lp-muted)!important;}
 #inventory .column-value-picker #columnValueSearch {min-height:43px!important;font-size:.79rem!important;border-radius:10px!important;}
 /* Premium but restrained interactive buttons */
-body[data-account="in"] #accountCard :is(.lookup-actions button,.admin-invite-panel button,.account-tools-body>.row button),
+body[data-account="in"] #accountCard :is(.lookup-actions button,.account-tools-body>.row button),
 #inventory :is(.inventory-filter-launch,.inventory-filter-foot button,.inventory-studio-link button,.smart-fill-action) {transition:transform .17s ease,box-shadow .17s ease,border-color .17s ease!important;}
-body[data-account="in"] #accountCard :is(.lookup-actions button,.admin-invite-panel button,.account-tools-body>.row button):hover:not(:disabled),
+body[data-account="in"] #accountCard :is(.lookup-actions button,.account-tools-body>.row button):hover:not(:disabled),
 #inventory :is(.inventory-filter-launch,.inventory-filter-foot button,.inventory-studio-link button,.smart-fill-action):hover:not(:disabled) {transform:translateY(-1px)!important;}
 @media(max-width:899px){
   /* Floating mobile dock: single unlayered surface, safe-area-aware; no overlapping labels. */

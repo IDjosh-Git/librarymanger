@@ -1,3 +1,5 @@
+**Latest release: v5.48 — Removed Activate Admin Access from Library Member navigation, including the old input/button handler and styles. Admin registration and admin code generation remain unchanged.**
+
 ## Latest release: v5.46 (13 November 2026)
 
 Admin-only code generation in Administrators, distinct Lending titles with selected-title physical-copy availability, and consistent navy/teal appearance. See `LIBRARY_LENDING_ADMIN_THEME_V546_20261113.md`.
