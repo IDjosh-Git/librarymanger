@@ -174,20 +174,20 @@
 #review .review-editor-section {box-shadow:0 14px 36px rgba(23,49,67,.055)!important}
 #review .review-assist-toolbar {border-radius:16px!important}
 #review .review-hero-actions button:focus-visible,#shelfScan :is(button,summary):focus-visible{outline:3px solid #83eed3!important;outline-offset:3px}
-/* Compact sidebar on all authenticated desktop pages. Do not affect sign-in or mobile navigation. */
+/* Comfortable-width sidebar on all authenticated desktop pages. Mobile navigation and sign-in are unchanged. */
 @media(min-width:900px) {
- body[data-account="in"] .layout {grid-template-columns:minmax(0,272px) minmax(0,1fr)!important;gap:clamp(14px,1.6vw,22px)!important;}
- body[data-account="in"] .layout>.auth {min-width:0!important;max-width:272px!important;}
- body[data-account="in"] #accountCard .auth-content {padding:15px 11px!important;}
- body[data-account="in"] #accountCard .workspace-nav {padding:16px 10px!important;margin:12px 0!important;border-radius:18px!important;}
- body[data-account="in"] #accountCard .workspace-nav-section :is(.tab,.workspace-nav-action) {padding:9px 10px!important;min-height:43px!important;gap:9px!important;font-size:.78rem!important;}
+ body[data-account="in"] .layout {grid-template-columns:minmax(0,312px) minmax(0,1fr)!important;gap:clamp(14px,1.6vw,22px)!important;}
+ body[data-account="in"] .layout>.auth {min-width:0!important;max-width:312px!important;}
+ body[data-account="in"] #accountCard .auth-content {padding:18px 16px!important;}
+ body[data-account="in"] #accountCard .workspace-nav {padding:16px 13px!important;margin:12px 0!important;border-radius:18px!important;}
+ body[data-account="in"] #accountCard .workspace-nav-section :is(.tab,.workspace-nav-action) {padding:10px 12px!important;min-height:45px!important;gap:11px!important;font-size:.83rem!important;}
  body[data-account="in"] #accountCard .workspace-nav-section .nav-new-pill {font-size:.55rem!important;padding:4px 5px!important;}
  body[data-account="in"] #accountCard :is(.account-tools-body,.account-tools,.sidebar-title) {min-width:0!important;}
 }
 @media(min-width:900px) and (max-width:1100px) {
- body[data-account="in"] .layout {grid-template-columns:minmax(0,236px) minmax(0,1fr)!important;gap:12px!important;}
- body[data-account="in"] .layout>.auth{max-width:236px!important;}
- body[data-account="in"] #accountCard .workspace-nav-section :is(.tab,.workspace-nav-action){font-size:.74rem!important;padding:8px!important;gap:7px!important;}
+ body[data-account="in"] .layout {grid-template-columns:minmax(0,284px) minmax(0,1fr)!important;gap:12px!important;}
+ body[data-account="in"] .layout>.auth{max-width:284px!important;}
+ body[data-account="in"] #accountCard .workspace-nav-section :is(.tab,.workspace-nav-action){font-size:.79rem!important;padding:9px 10px!important;gap:9px!important;}
 }
 @media(max-width:700px) {
  #shelfScan .shelf-page-hero, #review .review-workspace-hero {min-height:270px!important;padding:14px!important;border-radius:20px!important;}

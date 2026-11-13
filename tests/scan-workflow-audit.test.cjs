@@ -131,11 +131,12 @@ test('Replacement image only receives pending cloud status after backup succeeds
  assert.match(html,/\.eq\('fingerprint',oldSignature\)/);
 });
 
-test('premium heroes use photographs and glass cards; compact sidebar is scoped to signed-in desktop',()=>{
+test('premium heroes and a comfortable sidebar are scoped to signed-in desktop',()=>{
  assert.match(html,/class="shelf-page-image" aria-hidden="true"/);
  assert.match(html,/class="lm-review-hero-image" aria-hidden="true"/);
  assert.match(css,/#review \.lm-review-hero-image/);
- assert.match(css,/grid-template-columns:minmax\(0,272px\) minmax\(0,1fr\)/);
+ assert.match(css,/grid-template-columns:minmax\(0,312px\) minmax\(0,1fr\)/);
+ assert.match(css,/grid-template-columns:minmax\(0,284px\) minmax\(0,1fr\)/);
  assert.match(html,/Add book manually/);
  assert.match(html,/id="addManual"/);
  assert.doesNotMatch(html,/scan-auto-premium-v534\.css/);
