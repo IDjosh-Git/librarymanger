@@ -5,7 +5,7 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const path=require('node:path');
 const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');
-const css=fs.readFileSync(path.join(__dirname,'..','assets','scan-auto-premium-v534.css'),'utf8');
+const css=fs.readFileSync(path.join(__dirname,'..','assets','scan-review-premium-v539.css'),'utf8');
 const deletionStart=html.indexOf('async function discardPendingReviewImage(index){');
 const deletionEnd=html.indexOf("$('reviewSaveCorrected').onclick",deletionStart);
 const deletionSource=html.slice(deletionStart,deletionEnd);
@@ -48,7 +48,13 @@ function mockDelete({saved=false,cloudError=false,confirmed=true,rowSaved=false}
 }
 test('Scan has premium automatic workflow and no visible result tables',()=>{
  const scan=html.slice(html.indexOf('<div id="shelfScan"'),html.indexOf('<div id="review"'));
- assert.match(scan,/Scan once\. We take it from here/);
+ assert.match(scan,/Scan books with ease/);
+ assert.match(scan,/id="batchHeading"/);
+ assert.equal((scan.match(/class="batch-head scan-auto-hero"/g)||[]).length,0);
+ assert.match(scan,/id="jumpQuickAdd"/);
+ assert.match(scan,/id="quickAddDrawer"/);
+ assert.match(css,/#shelfScan \.shelf-page-hero/);
+ assert.match(css,/backdrop-filter:blur/);
  assert.match(scan,/id="scanAutoSavedCount"/);
  assert.match(scan,/id="scanAutoReviewCount"/);
  assert.match(scan,/id="scanAutoOutcome"/);
@@ -123,4 +129,14 @@ test('Replacement image only receives pending cloud status after backup succeeds
  assert.match(html,/if\(!backedUp\)\{/);
  assert.match(html,/await scanUploadGuard\.changeStatus\(sb,owner,\[claimedPhoto\],'pending'\)/);
  assert.match(html,/\.eq\('fingerprint',oldSignature\)/);
+});
+
+test('premium heroes use photographs and glass cards; compact sidebar is scoped to signed-in desktop',()=>{
+ assert.match(html,/class="shelf-page-image" aria-hidden="true"/);
+ assert.match(html,/class="lm-review-hero-image" aria-hidden="true"/);
+ assert.match(css,/#review \.lm-review-hero-image/);
+ assert.match(css,/grid-template-columns:minmax\(0,272px\) minmax\(0,1fr\)/);
+ assert.match(html,/Add book manually/);
+ assert.match(html,/id="addManual"/);
+ assert.doesNotMatch(html,/scan-auto-premium-v534\.css/);
 });

@@ -51,7 +51,7 @@
 <link rel="stylesheet" href="assets/premium-navigation-filters.css?v=5.21.0">
 <link rel="stylesheet" href="assets/mobile-navigation-ai-orb.css?v=5.22.0">
 <link rel="stylesheet" href="assets/daily-visit-register.css?v=5.26.0">
-<link rel="stylesheet" href="assets/scan-auto-premium-v534.css?v=5.34.0">
+<link rel="stylesheet" href="assets/scan-review-premium-v539.css?v=5.39.0">
 <link rel="stylesheet" href="assets/recognition-settings-v535.css?v=5.35.0">
 <script defer src="assets/compact-card-insights.js?v=5.17.0"></script>
 <script defer src="assets/premium-progress-upload.js?v=5.32.0"></script>
@@ -362,9 +362,9 @@
 <div id="shelfScan" class="panel shelf-scan-page" aria-labelledby="shelfScanTitle">
 <input id="inventoryCamera" type="file" accept="image/*" capture="environment" hidden><img id="inventoryPreview" class="preview">
  <section class="shelf-page-hero" aria-labelledby="shelfScanTitle">
-  <div class="shelf-page-copy"><span class="shelf-kicker">YOUR SCANNING WORKSPACE · ADMIN ONLY</span><h2 id="shelfScanTitle">Scan books, without the busywork.</h2><p>Upload once. Verified books go straight to Inventory, and uncertain covers go to Review automatically.</p>
-   <div class="shelf-page-hero-actions"><button type="button" class="shelf-return" data-tab-go="inventory">← Back to inventory</button><button type="button" class="light" id="jumpQuickAdd"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#plus"></use></svg> Add book</button><button id="scanInventory" class="scanbtn"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg> Quick scan</button><span class="shelf-speed-tag">✦ Fast local recognition · Private by default</span></div>
-  </div><div class="shelf-page-image"><img src="assets/library-shelves-fallback.jpg" alt="A warmly lit library aisle with bookshelves" loading="lazy"></div>
+  <div class="shelf-page-copy"><span class="shelf-kicker">YOUR SCANNING WORKSPACE · ADMIN ONLY</span><h2 id="shelfScanTitle">Scan books with ease.</h2><p>Choose your photos and watch each book find its place. Verified details go to Inventory; uncertain scans move straight to Review.</p>
+   <div class="shelf-page-hero-actions"><button type="button" class="shelf-return" data-tab-go="inventory">← Back to inventory</button><button type="button" class="light" id="jumpQuickAdd"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#plus"></use></svg> Add book manually</button><button id="scanInventory" class="scanbtn"><svg class="app-icon " aria-hidden="true"><use href="assets/icons.svg#scan"></use></svg> Quick scan</button></div>
+  <div class="lm-hero-details" aria-label="Scanning benefits"><span>Automatic inventory saving</span><span>Review when needed</span></div></div><div class="shelf-page-image" aria-hidden="true"><img src="assets/library-shelves-fallback.jpg" alt="A warmly lit library aisle with bookshelves" loading="lazy"></div>
  </section>
 <section id="inventoryQuickAdd" class="inventory-secondary-section" aria-labelledby="quickAddHeading">
 <details id="quickAddDrawer" class="quick-add-drawer"><summary><span aria-hidden="true">＋</span><span><strong>Add a book manually</strong><small>Optional · Enter one title or ISBN without scanning</small></span><span class="drawer-chevron" aria-hidden="true"></span></summary>
@@ -397,9 +397,9 @@
 </section>
 <section class="scanned-review-section" aria-label="Inventory book scanning and review">
 <section class="batch-box scan-automation-workspace" aria-labelledby="batchHeading">
- <div class="batch-head scan-auto-hero"><span class="scan-auto-eyebrow"><span class="scan-auto-beacon" aria-hidden="true"></span> AUTOMATED LIBRARY INTAKE</span><h3 id="batchHeading">Scan once. We take it from here.</h3><p>Choose your book photos. Recognition, Inventory saving and Review routing happen automatically as each photo is processed.</p><div class="scan-auto-hero-chips"><span>✓ Instant scanning</span><span>✓ Cloud inventory</span><span>✓ Automatic review</span></div></div>
+
  <div class="batch-body">
-  <div class="scan-auto-stephead"><div><span class="scan-auto-step-index">01</span><div><h4>Add book photos</h4><p>Scanning begins immediately; no separate Start or Save button.</p></div></div><button id="scanReviewJump" type="button" class="scan-auto-quiet-link">Open Review <span id="scanQuickAttentionCount">0</span> <span aria-hidden="true">→</span></button></div>
+  <div class="scan-auto-stephead"><div><span class="scan-auto-step-index">01</span><div><h4 id="batchHeading">Upload and scan</h4><p>Scanning begins immediately; no separate Start or Save button.</p></div></div><button id="scanReviewJump" type="button" class="scan-auto-quiet-link">Open Review <span id="scanQuickAttentionCount">0</span> <span aria-hidden="true">→</span></button></div>
   <div class="batch-picker scan-auto-picker" role="group" aria-label="Choose book photos to scan">
    <label class="premium-upload-choice" data-input-label="batchPhotos"><span class="premium-upload-icon"><svg class="app-icon"><use href="assets/icons.svg#image"></use></svg></span><span class="premium-upload-copy"><strong>Upload photos</strong><small class="premium-upload-detail">Choose or take book-cover photos</small></span><span class="premium-upload-chevron" aria-hidden="true">↗</span><input id="batchPhotos" aria-label="Choose book cover photos" type="file" accept="image/*,.heic,.heif,.avif" multiple></label>
    <label class="premium-upload-choice" data-input-label="batchFolder"><span class="premium-upload-icon"><svg class="app-icon"><use href="assets/icons.svg#folder"></use></svg></span><span class="premium-upload-copy"><strong>Upload folder</strong><small class="premium-upload-detail">Scan a folder of images</small></span><span class="premium-upload-chevron" aria-hidden="true">↗</span><input id="batchFolder" aria-label="Choose a folder of book photos" type="file" accept="image/*" webkitdirectory directory multiple></label>
@@ -418,7 +418,7 @@
 </section>
 </div>
 <div id="review" class="panel review-workspace" aria-labelledby="reviewWorkspaceTitle">
- <section class="review-workspace-hero"><div><span class="eyebrow">REVIEW · AUTOMATIC INTAKE</span><h2 id="reviewWorkspaceTitle">Only the books that need your attention.</h2><p>Uncertain covers arrive here automatically. Correct the details, replace an image, or delete an unwanted scan.</p></div><div class="review-hero-actions"><button id="reviewBackToScan" type="button" class="light">← Scan more</button><button id="reviewCloudRefresh" type="button">Refresh queue</button></div></section>
+ <section class="review-workspace-hero"><div><span class="eyebrow">REVIEW · AUTOMATIC INTAKE</span><h2 id="reviewWorkspaceTitle">Review what matters.</h2><p>A calm place to confirm details, improve a scan, or remove an image before it reaches Inventory.</p><div class="review-hero-actions"><button id="reviewBackToScan" type="button" class="light">← Scan more</button><button id="reviewCloudRefresh" type="button">Refresh queue</button></div></div><div class="lm-review-hero-image" aria-hidden="true"><img src="assets/library-reading-fallback.jpg" alt="" loading="lazy" decoding="async"></div></section>
  <div class="review-stats" aria-live="polite"><span class="review-stat-pending"><strong id="reviewPendingCount">0</strong> Awaiting review</span><span class="review-stat-saved"><strong id="reviewSavedAttentionCount">0</strong> Saved books needing correction</span></div>
  <section class="review-editor-section" aria-label="Pending book corrections">
   <div class="scan-review-heading"><div><span class="eyebrow">YOUR REVIEW QUEUE</span><h3>Books needing review</h3><p>Check the cover, correct missing details, then approve the book for Inventory.</p></div><button id="reviewSaveCorrected" type="button" class="green">Save corrected to Inventory</button></div>
