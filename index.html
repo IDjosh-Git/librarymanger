@@ -55,11 +55,11 @@
 
 
 <script defer src="assets/compact-card-insights.js?v=5.17.0"></script>
-<script defer src="assets/premium-progress-upload.js?v=5.49.0"></script>
+<script defer src="assets/premium-progress-upload.js?v=5.53.0"></script>
 <script defer src="assets/book-guide-format.js"></script>
 <script defer src="assets/book-guide.js?v=5.29.0"></script>
 <script defer src="assets/public-contact.js"></script>
-  <link rel="stylesheet" href="assets/library-manager-v542.css?v=5.51.0">
+  <link rel="stylesheet" href="assets/library-manager-v542.css?v=5.53.0">
 </head>
 <body data-account="out">
 <a href="#mainContent" class="skip-link">Skip to main content</a>
@@ -398,11 +398,31 @@
    <label class="premium-upload-choice" data-input-label="batchZip"><span class="premium-upload-icon"><svg class="app-icon"><use href="assets/icons.svg#archive"></use></svg></span><span class="premium-upload-copy"><strong>Import ZIP</strong><small class="premium-upload-detail">Import multiple photos together</small></span><span class="premium-upload-chevron" aria-hidden="true">↗</span><input id="batchZip" aria-label="Choose ZIP containing book photos" type="file" accept=".zip,application/zip,application/x-zip-compressed"></label>
   </div>
   <div class="scan-auto-inline-options"><div class="scan-shelf-simple"><label for="batchDefaultShelf">Shelf <span class="quickadd-optional">optional</span></label><input id="batchDefaultShelf" maxlength="120" placeholder="e.g. A-04"></div></div>
-  <section class="scan-auto-progress-shell" aria-label="Live scanning status"><div class="scan-auto-stephead"><div><span class="scan-auto-step-index">02</span><div><h4>Automatic processing</h4><p>Watch your scan and save results update in real time.</p></div></div><button id="batchStop" type="button" class="light" disabled>Stop scanning</button></div><div class="batch-progress premium-progress" data-progress-state="idle" role="group" aria-label="Book scanning progress"><div class="premium-progress-header"><span class="premium-progress-stage"><span class="premium-progress-pulse"></span><span id="batchProgressStage">Ready to scan</span></span><strong class="premium-progress-percent" id="batchProgressPercent" aria-hidden="true">0%</strong></div><div class="premium-progress-description"><span id="batchStatus" role="status" aria-live="polite" aria-atomic="true">Choose book photos to begin automatic scanning.</span><span id="batchProgressCount" class="premium-progress-count" aria-hidden="true">0 / 0</span></div><progress id="batchProgress" max="100" value="0" aria-label="Scanning progress: 0%"></progress><small class="premium-progress-hint" id="batchProgressHint">Verified books are saved as they are identified.</small></div></section>
+  <p id="scanUploadNotice" class="scan-upload-notice" role="alert" hidden></p>
+  <section id="scanLiveProgressPanel" class="scan-auto-progress-shell" aria-label="Live scanning status" hidden><div class="scan-auto-stephead"><div><span class="scan-auto-step-index">02</span><div><h4>Automatic processing</h4><p>Watch your scan and save results update in real time.</p></div></div><button id="batchStop" type="button" class="light" disabled>Stop scanning</button></div><div class="batch-progress premium-progress" data-progress-state="idle" role="group" aria-label="Book scanning progress"><div class="premium-progress-header"><span class="premium-progress-stage"><span class="premium-progress-pulse"></span><span id="batchProgressStage">Ready to scan</span></span><strong class="premium-progress-percent" id="batchProgressPercent" aria-hidden="true">0%</strong></div><div class="premium-progress-description"><span id="batchStatus" role="status" aria-live="polite" aria-atomic="true">Preparing your scan…</span></div><progress id="batchProgress" max="100" value="0" aria-label="Scanning progress: 0%"></progress><small class="premium-progress-hint" id="batchProgressHint">Verified books are saved as they are identified.</small></div></section>
   <section class="scan-auto-outcomes" aria-label="Automatic scan results"><div class="scan-auto-stephead"><div><span class="scan-auto-step-index">03</span><div><h4>Saved automatically</h4><p>No tables, checkboxes or manual save actions.</p></div></div></div><div class="scan-auto-stat-grid"><div class="scan-auto-stat scan-auto-stat-saved"><span class="scan-auto-stat-icon" aria-hidden="true">✓</span><strong id="scanAutoSavedCount">0</strong><span>Saved to Inventory</span></div><div class="scan-auto-stat scan-auto-stat-review"><span class="scan-auto-stat-icon" aria-hidden="true">✦</span><strong id="scanAutoReviewCount">0</strong><span>Sent to Review</span></div><div class="scan-auto-stat scan-auto-stat-skipped"><span class="scan-auto-stat-icon" aria-hidden="true">↷</span><strong id="scanAutoSkippedCount">0</strong><span>Already processed</span></div></div><div id="scanAutoOutcome" class="scan-auto-feedback" role="status" aria-live="polite">Select your photos to begin. You will see a confirmation here when Inventory and Review are updated.</div><div class="scan-auto-destinations"><button id="scanInventoryJump" type="button" class="scan-auto-main-button">View Inventory <span aria-hidden="true">→</span></button><button id="scanOpenReview" type="button" class="scan-auto-outline-button">Open Review <span aria-hidden="true">→</span></button></div><p id="scanAutoErrorMessage" class="scan-auto-error" role="alert" hidden></p></section>
   <details class="scan-cloud-details scan-auto-cloud"><summary>Cloud connection &amp; recovery</summary><div class="scan-cloud-toolbar" aria-label="Shared inventory synchronization"><div class="scan-cloud-copy"><span class="scan-cloud-indicator"></span><div><strong>Shared inventory</strong><small id="scanCloudLastSync">Reading saved books from Supabase…</small></div></div><button id="scanRefreshCloud" type="button" class="scan-refresh-button">Refresh from cloud</button></div></details>
   <section id="scanRecoveryBar" class="scan-recovery-bar" role="status" hidden><div><strong>Continue your interrupted scan</strong><p id="scanRecoveryMessage">The remaining covers are saved on this device.</p></div><button type="button" id="scanResumeNow" class="green">Resume scan</button></section>
-  <section id="scanRecentSummary" class="scan-recent-summary" aria-label="Last completed scan" hidden><div class="scan-recent-heading"><div><span class="eyebrow">RECENT SCAN</span><h4>Last completed scan</h4><p id="scanRecentWhen"></p></div><span class="scan-recent-complete">✓ Completed</span></div><div class="scan-recent-counters"><span><strong id="scanRecentSaved">0</strong> In Inventory</span><span><strong id="scanRecentReview">0</strong> To Review</span><span><strong id="scanRecentSkipped">0</strong> Skipped</span><span><strong id="scanRecentTotal">0</strong> Photos</span></div><small>Kept here for six hours, or until your next scan.</small></section>
+  <section id="scanRecentSummary" class="scan-recent-summary" aria-labelledby="scanRecentTitle" hidden>
+  <div class="scan-recent-heading">
+    <div><span class="eyebrow">SCAN HISTORY · MOST RECENT BATCH</span><h4 id="scanRecentTitle">Last completed scan</h4><p id="scanRecentWhen"></p></div>
+    <span class="scan-recent-complete"><span aria-hidden="true">✓</span> 100% completed</span>
+  </div>
+  <div class="scan-recent-overview">
+    <div class="scan-recent-total"><span>Total photos processed</span><strong id="scanRecentTotal">0</strong><small>Across all scan outcomes</small></div>
+    <div class="scan-recent-overview-copy"><strong>Scan results</strong><span>Books confirmed in Inventory and Review are counted separately. Skipped photos were already processed or duplicated.</span></div>
+  </div>
+  <div class="scan-recent-counters" aria-label="Completed scan outcome totals">
+    <div class="scan-recent-metric" data-kind="inventory"><span class="scan-recent-metric-label"><span class="scan-recent-metric-dot" aria-hidden="true"></span>Saved to Inventory</span><strong id="scanRecentSaved">0</strong><small id="scanRecentSavedRate">0% of photos</small></div>
+    <div class="scan-recent-metric" data-kind="review"><span class="scan-recent-metric-label"><span class="scan-recent-metric-dot" aria-hidden="true"></span>Sent to Review</span><strong id="scanRecentReview">0</strong><small id="scanRecentReviewRate">0% of photos</small></div>
+    <div class="scan-recent-metric" data-kind="skipped"><span class="scan-recent-metric-label"><span class="scan-recent-metric-dot" aria-hidden="true"></span>Skipped / duplicate</span><strong id="scanRecentSkipped">0</strong><small id="scanRecentSkippedRate">0% of photos</small></div>
+    <div class="scan-recent-metric" data-kind="failed"><span class="scan-recent-metric-label"><span class="scan-recent-metric-dot" aria-hidden="true"></span>Needs attention</span><strong id="scanRecentFailed">0</strong><small id="scanRecentFailedRate">0% of photos</small></div>
+  </div>
+  <div class="scan-recent-breakdown-head"><strong>Outcome breakdown</strong><span>Share of completed scan</span></div>
+  <div id="scanRecentBreakdown" class="scan-recent-breakdown" role="img" aria-label="Completed scan results"><span id="scanRecentBarSaved" data-kind="inventory"></span><span id="scanRecentBarReview" data-kind="review"></span><span id="scanRecentBarSkipped" data-kind="skipped"></span><span id="scanRecentBarFailed" data-kind="failed"></span></div>
+  <p id="scanRecentDetails" class="scan-recent-details"></p>
+  <small class="scan-recent-retention">Available for six hours after completion; replaced when another scan begins.</small>
+</section>
   <div id="batchSummary" hidden aria-live="off"></div><span id="scanSelectionHint" class="sr-only" aria-live="polite"></span>
   <!-- Legacy element IDs retained only for compatibility; tables and manual save actions are not rendered. -->
   <div id="scanLegacyControls" hidden aria-hidden="true"><button id="batchStart" type="button" disabled></button><button id="batchSaveAllReady" type="button" disabled></button><button id="batchSave" type="button" disabled></button><button id="batchSelectAll" type="button" disabled></button><button id="batchDeselectAll" type="button" disabled></button><button id="batchClear" type="button" disabled></button><button id="scanReadyToggle" type="button"></button><button id="scanReviewToggle" type="button"></button><div id="scanReadyTable"><div id="batchReadyResults"></div></div><div id="scanReviewTable"><div id="scanReviewCandidates"></div></div><span id="scanReadyCount"></span><span id="scanNeedsTitleCount"></span><input id="batchAutoSave" type="checkbox" checked></div>
@@ -2008,7 +2028,32 @@ function scheduleScanReconnect(){
  scanRetryTimer=setTimeout(()=>{scanRetryTimer=null;if(!batchActive&&session?.user&&navigator.onLine!==false)void restoreResumableScan(true);else if(batchActive)scheduleScanReconnect()},backoff);
 }
 function scanCheckpointDone(index,kind){if(!scanJobId||!Number.isInteger(index)||index<0||!scanResumeStore||!scanJournalOwner)return;scanCheckpointPromise(scanResumeStore.markDone(scanJournalOwner,index,kind,scanJobId))}
-function renderRecentScan(summary){const el=$('scanRecentSummary');if(!el)return;el.hidden=!summary;if(!summary)return;$('scanRecentSaved').textContent=String(summary.saved||0);$('scanRecentReview').textContent=String(summary.review||0);$('scanRecentSkipped').textContent=String(summary.skipped||0);$('scanRecentTotal').textContent=String(summary.total||0);$('scanRecentWhen').textContent=new Date(summary.finishedAt).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'})}
+function scanHistoryBreakdown(summary){
+ const count=value=>Math.max(0,Math.floor(Number(value)||0));
+ const total=count(summary?.total),saved=count(summary?.saved),review=count(summary?.review),skipped=count(summary?.skipped),failed=count(summary?.failed);
+ const unclassified=Math.max(0,total-saved-review-skipped-failed);
+ const pct=value=>total?Math.round(value/total*100):0;
+ return {total,saved,review,skipped,failed,unclassified,pct};
+}
+function renderRecentScan(summary){
+ const el=$('scanRecentSummary');if(!el)return;el.hidden=!summary;if(!summary)return;
+ const result=scanHistoryBreakdown(summary);
+ for(const [name,id,rateId,barId] of [
+  ['saved','scanRecentSaved','scanRecentSavedRate','scanRecentBarSaved'],
+  ['review','scanRecentReview','scanRecentReviewRate','scanRecentBarReview'],
+  ['skipped','scanRecentSkipped','scanRecentSkippedRate','scanRecentBarSkipped'],
+  ['failed','scanRecentFailed','scanRecentFailedRate','scanRecentBarFailed']
+ ]){
+  $(id).textContent=String(result[name]);$(rateId).textContent=`${result.pct(result[name])}% of photos`;
+  $(barId).style.width=`${result.total?Math.min(100,result[name]/result.total*100):0}%`;
+ }
+ $('scanRecentTotal').textContent=String(result.total);
+ $('scanRecentWhen').textContent=new Date(summary.finishedAt).toLocaleString(undefined,{dateStyle:'medium',timeStyle:'short'});
+ $('scanRecentBreakdown').setAttribute('aria-label',`${result.saved} saved to Inventory, ${result.review} sent to Review, ${result.skipped} skipped, ${result.failed} needing attention, of ${result.total} photos`);
+ $('scanRecentDetails').textContent=result.unclassified?`${result.unclassified} additional outcome(s) were not classified in this summary. Check Inventory and Review before rescanning.`:
+  result.failed?`Review unsuccessful saves before retrying those photos. ${result.saved+result.review} books were confirmed in Inventory or Review.`:
+  `All ${result.total} photos were accounted for. ${result.saved+result.review} books reached Inventory or Review; ${result.skipped} duplicates or previously processed photos were skipped.`;
+}
 function scanRecoveryNotice(message,showButton=true){const bar=$('scanRecoveryBar');if(!bar)return;bar.hidden=!message;if(message)$('scanRecoveryMessage').textContent=message;$('scanResumeNow').hidden=!showButton}
 async function showScanHistory(owner){if(!scanResumeStore||!owner)return;try{renderRecentScan(await scanResumeStore.history(owner))}catch(error){console.info('Recent scan not available:',error)}}
 async function restoreResumableScan(run=true){
@@ -2031,7 +2076,8 @@ async function restoreResumableScan(run=true){
   batchQueue=queue;autoScanSession={saved:saved.job.saved||0,review:saved.job.review||0,failed:0,skipped:saved.job.skipped||0,total:saved.job.total};refreshScanOutcome();
   const total=saved.job.total,completed=done.size,bar=$('batchProgress');bar.max=1000;bar.value=Math.floor(completed/Math.max(1,total)*1000);bar.dataset.scanMode='true';bar.dataset.scanPrepared=String(completed);bar.dataset.scanChecked=String(completed);bar.dataset.scanFinished=String(completed);bar.dataset.scanTotal=String(total);window.LibraryProgressUI?.refresh();
   if(!queue.length){await completeScanJournal(owner);return}
-  const message=`${completed} of ${total} covers confirmed. ${queue.length} unfinished ${queue.length===1?'photo is':'photos are'} ready to resume.`;
+  const resumePercent=Math.floor(100*completed/Math.max(1,total));
+  const message=`${resumePercent}% confirmed. Unfinished photos are ready to resume.`;
   scanRecoveryNotice(message,true);batchOutput(navigator.onLine===false?'Connection unavailable. '+message:message);renderBatch();
   if(run&&navigator.onLine!==false){scanRecoveryNotice('');void runBatch()}
  })().catch(error=>{console.warn('Scan restoration:',error);scanRecoveryNotice('Your unfinished scan could not be restored automatically: '+(error?.message||error),true);batchOutput('Recovery unavailable: '+(error?.message||error))}).finally(()=>{scanResumeRestoring=null});
@@ -2044,7 +2090,7 @@ async function completeScanJournal(owner){
  if(!current||current.id!==scanJobId)return;
  if(current.done.length===current.total){
   const history=await scanResumeStore.finish(owner);if(scanRetryTimer)clearTimeout(scanRetryTimer);scanRetryTimer=null;scanRetryAttempts=0;scanJobId=null;scanResumeInitial=null;scanResumeJob=null;scanJournalOwner=null;batchQueue=[];scanRecoveryNotice('');if(history){renderRecentScan(history);$('batchProgress').max=1000;$('batchProgress').value=1000;window.LibraryProgressUI?.refresh();}
- }else{scanRecoveryNotice(`${current.done.length} of ${current.total} covers confirmed. Remaining covers will resume automatically when online.`,true)}
+ }else{scanRecoveryNotice(`${Math.floor(100*current.done.length/Math.max(1,current.total))}% confirmed. Remaining covers will resume automatically when online.`,true)}
 }
 const scanAutoRoute=globalThis.LibraryScanAutoRoute;
 let autoScanSession={saved:0,review:0,failed:0,skipped:0,total:0};
@@ -2390,6 +2436,19 @@ function batchShelf(path,fallback="",source="photos"){
 function batchAttr(v){return esc(v).replace(/"/g,"&quot;").replace(/'/g,"&#39;")}
 function batchImageName(name){return /\.(?:jpe?g|png|webp|bmp|gif|tif|tiff|avif|heic|heif)$/i.test(String(name||""))}
 function batchOutput(message){$("batchStatus").textContent=message;window.LibraryProgressUI?.refresh()}
+// Upload validation stays visible even when the idle progress meter is hidden.
+function scanUploadProblem(message){
+ batchOutput(message);
+ const note=$('scanUploadNotice');if(note){note.textContent=message;note.hidden=false}
+}
+function scanProgressIsActive(){
+ // Do not use batchActive here: Review/OCR actions also set that flag.
+ return !!(scanJobId||scanResumeJob||batchQueue.length||scanJournalPreparing||batchZipLoading);
+}
+function updateScanProgressVisibility(){
+ const panel=$('scanLiveProgressPanel');if(panel)panel.hidden=!scanProgressIsActive();
+}
+
 function reviewFingerprint(x){return JSON.stringify(['title','authors','publisher','publication_year','barcode','shelf','importAction','updateTargetId'].map(k=>String(x[k]||'').trim()))}
 function batchValid(x){return !!(!x.saved&&!x.reviewBusy&&hasBookTitle(x.title))}
 function reviewShelfNames(){return [...new Set([...books.map(b=>b.shelf_location),...batchItems.map(x=>x.shelf)].map(v=>String(v||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b))}
@@ -2560,6 +2619,7 @@ function renderSavedAttentionReview(reviewQuery=''){
  el.innerHTML=`<div class="saved-review-heading"><div><h3>Saved books needing attention <span>${attention.length}</span></h3><p>Correct these saved copies — no duplicates.</p></div><span class="review-view-count">${(savedAttentionPage-1)*SAVED_ATTENTION_PAGE_SIZE+1}–${Math.min(attention.length,savedAttentionPage*SAVED_ATTENTION_PAGE_SIZE)} of ${attention.length}</span></div><div class="saved-review-list">${cards}</div>${pages>1?`<nav class="review-pager" aria-label="Saved books requiring attention pages"><button type="button" class="light smallbtn" data-saved-attention-page="${savedAttentionPage-1}" ${savedAttentionPage===1?'disabled':''}>Previous</button><span>Page ${savedAttentionPage} of ${pages}</span><button type="button" class="light smallbtn" data-saved-attention-page="${savedAttentionPage+1}" ${savedAttentionPage===pages?'disabled':''}>Next</button></nav>`:''}`;
 }
 function renderBatch(){
+ updateScanProgressVisibility();
  batchSummary();
  const locked=batchActive||batchSaving||batchZipLoading||batchExcelLoading;
  const pending=batchItems.map((x,i)=>({x,i})).filter(({x})=>!x.saved);
@@ -2622,14 +2682,15 @@ function renderBatch(){
 }
 
 async function setBatchQueue(files,source,zipFile=null){
- if(batchActive||batchSaving||autoCommitTask||scanJournalPreparing||batchExcelLoading||(batchZipLoading&&source!=='ZIP'))return batchOutput('Finish the current batch or ZIP import first.');
- if(!session?.user)return batchOutput('Sign in to Supabase before uploading.');
+ if(batchActive||batchSaving||autoCommitTask||scanJournalPreparing||batchExcelLoading||(batchZipLoading&&source!=='ZIP'))return scanUploadProblem('Finish the current batch or ZIP import first.');
+ if(!session?.user)return scanUploadProblem('Sign in to Supabase before uploading.');
  const eligible=files.filter(x=>batchImageName(x.path)),fallback=$('batchDefaultShelf').value.trim();
- if(!eligible.length)return batchOutput('No supported image files found.');
- if(eligible.length>BATCH_MAX_FILES)return batchOutput(`Limit each batch to ${BATCH_MAX_FILES} pictures; split your folder or ZIP.`);
- if(eligible.some(x=>x.size>BATCH_MAX_IMAGE))return batchOutput('An individual image exceeds 60 MB; reduce that image size.');
- if(eligible.reduce((sum,x)=>sum+x.size,0)>BATCH_MAX_TOTAL)return batchOutput('Pictures exceed the 4 GB batch limit. Split into smaller batches.');
- const owner=session.user.id;scanJournalPreparing=true;
+ if(!eligible.length)return scanUploadProblem('No supported image files found.');
+ if(eligible.length>BATCH_MAX_FILES)return scanUploadProblem(`Limit each batch to ${BATCH_MAX_FILES} pictures; split your folder or ZIP.`);
+ if(eligible.some(x=>x.size>BATCH_MAX_IMAGE))return scanUploadProblem('An individual image exceeds 60 MB; reduce that image size.');
+ if(eligible.reduce((sum,x)=>sum+x.size,0)>BATCH_MAX_TOTAL)return scanUploadProblem('Pictures exceed the 4 GB batch limit. Split into smaller batches.');
+ const notice=$('scanUploadNotice');if(notice)notice.hidden=true;
+ const owner=session.user.id;scanJournalPreparing=true;updateScanProgressVisibility();
  try{
   const existing=await scanResumeStore.read(owner);
   if(existing?.total&&existing?.state!=='completed'){
@@ -2638,16 +2699,16 @@ async function setBatchQueue(files,source,zipFile=null){
    await scanResumeStore.discard(owner);
   }
   const queue=eligible.map((x,index)=>({...x,resumeIndex:index,saveRecordId:uuid(),shelf:batchShelf(x.path,fallback,source),source}));
-  batchOutput(`Securing ${queue.length} photos for automatic recovery…`);
+  batchOutput('Securing selected photos for automatic recovery…');
   const saved=await scanResumeStore.begin(owner,queue,source,zipFile);
   if(session?.user?.id!==owner)return;
   scanJobId=saved.id;scanJournalOwner=owner;scanResumeJob=saved;scanResumeInitial=saved;
   batchMetadataCache.clear();batchQueue=queue;batchStopRequested=false;scanRetryAttempts=0;if(scanRetryTimer)clearTimeout(scanRetryTimer);scanRetryTimer=null;renderRecentScan(null);scanRecoveryNotice('');
   delete $('batchProgress').dataset.scanMode;$('batchProgress').max=1000;$('batchProgress').value=0;
-  batchOutput(`${queue.length} photos secured on this device. Scanning starts now…`);
+  batchOutput('Photos secured on this device. Scanning starts now…');
   if($('batchUseOCR').checked)void warmupOCR();renderBatch();
- }catch(error){batchOutput('Scan cannot start safely: '+(error?.message||error)+'. Free device storage or reduce the batch. No photos were discarded.');return}
- finally{scanJournalPreparing=false}
+ }catch(error){scanUploadProblem('Scan cannot start safely: '+(error?.message||error)+'. Free device storage or reduce the batch. No photos were discarded.');return}
+ finally{scanJournalPreparing=false;updateScanProgressVisibility()}
  if(source!=='ZIP'&&batchQueue.length&&session?.user?.id===owner)void runBatch();
 }
 async function batchZipFiles(file){
@@ -2655,21 +2716,22 @@ async function batchZipFiles(file){
  if(!session?.user)return batchOutput('Sign in first.');
  const uploader=session.user.id;
  if(batchActive||batchSaving||autoCommitTask||batchZipLoading||batchExcelLoading)return;
- if(file.size>BATCH_MAX_ZIP)return batchOutput('ZIP is over 2 GB. Split into smaller archives. Large ZIP files require sufficient browser memory.');
- if(!window.JSZip)return batchOutput('ZIP reader did not load. Check your internet connection and reload the app.');
+ if(file.size>BATCH_MAX_ZIP)return scanUploadProblem('ZIP is over 2 GB. Split into smaller archives. Large ZIP files require sufficient browser memory.');
+ if(!window.JSZip)return scanUploadProblem('ZIP reader did not load. Check your internet connection and reload the app.');
+ const notice=$('scanUploadNotice');if(notice)notice.hidden=true;
  batchZipLoading=true;let zipPrepared=false;batchQueue=[];batchOutput('Opening ZIP archive…');renderBatch();
  try{
   const zip=await JSZip.loadAsync(file,{checkCRC32:false}),entries=Object.values(zip.files).filter(x=>!x.dir&&batchImageName(x.name)&&!x.name.includes('__MACOSX/'));
-  if(!entries.length)return batchOutput('No supported image files found in ZIP.');
-  if(entries.length>BATCH_MAX_FILES)return batchOutput(`ZIP contains over ${BATCH_MAX_FILES} photos. Split it into smaller ZIPs.`);
+  if(!entries.length)return scanUploadProblem('No supported image files found in ZIP.');
+  if(entries.length>BATCH_MAX_FILES)return scanUploadProblem(`ZIP contains over ${BATCH_MAX_FILES} photos. Split it into smaller ZIPs.`);
   const sizes=entries.map(x=>Number(x._data?.uncompressedSize)||0);
-  if(sizes.some(n=>n>BATCH_MAX_IMAGE)||sizes.reduce((a,b)=>a+b,0)>BATCH_MAX_TOTAL)return batchOutput('ZIP contains an image over 60 MB or more than 4 GB unpacked.');
+  if(sizes.some(n=>n>BATCH_MAX_IMAGE)||sizes.reduce((a,b)=>a+b,0)>BATCH_MAX_TOTAL)return scanUploadProblem('ZIP contains an image over 60 MB or more than 4 GB unpacked.');
   // Keep entries lazy: streaming scan will decompress the first few images,
   // then continue decompressing while those covers are being recognized.
   const rows=entries.map(x=>({zipEntry:x,path:x.name.replace(/\\/g,'/'),size:Number(x._data?.uncompressedSize)||0}));
-  if(session?.user?.id!==uploader)return batchOutput('Account changed. ZIP import cancelled.');
+  if(session?.user?.id!==uploader)return scanUploadProblem('Account changed. ZIP import cancelled.');
   await setBatchQueue(rows,'ZIP',file);zipPrepared=!!batchQueue.length;
- }catch(err){batchOutput('Could not open ZIP: '+String(err?.message||err))}
+ }catch(err){scanUploadProblem('Could not open ZIP: '+String(err?.message||err))}
  finally{batchZipLoading=false;renderBatch();if(zipPrepared&&!batchActive&&!batchSaving)void runBatch()}
 }
 function batchMime(path){const ext=String(path).split('.').pop().toLowerCase();return ({png:'image/png',webp:'image/webp',gif:'image/gif',bmp:'image/bmp',tif:'image/tiff',tiff:'image/tiff',avif:'image/avif',heic:'image/heic',heif:'image/heif'})[ext]||'image/jpeg'}
@@ -3126,7 +3188,7 @@ async function runBatch(){
  try{
   if(!scanUploadGuard||!scanStream)throw Error('The scanner did not load. Reload the page and try again.');
   if($('batchUseOCR').checked)void warmupOCR();
-  batchOutput(previouslyDone?`Resuming scan: ${previouslyDone} of ${totalScanPhotos} covers already confirmed. Checking ${originalQueue.length} remaining.`:`Preparing the first book covers and scanning as the rest are checked… 0 of ${totalScanPhotos} scanned.`);
+  batchOutput(previouslyDone?'Resuming interrupted scan. Checking unfinished covers…':'Preparing and verifying book covers…');
   const prepare=async input=>{
    if(batchStopRequested)throw Error('Scan cancelled.');
    // ZIP entries are decompressed only when their chunk reaches the scanner,
@@ -3144,7 +3206,7 @@ async function runBatch(){
    const result=await scanUploadGuard.prepare(ready,knownPhotos,part=>{
     prepared=prior+part;
     progress();
-    if(part===1||part===ready.length||part%4===0)batchOutput(`Preparing photos ${prepared} of ${originalQueue.length} while scanning ${done}…`);
+    if(part===1||part===ready.length||part%4===0)batchOutput('Preparing photos and recognizing books…');
    },{concurrency:window.matchMedia?.('(max-width: 800px)')?.matches?2:3});
    for(const item of result.accepted)knownPhotos.add(item.sourceSignature);
    return result;
@@ -3185,7 +3247,7 @@ async function runBatch(){
    }
    refreshScanOutcome();
    done++;progress();
-   batchOutput(`Scanning while photos are prepared: ${done} scanned · ${skippedPhotos} duplicates skipped · ${checked} of ${originalQueue.length} checked`);
+   batchOutput('Recognizing covers and checking book details…');
    const now=Date.now();if(done===1||done%4===0||now-lastRender>1600){lastRender=now;renderBatch();await new Promise(requestAnimationFrame)}
   };
   const streamResult=await scanStream.run({items:originalQueue,
@@ -3216,7 +3278,7 @@ async function runBatch(){
     recovered+=claimed.recovered||0;
     claimedUploads.push(...claimed.accepted);
     progress();
-    batchOutput(`Scanning while photos are prepared: ${done} scanned · ${skippedPhotos} duplicates skipped · ${checked} of ${originalQueue.length} checked`);
+    batchOutput('Recognizing covers and checking book details…');
    }
   });
   if(navigator.onLine===false)throw Error('Internet connection lost. Unfinished books will resume as soon as you reconnect.');
@@ -3241,12 +3303,12 @@ async function runBatch(){
     reasons.inReview?`${reasons.inReview} already in Review`:null,
     reasons.inProgress?`${reasons.inProgress} reserved by another scan`:null,
     reasons.local?`${reasons.local} duplicates in this selection`:null].filter(Boolean);
-   batchOutput(`No new photos to scan (${checked} checked). ${details.join(' · ')||'These photos were previously recorded'}. Interrupted scans can be retried after the recovery interval.`);
+   batchOutput('No new covers to scan. '+(details.length?'The photos were already processed or duplicated.':'These photos were previously recorded.')+' Interrupted scans can resume automatically.');
   }else if(batchStopRequested){
-   retryUnresolved=true;batchOutput(`Stopped after ${done} scanned photos. Processed covers are kept in Review; reselect unfinished photos to resume safely.`);
+   retryUnresolved=true;batchOutput('Scan stopped. Confirmed work is preserved; unfinished photos can be resumed safely.');
   }else{
    $('batchProgress').value=scanJobId?990:1000;window.LibraryProgressUI?.refresh();
-   batchOutput(`Processed ${done} photos. ${autoScanSession.saved} saved to Inventory · ${autoScanSession.review} sent to Review · ${skippedPhotos} skipped.`);
+   batchOutput('Scanning complete. Finalizing the result summary…');
   }
  }catch(error){
   retryUnresolved=true;
@@ -3288,7 +3350,7 @@ async function runBatch(){
   refreshScanOutcome();renderBatch();
   await completeScanJournal(uploader).catch(error=>console.warn('Scan history finalization:',error));
   if(scanJobId&&!batchStopRequested)scheduleScanReconnect();
-  if(!scanJobId&&!retryUnresolved&&!batchStopRequested&&reviewCloudStatus!=='error')batchOutput(`Completed: ${autoScanSession.saved} saved to Inventory · ${autoScanSession.review} sent to Review · ${autoScanSession.skipped} skipped.`);
+  if(!scanJobId&&!retryUnresolved&&!batchStopRequested&&reviewCloudStatus!=='error')batchOutput('Completed: all outcomes confirmed. See the detailed scan history below.');
  }
 
 }
@@ -3593,7 +3655,7 @@ $("batchZip").onchange=e=>{const f=e.target.files?.[0];batchZipFiles(f);e.target
 $("batchPhotos").onchange=e=>{const f=Array.from(e.target.files||[]);void setBatchQueue(f.map(file=>({file,path:file.name,size:file.size})),'photos');e.target.value=''};
 $('scanResumeNow').onclick=()=>{if(navigator.onLine===false){scanRecoveryNotice('You are offline. Scanning will resume when your connection returns.',true);return}void restoreResumableScan(true)};
 window.addEventListener('online',()=>{if(session?.user){if(batchActive)scheduleScanReconnect();else void restoreResumableScan(true)}});
-window.addEventListener('offline',()=>{if(batchActive)batchOutput('Connection lost. Secured covers and progress are preserved. Reconnect to continue.');else scanRecoveryNotice('Offline — your unfinished photos are secured on this device.',true)});
+window.addEventListener('offline',()=>{if(!scanJobId&&!scanResumeJob&&!batchQueue.length)return;if(batchActive&&scanJobId)batchOutput('Connection lost. Secured covers and progress are preserved. Reconnect to continue.');else scanRecoveryNotice('Offline — your unfinished photos are secured on this device.',true)});
 $("batchStart").onclick=runBatch;
 $("batchStop").onclick=()=>{batchStopRequested=true;batchOutput('Stopping after the current photo…')};
 $("batchClear").onclick=clearBatch;

@@ -1,4 +1,4 @@
-/* v5.18 progress and upload microcopy. No artificial countdown or percentages. */
+/* v5.53 live progress is percentage-only. No artificial countdown. */
 (()=>{
   const init=()=>{
     const progress=document.getElementById('batchProgress');
@@ -7,7 +7,6 @@
     if(!progress||!container||!status)return;
     const stage=document.getElementById('batchProgressStage');
     const percent=document.getElementById('batchProgressPercent');
-    const count=document.getElementById('batchProgressCount');
     const hint=document.getElementById('batchProgressHint');
     let lastState='idle';
     const refresh=()=>{
@@ -35,9 +34,10 @@
       container.dataset.progressState=state;
       stage.textContent=state==='error'?'Needs attention':state==='done'?'Completed':preparingZip?'Preparing ZIP':saving?'Saving books':scanMode&&scanScanned?'Scanning books':scanMode&&scanChecked?'Recognizing covers':scanMode&&scanPrepared?'Preparing images':checking?'Checking duplicates':state==='working'?'Scanning books':'Ready to scan';
       percent.textContent=hasRealCount?`${pct>=10?Math.round(pct):Number(pct.toFixed(1))}%`:(preparingZip?'Preparing…':'0%');
-      count.textContent=scanMode&&scanTotal?`${scanScanned + scanSkipped} / ${scanTotal} photos`:hasRealCount?`${value} / ${max} ${saving?'books':'photos'}`:'';
-      hint.textContent=state==='error'?'Some photos need attention. See the message above.':state==='done'?'Inventory and Review have been updated.':preparingZip?'Opening ZIP and checking images.':saving?'Finalizing cloud saves. Keep this page open.':scanMode?`${scanPrepared} prepared · ${scanChecked} checked · ${scanScanned} scanned.`:checking?'Checking previously uploaded photos.':state==='working'?'Verified books save to Inventory automatically.':'Select photos to begin.';
-      progress.setAttribute('aria-label',`${stage.textContent}: ${Number(pct.toFixed(1))}%${scanMode?`, ${scanScanned} scanned and ${scanSkipped} skipped of ${scanTotal} photos`:max?`, ${value} of ${max} photos`:''}`);
+      // Scanning uses percentages only; exact counts remain in the completed history.
+
+      hint.textContent=state==='error'?'Some photos need attention. See the message above.':state==='done'?'Inventory and Review have been updated.':preparingZip?'Opening ZIP and checking images.':saving?'Finalizing cloud saves. Keep this page open.':scanMode?'Verified books save automatically as recognition finishes.':checking?'Checking previously uploaded photos.':state==='working'?'Verified books save to Inventory automatically.':'Select photos to begin.';
+      progress.setAttribute('aria-label',`${stage.textContent}: ${Number(pct.toFixed(1))}% complete`);
     };
     // A burst of status updates can arrive in a single frame during bulk scanning.
     // Paint progress once per frame instead of relaying out the card repeatedly.

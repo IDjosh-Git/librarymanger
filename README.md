@@ -1,3 +1,11 @@
+# Latest release: Library Manager v5.52 — Scan progress only when scanning
+
+The Scan page no longer shows an idle progress card or `0 / 100 photos` when no batch is running. Progress appears only during scan preparation, active processing, ZIP import, or genuine unfinished-scan recovery. An idle network outage no longer invents a recovery banner. Invalid uploads still show a visible warning. The recent completed-scan history is preserved and the offline app-shell cache is bumped to v5.52.
+
+**Validation:** 189 automated tests passed; responsive Chromium checks at 320–1440px confirmed the idle/active/history states with no horizontal overflow. See `LIBRARY_IDLE_SCAN_PROGRESS_V552_20261113.md`. **Deployment:** The live Vercel application is unchanged until this ZIP is deployed.
+
+---
+
 # Latest release: Library Manager v5.51 — Scan recovery + parallel Review approvals
 
 A new **persistent scan journal** records selected photo files and verified progress in the browser before processing begins. Interrupted scans resume after reconnect or same-device refresh without resetting to 0%; original copy IDs are retained and cloud duplicate checks protect Inventory. The app caches its public shell for best-effort offline refresh. **Review cards approve independently**, with per-card saving/retry feedback and stable record-ID actions. The Scan page shows the **last completed batch** for **six hours** or until another scan starts.
@@ -360,3 +368,8 @@ The Book of the Week feature now tries AI before other selection methods and can
 - Review thumbnail compression is skipped for verified Inventory saves, but retained for uncertain/failed saves.
 - Preserves existing book recognition and automatic saving logic. Run `npm test` and `python tests/browser_scan_progress_v549.py` to verify.
 - Full changes and limitations: `LIBRARY_SCAN_PERFORMANCE_STABLE_PROGRESS_V549_20261113.md`.
+
+
+## Release v5.53 — Scan percentage and completed history
+
+The live scan meter shows only a percentage, while the completed scan history provides detailed counts for Inventory, Review, skipped, and needs-attention results, plus an outcome breakdown. The six-hour retention, same-device offline recovery, and existing Review workflow remain in place. See `LIBRARY_SCAN_PERCENT_HISTORY_V553_20261113.md`.

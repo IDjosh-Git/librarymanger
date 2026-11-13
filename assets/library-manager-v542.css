@@ -4694,3 +4694,78 @@ html[data-theme=dark] #review .review-save-feedback[data-status=error]:not(:empt
 :root[data-theme=dark] #review .scan-title-review-card .review-save-feedback[data-status=success]{color:#9be9cf!important}
 :root[data-theme=dark] #review .scan-title-review-card .review-save-feedback[data-status=error]{color:#ffb5aa!important}
 @media(max-width:650px){#shelfScan .scan-recent-counters{grid-template-columns:repeat(2,minmax(0,1fr))}#shelfScan .scan-recovery-bar{padding:15px;align-items:stretch;flex-direction:column}#shelfScan #scanResumeNow{width:100%}}
+
+/* v5.52: the progress card is for a real batch, not an idle 0 / 100 placeholder.
+   Respect [hidden] even where an older layout forces display:grid. */
+#shelfScan #scanLiveProgressPanel[hidden],
+#shelfScan #scanUploadNotice[hidden]{display:none!important}
+#shelfScan .scan-upload-notice{
+ margin:10px 0 2px;padding:12px 15px;border-radius:13px;
+ border:1px solid rgba(199,130,48,.35);
+ background:var(--surface2);color:var(--ink);
+ font-size:12px;line-height:1.55;font-weight:600;
+}
+:root[data-theme="dark"] #shelfScan .scan-upload-notice{
+ border-color:rgba(241,181,94,.38);
+}
+
+
+/* v5.53 — percentage-only scan progress + detailed six-hour completed-scan report. */
+#shelfScan .premium-progress-description{grid-template-columns:minmax(0,1fr)!important}
+#shelfScan #batchProgressPercent{font-size:clamp(23px,2.2vw,29px)!important;line-height:1!important;letter-spacing:-.045em!important}
+#shelfScan .premium-progress-header{align-items:center!important}
+#shelfScan .scan-recent-summary{padding:clamp(18px,2.6vw,28px)!important;border-radius:23px!important}
+#shelfScan .scan-recent-heading{margin-bottom:16px!important}
+#shelfScan .scan-recent-overview{display:flex;gap:17px;align-items:center;min-width:0;margin-bottom:17px;padding:15px 17px;border:1px solid var(--line);border-radius:16px;background:var(--surface2)}
+#shelfScan .scan-recent-total{display:grid;gap:2px;flex:0 0 172px;padding-right:16px;border-right:1px solid var(--line);min-width:0}
+#shelfScan .scan-recent-total>span{font-size:11px;font-weight:750;color:var(--muted)}
+#shelfScan .scan-recent-total strong{font-size:clamp(27px,3vw,35px);line-height:1.15;letter-spacing:-.05em;font-weight:860;color:var(--ink);font-variant-numeric:tabular-nums}
+#shelfScan .scan-recent-total small{font-size:10px;color:var(--muted)}
+#shelfScan .scan-recent-overview-copy{display:grid;gap:4px;min-width:0}
+#shelfScan .scan-recent-overview-copy strong{font-size:13px;color:var(--ink);font-weight:820}
+#shelfScan .scan-recent-overview-copy span{font-size:11px;line-height:1.6;color:var(--muted);max-width:58ch}
+#shelfScan .scan-recent-counters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+#shelfScan .scan-recent-metric{min-width:0;display:grid;gap:8px;padding:15px 14px;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 3px 13px rgba(14,53,70,.025)}
+#shelfScan .scan-recent-metric-label{display:inline-flex;align-items:center;gap:7px;font-size:11px;line-height:1.4;font-weight:760;color:var(--ink)}
+#shelfScan .scan-recent-metric-dot{display:inline-block;flex:0 0 8px;width:8px;height:8px;border-radius:50%;background:#158f84}
+#shelfScan .scan-recent-metric[data-kind="review"] .scan-recent-metric-dot{background:#3678aa}
+#shelfScan .scan-recent-metric[data-kind="skipped"] .scan-recent-metric-dot{background:#9a9dab}
+#shelfScan .scan-recent-metric[data-kind="failed"] .scan-recent-metric-dot{background:#cc8b4e}
+#shelfScan .scan-recent-metric strong{font-size:clamp(24px,2.9vw,34px);font-weight:880;letter-spacing:-.04em;line-height:1.05;color:var(--ink);font-variant-numeric:tabular-nums}
+#shelfScan .scan-recent-metric[data-kind="inventory"] strong{color:#0d7973}
+#shelfScan .scan-recent-metric[data-kind="review"] strong{color:#266794}
+#shelfScan .scan-recent-metric small{font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
+#shelfScan .scan-recent-breakdown-head{display:flex;align-items:baseline;justify-content:space-between;gap:9px;margin:21px 0 9px}
+#shelfScan .scan-recent-breakdown-head strong{font-size:12px;color:var(--ink);font-weight:830}
+#shelfScan .scan-recent-breakdown-head span{font-size:10px;color:var(--muted)}
+#shelfScan .scan-recent-breakdown{display:flex;width:100%;height:11px;overflow:hidden;border-radius:999px;background:var(--line)}
+#shelfScan .scan-recent-breakdown>span{height:100%;width:0;min-width:0;flex-shrink:0;transition:width .25s ease-out}
+#shelfScan .scan-recent-breakdown>span[data-kind="inventory"]{background:#11877f}
+#shelfScan .scan-recent-breakdown>span[data-kind="review"]{background:#3678aa}
+#shelfScan .scan-recent-breakdown>span[data-kind="skipped"]{background:#9a9dab}
+#shelfScan .scan-recent-breakdown>span[data-kind="failed"]{background:#cc8b4e}
+#shelfScan .scan-recent-details{font-size:11px;line-height:1.65;color:var(--muted);margin:10px 0 0}
+#shelfScan .scan-recent-retention{display:block;font-size:10px;color:var(--muted);line-height:1.5;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+:root[data-theme="dark"] #shelfScan .scan-recent-metric[data-kind="inventory"] strong{color:#8ae0d3}
+:root[data-theme="dark"] #shelfScan .scan-recent-metric[data-kind="review"] strong{color:#98c8f0}
+:root[data-theme="dark"] #shelfScan .scan-recent-total{border-right-color:var(--line)}
+@media(max-width:940px){#shelfScan .scan-recent-counters{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:540px){
+ #shelfScan .scan-recent-summary{padding:16px!important}
+ #shelfScan .scan-recent-overview{padding:12px;gap:12px}
+ #shelfScan .scan-recent-total{flex:0 0 103px;padding-right:10px}
+ #shelfScan .scan-recent-total strong{font-size:27px}
+ #shelfScan .scan-recent-overview-copy span{font-size:10px;line-height:1.45}
+ #shelfScan .scan-recent-metric{padding:13px 11px;gap:7px}
+ #shelfScan .scan-recent-counters{gap:9px}
+ #shelfScan .scan-recent-breakdown-head{margin-top:16px}
+ #shelfScan .scan-recent-complete{font-size:10px}
+ #shelfScan .premium-progress-description{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:1fr!important;height:53px!important}
+ #shelfScan .premium-progress-percent{font-size:25px!important}
+}
+@media(max-width:360px){#shelfScan .scan-recent-overview{align-items:start;flex-direction:column}#shelfScan .scan-recent-total{border:0;flex:auto;padding:0}#shelfScan .scan-recent-metric-label{font-size:10px}}
+@media(prefers-reduced-motion:reduce){#shelfScan .scan-recent-breakdown>span{transition:none}}
+
+/* Match the unified navy/teal palette in the scan report heading. */
+#shelfScan .scan-recent-heading .eyebrow{color:#0b7978!important;letter-spacing:.12em!important}
+:root[data-theme="dark"] #shelfScan .scan-recent-heading .eyebrow{color:#8bdfdf!important}

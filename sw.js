@@ -1,16 +1,16 @@
-/* Library Manager 5.51 - offline-tolerant app shell.
+/* Library Manager 5.53 - offline-tolerant app shell.
    Only public app files and pinned library scripts are cached. Account data,
    uploaded book images, Supabase/auth requests and API responses are NEVER cached.
    Those remain in Supabase or the authenticated user's IndexedDB scan journal. */
 'use strict';
-const VERSION='lm-app-shell-v551',SHELL='lm-app-shell-v551',LIBRARIES='lm-libraries-v551';
+const VERSION='lm-app-shell-v553',SHELL='lm-app-shell-v553',LIBRARIES='lm-libraries-v553';
 const PAGES=['/','/index.html','/book-of-the-week.html','/reading-guide.html'];
 const LOCAL=[
- '/assets/library-manager-v542.css?v=5.51.0','/assets/reading-v542.css','/assets/book-of-week-v542.css',
+ '/assets/library-manager-v542.css?v=5.53.0','/assets/reading-v542.css','/assets/book-of-week-v542.css',
  '/assets/scan-resume.js?v=5.51.0','/assets/scan-upload-dedup.js?v=5.51.0','/assets/scan-stream.js?v=5.32.0',
  '/assets/scan-progress.js?v=5.32.0','/assets/scan-extraction.js?v=5.36.0',
  '/assets/scan-auto-route.js?v=5.37.0','/assets/book-identifiers.js?v=5.36.0',
- '/assets/premium-progress-upload.js?v=5.49.0','/assets/library-shelves-fallback.jpg',
+ '/assets/premium-progress-upload.js?v=5.53.0','/assets/library-shelves-fallback.jpg',
  '/assets/library-reading-fallback.jpg','/assets/book-logo.svg','/assets/icons.svg'
 ];
 const EXTERNAL=[

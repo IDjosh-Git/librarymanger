@@ -40,13 +40,14 @@ with sync_playwright() as p:
     document.querySelector('#batchProgress').dataset.scanChecked='116';
     document.querySelector('#batchProgress').dataset.scanScanned='23';
     document.querySelector('#batchProgress').dataset.scanSkipped='1';
-    document.querySelector('#batchProgressCount').textContent='24 / 117 photos';
     document.querySelector('#batchProgressHint').textContent=message.repeat(2);
    }''',{'message':message,'stage':stage,'percent':percent,'val':val})
    page.wait_for_timeout(35)
    height=card.bounding_box()['height'];heights.append(round(height,2))
    if width in (390,1440) and state=='working':card.screenshot(path=str(root/f'LibraryManager_v549_Scan_Progress_{width}.png'))
    assert abs(height-expected)<=1.5,(width,state,height,expected)
+   assert page.locator('#batchProgressCount').count()==0, 'Raw photo counters should not appear in scanning progress'
+   assert '%' in page.locator('#batchProgressPercent').inner_text(), 'Progress should be shown as a percentage'
   overflow=page.evaluate('document.documentElement.scrollWidth')
   assert overflow<=width+1,(width,overflow)
   assert page.locator('#batchStatus').is_visible()
