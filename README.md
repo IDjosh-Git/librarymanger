@@ -1,3 +1,11 @@
+## Library Manager v5.41 — Recognition settings card layout (13 November 2026)
+
+The **Account settings → Book recognition settings** panel now has two generous, accessible cards, named simply **AI** and **OCR**. Each card has at least 100px of height (106px outside small-screen breakpoint), balanced typography, correctly positioned on/off switches, and independent touch/keyboard toggle behaviour. This is a **visual/layout-only change**: API priority, recognition behaviour, cloud saving, Review and Inventory workflows and the sidebar sizing from v5.40 are unchanged.
+
+**Verification:** 128 existing Node tests pass. Chromium checks at 320, 360, 390, 768, 1024 and 1440px confirm card heights, no horizontal overflow, accessible keyboard operation, and independent switches. No database or environment change is required. This packaged source is not yet deployed to production.
+
+---
+
 ## Library Manager v5.37 — Full post-fix regression audit and safety hardening (12 November 2026)
 
 This release is based on v5.36 and performs a fresh regression review of the Scan, Inventory, Review, Book API, AI/OCR settings and duplicate-upload workflows. The previous suite passes, with new tests added for source identity and latency safety.
