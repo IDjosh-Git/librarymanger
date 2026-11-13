@@ -1,3 +1,39 @@
+## Latest release: v5.46 (13 November 2026)
+
+Admin-only code generation in Administrators, distinct Lending titles with selected-title physical-copy availability, and consistent navy/teal appearance. See `LIBRARY_LENDING_ADMIN_THEME_V546_20261113.md`.
+
+# Library Manager v5.45 — Original User/Admin signup + resilient role verification (13 November 2026)
+
+**Current release: v5.45.** The registration screen again offers **User** (no access code) and **Admin** (private code required). Both start with server-assigned member permissions; an Admin code is verified by Supabase only after authentication. The sign-in role gate now uses a secure self-healing RPC instead of a `.single()` lookup that fails when no role row is visible. Existing administrators are never downgraded.
+
+- The upgrade `database/11_library_self_healing_role_resolution.sql` has already been installed in the connected Supabase project. The function permits authenticated users only and can repair a missing role as an ordinary member.
+- The same account-creation, confirmation, and admin invitation flows remain supported. The sign-in gate offers **Retry permissions** on a transient failure.
+- Validation: **146 passing Node tests**, responsive User/Admin registration checks at six widths, no observed horizontal overflow, and JavaScript syntax verification.
+- **Deployment:** the backend role resolver is already live; publish the ZIP to the existing `librarymanger` Vercel project to activate the frontend fix.
+
+See `LIBRARY_ROLE_LOGIN_FIX_V545_20261113.md` for the audit and security details.
+
+---
+
+# Library Manager v5.44 — Automatic Library Member registration (13 November 2026)
+
+**Current source release: v5.44.** All public registrations now create a **Library Member** account; the former User/Admin role chooser and administrator signup-code field are removed from the Create Account screen. Supabase's already-enabled `auth.users` trigger assigns the internal `library_member_roles.role = 'user'` upon new account creation. The UI consistently identifies this role as **Library Member** without changing the underlying database role values used by RLS and pages.
+
+- Existing administrators are preserved. Administrator invitation and promotion still require the existing server-validated code **after sign-in and email confirmation**; untrusted signup fields and metadata never grant admin privileges.
+- The role trigger was verified active on the connected Supabase project. One existing, confirmed account that attempted repeat signup without a member role was assigned the regular role after checking the account. Post-correction, membership counts were **4 regular members** and **5 administrators**. No existing administrator was downgraded.
+- No new database migration is necessary for this project; the signup trigger already exists. Account creation and confirmation email delivery are separate concerns and custom SMTP remains relevant.
+- The Supabase Auth project is shared with other applications, and its existing signup trigger is global. This release does not alter that established trigger to avoid breaking the currently deployed application; future app-specific scoping should be planned separately if desired.
+- Validation: **139 Node tests passed**, including new default-role and post-sign-in admin invitation tests; the main inline application script passes syntax checking. Offline Chromium signup and confirmation layouts passed at 320, 390, 768, 1024 and 1440 px without horizontal overflow.
+- **Deployment:** Upload the ZIP's root files to the existing Vercel `librarymanger` project. The live database member-role correction is already applied; the new registration screen requires source deployment.
+
+See `LIBRARY_MEMBER_ONBOARDING_V544_20261113.md` for checks and limitations.
+
+---
+
+# Library Manager v5.43 — Authentication Email Guidance (13 November 2026)
+
+**Current source release:** v5.43. See `LIBRARY_AUTH_EMAIL_DELIVERY_V543_20261113.md` for the registration-email diagnosis, frontend corrections, and production SMTP setup steps.
+
 # Library Manager v5.42 — Unified Stylesheet & Premium Sidebar (13 November 2026)
 
 **Current source release:** v5.42.

@@ -58,7 +58,7 @@
 <script defer src="assets/book-guide-format.js"></script>
 <script defer src="assets/book-guide.js?v=5.29.0"></script>
 <script defer src="assets/public-contact.js"></script>
-  <link rel="stylesheet" href="assets/library-manager-v542.css?v=5.42.0">
+  <link rel="stylesheet" href="assets/library-manager-v542.css?v=5.47.0">
 </head>
 <body data-account="out">
 <a href="#mainContent" class="skip-link">Skip to main content</a>
@@ -118,10 +118,10 @@
     </div>
     <button id="authSubmit" type="submit">Sign In</button>
   </form>
-  <div class="auth-links"><button type="button" id="forgotPassword" class="textbtn">Forgot password?</button><button type="button" id="resendConfirmation" class="textbtn" hidden>Resend confirmation email</button></div>
+  <div class="auth-links"><button type="button" id="forgotPassword" class="textbtn">Forgot password?</button><button type="button" id="resendConfirmation" class="textbtn" hidden>Resend confirmation email</button></div><p id="authEmailHelp" class="auth-hint auth-email-help" hidden>Already registered? Use Sign In or Forgot password. Confirmation emails are only for accounts awaiting verification.</p>
 </div>
 <div id="recoveryPanel" hidden class="recovery-panel"><strong>Set a new password</strong><p class="auth-hint">Enter a new password for your account.</p><input id="newPassword" type="password" autocomplete="new-password" placeholder="New password (at least 8 characters)"><button id="updatePassword" type="button" class="green" style="width:100%;margin-top:8px">Update Password</button></div>
-<div id="roleGate" class="role-gate" role="status" aria-live="polite" hidden><p id="roleGateText">Checking account permissions…</p><button id="roleGateSignOut" type="button" class="light">Sign out / change account</button></div>
+<div id="roleGate" class="role-gate" role="status" aria-live="polite" hidden><p id="roleGateText">Checking account permissions…</p><button id="roleGateRetry" type="button" class="green">Retry permissions</button> <button id="roleGateSignOut" type="button" class="light">Sign out / change account</button></div>
 <div id="loggedIn" hidden>
 <div class="workspace-account" aria-label="Current account">
   <span class="workspace-account-avatar" aria-hidden="true"><svg class="app-icon"><use href="assets/icons.svg#user"></use></svg></span>
@@ -179,21 +179,18 @@
   </div>
 </nav>
 <details class="account-tools"><summary><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span class="account-tools-label">Account settings</span></summary><div class="account-tools-body"><details id="recognitionSettings" class="recognition-account-settings"><summary><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#settings"></use></svg> Book recognition settings</summary><p>Book catalogue lookup always runs first when a printed identifier is available. These preferences apply automatically to Scan and Review on this device.</p><div class="scan-recognition-grid"><label class="scan-recognition-card" for="batchUseAI"><span class="scan-recognition-icon">✦</span><span class="scan-recognition-copy"><strong>AI</strong><small>Fills details when book catalogues cannot.</small></span><input id="batchUseAI" type="checkbox" role="switch" checked aria-label="Enable AI book recognition"><span class="scan-recognition-switch"></span></label><label class="scan-recognition-card" for="batchUseOCR"><span class="scan-recognition-icon">▤</span><span class="scan-recognition-copy"><strong>OCR</strong><small>Reads text from images to assist matching.</small></span><input id="batchUseOCR" type="checkbox" role="switch" checked aria-label="Enable OCR text recognition"><span class="scan-recognition-switch"></span></label></div><p id="recognitionSettingsStatus" role="status" aria-live="polite">Settings apply automatically. Save buttons are not required.</p></details><div class="row"><button id="reload" class="green">Reload Database</button><button id="signOut" class="light">Sign Out</button></div>
-<details id="adminInvitePanel" class="admin-invite-panel" hidden>
-  <summary><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span>Generate access code</span></summary>
-  <div class="admin-invite-panel-body">
-    <p class="admin-panel-intro">Create a private code for a new administrator. The previous code will stop working.</p><button id="createAdminInvite" type="button" class="green"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#plus"></use></svg> Generate new code</button>
-    <div id="createdAdminInvite" hidden class="admin-invite-result" role="status"><strong>Code generated</strong><p id="adminInviteDeliveryStatus">Copy now. This code appears only once.</p><code id="adminAccessCodeResult" class="admin-access-result"></code><button id="copyAdminAccessCode" class="light" type="button"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#copy"></use></svg> Copy code</button></div>
-  </div>
-</details>
-<details id="activateAdminPanel" class="admin-invite-panel" hidden>
+
+</div></details>
+<div id="memberAccountFooter" class="member-account-footer" hidden aria-label="Library Member session">
+  <button id="memberSignOut" type="button" class="member-signout-button"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg> Sign Out</button>
+  <details id="activateAdminPanel" class="admin-invite-panel" hidden>
   <summary><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg><span>Activate admin access</span></summary>
   <div class="admin-invite-panel-body"><p>Enter your invitation code to activate administrator access.</p>
     <label for="existingAdminInviteCode">Administrator access code</label><input id="existingAdminInviteCode" type="password" autocomplete="off" spellcheck="false" placeholder="Enter private code">
     <button id="activateAdminInvite" type="button" class="light">Activate access</button>
   </div>
 </details>
-</div></details>
+</div>
 </div>
 <div id="status" class="status">Ready.</div>
 
@@ -480,9 +477,13 @@
  <div class="full book-picker" aria-label="Find an available book to lend">
   <label for="lendBookSearch">Search available books</label>
   <div class="search-wrap"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input id="lendBookSearch" type="search" placeholder="Search by title, author, Book ID, ISBN or shelf…" autocomplete="off" aria-controls="lendBookSelect"></div>
-  <label for="lendBookSelect">Choose a book from available inventory</label>
-  <select id="lendBookSelect" aria-describedby="lendBookCount"><option value="">Loading available books…</option></select>
+  <label for="lendBookSelect">Choose a book title (each title listed once)</label>
+  <select id="lendBookSelect" aria-describedby="lendBookCount lendTitleAvailabilityName"><option value="">Loading available books…</option></select>
   <p class="picker-count" id="lendBookCount" role="status" aria-live="polite">Available books will appear here after sign-in.</p>
+  <div class="lend-availability-card" id="lendTitleAvailability" role="status" aria-live="polite" aria-atomic="true">
+   <div class="lend-availability-heading"><span class="lend-availability-icon" aria-hidden="true">▤</span><span><strong>Selected title availability</strong><small id="lendTitleAvailabilityName">Select a title to see its live loaded copy count</small></span></div>
+   <div class="lend-availability-grid"><div class="lend-availability-stat is-available"><span>Available now</span><strong id="lendTitleAvailable">0</strong></div><div class="lend-availability-stat"><span>On loan</span><strong id="lendTitleBorrowed">0</strong></div><div class="lend-availability-stat"><span>Total copies</span><strong id="lendTitleTotal">0</strong></div></div>
+  </div>
   <div class="picker-actions"><button type="button" id="askLendBook" class="light smallbtn">✦ Ask about selected book</button><button type="button" id="clearLendBook" class="light smallbtn">Clear chosen book</button><button type="button" id="refreshLendBooks" class="light smallbtn">Refresh available copies</button></div>
  </div>
  <div class="full"><label for="lendBookDisplay">Selected book</label><input id="lendBookDisplay" readonly placeholder="Choose or scan a book above"><p id="lendCopyDetail" class="copy-detail" role="status" aria-live="polite">Select a copy to view its Book ID and shelf below.</p></div>
@@ -552,10 +553,20 @@
     <div class="admin-directory-hero-copy"><span class="eyebrow">ACCESS CONTROL · VERIFIED ADMIN ACCOUNTS</span><h2 id="adminDirectoryTitle">Manage your administrators.</h2><p>View every email-confirmed account with approved Administrator privileges, including new administrators who have not opened the workspace yet. Revoke access securely when it is no longer needed.</p><div class="admin-directory-hero-actions"><span class="admin-directory-secure"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg> Server-verified access</span><button type="button" id="adminDirectoryRefresh" class="admin-directory-refresh"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#refresh"></use></svg>Refresh directory</button></div></div>
     <div class="admin-directory-hero-number" aria-label="Registered administrators"><small>VERIFIED ADMINS</small><strong id="adminDirectoryTotal">—</strong><span>Approved Admin accounts</span></div>
   </section>
+  <section class="admin-directory-access" aria-label="Administrator invitation codes">
+    <div class="admin-directory-access-intro"><span class="eyebrow">ADMINISTRATOR ONLY</span><h3>Administrator access codes</h3><p>Generate codes for trusted administrators here. Library Members cannot view or generate these codes.</p></div>
+<details id="adminInvitePanel" class="admin-invite-panel" hidden>
+  <summary><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span>Generate access code</span></summary>
+  <div class="admin-invite-panel-body">
+    <p class="admin-panel-intro">Create a private code for a new administrator. The previous code will stop working.</p><button id="createAdminInvite" type="button" class="green"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#plus"></use></svg> Generate new code</button>
+    <div id="createdAdminInvite" hidden class="admin-invite-result" role="status"><strong>Code generated</strong><p id="adminInviteDeliveryStatus">Copy now. This code appears only once.</p><code id="adminAccessCodeResult" class="admin-access-result"></code><button id="copyAdminAccessCode" class="light" type="button"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#copy"></use></svg> Copy code</button></div>
+  </div>
+</details>
+  </section>
   <section class="admin-directory-surface" aria-label="Administrator directory"><div class="admin-directory-heading"><div><span class="eyebrow">ACCESS DIRECTORY</span><h3>Verified administrator registrations</h3><p>Only confirmed accounts with a verified Admin role appear here. Selecting Admin without a valid access code does not grant privileges. Visit history is optional.</p></div><div class="admin-directory-search-wrap"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input id="adminDirectorySearch" type="search" placeholder="Find an administrator…" aria-label="Search administrators"></div></div>
     <p id="adminDirectoryStatus" class="admin-directory-status" role="status" aria-live="polite">Loading registered administrators…</p>
     <div class="admin-directory-table-scroll"><table class="admin-directory-table"><thead><tr><th scope="col">Administrator</th><th scope="col">Access</th><th scope="col">Registered</th><th scope="col">Last visit</th><th scope="col">Visits</th><th scope="col">Manage</th></tr></thead><tbody id="adminDirectoryList" aria-live="polite"></tbody></table></div>
-    <div class="admin-directory-footer"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg><p>Removing access changes the account to a regular library user. It does not erase the account, books, loans or audit history. Self-removal and last-admin removal are blocked.</p></div>
+    <div class="admin-directory-footer"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg><p>Removing access changes the account to a Library Member. It does not erase the account, books, loans or audit history. Self-removal and last-admin removal are blocked.</p></div>
   </section>
 </div>
 <!-- Daily library visit log: only self-checked-in visits become admin attendance records. -->
@@ -634,13 +645,14 @@
     <button type="button" data-mobile-tab="return"><svg class="app-icon"><use href="assets/icons.svg#arrow-down-left"></use></svg>Return a book</button>
   </div>
   <div class="mobile-sheet-section nav-admin-only"><p>QUICK TOOLS</p><div class="mobile-sheet-links"><button type="button" data-mobile-action="add"><svg class="app-icon"><use href="assets/icons.svg#plus"></use></svg>Add a book</button><button type="button" data-mobile-action="import"><svg class="app-icon"><use href="assets/icons.svg#folder"></use></svg>Import a shelf</button></div></div>
-  <div class="mobile-sheet-footer"><a class="mobile-contact-link" href="#publicContactArea">Contact library <svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg></a><a href="book-of-the-week.html"><span aria-hidden="true">✦</span> Book of the week <svg class="app-icon"><use href="assets/icons.svg#arrow-up-right"></use></svg></a><button type="button" id="mobileAccountJump"><svg class="app-icon"><use href="assets/icons.svg#user"></use></svg> Account settings</button></div>
+  <div class="mobile-sheet-footer"><a class="mobile-contact-link" href="#publicContactArea">Contact library <svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg></a><a href="book-of-the-week.html"><span aria-hidden="true">✦</span> Book of the week <svg class="app-icon"><use href="assets/icons.svg#arrow-up-right"></use></svg></a><button type="button" id="mobileAccountJump"><svg class="app-icon"><use href="assets/icons.svg#user"></use></svg> Account settings</button><button type="button" id="mobileMemberSignOut" hidden><svg class="app-icon"><use href="assets/icons.svg#user"></use></svg> Sign Out</button></div>
 </section>
-<div class="scroll-controls" aria-label="Page navigation"><button id="pageUp" type="button" title="Go to the top" aria-label="Go to the top"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#chevrons-up"></use></svg></button><button id="pageDown" type="button" title="Go to the bottom" aria-label="Go to the bottom"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#chevrons-down"></use></svg></button></div><div id="commandBackdrop" class="command-backdrop" hidden><section class="command-dialog" role="dialog" aria-modal="true" aria-labelledby="commandTitle"><div class="command-head"><div><span class="eyebrow">Workspace shortcuts</span><h2 id="commandTitle">Quick actions</h2></div><button type="button" class="command-close icon-btn" id="commandClose" aria-label="Close quick actions"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#x"></use></svg></button></div><label class="sr-only" for="commandSearch">Find an action</label><div class="search-wrap command-search"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input id="commandSearch" type="search" placeholder="Search actions…" autocomplete="off"></div><div class="command-items" id="commandList"><button type="button" data-command="dashboard" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg><span><strong>Overview</strong><small>View library statistics</small></span></button><button type="button" data-command="find" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><span><strong>Find a book</strong><small>Search the shared collection</small></span><kbd>/</kbd></button><button type="button" data-command="add" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#plus"></use></svg><span><strong>Add by ISBN</strong><small>Enter a barcode manually</small></span></button><button type="button" data-command="lend" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg><span><strong>Lend a book</strong><small>Record a borrower and due date</small></span></button><button type="button" data-command="return" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-down-left"></use></svg><span><strong>Process a return</strong><small>Close an active loan</small></span></button><button type="button" data-command="overdue" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#alert"></use></svg><span><strong>Overdue loans</strong><small>See books past their due date</small></span></button><button type="button" data-command="import" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg><span><strong>Import a shelf</strong><small>Upload photos, a folder or a ZIP</small></span></button><button type="button" data-command="export" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg><span><strong>Export inventory</strong><small>Download the Excel workbook</small></span></button><button type="button" data-command="signin" data-guest-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span><strong>Sign in</strong><small>Access the library workspace</small></span></button><button type="button" data-command="theme"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#sun"></use></svg><span><strong>Switch theme</strong><small>Light and dark appearance</small></span></button></div><p id="commandEmpty" class="empty" hidden>No matching actions.</p><div class="command-footer">Press <kbd>Ctrl</kbd> + <kbd>K</kbd> to open · <kbd>Esc</kbd> to close</div></section></div><div id="adminRemoveBackdrop" class="admin-remove-backdrop" hidden><section class="admin-remove-dialog" role="dialog" aria-modal="true" aria-labelledby="adminRemoveTitle" aria-describedby="adminRemoveHelp"><div class="admin-remove-dialog-icon" aria-hidden="true">!</div><h2 id="adminRemoveTitle">Remove administrator access?</h2><p id="adminRemoveHelp">This account will become a regular library user. Its books and activity will remain untouched.</p><strong id="adminRemoveTarget"></strong><label for="adminRemoveConfirm">Type <b>REMOVE</b> to confirm<input type="text" id="adminRemoveConfirm" autocomplete="off" placeholder="REMOVE" maxlength="6"></label><p id="adminRemoveError" class="admin-remove-error" role="alert" hidden></p><div class="admin-remove-actions"><button type="button" id="adminRemoveCancel" class="light">Keep administrator</button><button type="button" id="adminRemoveSubmit" class="admin-remove-danger" disabled>Remove admin access</button></div></section></div><div id="toast" class="toast" role="status" aria-live="polite" hidden></div><div id="inventoryCopiesBackdrop" class="inventory-copies-backdrop" hidden><section class="inventory-copies-dialog" role="dialog" aria-modal="true" aria-labelledby="inventoryCopiesTitle" aria-describedby="inventoryCopiesSubtitle" tabindex="-1"><div class="inventory-copies-heading"><div><span class="eyebrow">Inventory · physical copies</span><h2 id="inventoryCopiesTitle">Book copies</h2><p id="inventoryCopiesSubtitle">Review and manage individual physical copies.</p></div><button type="button" class="light" id="closeInventoryCopies" aria-label="Close copies panel">Close</button></div><div id="inventoryCopiesList" class="inventory-copies-content"></div></section></div><div id="bookEditorBackdrop" class="book-editor-backdrop" hidden><section class="book-editor" role="dialog" aria-modal="true" aria-labelledby="bookEditorTitle"><div class="book-editor-head"><h2 id="bookEditorTitle">Edit book details</h2><button type="button" id="closeBookEditor" class="light">Close</button></div><form id="bookEditorForm"><div class="book-editor-grid"><label>ISBN / barcode <input name="barcode" maxlength="80" autocomplete="off"></label><label>Title <input name="title" maxlength="350" autocomplete="off"></label><label>Author(s) <input name="authors" maxlength="350"></label><label>Publisher <input name="publisher" maxlength="250"></label><label>Publication year <input name="publication_year" maxlength="20"></label><label>Shelf / location <input name="shelf_location" maxlength="120"></label><label>Language <input name="language" maxlength="100"></label><label>Pages <input name="pages" maxlength="20"></label><label class="wide">Subjects <input name="subject" maxlength="500"></label></div><div class="book-editor-actions"><button type="button" id="editorFindISBN" class="light">Find using ISBN</button><button type="button" id="editorFindTitle" class="light">Search title & author</button><button type="submit" class="green">Save book changes</button></div><div id="editorResults" role="status" aria-live="polite"></div></form></section></div><div id="decoder" aria-hidden="true" style="position:fixed;left:-9999px;top:0;width:360px;height:360px;opacity:0;pointer-events:none"></div>
+<div class="scroll-controls" aria-label="Page navigation"><button id="pageUp" type="button" title="Go to the top" aria-label="Go to the top"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#chevrons-up"></use></svg></button><button id="pageDown" type="button" title="Go to the bottom" aria-label="Go to the bottom"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#chevrons-down"></use></svg></button></div><div id="commandBackdrop" class="command-backdrop" hidden><section class="command-dialog" role="dialog" aria-modal="true" aria-labelledby="commandTitle"><div class="command-head"><div><span class="eyebrow">Workspace shortcuts</span><h2 id="commandTitle">Quick actions</h2></div><button type="button" class="command-close icon-btn" id="commandClose" aria-label="Close quick actions"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#x"></use></svg></button></div><label class="sr-only" for="commandSearch">Find an action</label><div class="search-wrap command-search"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><input id="commandSearch" type="search" placeholder="Search actions…" autocomplete="off"></div><div class="command-items" id="commandList"><button type="button" data-command="dashboard" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#grid"></use></svg><span><strong>Overview</strong><small>View library statistics</small></span></button><button type="button" data-command="find" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#search"></use></svg><span><strong>Find a book</strong><small>Search the shared collection</small></span><kbd>/</kbd></button><button type="button" data-command="add" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#plus"></use></svg><span><strong>Add by ISBN</strong><small>Enter a barcode manually</small></span></button><button type="button" data-command="lend" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg><span><strong>Lend a book</strong><small>Record a borrower and due date</small></span></button><button type="button" data-command="return" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-down-left"></use></svg><span><strong>Process a return</strong><small>Close an active loan</small></span></button><button type="button" data-command="overdue" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#alert"></use></svg><span><strong>Overdue loans</strong><small>See books past their due date</small></span></button><button type="button" data-command="import" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#folder"></use></svg><span><strong>Import a shelf</strong><small>Upload photos, a folder or a ZIP</small></span></button><button type="button" data-command="export" data-auth-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg><span><strong>Export inventory</strong><small>Download the Excel workbook</small></span></button><button type="button" data-command="signin" data-guest-only><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span><strong>Sign in</strong><small>Access the library workspace</small></span></button><button type="button" data-command="theme"><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#sun"></use></svg><span><strong>Switch theme</strong><small>Light and dark appearance</small></span></button></div><p id="commandEmpty" class="empty" hidden>No matching actions.</p><div class="command-footer">Press <kbd>Ctrl</kbd> + <kbd>K</kbd> to open · <kbd>Esc</kbd> to close</div></section></div><div id="adminRemoveBackdrop" class="admin-remove-backdrop" hidden><section class="admin-remove-dialog" role="dialog" aria-modal="true" aria-labelledby="adminRemoveTitle" aria-describedby="adminRemoveHelp"><div class="admin-remove-dialog-icon" aria-hidden="true">!</div><h2 id="adminRemoveTitle">Remove administrator access?</h2><p id="adminRemoveHelp">This account will become a Library Member. Its books and activity will remain untouched.</p><strong id="adminRemoveTarget"></strong><label for="adminRemoveConfirm">Type <b>REMOVE</b> to confirm<input type="text" id="adminRemoveConfirm" autocomplete="off" placeholder="REMOVE" maxlength="6"></label><p id="adminRemoveError" class="admin-remove-error" role="alert" hidden></p><div class="admin-remove-actions"><button type="button" id="adminRemoveCancel" class="light">Keep administrator</button><button type="button" id="adminRemoveSubmit" class="admin-remove-danger" disabled>Remove admin access</button></div></section></div><div id="toast" class="toast" role="status" aria-live="polite" hidden></div><div id="inventoryCopiesBackdrop" class="inventory-copies-backdrop" hidden><section class="inventory-copies-dialog" role="dialog" aria-modal="true" aria-labelledby="inventoryCopiesTitle" aria-describedby="inventoryCopiesSubtitle" tabindex="-1"><div class="inventory-copies-heading"><div><span class="eyebrow">Inventory · physical copies</span><h2 id="inventoryCopiesTitle">Book copies</h2><p id="inventoryCopiesSubtitle">Review and manage individual physical copies.</p></div><button type="button" class="light" id="closeInventoryCopies" aria-label="Close copies panel">Close</button></div><div id="inventoryCopiesList" class="inventory-copies-content"></div></section></div><div id="bookEditorBackdrop" class="book-editor-backdrop" hidden><section class="book-editor" role="dialog" aria-modal="true" aria-labelledby="bookEditorTitle"><div class="book-editor-head"><h2 id="bookEditorTitle">Edit book details</h2><button type="button" id="closeBookEditor" class="light">Close</button></div><form id="bookEditorForm"><div class="book-editor-grid"><label>ISBN / barcode <input name="barcode" maxlength="80" autocomplete="off"></label><label>Title <input name="title" maxlength="350" autocomplete="off"></label><label>Author(s) <input name="authors" maxlength="350"></label><label>Publisher <input name="publisher" maxlength="250"></label><label>Publication year <input name="publication_year" maxlength="20"></label><label>Shelf / location <input name="shelf_location" maxlength="120"></label><label>Language <input name="language" maxlength="100"></label><label>Pages <input name="pages" maxlength="20"></label><label class="wide">Subjects <input name="subject" maxlength="500"></label></div><div class="book-editor-actions"><button type="button" id="editorFindISBN" class="light">Find using ISBN</button><button type="button" id="editorFindTitle" class="light">Search title & author</button><button type="submit" class="green">Save book changes</button></div><div id="editorResults" role="status" aria-live="polite"></div></form></section></div><div id="decoder" aria-hidden="true" style="position:fixed;left:-9999px;top:0;width:360px;height:360px;opacity:0;pointer-events:none"></div>
 
 <section class="site-contact-strip" id="publicContactArea" aria-labelledby="publicContactTitle"><div class="site-contact-intro"><span class="eyebrow">STAY CONNECTED</span><h2 id="publicContactTitle">Talk to your library.</h2><p data-contact-detail="summary">Contact information and community links will appear here when the library administrator publishes them.</p></div><div class="site-contact-actions"><div class="public-contact-facts"><span data-contact-detail="email"></span><span data-contact-detail="phone"></span><span data-contact-detail="location"></span><span data-contact-detail="hours"></span></div><div class="public-social-links" data-public-socials aria-label="Library social and contact links"></div></div></section>
 <footer class="footer"><span><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#library"></use></svg> &nbsp; Library Manager · A calm home for every collection.</span><span>Shared Supabase inventory · Secure role-based access</span></footer>
 <script src="assets/daily-visit-register.js?v=5.26.0"></script>
+<script src="assets/lending-catalogue.js?v=5.46.0"></script>
 <script>
 (()=>{
 const SUPABASE_URL="https://hotysnqorkqbiconjskl.supabase.co", SUPABASE_KEY="sb_publishable_OL7r2hmR6n7OOWY5m-3bRw_Peft2X9q", BOOKS="library_books", LOANS="library_loans", REVIEW_QUEUE="library_review_queue";
@@ -664,12 +676,28 @@ function canAccess(page,role=memberRole){return role==='admin'?ADMIN_PAGES.has(p
 function isAdmin(){return memberRole==='admin'}
 function isCirculationUser(){return memberRole==='user'}
 function roleLanding(){const wanted=decodeURIComponent(location.hash.slice(1));return canAccess(wanted)?wanted:(isAdmin()?'dashboard':'dailyLog')}
-function authUI(){const signedIn=!!session?.user,ready=signedIn&&(memberRole==='admin'||memberRole==='user');window.LibraryBookGuide?.setSession(ready?session:null);document.body.dataset.account=signedIn?'in':'out';document.body.dataset.role=memberRole||'pending';$('authBadge').textContent=ready?(isAdmin()?'Administrator':'Library user'):signedIn?'Checking access':'Own account required';$('authBadge').className=ready?'badge ok':'badge';$('loggedOut').hidden=signedIn;$('loggedIn').hidden=!ready;$('libraryArea').hidden=!ready;$('notificationBell').hidden=!ready||!isAdmin();$('who').textContent=ready?session.user.email||'Signed in':'';$('memberRolePill').textContent=isAdmin()?'ADMIN WORKSPACE':'READING & CIRCULATION';$('roleGate').hidden=!signedIn||ready;$('adminInvitePanel').hidden=!ready||!isAdmin();$('activateAdminPanel').hidden=!ready||isAdmin();$('roleGateText').textContent=signedIn&&!ready?'Checking account permissions…':'';
+function authUI(){const signedIn=!!session?.user,ready=signedIn&&(memberRole==='admin'||memberRole==='user');window.LibraryBookGuide?.setSession(ready?session:null);document.body.dataset.account=signedIn?'in':'out';document.body.dataset.role=memberRole||'pending';$('authBadge').textContent=ready?(isAdmin()?'Administrator':'Library Member'):signedIn?'Checking access':'Own account required';$('authBadge').className=ready?'badge ok':'badge';$('loggedOut').hidden=signedIn;$('loggedIn').hidden=!ready;$('libraryArea').hidden=!ready;$('notificationBell').hidden=!ready||!isAdmin();$('who').textContent=ready?session.user.email||'Signed in':'';$('memberRolePill').textContent=isAdmin()?'ADMIN WORKSPACE':'LIBRARY MEMBER';$('roleGate').hidden=!signedIn||ready;$('adminInvitePanel').hidden=!ready||!isAdmin();$('activateAdminPanel').hidden=!ready||isAdmin();const adminSettingsVisible=ready&&isAdmin();$('accountCard').querySelector('.account-tools').hidden=!adminSettingsVisible;$('accountCard').querySelector('.lookupbox').hidden=!adminSettingsVisible;$('memberAccountFooter').hidden=!ready||isAdmin();$('mobileAccountJump').hidden=!adminSettingsVisible;$('mobileMemberSignOut').hidden=!ready||isAdmin();if(!adminSettingsVisible)$('accountCard').querySelector('.account-tools').open=false;$('roleGateText').textContent=signedIn&&!ready?'Checking account permissions…':'';
  window.LibraryDailyVisits?.setContext(ready?session:null,ready?memberRole:null);
  document.querySelectorAll('[data-tab],[data-gotab],[data-mobile-tab]').forEach(b=>{b.hidden=!canAccess(b.dataset.tab||b.dataset.gotab||b.dataset.mobileTab)});
  $('navImportShelf').hidden=!isAdmin();
  document.querySelectorAll('[data-dashboard-action="lend"],[data-dashboard-action="return"],[data-history-return],[data-lend-book],[data-return-book]').forEach(b=>{b.hidden=isAdmin()});
  if(ready&&document.querySelector('.panel.active')&&!canAccess(document.querySelector('.panel.active').id))tab(roleLanding());
+}
+async function lookupVerifiedMemberRole(uid){
+ // A secure Supabase function finds the signed-in account's role and creates a
+ // Library Member assignment if the signup trigger failed. Existing Admin roles
+ // are read but never changed. Do not trust signup role controls or user_metadata.
+ const {data,error}=await sb.rpc('library_resolve_my_role');
+ if(!error)return data;
+ // Compatibility with servers not yet upgraded: read a role if one exists.
+ // .maybeSingle() does not throw PGRST116 for zero visible rows.
+ if(['PGRST202','42883'].includes(String(error.code||''))){
+  const {data:legacy,error:readError}=await sb.from('library_member_roles').select('role').eq('user_id',uid).maybeSingle();
+  if(readError)throw readError;
+  if(!legacy?.role)throw Error('The account role recovery upgrade is not installed. Contact the library administrator.');
+  return legacy.role;
+ }
+ throw error;
 }
 async function ensureMemberRole(){
  if(!session?.user)return false;
@@ -678,16 +706,25 @@ async function ensureMemberRole(){
  const uid=session.user.id,generation=authGeneration;
  memberRolePromise=(async()=>{
   try{
-   // Verify an emailed invitation only after authentication. Never trust a client-supplied role.
-   await redeemPendingAdminInvite(uid);
-   await claimPendingAdminAccess(uid);
-   const {data,error}=await sb.from('library_member_roles').select('role').eq('user_id',uid).single();
-   if(error)throw error;
+   // Repair a missing member role first so Admin invitation validation can
+   // safely promote only verified, signed-in accounts.
+   let verifiedRole=await lookupVerifiedMemberRole(uid);
    if(uid!==session?.user?.id||generation!==authGeneration)return false;
-   if(!['admin','user'].includes(data?.role))throw Error('No valid library role is assigned to this account.');
-   memberRole=data.role;authUI();if(isAdmin())void recordAdminWorkspaceUse();tab(roleLanding());return true;
-  }catch(e){if(uid===session?.user?.id){$('roleGate').hidden=false;$('roleGateText').textContent='Account permissions could not be verified: '+(e.message||String(e))+'. Check that the Supabase roles setup is installed and your account has a role.';msg('Library role verification required. '+(e.message||e),'err')}return false}
-  finally{memberRolePromise=null}
+   const invited=await redeemPendingAdminInvite(uid);
+   const promoted=await claimPendingAdminAccess(uid);
+   if(invited||promoted)verifiedRole=await lookupVerifiedMemberRole(uid);
+   if(uid!==session?.user?.id||generation!==authGeneration)return false;
+   if(!['admin','user'].includes(verifiedRole))throw Error('This account has no recognized library role.');
+   memberRole=verifiedRole;authUI();if(isAdmin())void recordAdminWorkspaceUse();tab(roleLanding());return true;
+  }catch(e){
+   if(uid===session?.user?.id&&generation===authGeneration){
+    console.warn('Role lookup failed:',e?.code||e?.message||e);
+    $('roleGate').hidden=false;
+    $('roleGateText').textContent='Your account permissions could not be loaded. Please retry. If this continues, contact the library administrator.';
+    msg('Unable to load account permissions. Try again.','err');
+   }
+   return false;
+  }finally{memberRolePromise=null}
  })();return memberRolePromise;
 }
 
@@ -710,6 +747,8 @@ function setAuthMode(mode){
  $('showSignIn').classList.toggle('active',!creating);$('showSignUp').classList.toggle('active',creating);
  $('showSignIn').setAttribute('aria-pressed',String(!creating));$('showSignUp').setAttribute('aria-pressed',String(creating));
  $('authIntro').textContent=creating?'Choose User or Admin below. Admin registration requires a private access code.':'Enter your email and password. We will open your account’s assigned workspace automatically.';
+ $('resendConfirmation').hidden=!creating;
+ $('authEmailHelp').hidden=!creating;
  updateSignupRole();
 }
 function updateSignupRole(){
@@ -797,9 +836,15 @@ function jumpInventorySection(id){
 $('jumpCatalog').addEventListener('click',()=>jumpInventorySection('inventoryCatalog'));
 $('jumpQuickAdd').addEventListener('click',()=>{$('quickAddDrawer').open=true;jumpInventorySection('inventoryQuickAdd')});
 $('columnFiltersClose').addEventListener('click',()=>setColumnFiltersOpen(false));
-function resetAccountState(){window.LibraryDailyVisits?.clear();stopInventoryLiveSync();if($('columnFiltersPanel').open)closeInventoryFilter(false);adminDirectoryRows=[];adminRemovalTarget=null;if($('adminDirectoryList'))$('adminDirectoryList').replaceChildren();if($('adminRemoveBackdrop'))$('adminRemoveBackdrop').hidden=true;window.LibraryBookGuide?.setSession(null);window.LibraryBookGuide?.setBooks([]);window.LibraryBookGuide?.setVisible(true);memberRole=null;memberRolePromise=null;libraryOwnerId=null;books=[];loans=[];selectedLend=null;selectedReturn=null;$("lendCopyDetail").textContent="Select a copy to view its Book ID and shelf below.";$("returnCopyDetail").textContent="Select a borrowed copy to view its Book ID and borrower below.";$("lendBookSearch").value="";$("returnBookSearch").value="";$("lendBookDisplay").value="";$("lendBookId").value="";$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";batchStopRequested=true;batchQueue=[];batchExcelLoading=false;autoScanSession={saved:0,review:0,failed:0,skipped:0,total:0};autoCommitQueue=[];reviewDraftVersion++;reviewDraftLoadedFor=null;if(reviewSaveTimer)clearTimeout(reviewSaveTimer);reviewSaveTimer=null;reviewRemoteHashes.clear();reviewDraftLastSignature='';savedAttentionPage=1;autoISBNChecked.clear();savedISBNSuggestions.clear();isbnAutoJob=null;lastCloudScanAt=0;reviewCloudStatus='loading';reviewCloudFailure='';releaseBatchPreviews();batchItems=[];batchMetadataCache.clear();$("batchProgress").value=0;bookSearch="";loanSearch="";columnFilters=LibraryInventoryColumnFilters.empty();selectedColumnValues={};resetColumnFilterInputs();bookFilter="all";qualityFilter="all";loanFilter="all";bookPage=1;loanPage=1;$("bookSearch").value="";$("loanSearch").value="";setPressed("book","all");setPressed("quality","all");setPressed("loan","all");notificationQuery="";$("notificationSearch").value="";renderBatch();renderAll()}
+function resetAccountState(){window.LibraryDailyVisits?.clear();stopInventoryLiveSync();if($('columnFiltersPanel').open)closeInventoryFilter(false);adminDirectoryRows=[];adminRemovalTarget=null;if($('adminDirectoryList'))$('adminDirectoryList').replaceChildren();if($('adminRemoveBackdrop'))$('adminRemoveBackdrop').hidden=true;window.LibraryBookGuide?.setSession(null);window.LibraryBookGuide?.setBooks([]);window.LibraryBookGuide?.setVisible(true);memberRole=null;memberRolePromise=null;libraryOwnerId=null;books=[];loans=[];selectedLend=null;selectedReturn=null;refreshLendTitleAvailability();$("lendCopyDetail").textContent="Select a copy to view its Book ID and shelf below.";$("returnCopyDetail").textContent="Select a borrowed copy to view its Book ID and borrower below.";$("lendBookSearch").value="";$("returnBookSearch").value="";$("lendBookDisplay").value="";$("lendBookId").value="";$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";batchStopRequested=true;batchQueue=[];batchExcelLoading=false;autoScanSession={saved:0,review:0,failed:0,skipped:0,total:0};autoCommitQueue=[];reviewDraftVersion++;reviewDraftLoadedFor=null;if(reviewSaveTimer)clearTimeout(reviewSaveTimer);reviewSaveTimer=null;reviewRemoteHashes.clear();reviewDraftLastSignature='';savedAttentionPage=1;autoISBNChecked.clear();savedISBNSuggestions.clear();isbnAutoJob=null;lastCloudScanAt=0;reviewCloudStatus='loading';reviewCloudFailure='';releaseBatchPreviews();batchItems=[];batchMetadataCache.clear();$("batchProgress").value=0;bookSearch="";loanSearch="";columnFilters=LibraryInventoryColumnFilters.empty();selectedColumnValues={};resetColumnFilterInputs();bookFilter="all";qualityFilter="all";loanFilter="all";bookPage=1;loanPage=1;$("bookSearch").value="";$("loanSearch").value="";setPressed("book","all");setPressed("quality","all");setPressed("loan","all");notificationQuery="";$("notificationSearch").value="";renderBatch();renderAll()}
 function authRedirectOptions(){if(!/^https?:$/.test(location.protocol))return {};return {emailRedirectTo:location.origin+location.pathname}}
-function authError(e){let text=e?.message||"Authentication failed.";if(/rate limit|email rate/i.test(text))text+=" Try later; if emails are limited, the project owner must configure SMTP in Supabase.";return text}
+function authError(e){
+ const code=String(e?.code||e?.error_code||'').toLowerCase(), detail=String(e?.message||'Authentication failed.');
+ if(code==='email_address_not_authorized'||/email address not authorized/i.test(detail))return 'Confirmation email could not be delivered because this address is not authorized by the current email provider. Ask the Library Manager administrator to enable custom SMTP in Supabase Auth; registration may not have completed.';
+ if(code==='over_email_send_rate_limit'||code==='over_request_rate_limit'||/email rate limit|rate limit exceeded/i.test(detail))return 'Email delivery is temporarily rate-limited. Please try again later. The administrator may need to configure custom SMTP and review Supabase Auth rate limits.';
+ if(code==='email_not_confirmed'||/email not confirmed/i.test(detail))return 'Your email has not yet been confirmed. Check your inbox or spam folder, or use Resend confirmation email below.';
+ return detail;
+}
 let adminDirectoryRows=[],adminDirectoryBusy=false,adminRemovalTarget=null,adminRemoveFocus=null;
 async function recordAdminWorkspaceUse(){
  if(!session?.user||!isAdmin())return;
@@ -855,7 +900,7 @@ $('adminRemoveSubmit').addEventListener('click',async()=>{
  const target=adminRemovalTarget;if(!isAdmin()||!target||target.user_id===session?.user?.id||$('adminRemoveConfirm').value.trim()!=='REMOVE')return;
  const button=$('adminRemoveSubmit');button.dataset.busy='true';button.disabled=true;$('adminRemoveCancel').disabled=true;$('adminRemoveError').hidden=true;
  try{const {data,error}=await sb.rpc('library_revoke_admin',{p_target:target.user_id});if(error)throw error;if(data!==true)throw Error('Server did not confirm the role change');
-  delete button.dataset.busy;$('adminRemoveCancel').disabled=false;closeAdminRemoval();msg('Administrator privileges revoked. The account is now a regular user.','ok');await loadAdminDirectory();
+  delete button.dataset.busy;$('adminRemoveCancel').disabled=false;closeAdminRemoval();msg('Administrator privileges revoked. The account is now a Library Member.','ok');await loadAdminDirectory();
  }catch(error){delete button.dataset.busy;$('adminRemoveCancel').disabled=false;button.disabled=false;$('adminRemoveError').textContent=error?.message||'Unable to remove access';$('adminRemoveError').hidden=false;}
 });
 
@@ -872,9 +917,9 @@ async function signIn(){
   if(!data?.session)throw new Error("No session was created. Confirm your email if required.");
   session=data.session;authUI();await reloadAll();
   if(memberRole){
-    msg('Signed in. Your '+(isAdmin()?'administrator':'library user')+' workspace is ready.','ok');
+    msg('Signed in. Your '+(isAdmin()?'administrator':'Library Member')+' workspace is ready.','ok');
   }
- }catch(e){msg(authError(e),"err");if(/confirm/i.test(String(e?.message||"")))$("resendConfirmation").hidden=false}
+ }catch(e){msg(authError(e),"err");if(e?.code==="email_not_confirmed"||/confirm/i.test(String(e?.message||""))){$("resendConfirmation").hidden=false;$("authEmailHelp").hidden=false}}
  finally{authBusy=false;$("authSubmit").disabled=false}
 }
 async function signUp(){
@@ -893,16 +938,31 @@ async function signUp(){
     else savePendingAdminAccess(email,inviteCode);
   }
   const options=authRedirectOptions();let {data,error}=await sb.auth.signUp({email,password,options});if(error)throw error;
-  if(data?.session){session=data.session;authUI();await reloadAll();if(memberRole)msg(isAdmin()?"Administrator account activated.":"Account created. Confirm your email and activate your invitation if necessary.","ok")}
+  if(data?.session){session=data.session;authUI();await reloadAll();if(memberRole)msg(isAdmin()?"Administrator account activated.":"Account is ready. No confirmation email is needed; you are signed in.","ok")}
   else{
    $("resendConfirmation").hidden=false;
-   msg("If registration succeeded, check "+email+" for a confirmation link (including spam). "+(creatingAdmin?"After confirmation, return and sign in. Your admin code activates your role; you may need to enter it again on another device.":"After confirming, return here and sign in."),"ok");
+   $("authEmailHelp").hidden=false;
+   msg("If this is a new account, check "+email+" for a confirmation link (including spam). If you registered previously, use Sign In instead; an already-confirmed account will not receive another signup email. "+(creatingAdmin?"After confirmation, sign in to activate your administrator access code.":"If the message does not arrive, try Resend confirmation below."),"ok");
   }
- }catch(e){if(creatingAdmin){clearPendingAdminInvite();clearPendingAdminAccess()}msg(authError(e),"err")}
+ }catch(e){if(creatingAdmin){clearPendingAdminInvite();clearPendingAdminAccess()}$("resendConfirmation").hidden=false;$("authEmailHelp").hidden=false;msg(authError(e),"err")}
  finally{authBusy=false;$("authSubmit").disabled=false}
 }
-async function resendConfirmation(){let email=$("email").value.trim();if(!email)return msg("Enter your email address first.","warn");
- let {error}=await sb.auth.resend({type:"signup",email,options:authRedirectOptions()});msg(error?authError(error):"If that email has a pending signup, a confirmation message has been requested. Check your inbox and spam.",error?"err":"ok")}
+let resendConfirmationBusy=false,lastConfirmationRequest=0;
+async function resendConfirmation(){
+ const email=$("email").value.trim(),input=$("email"),button=$("resendConfirmation");
+ if(!email||!input.checkValidity())return msg("Enter a valid email address before requesting confirmation.","warn");
+ if(resendConfirmationBusy)return;
+ const secondsRemaining=Math.ceil((lastConfirmationRequest+60000-Date.now())/1000);
+ if(secondsRemaining>0)return msg("A confirmation request was just accepted. Please check your inbox or spam folder and try again in "+secondsRemaining+" seconds if needed.","warn");
+ resendConfirmationBusy=true;button.disabled=true;msg("Requesting a confirmation message...");
+ try{
+   const {error}=await sb.auth.resend({type:"signup",email,options:authRedirectOptions()});
+   if(error)throw error;
+   lastConfirmationRequest=Date.now();
+   msg("If this address belongs to an account awaiting confirmation, an email has been requested. Check inbox and spam. Already verified? Use Sign In. If no email arrives, the administrator should check Supabase Auth email delivery settings.","ok");
+ }catch(e){msg(authError(e),"err")}
+ finally{resendConfirmationBusy=false;button.disabled=false}
+}
 async function forgotPassword(){let email=$("email").value.trim();if(!email)return msg("Enter your email address first.","warn");
  if(!/^https?:$/.test(location.protocol))return msg("Open the scanner on its HTTPS website to reset a password by email.","warn");
  let {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});msg(error?authError(error):"If the account exists, a password reset email has been requested. Check your inbox.",error?"err":"ok")}
@@ -1752,6 +1812,7 @@ async function addBook(code){
 }
 // Book selectors always use the exact inventory record_id, NOT an ISBN or a potentially repeated Book ID.
 const pickerIds={lend:{search:"lendBookSearch",select:"lendBookSelect",count:"lendBookCount"},return:{search:"returnBookSearch",select:"returnBookSelect",count:"returnBookCount"}};
+const lendingCatalogue=window.LibraryLendingCatalogue;
 function bookIsEligible(b,mode){return mode==="lend"?(b.book_status||"Available")==="Available":b.book_status==="Borrowed"}
 function bookSearchText(b,mode){const active=mode==="return"?loans.find(l=>l.book_record_id===b.record_id&&l.status==="Borrowed"):null;return [b.title,b.authors,b.book_id,b.record_id,b.barcode,b.shelf_location,b.borrower_name,active?.borrower_name].join(" ").toLocaleLowerCase()}
 // Only the title is visible in either book dropdown. Option values remain unique record IDs.
@@ -1761,9 +1822,18 @@ function bookCopyDetail(b,mode){
  const extra=[b.authors?`By ${b.authors}`:"",id,b.shelf_location?`Shelf: ${b.shelf_location}`:"",b.barcode?`ISBN: ${b.barcode}`:"",mode==="return"?(b.borrower_name||loans.find(l=>l.book_record_id===b.record_id&&l.status==="Borrowed")?.borrower_name||""):""].filter(Boolean);
  return extra.join(" · ");
 }
+function refreshLendTitleAvailability(){
+ const selected=selectedLend,stat=$('lendTitleAvailability');if(!stat)return;
+ const group=selected?lendingCatalogue.titleSummary(books,selected):null;
+ $('lendTitleAvailabilityName').textContent=group?group.title+' · '+group.available+' available of '+group.total+' physical copies':'Select a title to see its live loaded copy count';
+ $('lendTitleAvailable').textContent=String(group?.available||0);
+ $('lendTitleBorrowed').textContent=String(group?.borrowed||0);
+ $('lendTitleTotal').textContent=String(group?.total||0);
+ stat.classList.toggle('is-selected',!!group);
+}
 function clearSelectedBook(mode){
  if(mode==="lend"){
-  selectedLend=null;$("lendBookDisplay").value="";$("lendBookId").value="";$("lendCopyDetail").textContent="Select a copy to view its Book ID and shelf below.";$("lendBookSelect").value="";
+  selectedLend=null;$("lendBookDisplay").value="";$("lendBookId").value="";$("lendCopyDetail").textContent="Select a copy to view its Book ID and shelf below.";$("lendBookSelect").value="";refreshLendTitleAvailability();
  }else{
   selectedReturn=null;$("returnBookDisplay").value="";$("returnBookId").value="";$("returnBorrower").value="";$("returnDue").value="";$("returnCopyDetail").textContent="Select a borrowed copy to view its Book ID and borrower below.";$("returnBookSelect").value="";
  }
@@ -1771,24 +1841,36 @@ function clearSelectedBook(mode){
 function renderBookPicker(mode){
  const ids=pickerIds[mode],select=$(ids.select),search=$(ids.search),count=$(ids.count);
  if(!select||!search||!count)return;
- const selected=mode==="lend"?selectedLend:selectedReturn;
+ const selected=mode==='lend'?selectedLend:selectedReturn;
  const current=selected&&books.find(b=>b.record_id===selected.record_id&&bookIsEligible(b,mode));
  if(selected&&!current)clearSelectedBook(mode);
- else if(current){if(mode==="lend")selectedLend=current;else selectedReturn=current}
+ else if(current){if(mode==='lend')selectedLend=current;else selectedReturn=current}
  const eligible=books.filter(b=>bookIsEligible(b,mode));
  const terms=search.value.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
  const matches=eligible.filter(b=>terms.every(t=>bookSearchText(b,mode).includes(t)))
- .sort((a,b)=>String(a.title||"").localeCompare(String(b.title||""),undefined,{numeric:true,sensitivity:"base"})||String(a.book_id||a.record_id).localeCompare(String(b.book_id||b.record_id)));
- const shown=matches.slice(0,200),active=mode==="lend"?selectedLend:selectedReturn;
- const placeholder=eligible.length?(matches.length?`Choose a ${mode==="lend"?"available":"borrowed"} book…`:"No matching books — change your search"):`No ${mode==="lend"?"available":"borrowed"} books in inventory`;
- select.innerHTML=`<option value="">${esc(placeholder)}</option>`+shown.map(b=>`<option value="${esc(b.record_id)}">${esc(bookChoiceLabel(b,mode))}</option>`).join("");
- // Keep the chosen exact copy visible even when the search narrows to another title.
- if(active&&!shown.some(b=>b.record_id===active.record_id)){
-  const option=new Option(bookChoiceLabel(active,mode),active.record_id);select.add(option,1);
+  .sort((a,b)=>String(a.title||'').localeCompare(String(b.title||''),undefined,{numeric:true,sensitivity:'base'})||String(a.book_id||a.record_id).localeCompare(String(b.book_id||b.record_id)));
+ const active=mode==='lend'?selectedLend:selectedReturn;
+ if(mode==='lend'){
+  const grouped=lendingCatalogue.groupAvailableTitles(books,matches);
+  const shown=grouped.slice(0,200);
+  const activeKey=active&&lendingCatalogue.titleKey(active);
+  select.innerHTML=`<option value="">${esc(eligible.length?(matches.length?'Choose an available title…':'No matching titles — change your search'):'No available books in inventory')}</option>`+
+   shown.map(g=>{const chosen=activeKey===g.key?active:g.representative;return `<option value="${esc(chosen.record_id)}">${esc(g.title)}</option>`}).join('');
+  if(active&&!shown.some(g=>g.key===activeKey))select.add(new Option(bookChoiceLabel(active),active.record_id),1);
+  select.value=active?.record_id||'';
+  select.disabled=!eligible.length;
+  count.textContent=eligible.length?`${lendingCatalogue.countDistinctTitles(eligible)} distinct title(s) · ${eligible.length} available physical copies. ${matches.length?`${grouped.length} matching title(s). `:''}Search by title, author, Book ID, ISBN or shelf to select a specific copy.${grouped.length>shown.length?' Showing first 200 titles; narrow your search.':''}`:'No available books right now. Add books to Inventory first.';
+  refreshLendTitleAvailability();
+  return;
  }
- select.value=active?.record_id||"";
+ // Returns remain copy-specific: borrowers and loan records must never be mixed.
+ const shown=matches.slice(0,200);
+ const placeholder=eligible.length?(matches.length?'Choose a borrowed book…':'No matching books — change your search'):'No borrowed books in inventory';
+ select.innerHTML=`<option value="">${esc(placeholder)}</option>`+shown.map(b=>`<option value="${esc(b.record_id)}">${esc(bookChoiceLabel(b))}</option>`).join('');
+ if(active&&!shown.some(b=>b.record_id===active.record_id))select.add(new Option(bookChoiceLabel(active),active.record_id),1);
+ select.value=active?.record_id||'';
  select.disabled=!eligible.length;
- count.textContent=eligible.length?`${eligible.length} ${mode==="lend"?"available":"borrowed"} ${eligible.length===1?"copy":"copies"} · ${matches.length} match${matches.length===1?"":"es"}${matches.length>shown.length?" · Showing first 200; search to narrow":""}. If several copies share a title, search its Book ID or shelf to identify the copy. Details appear after selection.`:`No ${mode==="lend"?"available":"borrowed"} books right now. ${mode==="lend"?"Add books to inventory first.":"Lend a book first."}`;
+ count.textContent=eligible.length?`${eligible.length} borrowed ${eligible.length===1?'copy':'copies'} · ${matches.length} match${matches.length===1?'':'es'}. Search by Book ID or borrower to identify an exact copy.`:'No borrowed books right now. Lend a book first.';
 }
 function setSelectedBook(mode,b){if(!isCirculationUser())return msg("Lending and returns are user-only.","warn");
  if(!session?.user)return msg("Sign in first.","warn");
@@ -1797,7 +1879,7 @@ function setSelectedBook(mode,b){if(!isCirculationUser())return msg("Lending and
  // Clear the opposite operation so a previous selection cannot be confused with this one.
  clearSelectedBook(mode);
  if(mode==="lend"){
-  selectedLend=b;$("lendBookDisplay").value=bookChoiceLabel(b,mode);$("lendBookId").value=b.book_id||b.record_id;$("lendCopyDetail").textContent=bookCopyDetail(b,mode);
+  selectedLend=b;$("lendBookDisplay").value=lendingCatalogue.titleSummary(books,b)?.title||bookChoiceLabel(b,mode);$("lendBookId").value=b.book_id||b.record_id;$("lendCopyDetail").textContent=bookCopyDetail(b,mode);refreshLendTitleAvailability();
  }else{
   selectedReturn=b;const active=loans.find(l=>l.book_record_id===b.record_id&&l.status==="Borrowed");
   $("returnBookDisplay").value=bookChoiceLabel(b,mode);$("returnBookId").value=b.book_id||b.record_id;$("returnCopyDetail").textContent=bookCopyDetail(b,mode);
@@ -1826,7 +1908,7 @@ function findBookByCode(code,mode="any"){
 }
 function selectLend(code){const b=findBookByCode(code,"lend");if(b)setSelectedBook("lend",b)}
 async function confirmLend(){
- if(!isCirculationUser())return msg("Lending is available only to library users.","err");
+ if(!isCirculationUser())return msg("Lending is available only to Library Members.","err");
  const btn=$("confirmLend");if(btn.disabled)return;
  if(!session?.user)return msg("Sign in first.","warn");
  if(!selectedLend)return msg("Choose an available book from the searchable list first.","warn");
@@ -1857,7 +1939,7 @@ async function confirmLend(){
 }
 function selectReturn(code){const b=findBookByCode(code,"return");if(b)setSelectedBook("return",b)}
 async function confirmReturn(){
- if(!isCirculationUser())return msg("Returns are available only to library users.","err");
+ if(!isCirculationUser())return msg("Returns are available only to Library Members.","err");
  const btn=$("confirmReturn");if(btn.disabled)return;
  if(!session?.user)return msg("Sign in first.","warn");
  if(!selectedReturn)return msg("Choose a borrowed book from the searchable list first.","warn");
@@ -3855,7 +3937,8 @@ $('mobileNavSheet').addEventListener('click',e=>{
  const action=e.target.closest('[data-mobile-action]');
  if(action){closeMobileMenu();runWorkspaceAction(action.dataset.mobileAction)}
 });
-$('mobileAccountJump').addEventListener('click',()=>{closeMobileMenu();
+$('mobileMemberSignOut').addEventListener('click',()=>{closeMobileMenu();$('signOut').click()});$('memberSignOut').addEventListener('click',()=>$('signOut').click());
+$('mobileAccountJump').addEventListener('click',()=>{if(!isAdmin())return;closeMobileMenu();
  $('accountCard').scrollIntoView({block:'start',behavior:'smooth'});
  $('accountCard').querySelector('.account-tools').open=true;
 });
@@ -3959,7 +4042,7 @@ $('copyAdminAccessCode').onclick=async()=>{const code=$('adminAccessCodeResult')
 $("passwordReveal").onclick=()=>{const field=$("password"),revealed=field.type==="text";field.type=revealed?"password":"text";$("passwordReveal").textContent=revealed?"Show":"Hide";$("passwordReveal").setAttribute("aria-label",revealed?"Show password":"Hide password");$("passwordReveal").setAttribute("aria-pressed",String(!revealed));};
 $("accountForm").onsubmit=e=>{e.preventDefault();authMode==="signup"?signUp():signIn()};
 $("forgotPassword").onclick=forgotPassword;$("resendConfirmation").onclick=resendConfirmation;$("updatePassword").onclick=updatePassword;
-$("signOut").onclick=signOut;$("roleGateSignOut").onclick=signOut;$("reload").onclick=reloadAll;$("reloadLoans").onclick=reloadAll;
+$("signOut").onclick=signOut;$("roleGateSignOut").onclick=signOut;$('roleGateRetry').onclick=async()=>{if(await ensureMemberRole())await reloadAll()};$("reload").onclick=reloadAll;$("reloadLoans").onclick=reloadAll;
 $("bookTable").addEventListener("focusout",async e=>{let c=e.target.closest('[contenteditable][data-field="shelf_location"]');if(!c||!session?.user)return;let val=c.innerText.trim();let upd={shelf_location:val||null,updated_at:new Date().toISOString()};let {data,error}=await sb.from(BOOKS).update(upd).eq("record_id",c.dataset.book).select("*").single();if(error)msg(error.message,"err");else{let b=books.find(x=>x.record_id===c.dataset.book);if(b)books=books.map(x=>x.record_id===b.record_id?{...x,[c.dataset.field]:val}:x);msg("Book updated in Supabase.","ok")}});
 setInterval(()=>{if(session?.user&&!document.hidden)renderNotifications()},60_000);
 document.addEventListener("visibilitychange",()=>{if(document.hidden&&session?.user){if(reviewSaveTimer)clearTimeout(reviewSaveTimer);reviewSaveTimer=null;persistReviewDraft(session.user.id,reviewDraftVersion)}else if(session?.user)reloadAll({background:true,force:!!document.querySelector('#shelfScan.panel.active')})});

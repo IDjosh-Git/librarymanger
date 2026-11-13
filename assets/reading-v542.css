@@ -293,3 +293,11 @@ body{background:var(--bg)!important;color:var(--ink)!important}
 @media(max-width:380px){.guide-hero-actions>*{width:100%}.guide-cover-shell{max-width:165px}}
 @media(prefers-reduced-motion:reduce){.guide-primary,.guide-secondary{transition:none!important}}
 
+
+/* v5.46 — matching navy / teal palette for the public reading guide. */
+:root{--gold:#187d83;--week-gold:#187d83;--guide-accent:#117c84;}
+:root[data-theme="dark"]{--gold:#8dd9d2;--week-gold:#8dd9d2;--guide-accent:#9ce3df;}
+body .book-guide-root .book-guide-head{background:linear-gradient(120deg,#143d58,#116977 72%,#0b8685)!important}
+body .book-guide-root .book-guide-fab{background:linear-gradient(125deg,#123c57,#0c6e7c 68%,#0d918b)!important}
+body .book-guide-root .book-guide-compose button{background:linear-gradient(125deg,#174863,#0d858a)!important}
+body .book-guide-root .book-guide-selection :is(select,#bookGuideSearch):focus-visible{border-color:#137c86!important;outline:3px solid rgba(25,146,157,.19)!important}

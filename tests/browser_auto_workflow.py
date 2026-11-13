@@ -12,7 +12,7 @@ parts=[]
 for id in ['shelfScan','review']:
  e=soup.find(id=id);e['class']=e.get('class',[])+(['active'] if id=='shelfScan' else [])
  parts.append(str(e))
-style='\n'.join((root/'assets'/x).read_text() for x in ['library-ui.css','scan-review-workspace.css','premium-progress-upload.css','recognition-settings-v535.css','scan-auto-premium-v534.css'])
+style=(root/'assets/library-manager-v542.css').read_text()
 html='<html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>'+style+'</style></head><body data-account="in">'+''.join(parts)+'</body></html>'
 with sync_playwright() as p:
  browser=p.chromium.launch(headless=True,executable_path='/usr/bin/chromium',args=['--no-sandbox','--disable-dev-shm-usage'])

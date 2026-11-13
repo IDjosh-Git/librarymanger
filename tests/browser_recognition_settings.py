@@ -11,7 +11,7 @@ assert soup.select_one('#shelfScan #batchUseAI') is None
 assert soup.select_one('#shelfScan #batchUseOCR') is None
 assert soup.select_one('#review #reviewUseAI') is None
 assert soup.select_one('#review #reviewUseOCR') is None
-css='\n'.join((root/'assets'/name).read_text() for name in ['library-ui.css','recognition-settings-v535.css'])
+css='\n'.join((root/'assets'/name).read_text() for name in ['library-manager-v542.css'])
 html=f'<html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>*{{box-sizing:border-box}}body{{padding:10px;margin:0}}.account-tools{{max-width:440px}}{css}</style></head><body data-account="in">{account}</body></html>'
 with sync_playwright() as playwright:
  browser=playwright.chromium.launch(headless=True, executable_path='/usr/bin/chromium',args=['--no-sandbox','--disable-dev-shm-usage'])

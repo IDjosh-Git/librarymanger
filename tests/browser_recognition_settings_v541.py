@@ -10,9 +10,8 @@ assert [s.get_text(strip=True) for s in settings.select('.scan-recognition-copy 
 for selector in ('#batchUseAI','#batchUseOCR'):
  assert settings.select_one(selector)
 styles='\n'.join((root/'assets'/name).read_text(encoding='utf-8') for name in [
- 'library-ui.css', 'premium-navigation-filters.css',
- 'scan-review-premium-v539.css','recognition-settings-v535.css'])
-html=f'''<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>{styles}\n*{{box-sizing:border-box}}body{{margin:0}}#mock{{width: min(312px, calc(100vw - 24px));margin:12px auto}}</style></head><body data-account="in"><section id="accountCard" class="card auth"><details class="account-tools" open><summary>Account settings</summary><div class="account-tools-body">{settings}</div></details></section><script>document.getElementById('recognitionSettings').open=true;</script></body></html>'''
+ 'library-manager-v542.css'])
+html=f'''<!doctype html><html><head><meta name="viewport" content="width=device-width, initial-scale=1"><style>{styles}\n*{{box-sizing:border-box}}body{{margin:0}}#mock{{width: min(312px, calc(100vw - 24px));margin:12px auto}}</style></head><body data-account="in" data-role="admin"><section id="accountCard" class="card auth"><details class="account-tools" open><summary>Account settings</summary><div class="account-tools-body">{settings}</div></details></section><script>document.getElementById('recognitionSettings').open=true;</script></body></html>'''
 with sync_playwright() as playwright:
  b=playwright.chromium.launch(headless=True,executable_path='/usr/bin/chromium',args=['--no-sandbox','--disable-dev-shm-usage'])
  for width in [320,360,390,768,1024,1440]:

@@ -4351,3 +4351,138 @@ body[data-account="in"] #accountCard.auth .workspace-nav .workspace-nav-section 
   color: #173b50 !important;
   transform: none !important;
 }
+
+/* v5.43: email verification guidance -- consistent across account layouts */
+.auth-email-help{max-width:430px;margin:10px auto 0;font-size:.76rem;line-height:1.55;text-align:center;color:var(--muted)}
+.auth-email-help[hidden]{display:none!important}
+#resendConfirmation:disabled{opacity:.55;cursor:wait}
+
+/* v5.44: Public registrations are always Library Member accounts. */
+.member-signup-note{display:flex;align-items:flex-start;gap:13px;margin:13px 0 17px;padding:16px 17px;border:1px solid rgba(35,125,120,.26);border-radius:17px;background:linear-gradient(125deg,rgba(32,133,119,.09),rgba(44,106,153,.05));color:var(--ink);min-height:94px;}
+.member-signup-note[hidden]{display:none!important;}
+.member-signup-note .member-signup-icon{display:grid;place-items:center;flex:0 0 31px;width:31px;height:31px;border-radius:12px;background:#1a7368;color:white;font-weight:900;}
+.member-signup-note strong{display:block;font-size:1rem;line-height:1.35;margin:0 0 4px;}
+.member-signup-note p{margin:0;color:var(--muted);font-size:.83rem;line-height:1.55;}
+@media(max-width:440px){.member-signup-note{padding:14px;gap:10px;min-height:auto;}}
+
+
+/* v5.46 — unified navy/teal components, admin-only access controls, lending summary. */
+:root{
+ --accent:#0b7280;--accent2:#168c91;--bright-gradient:linear-gradient(118deg,#143f5b 0%,#166179 53%,#0b8287 100%);
+ --purple-gradient:linear-gradient(135deg,#edf5f8 0%,#e9f5f3 100%);
+ --accent-gradient:linear-gradient(135deg,#eaf3f7 0%,#edf9f7 100%);
+ --mint-gradient:linear-gradient(125deg,#e9f7f3,#eff9fa);
+ --lp-accent:#0b7280;--lp-accent-2:#188a8d;
+}
+:root[data-theme="dark"]{
+ --accent:#83d5df;--accent2:#9ce5d4;
+ --bright-gradient:linear-gradient(118deg,#17405c,#146475 60%,#137d79);
+ --purple-gradient:linear-gradient(135deg,#223a4b,#1b3e48);
+ --accent-gradient:linear-gradient(135deg,#19394b,#18424a);
+ --mint-gradient:linear-gradient(135deg,#163b3d,#203b50);
+ --lp-accent:#86d9e4;--lp-accent-2:#9be6d7;
+}
+#adminInvitePanel[hidden],body:not([data-role="admin"]) #adminInvitePanel{display:none!important}
+#adminDirectory .admin-directory-access{margin:0 0 20px;padding:clamp(18px,2.4vw,27px);border:1px solid var(--line);border-radius:21px;background:var(--surface);box-shadow:0 10px 25px rgba(19,52,75,.06);color:var(--ink)}
+#adminDirectory .admin-directory-access-intro h3{color:var(--ink);font-size:clamp(1.12rem,2vw,1.5rem);line-height:1.25;margin:6px 0}
+#adminDirectory .admin-directory-access-intro p{margin:0 0 16px;color:var(--muted);font-size:.87rem;line-height:1.6}
+#adminDirectory #adminInvitePanel{border:1px solid var(--line);border-radius:15px;background:var(--surface2);padding:0;overflow:hidden}
+#adminDirectory #adminInvitePanel summary{padding:15px 17px;display:flex;align-items:center;gap:11px;color:var(--ink);font-weight:800;cursor:pointer}
+#adminDirectory #adminInvitePanel .admin-invite-panel-body{padding:0 17px 17px}
+#adminDirectory #createAdminInvite{background:linear-gradient(115deg,#17435e,#0a777d)!important;color:white!important;border-color:transparent!important}
+#adminDirectory #adminInvitePanel :is(button,summary):focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+#lend .lend-availability-card{padding:clamp(15px,2vw,21px);margin-top:13px;border:1px solid #cadfe6;border-radius:18px;background:linear-gradient(125deg,#f8fcfd 0%,#eaf6f6 100%);box-shadow:0 10px 24px rgba(16,56,75,.06);color:#173b50}
+#lend .lend-availability-heading{display:flex;align-items:center;gap:12px;margin-bottom:15px}
+#lend .lend-availability-icon{display:grid;place-items:center;flex:0 0 40px;height:40px;border-radius:12px;background:linear-gradient(130deg,#184761,#087982);color:#fff;font-size:23px}
+#lend .lend-availability-heading>span:last-child{display:grid;gap:3px;min-width:0}
+#lend .lend-availability-heading strong{font-size:.97rem;color:inherit;line-height:1.3}
+#lend .lend-availability-heading small{font-size:.78rem;color:#516e7a;line-height:1.45;overflow-wrap:anywhere}
+#lend .lend-availability-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+#lend .lend-availability-stat{display:grid;gap:7px;align-content:space-between;padding:13px 14px;min-height:86px;border:1px solid #d6e4e9;border-radius:13px;background:rgba(255,255,255,.84)}
+#lend .lend-availability-stat span{color:#546f7c;font-size:.73rem;line-height:1.3;font-weight:750}
+#lend .lend-availability-stat strong{font-size:clamp(1.35rem,2vw,1.75rem);font-weight:870;line-height:1.15;color:#173b50;font-variant-numeric:tabular-nums}
+#lend .lend-availability-stat.is-available{background:linear-gradient(120deg,#e5f8f1,#f5fdfc);border-color:#a9d8d0}
+#lend .lend-availability-stat.is-available strong{color:#0b7165}
+:root[data-theme="dark"] #lend .lend-availability-card{background:linear-gradient(125deg,#1d3548,#193c46);border-color:#3e6670;color:#effbff}
+:root[data-theme="dark"] #lend .lend-availability-heading small,:root[data-theme="dark"] #lend .lend-availability-stat span{color:#b9d0da}
+:root[data-theme="dark"] #lend .lend-availability-stat{background:#243b4c;border-color:#426070}
+:root[data-theme="dark"] #lend .lend-availability-stat.is-available{background:#1a4e4c;border-color:#377e72}
+:root[data-theme="dark"] #lend .lend-availability-stat strong{color:#effbff}
+:root[data-theme="dark"] #lend .lend-availability-stat.is-available strong{color:#9ff3d8}
+#lend #lendBookSelect:focus-visible,#lend #lendBookSearch:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media(max-width:460px){#lend .lend-availability-grid{gap:6px}#lend .lend-availability-stat{padding:10px 8px;min-height:80px}#lend .lend-availability-stat span{font-size:.67rem}#lend .lend-availability-heading{align-items:flex-start}}
+
+/* v5.46 — last-pass theme consistency for main actions and the floating guide. */
+#lend .circulation-submit-section .circulation-submit,
+#return .circulation-submit-section .circulation-submit{
+ background:linear-gradient(115deg,#14445e,#0e7a7d)!important;
+ color:#fff!important;border:1px solid #136c75!important;
+ box-shadow:0 11px 25px rgba(18,85,101,.20)!important;
+}
+#lend .circulation-submit-section .circulation-submit:hover,
+#return .circulation-submit-section .circulation-submit:hover{filter:brightness(1.08)}
+#inventory .inventory-filter-launch{background:linear-gradient(120deg,#194e68,#0c747f)!important;border-color:#1a6e79!important;color:#fff!important;box-shadow:0 8px 18px rgba(16,92,106,.18)!important}
+#inventory .inventory-filter-launch:hover{box-shadow:0 13px 26px rgba(16,92,106,.23)!important}
+#inventory .inventory-filter-launch:focus-visible{outline:3px solid #55c6c2!important;outline-offset:3px}
+#inventory .inventory-filter-launch .column-filter-badge{color:#126678!important}
+body .book-guide-root .book-guide-head{background:linear-gradient(120deg,#163b56,#0c6878 73%,#087e7f)!important}
+body .book-guide-root .book-guide-fab{background:linear-gradient(122deg,#153e59,#0a7280 68%,#11968d)!important;border-color:rgba(255,255,255,.2)!important;box-shadow:0 14px 30px rgba(13,69,89,.24)!important}
+body .book-guide-root .book-guide-compose button{background:linear-gradient(115deg,#14516d,#0b8287)!important;box-shadow:0 7px 14px rgba(15,94,109,.17)!important}
+body .book-guide-root .book-guide-compose:focus-within{border-color:#0c8993!important;box-shadow:0 0 0 4px rgba(9,130,143,.14)!important}
+body .book-guide-root .book-guide-selection select:focus-visible,
+body .book-guide-root .book-guide-selection #bookGuideSearch:focus-visible{border-color:#098490!important;outline:3px solid rgba(20,142,151,.22)!important}
+body .book-guide-root .book-guide-prompts button:hover{background:#e3f6f3!important;color:#0c5f6d!important;border-color:#a7d5d2!important}
+:root[data-theme="dark"] body .book-guide-root .book-guide-prompts button:hover{background:#214f56!important;color:#d7fff7!important;border-color:#4c8d92!important}
+
+/* v5.47 — Admin-only management settings; member session remains accessible. */
+body:not([data-role="admin"]) #accountCard :is(.account-tools,.lookupbox),
+body:not([data-role="user"]) #accountCard #memberAccountFooter,
+body:not([data-role="admin"]) #mobileAccountJump,
+body:not([data-role="user"]) #mobileMemberSignOut {
+  display:none!important;
+}
+body[data-account="in"][data-role="user"] #accountCard .member-account-footer {
+  display:grid;gap:9px;margin-top:12px;padding:10px;
+  background:var(--lp-paper,#fff);border:1px solid var(--lp-stroke,#d4e3ea);
+  border-radius:15px;min-width:0;
+}
+body[data-account="in"][data-role="user"] #accountCard .member-signout-button {
+  min-height:46px;display:flex;align-items:center;justify-content:center;gap:9px;
+  width:100%;border:1px solid var(--lp-stroke,#d4e3ea);border-radius:11px;
+  background:var(--lp-soft,#eff6f8);color:var(--lp-ink,#16384c);
+  font-weight:760;cursor:pointer;
+}
+body[data-account="in"][data-role="user"] #accountCard .member-signout-button:hover,
+body[data-account="in"][data-role="user"] #accountCard .member-signout-button:focus-visible {
+  border-color:#378e92;background:#e4f6f4;color:#0d4c56;
+}
+:root[data-theme="dark"] body[data-account="in"][data-role="user"] #accountCard .member-signout-button:hover {
+  background:#234d58;color:#efffff;
+}
+/* A deep teal Book of the Week sidebar card with high contrast on dark screens. */
+:root[data-theme="dark"] body[data-account="in"] #accountCard .workspace-nav .workspace-spotlight-link {
+  background:linear-gradient(115deg,#153b53 0%,#195f6d 100%)!important;
+  background-image:linear-gradient(115deg,#153b53 0%,#195f6d 100%)!important;
+  border:1px solid #418597!important;color:#f3feff!important;
+  box-shadow:0 9px 22px rgba(0,0,0,.18)!important;
+}
+:root[data-theme="dark"] body[data-account="in"] #accountCard .workspace-nav .workspace-spotlight-link :is(span,small,svg) {
+  color:#e4f9fb!important;stroke:currentColor;
+}
+:root[data-theme="dark"] body[data-account="in"] #accountCard .workspace-nav .workspace-spotlight-link .spotlight-nav-mark {
+  color:#f7deb0!important;
+}
+:root[data-theme="dark"] body[data-account="in"] #accountCard .workspace-nav .workspace-spotlight-link:hover {
+  background:linear-gradient(115deg,#1b4b65,#187b7e)!important;
+  background-image:linear-gradient(115deg,#1b4b65,#187b7e)!important;
+  border-color:#79c7c5!important;
+}
+:root[data-theme="dark"] body[data-account="in"] #accountCard .workspace-nav .workspace-spotlight-link:focus-visible {
+  outline:3px solid #86e0d9!important;outline-offset:3px!important;
+}
+
+/* Override legacy mobile footer display:flex rules when a role-specific action is hidden. */
+body:not([data-role="admin"]) #mobileNavSheet .mobile-sheet-footer #mobileAccountJump,
+body:not([data-role="user"]) #mobileNavSheet .mobile-sheet-footer #mobileMemberSignOut {
+  display:none!important;
+}

@@ -828,3 +828,49 @@ body{background:var(--bg)!important;color:var(--ink)!important}
 @media(max-width:700px){.weekly-guide-link{padding:12px;gap:10px;margin-top:14px}.weekly-guide-icon{width:35px;height:35px;flex-basis:35px}.weekly-guide-link small{font-size:.7rem}}
 @media(prefers-reduced-motion:reduce){.weekly-guide-link{transition:none!important}}
 
+
+/* v5.46 — library-wide navy / teal brand, including reading assistant. */
+:root{--gold:#187d83;--week-gold:#187d83;--guide-accent:#117c84;}
+:root[data-theme="dark"]{--gold:#8dd9d2;--week-gold:#8dd9d2;--guide-accent:#9ce3df;}
+body .book-guide-root .book-guide-head{background:linear-gradient(120deg,#143d58,#116977 72%,#0b8685)!important}
+body .book-guide-root .book-guide-fab{background:linear-gradient(125deg,#123c57,#0c6e7c 68%,#0d918b)!important}
+body .book-guide-root .book-guide-compose button{background:linear-gradient(125deg,#174863,#0d858a)!important}
+body .book-guide-root .book-guide-selection :is(select,#bookGuideSearch):focus-visible{border-color:#137c86!important;outline:3px solid rgba(25,146,157,.19)!important}
+body .book-guide-root .book-guide-prompts button:hover{background:#e6f7f4!important;color:#0a626c!important;border-color:#b5ddd9!important}
+:root[data-theme="dark"] body .book-guide-root .book-guide-prompts button:hover{background:#214c53!important;color:#defdf6!important}
+
+/* v5.47 — Accessible dark-mode contrast for the public Book of the Week cards. */
+:root[data-theme="dark"] body[data-public-spotlight="true"] :is(.weekly-reason,.weekly-detail,.weekly-edition-tag) {
+  background:#172e42!important;border-color:#416277!important;color:#f2f9ff!important;
+}
+:root[data-theme="dark"] body[data-public-spotlight="true"] :is(.weekly-reason h3,.weekly-reason>p,.weekly-detail h3,.weekly-edition-tag) {
+  color:#f3fbff!important;
+}
+:root[data-theme="dark"] body[data-public-spotlight="true"] :is(.weekly-detail p,.weekly-reason-foot,.weekly-date,.weekly-guide-link small) {
+  color:#ccdfeb!important;
+}
+:root[data-theme="dark"] body[data-public-spotlight="true"] :is(.spotlight-kicker,.weekly-eyebrow,.weekly-reason-label,.weekly-detail-symbol,.weekly-edition-tag span) {
+  color:#f3d69d!important;
+}
+:root[data-theme="dark"] body[data-public-spotlight="true"] .weekly-guide-link {
+  border-color:#50758b!important;background:#1b394d!important;color:#f3fbff!important;
+}
+:root[data-theme="dark"] body[data-public-spotlight="true"] .weekly-guide-link :is(strong,span:last-child) {
+  color:#f1faff!important;
+}
+:root[data-theme="dark"] body[data-public-spotlight="true"] .weekly-guide-link:hover {
+  background:#244c60!important;border-color:#83c9c6!important;
+}
+:root[data-theme="dark"] body[data-public-spotlight="true"] .spotlight-feature {
+  background:linear-gradient(112deg,#102b42 0%,#16435b 62%,#11545b 100%)!important;
+  border-color:#488597!important;
+}
+:root[data-theme="dark"] body[data-public-spotlight="true"] :is(.spotlight-description,.spotlight-info strong,.spotlight-feature h1) {
+  color:#f5fbff!important;
+}
+:root[data-theme="dark"] body[data-public-spotlight="true"] :is(.spotlight-info span,.spotlight-edition,.spotlight-overline,.spotlight-cta>span) {
+  color:#d3edf2!important;
+}
+:root[data-theme="dark"] body[data-public-spotlight="true"] .spotlight-ribbon {
+  background:#ffe3ae!important;color:#302a1f!important;
+}
