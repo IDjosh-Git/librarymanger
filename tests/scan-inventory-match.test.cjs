@@ -1,6 +1,6 @@
 const {test}=require('node:test');const assert=require('node:assert/strict');
 const helper=require('../assets/scan-extraction'),match=require('../assets/scan-inventory-match');
-const a={title:'The Adventures of Sherlock Holmes',authors:'Arthur Conan Doyle',publisher:'Original Press',publication_year:'2010',barcode:'9780141034266'};
+const a={title:'The Adventures of Sherlock Holmes',authors:'Arthur Conan Doyle',publisher:'Original Press',publication_year:'2010',barcode:'9780470455715'};
 test('existing inventory exact title matched immediately without inventing edition details',()=>{
  const result=match.match('THE ADVENTURES OF SHERLOCK HOLMES\nby Arthur Conan Doyle',[a],helper);
  assert.equal(result?.title,a.title);assert.equal(result?.authors,a.authors);

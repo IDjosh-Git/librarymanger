@@ -40,10 +40,6 @@ async function currentPick(key,token,week){
  const rows=await rest('library_ai_weekly_picks?select=week_start,title,authors,isbn,why_selected,reading_hook,ideal_for,discussion_question,selection_source,provider,cover_url,shelf&week_start=eq.'+encodeURIComponent(week)+'&limit=1',key,token);
  return rows?.[0]||null;
 }
-async function hasManual(key,token){
- const list=await rest('library_featured_books?select=id&id=eq.1&limit=1',key,token);
- return !!list?.length;
-}
 async function aiSelect(candidates,week){
  const providers=available();
  if(!providers.length)return null;
@@ -78,12 +74,64 @@ async function aiSelect(candidates,week){
  }catch(_){return null}
 }
 function respond(res,status,body){return res.status(status).json(body)}
+// One selection per week, shared by the Monday cron, the admin action, and the
+// public page's on-demand recovery. Public calls can NEVER regenerate a pick.
+async function selectWeekly({key,token,week,replace=false}){
+ const existing=await currentPick(key,token,week);
+ if(existing&&!replace)return {status:'existing',pick:existing,week};
+ const inventory=await loadInventory(key,token);
+ const catalogueCandidates=inventoryCandidates(inventory,week);
+ const recent=await rest('library_ai_weekly_picks?select=title,authors&week_start=lt.'+encodeURIComponent(week)+'&order=week_start.desc&limit=8',key,token);
+ const candidates=withoutRecentlyFeatured(catalogueCandidates,recent);
+ if(!candidates.length)return {status:'empty',week,message:'Add a titled book to Inventory to enable Book of the Week.'};
+ const selection=(await aiSelect(candidates,week))||deterministicChoice(candidates,week);
+ const record=publicRecord(selection,week);
+ // First request wins on public/cron generation; an administrator can explicitly
+ // regenerate. Prevent a second public visit from replacing a published choice.
+ if(!replace){
+  const fresh=await currentPick(key,token,week);
+  if(fresh)return {status:'existing',pick:fresh,week};
+ }
+ const rows=await rest('library_ai_weekly_picks'+(replace?'?on_conflict=week_start':''),key,token,{
+  method:'POST',body:record,extraHeaders:{Prefer:replace?'resolution=merge-duplicates,return=representation':'resolution=ignore-duplicates,return=representation'}
+ });
+ const saved=rows?.[0]||await currentPick(key,token,week)||record;
+ return {status:'published',week,pick:saved};
+}
+function publicPick(pick){
+ if(!pick)return null;
+ const fields=['title','authors','isbn','why_selected','reading_hook','ideal_for','discussion_question','selection_source','cover_url','shelf','week_start'];
+ return Object.fromEntries(fields.filter(field=>Object.hasOwn(pick,field)).map(field=>[field,pick[field]]));
+}
+// Serverless instances may run concurrently; per-instance single flight also
+// prevents repeated expensive AI calls on bursty page loads.
+let publicFlight=null;
+let retryAfter=0;
 module.exports=async function handler(req,res){
  res.setHeader('Cache-Control','no-store');res.setHeader('Content-Type','application/json; charset=utf-8');res.setHeader('X-Content-Type-Options','nosniff');
  if(!['POST','GET'].includes(req.method)){res.setHeader('Allow','GET, POST');return respond(res,405,{error:'Method not allowed'});}
- const cron=req.method==='GET';
+ const ensure=req.method==='GET'&&String(req.query?.ensure||'')==='1';
+ const cron=req.method==='GET'&&!ensure;
  let key=PUB_KEY,token='',uid='';
  try{
+  if(ensure){
+   // Public callers can only ensure that the CURRENT week's selection exists.
+   // No client may select candidates, force a regeneration, or see inventory.
+   key=process.env.SUPABASE_SERVICE_ROLE_KEY||'';
+   if(!key)return respond(res,503,{status:'unavailable',message:'Automatic weekly selection needs server configuration.'});
+   token=key;
+   const week=isoWeekStart();
+   const current=await currentPick(key,token,week);
+   if(current)return respond(res,200,{status:'existing',week,pick:publicPick(current)});
+   if(Date.now()<retryAfter)return respond(res,503,{status:'retry-later',message:'Weekly selection will retry later.'});
+   if(!publicFlight){
+    publicFlight=selectWeekly({key,token,week}).catch(e=>{
+     retryAfter=Date.now()+60000;throw e;
+    }).finally(()=>{publicFlight=null});
+   }
+   const value=await publicFlight;
+   return respond(res,200,{status:value.status,week:value.week,pick:publicPick(value.pick),message:value.message});
+  }
   if(cron){
    const expected=process.env.CRON_SECRET;
    if(!expected||req.headers.authorization!=='Bearer '+expected)return respond(res,401,{error:'Unauthorized scheduled request'});
@@ -97,30 +145,10 @@ module.exports=async function handler(req,res){
    if(times.length>=3)return respond(res,429,{error:'Please wait a minute before generating another weekly pick.'});
    times.push(Date.now());rate.set(uid,times);
   }
-  const week=isoWeekStart();
-  if(cron&&await hasManual(key,token))return respond(res,200,{status:'manual-override',message:'An administrator has featured a book. The weekly AI pick was not changed.'});
-  const replace=!cron&&req.body?.regenerate===true;
-  const existing=await currentPick(key,token,week);
-  if(existing&&!replace)return respond(res,200,{status:'existing',pick:existing,week});
-  const inventory=await loadInventory(key,token);
-  const catalogueCandidates=inventoryCandidates(inventory,week);
-  const recent=await rest('library_ai_weekly_picks?select=title,authors&week_start=lt.'+encodeURIComponent(week)+'&order=week_start.desc&limit=8',key,token);
-  const candidates=withoutRecentlyFeatured(catalogueCandidates,recent);
-  if(!candidates.length)return respond(res,200,{status:'empty',week,message:'Add a titled book to Inventory to enable Book of the Week.'});
-  const selection=(await aiSelect(candidates,week))||deterministicChoice(candidates,week);
-  const record=publicRecord(selection,week);
-  const rows=await rest('library_ai_weekly_picks?on_conflict=week_start',key,token,{
-   method:'POST',body:record,extraHeaders:{Prefer:'resolution=merge-duplicates,return=representation'}
-  });
-  const saved=rows?.[0]||record;
-  return respond(res,200,{status:'published',week,pick:{
-   title:saved.title,authors:saved.authors,isbn:saved.isbn,why_selected:saved.why_selected,
-   reading_hook:saved.reading_hook,ideal_for:saved.ideal_for,discussion_question:saved.discussion_question,
-   selection_source:saved.selection_source,provider:saved.selection_source==='ai'?saved.provider:'catalogue rotation'
-  }});
+  const value=await selectWeekly({key,token,week:isoWeekStart(),replace:!cron&&req.body?.regenerate===true});
+  return respond(res,200,value);
  }catch(e){
   const status=[400,401,403,404,409,429].includes(e?.status)?e.status:503;
-  // Keep internal data and provider credentials out of public errors.
   const msg=e?.status===404?'The weekly spotlight database upgrade is missing.':
    e?.status===401||e?.status===403?e.message:
    'Weekly selection could not be saved. Verify the SQL upgrade, database access and AI setup.';

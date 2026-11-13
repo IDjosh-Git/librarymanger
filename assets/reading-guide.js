@@ -111,8 +111,28 @@
   const fallbackLink='https://openlibrary.org/search?'+new URLSearchParams({q:title+' '+authors});
   linkButton($('guideSourceLink'),fallbackLink,'Find verified book details ↗');
   linkButton($('guideSearchLink'),fallbackLink,'Browse editions and descriptions ↗');
-  const share=$('guideShare');share?.addEventListener('click',async()=>{try{if(navigator.share)await navigator.share({title:'Reading guide: '+title,url:location.href});else await navigator.clipboard.writeText(location.href);share.textContent='Link copied ✓'}catch(_){}});
+  const share=$('guideShare');if(share)share.onclick=async()=>{try{if(navigator.share)await navigator.share({title:'Reading guide: '+title,url:location.href});else await navigator.clipboard.writeText(location.href);share.textContent='Link copied ✓'}catch(_){}};
   return {title,authors};
+ }
+ let guideVersion=0;
+ function displayGuide(book){
+  const version=++guideVersion;
+  const info=render(book);if(!info)return;
+  put('guideSummary','Looking for an independently verified catalogue description…');
+  put('guideEvidence','Only matched book descriptions are used.');
+  $('guideSubjects').textContent='Finding relevant book subjects…';
+  put('guideStatus','Book selected from the library catalogue.');
+  catalogue(book).then(meta=>{
+   // Ignore an old lookup if an AI-first pick replaced the fallback book.
+   if(version!==guideVersion)return;
+   const summary=$('guideSummary'),subjects=$('guideSubjects');
+   if(meta.summary){summary.textContent=meta.summary;put('guideEvidence','Book description from '+(meta.summarySource||'a public catalogue')+'. Check the linked source for edition details.');}
+   else {summary.textContent='The library catalogue does not contain a full synopsis for this edition. The editorial note below explains its recommendation without inventing plot details.';put('guideEvidence','Read the original catalogue record for a verified description.');}
+   if(meta.subjects.length){subjects.replaceChildren();meta.subjects.slice(0,7).forEach(s=>{const chip=document.createElement('span');chip.className='guide-subject-chip';chip.textContent=s;subjects.append(chip)})}
+   else{subjects.textContent='Explore the themes and reading prompts below.'}
+   if(meta.link)linkButton($('guideSourceLink'),meta.link,'Read the verified catalogue record ↗');
+   put('guideStatus','Guide ready');
+  }).catch(()=>{if(version===guideVersion)put('guideStatus','Guide ready · external sources unavailable')});
  }
  async function load(){
   try{
@@ -122,22 +142,29 @@
    if(result.error)result=await client.rpc('library_public_featured_book');
    if(result.error||!result.data?.[0])throw new Error('No featured book yet');
    const book=result.data[0];
-   const info=render(book);if(!info)throw new Error('No title found');
-   put('guideStatus','Book selected from the library catalogue.');
-   // External information is optional; do not block the first meaningful paint.
-   catalogue(book).then(meta=>{
-    const summary=$('guideSummary'),subjects=$('guideSubjects');
-    if(meta.summary){summary.textContent=meta.summary;put('guideEvidence','Book description from '+(meta.summarySource||'a public catalogue')+'. Check the linked source for edition details.');}
-    else {summary.textContent='The library catalogue does not contain a full synopsis for this edition. The editorial note below explains its recommendation without inventing plot details.';put('guideEvidence','Read the original catalogue record for a verified description.');}
-    if(meta.subjects.length){subjects.replaceChildren();meta.subjects.slice(0,7).forEach(s=>{const chip=document.createElement('span');chip.className='guide-subject-chip';chip.textContent=s;subjects.append(chip)})}
-    else{subjects.textContent='Explore the themes and reading prompts below.'}
-    if(meta.link)linkButton($('guideSourceLink'),meta.link,'Read the Open Library record ↗');
-    put('guideStatus','Guide ready');
-   }).catch(()=>{put('guideStatus','Guide ready · external sources unavailable')});
+   displayGuide(book);
   }catch(_){
    put('guideStatus','The featured title could not be loaded. Try refreshing this page.');
    put('guideSummary','The weekly reading guide will appear when a book is selected.');
   }
+  // Opportunistic weekly generation; initial public content never waits on AI.
+  try{
+   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),24000);
+   let ensured;
+   try{ensured=await fetch('/api/weekly-pick?ensure=1',{cache:'no-store',signal:controller.signal})}
+   finally{clearTimeout(timer)}
+   if(ensured.ok){
+    const result=await ensured.json();
+    if(result.pick?.selection_source==='ai'&&result.pick.title)displayGuide(result.pick);
+    else if(result.status==='published')await loadPublishedGuide();
+   }
+  }catch(_){/* The public guide keeps the catalogue/manual fallback. */}
+ }
+ async function loadPublishedGuide(){
+  if(!window.supabase?.createClient)return;
+  const client=window.supabase.createClient(URL,KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+  const result=await client.rpc('library_public_weekly_spotlight_v2');
+  if(!result.error&&result.data?.[0])displayGuide(result.data[0]);
  }
  const theme=$('guideTheme');theme?.addEventListener('click',()=>{const dark=document.documentElement.dataset.theme!=='dark';document.documentElement.dataset.theme=dark?'dark':'light';try{localStorage.setItem('library_manager_theme_v2',dark?'dark':'light')}catch(_){}});
  load();

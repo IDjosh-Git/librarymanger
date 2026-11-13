@@ -1,0 +1,17 @@
+/* Recognition switches are user preferences, NOT scan/review actions. */
+.account-tools-body .recognition-account-settings{border:1px solid var(--line,#dce7ed);border-radius:14px;padding:0 12px;margin:0 0 14px;background:var(--surface2,#f7fafc);max-width:100%}
+.account-tools-body .recognition-account-settings>summary{cursor:pointer;display:flex;align-items:center;gap:8px;font-weight:750;padding:12px 3px;min-height:46px;list-style:revert}
+.account-tools-body .recognition-account-settings p{font-size:.83rem;line-height:1.55;margin:8px 0 14px;color:var(--muted,#607585)}
+.account-tools-body .recognition-account-settings .scan-recognition-grid{display:grid;grid-template-columns:1fr;gap:9px;margin:10px 0}
+.account-tools-body .recognition-account-settings .scan-recognition-card{display:flex;align-items:center;gap:10px;border:1px solid var(--line,#dce7ed);border-radius:12px;padding:10px;min-height:60px;background:var(--surface,#fff)}
+.account-tools-body .recognition-account-settings input[type=checkbox]{min-width:22px;min-height:22px;accent-color:#087a88;cursor:pointer}
+.account-tools-body .recognition-account-settings .scan-recognition-copy{flex:1;min-width:0}
+.account-tools-body .recognition-account-settings .scan-recognition-copy small{display:block;font-size:.73rem;line-height:1.4;margin-top:4px}
+.account-tools-body .recognition-account-settings .scan-recognition-switch{pointer-events:none}
+.account-tools-body .recognition-account-settings :focus-visible{outline:3px solid #25a8b4;outline-offset:3px}
+@media(max-width:480px){.account-tools-body .recognition-account-settings .scan-recognition-card{flex-wrap:wrap}}
+
+.account-tools-body .recognition-account-settings input:checked+.scan-recognition-switch{background:#087f8c}
+.account-tools-body .recognition-account-settings .scan-recognition-switch:after{content:'';position:absolute;width:20px;height:20px;top:3px;left:3px;border-radius:50%;background:#fff;transition:transform .16s}
+.account-tools-body .recognition-account-settings input:checked+.scan-recognition-switch:after{transform:translateX(19px)}
+.account-tools-body .recognition-account-settings input:focus-visible+.scan-recognition-switch{outline:3px solid #27a3ad;outline-offset:3px}

@@ -9,21 +9,8 @@
   const normalizedText = x => text(x).normalize('NFKC').toLocaleLowerCase()
     .replace(/[\u2018\u2019]/g, "'").replace(/[\u2013\u2014]/g, '-')
     .replace(/[^\p{L}\p{N}]+/gu, ' ').trim().replace(/\s+/g, ' ');
-  function isbn13(x) {
-    const raw = text(x).replace(/^ISBN(?:-1[03])?\s*:?\s*/i, '').replace(/[\s-]/g, '').toUpperCase();
-    if (/^97[89]\d{10}$/.test(raw)) {
-      let sum = 0; for (let i = 0; i < 13; i++) sum += Number(raw[i]) * (i % 2 ? 3 : 1);
-      return sum % 10 === 0 ? raw : '';
-    }
-    if (/^\d{9}[\dX]$/.test(raw)) {
-      let sum = 0; for (let i = 0; i < 10; i++) sum += (10 - i) * (raw[i] === 'X' ? 10 : Number(raw[i]));
-      if (sum % 11) return '';
-      const first12 = '978' + raw.slice(0, 9); let n = 0;
-      for (let i = 0; i < first12.length; i++) n += Number(first12[i]) * (i % 2 ? 3 : 1);
-      return first12 + String((10 - (n % 10)) % 10);
-    }
-    return '';
-  }
+  const ids=(typeof module!=='undefined'&&module.exports)?require('./book-identifiers.js'):globalThis.LibraryBookIdentifiers;
+  function isbn13(x){return ids.to13(x)}
   const identified = value => Boolean(normalizedText(value)) && !/^(?:unknown|untitled|untitled book|title not found|title missing|no title|n a)$/i.test(normalizedText(value));
   function identity(book, index) {
     // Same title and known author = same inventory row even with unique copy barcodes,

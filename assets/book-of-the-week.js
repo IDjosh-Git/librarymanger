@@ -4,6 +4,11 @@
  const SUPABASE_URL='https://hotysnqorkqbiconjskl.supabase.co';
  const SUPABASE_KEY='sb_publishable_OL7r2hmR6n7OOWY5m-3bRw_Peft2X9q';
  const $=id=>document.getElementById(id);
+ async function ensureWeeklyPick(){
+  const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),24000);
+  try{return await fetch('/api/weekly-pick?ensure=1',{cache:'no-store',signal:controller.signal})}
+  finally{clearTimeout(timer)}
+ }
  const theme=$('spotlightThemeToggle');
  theme?.addEventListener('click',()=>{
   const next=document.documentElement.dataset.theme==='dark'?'light':'dark';
@@ -63,10 +68,29 @@
    // Existing installations continue to work without migration, but AI picks
    // require the dedicated v5.19 migration.
    if(result.error)result=await db.rpc('library_public_featured_book');
-   if(!result.error&&Array.isArray(result.data)&&result.data[0])return updateSpotlight(result.data[0]);
-   const fallback=await db.from('library_featured_books').select('title,authors,isbn,description,cover_url,shelf,published_at').eq('id',1).maybeSingle();
-   if(!fallback.error&&fallback.data)updateSpotlight({...fallback.data,selection_source:'manual'});
+   if(!result.error&&Array.isArray(result.data)&&result.data[0])updateSpotlight(result.data[0]);
+   else{
+    const fallback=await db.from('library_featured_books').select('title,authors,isbn,description,cover_url,shelf,published_at').eq('id',1).maybeSingle();
+    if(!fallback.error&&fallback.data)updateSpotlight({...fallback.data,selection_source:'manual'});
+   }
   }catch(_){/* Page keeps a truthful placeholder if Supabase is offline. */}
+  // The scheduled job may not have fired yet. Generate exactly one weekly
+  // selection server-side on first visit, without exposing inventory or AI keys.
+  try{
+   const result=await ensureWeeklyPick();
+   if(result.ok){
+    const data=await result.json();
+    // The API exposes ONLY published, public-safe book details. This also
+    // allows AI-first on older installs until the RPC priority migration runs.
+    if(data.pick?.selection_source==='ai'&&data.pick.title){
+     updateSpotlight(data.pick);
+    }else if(data.pick?.title&&window.supabase?.createClient){
+     const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
+     const fresh=await db.rpc('library_public_weekly_spotlight_v2');
+     if(!fresh.error&&fresh.data?.[0])updateSpotlight(fresh.data[0]);
+    }
+   }
+  }catch(_){/* Previously loaded public fallback remains visible. */}
  }
  $('askFeaturedBook')?.addEventListener('click',()=>{
   const title=$('spotlightTitle')?.textContent;

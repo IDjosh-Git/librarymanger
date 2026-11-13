@@ -29,14 +29,15 @@ test('bulk scan recognizes via local OCR before cloud AI when both are enabled',
  const local=recognition.indexOf('await recognizeCoverLocally(row,file,{fast}');
  const cloud=recognition.indexOf('await readCoverWithAI(row,file');
  assert.ok(local>=0&&cloud>local);
- assert.match(recognition,/if\(found\|\|mode==='ocr'\)return/);
+ assert.match(recognition,/policy\.needsOCR\(row/);
+ assert.match(recognition,/policy\.needsAI\(row,true\)/);
  const batch=html.slice(html.indexOf('async function runBatch('),html.indexOf('function batchSelectAll()'));
- assert.match(batch,/if\(!hasBookTitle\(row\.title\)/);
+ assert.match(batch,/if\(policy\.needsOCR\(row/);
 });
 
 test('partial scanned covers are persisted even when cloud preparation fails',()=>{
  const body=html.slice(html.indexOf('async function runBatch('),html.indexOf('function batchSelectAll()'));
- assert.match(body,/if\(processedUploads\.length&&session\?\.user\?\.id===uploader&&scanCheckpointMarked<processedUploads\.length\)/);
+ assert.match(body,/if\(reviewUploads\.length&&session\?\.user\?\.id===uploader&&scanCheckpointMarked<reviewUploads\.length\)/);
  assert.match(body,/await persistReviewDraft\(uploader,reviewDraftVersion\)/);
  assert.match(body,/releaseProcessing\(sb,uploader,unused\)/);
 });

@@ -1,3 +1,52 @@
+## Library Manager v5.37 — Full post-fix regression audit and safety hardening (12 November 2026)
+
+This release is based on v5.36 and performs a fresh regression review of the Scan, Inventory, Review, Book API, AI/OCR settings and duplicate-upload workflows. The previous suite passes, with new tests added for source identity and latency safety.
+
+**Corrections:**
+- A title-and-author match in Inventory is now **work-level evidence only**. It may help complete recognition, but cannot authorize automatic inventory insertion or copy edition fields unless the scanned ISBN has a valid checksum and matches the existing edition. `inventoryEditionMatched` is explicitly required by the auto-route guard.
+- Work-level title-search results can supply title, author and subject, but no longer silently populate publisher, edition publication date or page count from an unverified edition.
+- A bounded Book API fallback budget avoids continuing slow upstream lookups beyond the browser's lookup deadline. Open Library pacing is included in that budget rather than causing extra hidden delays.
+- Automatically skipped duplicate uploads release their local image previews to reduce memory retention during large batches.
+- Updated cache-busting for the changed Scan modules.
+
+**Verified locally:** `npm test` passes **120 tests**; Chromium Scan/Review responsive smoke tests pass at 320, 360, 390, 600, 768, 1024 and 1440 px, and Recognition Settings and ISBN routing integration pass at four widths each. All JS modules pass Node syntax checking, and the app page contains no duplicate element IDs.
+
+**Supabase read-only consistency check:** At audit time, the connected library had 842 inventory books, 70 pending Review records and zero processing upload markers; checks found zero duplicate source-photo fingerprints, zero pending Review rows already present in Inventory and zero saved upload markers lacking an Inventory match. No production data was modified.
+
+**Not yet verified:** External catalogue provider availability and optional paid API credentials, the currently deployed Vercel website's version, performance/accuracy on the user's original book photos, and physical Android/iOS devices. These require a live deployment acceptance test, including both AI/OCR settings, valid/extended ISBNs, blurry images, API outages, saving confirmation, and cross-device Review sync. **Passing local tests is not a guarantee of defect-free production behaviour.**
+
+**Deployment:** Deploy the ZIP's root contents to the intended existing Vercel project, preserving its current Supabase and AI environment variables. No new SQL migration is required for these changes. Prefer a preview deployment and test it with sample book photos before promoting to production.
+
+See `LIBRARY_REGRESSION_AUDIT_V537_20261112.md` for detailed test and safety notes.
+
+---
+
+## Library Manager v5.36 — ISBN-13/extended barcode and Book API conflict fix (12 November 2026)
+
+Book metadata lookup now uses a shared ISBN normalization and checksum policy across the browser, API, scanning, automatic Inventory/Review routing, and inventory title grouping. ISBN-13 codes with EAN 2/5-digit supplements and GTIN-14 padding no longer fail Review routing due to their original length. The catalogues are prioritized to avoid redundant lookups, with exact-ISBN checks, conservative field merging, conflict reporting, and specialist providers as fallbacks. Valid ISBNs with no verified title still go to Review safely. See `LIBRARY_BOOK_API_ISBN_RELIABILITY_V536_20261112.md` for details and limitations.
+
+**Verification:** 113 automated tests passed and Chromium module integration passed at four screen sizes. External APIs were mocked for functional tests; their live production uptime, API-key configuration, and real-photo scan speeds have not been verified. **Deploy this ZIP root to the existing Vercel project** to activate the source update. No SQL migration.
+
+---
+
+## Library Manager v5.35 — Book API, OCR and AI in one coordinated workflow (12 November 2026)
+
+Book API/ISBN lookup remains the first authoritative detail source. When it cannot provide sufficient bibliographic data, optional local OCR extracts ISBN/title evidence for another catalogue search and supplies text that can help optional AI read the cover. Verified sources outrank unverified suggestions, and Inventory/Review routing remains automatic. OCR and AI toggles have moved to **Account settings → Book recognition settings**, and they are absent from Scan and Review. The old v5.33 Scan-table stylesheet has been removed. See `LIBRARY_RECOGNITION_ORCHESTRATION_V535_20261112.md`.
+
+**Tests:** 103 automated checks passed; Chromium responsive Scan/Review smoke test passed at seven widths and account-settings toggles at four. These local tests do not establish a 90% detail-fill rate or production scanning speed. **The ZIP is not yet deployed.**
+
+---
+
+## Library Manager v5.34 — Automatic book intake and premium Scan/Review (12 November 2026)
+
+Scan is now fully automatic: recognized book covers with verified evidence are saved directly to Inventory while processing continues; uncertain/failed results are queued in cloud Review. The Scan results tables and manual save/selection controls have been replaced with outcome counts and confirmed success/error messages. The Scan and Review layouts were redesigned for simple responsive use, while Review retains edit/replace/delete actions. **The code release is not deployed.** See `LIBRARY_AUTO_INTAKE_PREMIUM_V534_20261112.md` for routing safeguards, 95 tests, browser checks and deployment instructions.
+
+---
+
+## Library Manager v5.33 — Scan / Review workflow audit (12 November 2026)
+
+See `LIBRARY_WORKFLOW_AUDIT_V533_20261112.md` for the consolidated audit, corrected workflow, Review Delete Image behavior, test evidence, deployment instructions, and known limitations.
+
 # Library Manager v5.32 — Streaming Scan Progress and Fast Book Identification
 
 See `LIBRARY_SCAN_PROGRESS_AND_SPEED_V532_20261112.md` for the progress fix, automatic fast recognition, verification and deployment steps. This is a source release; it is not deployed to the live website.
@@ -217,3 +266,7 @@ This is the complete production-oriented source bundle, based on v5.19, preservi
 ## Verification
 
 The new duplicate-guard module passed local automated tests for identical bytes with different names, renamed ZIP/folder files, one-byte changes, concurrent device claims, saved-record reuploads, cancellation cleanup, missing database migration, and valid different-copy photos sharing an ISBN. The application inline JavaScript and updated scripts passed syntax checks. Live production behavior needs verification after migration and deployment.
+
+## v5.38 — AI-first weekly selection
+
+The Book of the Week feature now tries AI before other selection methods and can generate the missing weekly pick on the first public visit. The priority is AI > manual editorial fallback > automatic catalogue rotation > legacy public catalogue recommendation. Deploy the app and apply `database/10_ai_first_weekly_spotlight.sql` to update the existing public RPC. See `LIBRARY_WEEKLY_AI_FIRST_V538_20261112.md` for setup and tests.

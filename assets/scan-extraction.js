@@ -7,7 +7,8 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   const stop=new Set('the a an of and by or in for to from with on at volume vol book books edition revised updated print printing publisher publishing press copyright isbn library page pages contents introduction preface acknowledgements dedication all rights reserved international standard number'.split(' '));
   function normalizedWords(value){return String(value||'').normalize('NFKC').toLowerCase().replace(/[^\p{L}\p{N}]+/gu,' ').split(/\s+/).filter(w=>w.length>1&&!stop.has(w))}
-  function isbnValid(input){const s=String(input||'').toUpperCase().replace(/[^0-9X]/g,'');if(s.length===10){let n=0;for(let i=0;i<10;i++){const c=s[i]==='X'?10:Number(s[i]);if(c===10&&i!==9)return false;n+=(10-i)*c}return n%11===0}if(s.length===13&&/^97[89]/.test(s)){let sum=0;for(let i=0;i<13;i++)sum+=Number(s[i])*(i%2?3:1);return sum%10===0}return false}
+  const ids=(typeof module==='object'&&module.exports)?require('./book-identifiers.js'):globalThis.LibraryBookIdentifiers;
+  function isbnValid(input){return ids.valid(input)}
   function isbnFromText(value){const text=String(value||'').toUpperCase();const codes=[];
     // Prefer labeled ISBN lines, then other contiguous 10/13 character strings.
     for(const line of text.split(/\r?\n/)){
