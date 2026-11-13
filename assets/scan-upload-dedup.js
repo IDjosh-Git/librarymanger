@@ -17,14 +17,29 @@
     const hash=await cryptoProvider.subtle.digest('SHA-256',await file.arrayBuffer());
     return 'sha256:'+Array.from(new Uint8Array(hash),byte=>byte.toString(16).padStart(2,'0')).join('');
   }
-  async function prepare(items,existing=[],onProgress=()=>{}){
+  // Hash independent image files concurrently while publishing results in input
+  // order. This preserves duplicate semantics even when a later small photo
+  // finishes hashing before an earlier large one.
+  async function prepare(items,existing=[],onProgress=()=>{},{concurrency=3,fingerprintFn=fingerprint}={}){
     const known=new Set(existing),accepted=[];let skipped=0;
-    for(let i=0;i<items.length;i++){
-      const fingerprintValue=await fingerprint(items[i].file);
-      if(known.has(fingerprintValue))skipped++;
-      else{known.add(fingerprintValue);accepted.push({...items[i],sourceSignature:fingerprintValue});}
-      onProgress(i+1,items.length,skipped);
-    }
+    if(!items.length)return {accepted,skipped};
+    const hashes=new Array(items.length);
+    const workers=Math.max(1,Math.min(4,Math.floor(concurrency)||1,items.length));
+    let next=0,published=0;
+    const worker=async()=>{
+      while(next<items.length){
+        const index=next++;
+        hashes[index]=await fingerprintFn(items[index].file);
+        // Progress is committed in source order, not completion order.
+        while(published<items.length&&hashes[published]!==undefined){
+          const current=items[published],signature=hashes[published];
+          if(known.has(signature))skipped++;
+          else{known.add(signature);accepted.push({...current,sourceSignature:signature});}
+          published++;onProgress(published,items.length,skipped);
+        }
+      }
+    };
+    await Promise.all(Array.from({length:workers},worker));
     return {accepted,skipped};
   }
   function assertOK(result,message){
@@ -32,7 +47,7 @@
     return result?.data||[];
   }
   async function recoverUnfinished(client,userId,items,now=Date.now(),staleAfterMs=STALE_AFTER_MS){
-    if(!items.length)return {recovered:[],blocked:items,alreadySaved:0,inReview:0,inProgress:0};
+    if(!items.length)return {recovered:[],blocked:items,alreadySaved:0,inReview:0,inProgress:0,savedItems:[],reviewItems:[],inProgressItems:[]};
     const input=new Map(items.map(item=>[item.sourceSignature,item]));
     const rows=assertOK(await client.from(TABLE)
       .select('fingerprint,uploaded_by,record_id,status,updated_at')
@@ -41,9 +56,16 @@
     const stale=rows.filter(row=>input.has(row.fingerprint)&&row.uploaded_by===userId&&
       (row.status==='processing'||row.status==='pending')&&
       Number.isFinite(Date.parse(row.updated_at))&&Date.parse(row.updated_at)<=now-staleAfterMs);
+    // A retained per-photo record ID is a proof of this browser's own unfinished
+    // job. Do not impose the ten-minute stale-lease delay on reconnect.
+    const resumed=rows.filter(row=>row.uploaded_by===userId&&
+      input.get(row.fingerprint)?.resumeSession===true&&
+      String(input.get(row.fingerprint)?.saveRecordId||'')===String(row.record_id)&&
+      (row.status==='processing'||row.status==='pending'));
+    const inspected=[...new Map([...stale,...resumed].map(row=>[row.fingerprint,row])).values()];
     const savedHashes=new Set(),savedIds=new Set(),activeReviews=new Set();
-    if(stale.length){
-      const signatures=stale.map(row=>row.fingerprint),recordIds=stale.map(row=>row.record_id);
+    if(inspected.length){
+      const signatures=inspected.map(row=>row.fingerprint),recordIds=inspected.map(row=>row.record_id);
       const savedByHash=assertOK(await client.from(BOOKS).select('record_id,source_signature')
         .in('source_signature',signatures),'Could not verify whether photos were saved');
       const savedById=assertOK(await client.from(BOOKS).select('record_id,source_signature')
@@ -72,26 +94,26 @@
         .select('fingerprint,record_id'),'Could not recover interrupted uploads');
       for(const row of updated)reclaimedByHash.set(row.fingerprint,String(row.record_id));
     }
-    const recovered=[],blocked=[];
+    const recovered=[],blocked=[],savedItems=[],reviewItems=[],inProgressItems=[];
     let alreadySaved=0,inReview=0,inProgress=0;
     for(const item of items){
       const row=byHash.get(item.sourceSignature);
-      if(!row){blocked.push(item);inProgress++;continue;}
+      if(!row){blocked.push(item);inProgressItems.push(item);inProgress++;continue;}
       if(row.status==='saved'||savedHashes.has(row.fingerprint)||savedIds.has(String(row.record_id))){
-        blocked.push(item);alreadySaved++;continue;
+        blocked.push(item);savedItems.push(item);alreadySaved++;continue;
       }
-      if(activeReviews.has(String(row.record_id))){blocked.push(item);inReview++;continue;}
-      if(reclaimedByHash.has(row.fingerprint)){
-        recovered.push({...item,saveRecordId:reclaimedByHash.get(row.fingerprint),recovered:true});
+      if(activeReviews.has(String(row.record_id))){blocked.push(item);reviewItems.push(item);inReview++;continue;}
+      if(reclaimedByHash.has(row.fingerprint)||resumed.some(r=>r.fingerprint===row.fingerprint)){
+        recovered.push({...item,saveRecordId:reclaimedByHash.get(row.fingerprint)||String(row.record_id),recovered:true});
       }else{
         blocked.push(item);
-        if(row.status==='pending')inReview++;else inProgress++;
+        if(row.status==='pending'){inReview++;reviewItems.push(item)}else{inProgress++;inProgressItems.push(item)}
       }
     }
-    return {recovered,blocked,alreadySaved,inReview,inProgress};
+    return {recovered,blocked,alreadySaved,inReview,inProgress,savedItems,reviewItems,inProgressItems};
   }
   async function register(client,userId,items,{onProgress=()=>{}}={}){
-    const accepted=[],skipped=[];let recoveredCount=0,alreadySaved=0,inReview=0,inProgress=0;
+    const accepted=[],skipped=[],savedItems=[],reviewItems=[],inProgressItems=[];let recoveredCount=0,alreadySaved=0,inReview=0,inProgress=0;
     try{
       for(let i=0;i<items.length;i+=CHUNK){
         const chunk=items.slice(i,i+CHUNK);
@@ -106,13 +128,13 @@
         const claimed=new Set((data||[]).map(row=>row.fingerprint)),previous=[];
         for(const item of chunk){if(claimed.has(item.sourceSignature))accepted.push(item);else previous.push(item);}
         const retry=await recoverUnfinished(client,userId,previous);
-        accepted.push(...retry.recovered);skipped.push(...retry.blocked);
+        accepted.push(...retry.recovered);skipped.push(...retry.blocked);savedItems.push(...retry.savedItems);reviewItems.push(...retry.reviewItems);inProgressItems.push(...retry.inProgressItems);
         recoveredCount+=retry.recovered.length;
         alreadySaved+=retry.alreadySaved;inReview+=retry.inReview;inProgress+=retry.inProgress;
         onProgress(Math.min(i+CHUNK,items.length),items.length,{recovered:recoveredCount,skipped:skipped.length});
       }
     }catch(error){error.claimedUploads=accepted;throw error;}
-    return {accepted,skipped,recovered:recoveredCount,alreadySaved,inReview,inProgress};
+    return {accepted,skipped,recovered:recoveredCount,alreadySaved,inReview,inProgress,savedItems,reviewItems,inProgressItems};
   }
   async function changeStatus(client,userId,items,status){
     const digests=[...new Set(items.map(item=>typeof item==='string'?item:item?.sourceSignature).filter(d=>digestPattern.test(d||'')))];

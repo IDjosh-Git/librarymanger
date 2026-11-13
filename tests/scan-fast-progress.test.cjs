@@ -39,7 +39,7 @@ test('117-photo pipeline can report preparation before first OCR scan finishes',
 test('automatic bulk scanning has quicker recognition while manual retries remain full',()=>{
  assert.match(html,/decodeBatchBarcode\(item\.file,\{fast:true\}\)/);
  assert.match(html,/enrichScanFromImage\(row,\{fast:true\}\)/);
- assert.match(html,/if\(window\.Html5Qrcode\&\&!fast\)/);
+ assert.match(html,/if\(window\.Html5Qrcode\&\&\(!fast\|\|typeof BarcodeDetector===\x27undefined\x27\)\)/);
  assert.match(html,/enrichScanFromImage\(row,\{mode:withOCR===/);
  assert.match(ui,/scanPrepared/);
  assert.match(ui,/scanScanned/);

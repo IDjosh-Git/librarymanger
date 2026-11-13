@@ -1,3 +1,21 @@
+# Latest release: Library Manager v5.51 — Scan recovery + parallel Review approvals
+
+A new **persistent scan journal** records selected photo files and verified progress in the browser before processing begins. Interrupted scans resume after reconnect or same-device refresh without resetting to 0%; original copy IDs are retained and cloud duplicate checks protect Inventory. The app caches its public shell for best-effort offline refresh. **Review cards approve independently**, with per-card saving/retry feedback and stable record-ID actions. The Scan page shows the **last completed batch** for **six hours** or until another scan starts.
+
+**Validation:** **184 automated tests passed**; static responsive browser checks at 320–1440px passed without horizontal overflow. See `LIBRARY_SCAN_RECOVERY_CONCURRENT_REVIEW_V551_20261113.md` for limitations and acceptance steps. **Deployment:** Not yet deployed; authenticated mobile/cloud offline behavior needs verification on the live website. Browser storage must not be cleared, and recovery is limited to the same device/browser.
+
+---
+
+# Latest release: Library Manager v5.50 — Review rebuilt for desktop and mobile
+
+The Review page is redesigned as a simple, responsive editor with a native touch-safe **Approve & save** form. Book title alone is sufficient; ISBN is optional. Every card exposes editable title, author, ISBN, shelf, publisher, year, language, pages and subject. Save failures and retries display directly in Review. Colour contrast and controls use the app's navy/teal palette in light and dark mode. **171 automated Node tests passed**, plus mobile/desktop simulated save and retry checks. See `LIBRARY_PREMIUM_REVIEW_MOBILE_APPROVAL_V550_20261113.md`.
+
+**Deployment:** The source is not deployed to Vercel. Live authenticated iOS/Android approval requires a production acceptance test.
+
+---
+
+## Previous release notes
+
 **Latest release: v5.48 — Removed Activate Admin Access from Library Member navigation, including the old input/button handler and styles. Admin registration and admin code generation remain unchanged.**
 
 ## Latest release: v5.46 (13 November 2026)
@@ -334,3 +352,11 @@ The new duplicate-guard module passed local automated tests for identical bytes 
 ## v5.38 — AI-first weekly selection
 
 The Book of the Week feature now tries AI before other selection methods and can generate the missing weekly pick on the first public visit. The priority is AI > manual editorial fallback > automatic catalogue rotation > legacy public catalogue recommendation. Deploy the app and apply `database/10_ai_first_weekly_spotlight.sql` to update the existing public RPC. See `LIBRARY_WEEKLY_AI_FIRST_V538_20261112.md` for setup and tests.
+
+### v5.49 — Stable scan progress / faster recognition (2026-11-13)
+
+- Premium, fixed-height Scan progress card; no layout growth during lengthy progress messages.
+- Batched UI refresh; concurrent, ordered file hashing; overlapping API wait and next-cover scanning; fast local barcode fallback on browsers without native detection.
+- Review thumbnail compression is skipped for verified Inventory saves, but retained for uncertain/failed saves.
+- Preserves existing book recognition and automatic saving logic. Run `npm test` and `python tests/browser_scan_progress_v549.py` to verify.
+- Full changes and limitations: `LIBRARY_SCAN_PERFORMANCE_STABLE_PROGRESS_V549_20261113.md`.
