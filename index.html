@@ -96,6 +96,44 @@
 @media(max-width:700px){.review-workspace .review-workspace-hero{display:block}.review-workspace .lm-review-hero-image{display:none}.review-workspace .review-primary-lookup button,.review-workspace .review-approve-button,.review-workspace #reviewSaveCorrected{width:100%}.review-workspace .scan-title-support{display:grid;grid-template-columns:1fr}.review-workspace .review-card-footer{display:flex;flex-direction:column;align-items:stretch;gap:12px}}
 @media(prefers-reduced-motion:reduce){.review-workspace *{scroll-behavior:auto!important;transition:none!important}}
 </style>
+<style id="premium-account-settings-rc15">
+/* Refined disclosure cards. Native details/summary retains keyboard and screen-reader semantics. */
+.account-tools-body > details.premium-settings-card{margin:14px 0;border:1px solid #c6d6dd;border-radius:20px;background:linear-gradient(145deg,#ffffff 0%,#f1f7f8 100%);box-shadow:0 8px 24px rgba(18,55,70,.09);overflow:hidden;color:#173c4c}
+.account-tools-body > details.premium-settings-card[open]{border-color:#73a4ae;box-shadow:0 12px 30px rgba(18,55,70,.13)}
+.account-tools-body > details.premium-settings-card > summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:86px;padding:18px 20px;cursor:pointer;color:#173c4c}
+.account-tools-body > details.premium-settings-card > summary::-webkit-details-marker{display:none}
+.account-tools-body > details.premium-settings-card > summary::marker{content:""}
+.account-tools-body .premium-settings-heading{display:flex;align-items:center;gap:14px;min-width:0}
+.account-tools-body .premium-settings-emblem{width:46px;height:46px;flex:0 0 46px;display:grid;place-items:center;border-radius:14px;background:#d8edf0;color:#145b69}
+.account-tools-body .premium-settings-emblem svg{width:23px;height:23px}
+.account-tools-body .premium-settings-text{display:flex;flex-direction:column;gap:4px;min-width:0}
+.account-tools-body .premium-settings-text strong{font-size:1rem;line-height:1.3;font-weight:750;color:#143947}
+.account-tools-body .premium-settings-text small{font-size:.83rem;line-height:1.4;color:#46636e}
+.account-tools-body .premium-settings-toggle{display:grid;place-items:center;flex:0 0 38px;width:38px;height:38px;border-radius:12px;border:1px solid #9bbdc5;background:#fff;color:#154f5d;font-size:26px;font-weight:500;line-height:1}
+.account-tools-body .premium-settings-toggle::before{content:"+"}
+.account-tools-body > details.premium-settings-card[open] > summary .premium-settings-toggle::before{content:"−"}
+.account-tools-body > details.premium-settings-card[open] > summary{border-bottom:1px solid #c9dce0;background:rgba(222,240,243,.55)}
+.account-tools-body > details.premium-settings-card > :not(summary){margin-left:20px;margin-right:20px}
+.account-tools-body > details.premium-settings-card > :last-child{margin-bottom:20px}
+.account-tools-body > details.premium-settings-card > summary:focus-visible{outline:3px solid #d47818;outline-offset:-4px;border-radius:18px}
+.account-tools-body > details.premium-settings-card > summary:hover .premium-settings-toggle{background:#e0f2f4;border-color:#548e9a}
+@media(max-width:600px){.account-tools-body > details.premium-settings-card > summary{padding:15px;min-height:78px}.account-tools-body .premium-settings-heading{gap:10px}.account-tools-body .premium-settings-emblem{width:40px;height:40px;flex-basis:40px}.account-tools-body .premium-settings-toggle{width:36px;height:36px;flex-basis:36px}.account-tools-body > details.premium-settings-card > :not(summary){margin-left:15px;margin-right:15px}}
+@media(prefers-color-scheme:dark){body[data-theme="dark"] .account-tools-body > details.premium-settings-card{background:linear-gradient(145deg,#1a303b,#203c47);border-color:#4c7280;color:#f2f8fa}body[data-theme="dark"] .account-tools-body .premium-settings-text strong{color:#f2f8fa}body[data-theme="dark"] .account-tools-body .premium-settings-text small{color:#c0d7df}body[data-theme="dark"] .account-tools-body > details.premium-settings-card > summary{color:#f2f8fa}body[data-theme="dark"] .account-tools-body .premium-settings-toggle{background:#294854;color:#fff;border-color:#7299a5}}
+@media(prefers-reduced-motion:reduce){.account-tools-body .premium-settings-card *{transition:none!important}}
+</style>
+<style id="premium-disclosure-icons-rc15">
+/* High-contrast, clearly signalled disclosure controls; the native summary remains accessible. */
+.account-tools > summary,.lookupbox > summary.lookuphead{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px}
+.account-tools > summary::-webkit-details-marker,.lookupbox > summary::-webkit-details-marker{display:none}
+.account-tools > summary::marker,.lookupbox > summary::marker{content:""}
+.premium-disclosure-chevron{margin-left:auto;flex:0 0 38px;width:38px;height:38px;display:grid;place-items:center;border-radius:12px;border:1px solid #7dabb7;background:#e7f4f6;color:#164c5b;box-shadow:0 2px 7px rgba(17,54,65,.12);transition:transform .2s ease,background .2s ease}
+.premium-disclosure-chevron svg{width:20px;height:20px;transition:transform .2s ease}
+.account-tools[open] > summary .premium-disclosure-chevron svg,.lookupbox[open] > summary .premium-disclosure-chevron svg{transform:rotate(180deg)}
+.account-tools > summary:hover .premium-disclosure-chevron,.lookupbox > summary:hover .premium-disclosure-chevron{background:#d3ebef;border-color:#367989}
+.account-tools > summary:focus-visible,.lookupbox > summary:focus-visible{outline:3px solid #d47818;outline-offset:3px}
+body[data-theme="dark"] .premium-disclosure-chevron{background:#234956;border-color:#7baebb;color:#f0fbfd}
+@media(prefers-reduced-motion:reduce){.premium-disclosure-chevron,.premium-disclosure-chevron svg{transition:none}}
+</style>
 </head>
 <body data-account="out">
 <a href="#mainContent" class="skip-link">Skip to main content</a>
@@ -215,7 +253,7 @@
     <a class="workspace-spotlight-link" href="book-of-the-week.html"><span class="spotlight-nav-mark" aria-hidden="true">✦</span><span>Book of the week<small>Featured reading pick</small></span><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg></a>
   </div>
 </nav>
-<details class="account-tools"><summary><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span class="account-tools-label">Account settings</span></summary><div class="account-tools-body"><details id="recognitionSettings" class="recognition-account-settings"><summary><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#settings"></use></svg> Book recognition settings</summary><p>Book catalogue lookup always runs first when a printed identifier is available. These preferences apply automatically to Scan and Review on this device.</p><div class="scan-recognition-grid"><label class="scan-recognition-card" for="batchUseAI"><span class="scan-recognition-icon">✦</span><span class="scan-recognition-copy"><strong>AI</strong><small>Fills details when book catalogues cannot.</small></span><input id="batchUseAI" type="checkbox" role="switch" checked aria-label="Enable AI book recognition"><span class="scan-recognition-switch"></span></label><label class="scan-recognition-card" for="batchUseOCR"><span class="scan-recognition-icon">▤</span><span class="scan-recognition-copy"><strong>OCR</strong><small>Reads text from images to assist matching.</small></span><input id="batchUseOCR" type="checkbox" role="switch" checked aria-label="Enable OCR text recognition"><span class="scan-recognition-switch"></span></label></div><p id="recognitionSettingsStatus" role="status" aria-live="polite">Settings apply automatically. Save buttons are not required.</p></details><details class="branding-settings"><summary>App appearance &amp; branding</summary><form id="brandForm" class="branding-form"><p>Change the app name, logo, and consistent color palette for all library users.</p><label for="brandAppName">Application name</label><input id="brandAppName" maxlength="70" required value="Library Manager"><div class="branding-colors"><label for="brandPrimary">Primary color<input type="color" id="brandPrimary" value="#144e58"></label><label for="brandSecondary">Secondary color<input type="color" id="brandSecondary" value="#1d727a"></label></div><label for="brandButtonStyle">Button appearance</label><select id="brandButtonStyle"><option value="gradient">Gradient</option><option value="solid">Solid color</option></select><label for="brandLogoFile">App logo (PNG, JPG, WebP; max 1 MB)</label><input id="brandLogoFile" type="file" accept="image/png,image/jpeg,image/webp"><div class="row"><button type="submit" id="brandSave">Save shared branding</button><button type="button" id="brandRemoveLogo" class="light">Remove logo</button><button type="button" id="brandReset" class="light">Default palette</button></div><p id="brandStatus" role="status" aria-live="polite">Branding is shared across accounts.</p></form></details><div class="row"><button id="reload" class="green">Reload Database</button><button id="signOut" class="light">Sign Out</button></div>
+<details class="account-tools"><summary><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span class="account-tools-label">Account settings</span><span class="premium-disclosure-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></summary><div class="account-tools-body"><details id="recognitionSettings" class="recognition-account-settings premium-settings-card"><summary><span class="premium-settings-heading"><span class="premium-settings-emblem" aria-hidden="true"><svg class="app-icon sm"><use href="assets/icons.svg#settings"></use></svg></span><span class="premium-settings-text"><strong>Book recognition settings</strong><small>Choose how books are identified</small></span></span><span class="premium-settings-toggle" aria-hidden="true"></span></summary><p>Book catalogue lookup always runs first when a printed identifier is available. These preferences apply automatically to Scan and Review on this device.</p><div class="scan-recognition-grid"><label class="scan-recognition-card" for="batchUseAI"><span class="scan-recognition-icon">✦</span><span class="scan-recognition-copy"><strong>AI</strong><small>Fills details when book catalogues cannot.</small></span><input id="batchUseAI" type="checkbox" role="switch" checked aria-label="Enable AI book recognition"><span class="scan-recognition-switch"></span></label><label class="scan-recognition-card" for="batchUseOCR"><span class="scan-recognition-icon">▤</span><span class="scan-recognition-copy"><strong>OCR</strong><small>Reads text from images to assist matching.</small></span><input id="batchUseOCR" type="checkbox" role="switch" checked aria-label="Enable OCR text recognition"><span class="scan-recognition-switch"></span></label></div><p id="recognitionSettingsStatus" role="status" aria-live="polite">Settings apply automatically. Save buttons are not required.</p></details><details class="branding-settings premium-settings-card"><summary><span class="premium-settings-heading"><span class="premium-settings-emblem" aria-hidden="true"><svg class="app-icon sm"><use href="assets/icons.svg#settings"></use></svg></span><span class="premium-settings-text"><strong>App appearance &amp; branding</strong><small>Personalise the library identity</small></span></span><span class="premium-settings-toggle" aria-hidden="true"></span></summary><form id="brandForm" class="branding-form"><p>Change the app name, logo, and consistent color palette for all library users.</p><label for="brandAppName">Application name</label><input id="brandAppName" maxlength="70" required value="Library Manager"><div class="branding-colors"><label for="brandPrimary">Primary color<input type="color" id="brandPrimary" value="#144e58"></label><label for="brandSecondary">Secondary color<input type="color" id="brandSecondary" value="#1d727a"></label></div><label for="brandButtonStyle">Button appearance</label><select id="brandButtonStyle"><option value="gradient">Gradient</option><option value="solid">Solid color</option></select><label for="brandLogoFile">App logo (PNG, JPG, WebP; max 1 MB)</label><input id="brandLogoFile" type="file" accept="image/png,image/jpeg,image/webp"><div class="row"><button type="submit" id="brandSave">Save shared branding</button><button type="button" id="brandRemoveLogo" class="light">Remove logo</button><button type="button" id="brandReset" class="light">Default palette</button></div><p id="brandStatus" role="status" aria-live="polite">Branding is shared across accounts.</p></form></details><div class="row"><button id="reload" class="green">Reload Database</button><button id="signOut" class="light">Sign Out</button></div>
 
 </div></details>
 <div id="memberAccountFooter" class="member-account-footer" hidden aria-label="Library Member session">
@@ -225,7 +263,7 @@
 <div id="status" class="status">Ready.</div>
 
 <details class="lookupbox">
-  <summary class="lookuphead"><span class="lookuphead-icon" aria-hidden="true"><svg class="app-icon"><use href="assets/icons.svg#search"></use></svg></span><span class="lookuphead-copy"><strong>Book lookup settings</strong><small>Optional API connection</small></span><span class="lookuphead-status">Optional</span></summary>
+  <summary class="lookuphead"><span class="lookuphead-icon" aria-hidden="true"><svg class="app-icon"><use href="assets/icons.svg#search"></use></svg></span><span class="lookuphead-copy"><strong>Book lookup settings</strong><small>Optional API connection</small></span><span class="lookuphead-status">Optional</span><span class="premium-disclosure-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></summary>
   <div class="lookupbody">
     <p class="lookupnote lookup-intro">Complete book information using catalogue data.</p>
     <label for="googleBooksKey">Optional browser API key</label>
@@ -1435,7 +1473,7 @@ function copyManagement(g){
  const canDelete=copy=>copy.user_id===session?.user?.id||session?.user?.id===libraryOwnerId;
  return `<div class="inventory-copy-list" role="list" aria-label="Physical book copies">${g.copies.map(b=>{
   const id=esc(b.record_id),borrowed=b.book_status==='Borrowed';
-  return `<div role="listitem" class="inventory-copy-item"><div class="inventory-copy-identity"><strong>${esc(b.book_id||'Pending Book ID')}</strong> ${statusPill(b)} <span>Barcode: ${esc(b.barcode||'not recorded')}</span> <span>Shelf: <span contenteditable="true" role="textbox" aria-label="Edit shelf of ${esc(b.book_id||'book')}" data-book="${id}" data-field="shelf_location">${esc(b.shelf_location||'')}</span></span>${borrowed?`<span>Due: ${esc(b.due_date||'not set')}</span>`:''}</div><div class="action-cell">${isCirculationUser()?`<button type="button" class="icon-btn" data-${borrowed?'return':'lend'}-book="${id}" aria-label="${borrowed?'Return':'Lend'} copy ${esc(b.book_id||'')}">${uiIcon(borrowed?'arrow-down-left':'arrow-up-right')}</button>`:''}<button type="button" class="icon-btn" data-edit-book="${id}" aria-label="Edit copy ${esc(b.book_id||'')}">${uiIcon('pencil')}</button><button type="button" class="icon-btn" data-copy-book="${id}" aria-label="Copy book ID ${esc(b.book_id||'')}">${uiIcon('copy')}</button>${canDelete(b)?`<button type="button" class="icon-btn danger" data-delete-book="${id}" aria-label="Delete copy ${esc(b.book_id||'')}">${uiIcon('trash')}</button>`:''}</div></div>`;
+  return `<div role="listitem" class="inventory-copy-item"><div class="inventory-copy-identity"><strong>${esc(b.book_id||'Pending Book ID')}</strong> ${statusPill(b)} <span>Barcode: ${esc(b.barcode||'not recorded')}</span> <span>Shelf: <span contenteditable="true" role="textbox" aria-label="Edit shelf of ${esc(b.book_id||'book')}" data-book="${id}" data-field="shelf_location">${esc(b.shelf_location||'')}</span></span>${borrowed?`<span>Due: ${esc(b.due_date||'not set')}</span>`:''}</div><div class="action-cell">${isCirculationUser()?`<button type="button" class="icon-btn" data-${borrowed?'return':'lend'}-book="${id}" aria-label="${borrowed?'Return':'Lend'} copy ${esc(b.book_id||'')}">${uiIcon(borrowed?'arrow-down-left':'arrow-up-right')}</button>`:''}<button type="button" class="icon-btn" data-edit-book="${id}" aria-label="Edit copy ${esc(b.book_id||'')}">${uiIcon('pencil')}</button><button type="button" class="icon-btn" data-copy-book="${id}" aria-label="Copy book ID ${esc(b.book_id||'')}">${uiIcon('copy')}</button>${canDelete(b)?`<button type="button" class="icon-btn danger premium-delete" data-delete-book="${id}" aria-label="Delete copy ${esc(b.book_id||'')}">${uiIcon('trash')}</button>`:''}</div></div>`;
  }).join('')}</div>`;
 }
 function inventoryGroupStatus(g){
@@ -2012,11 +2050,28 @@ function clearForms(){
  ["inventoryCamera"].forEach(id=>{if($(id))$(id).value=""});
  msg("Form cleared. No database records were deleted.","ok")
 }
+// Shared, keyboard-accessible destructive-action confirmation.
+function confirmLibraryDeletion({title,description,buttonLabel='Delete'}){
+ return new Promise(resolve=>{
+  const backdrop=document.createElement('div');backdrop.className='premium-delete-backdrop';
+  backdrop.innerHTML=`<section class="premium-delete-dialog" role="alertdialog" aria-modal="true" aria-labelledby="premiumDeleteTitle" aria-describedby="premiumDeleteDescription" tabindex="-1"><span class="premium-delete-symbol" aria-hidden="true">${uiIcon('trash')}</span><h2 id="premiumDeleteTitle"></h2><p id="premiumDeleteDescription"></p><div class="premium-delete-actions"><button type="button" class="premium-delete-cancel light">Keep book</button><button type="button" class="premium-delete-confirm">${uiIcon('trash')} <span></span></button></div></section>`;
+  document.body.appendChild(backdrop);
+  backdrop.querySelector('#premiumDeleteTitle').textContent=title;
+  backdrop.querySelector('#premiumDeleteDescription').textContent=description;
+  backdrop.querySelector('.premium-delete-confirm span').textContent=buttonLabel;
+  const prior=document.activeElement;
+  const cancel=backdrop.querySelector('.premium-delete-cancel'),confirm=backdrop.querySelector('.premium-delete-confirm');
+  const finish=value=>{backdrop.removeEventListener('keydown',keyHandler);backdrop.remove();if(prior?.isConnected)prior.focus();resolve(value)};
+  const keyHandler=e=>{if(e.key==='Escape'){e.preventDefault();finish(false)}if(e.key==='Tab'){const target=e.shiftKey?cancel:confirm;if((e.shiftKey&&document.activeElement===cancel)||(!e.shiftKey&&document.activeElement===confirm)){e.preventDefault();target===cancel?confirm.focus():cancel.focus()}}};
+  backdrop.addEventListener('keydown',keyHandler);cancel.onclick=()=>finish(false);confirm.onclick=()=>finish(true);
+  backdrop.addEventListener('click',e=>{if(e.target===backdrop)finish(false)});cancel.focus();
+ });
+}
 async function deleteBookRecord(recordId){
  if(!session?.user)return msg("Sign in first.","warn");
  let b=books.find(x=>x.record_id===recordId);if(!b)return msg("Book not found.","warn");if(b.user_id!==session.user.id&&session.user.id!==libraryOwnerId)return msg("Only the uploader or library owner may delete this book.","err");
  if(b.book_status==="Borrowed")return msg("Return this book before deleting it.","warn");
- let label=b.title||b.barcode||b.book_id||"this book";if(!confirm('Delete "'+label+'" from the library inventory?'))return;
+ let label=b.title||b.barcode||b.book_id||"this book";if(!await confirmLibraryDeletion({title:'Delete this inventory book?',description:`${label} will be permanently removed from Inventory. This action cannot be undone.`,buttonLabel:'Delete book'}))return;
  let {error}=await sb.from(BOOKS).delete().eq("record_id",recordId);if(error)return msg(error.message,"err");
  await reloadAll();msg("Book deleted from Supabase.","ok")
 }
@@ -2812,7 +2867,7 @@ function renderBatch(){
   const status=hasBookTitle(x.title)?'Ready to approve':'Title needed';
   const duplicateWarning=duplicateCandidate(x)?'<p class="review-duplicate-warning" role="note">Possible matching ISBN in Inventory or Review. Check whether this is a separate physical copy before approving.</p>':'';
   h+=`<article role="listitem" class="batch-book scan-title-review-card" data-review-card="${i}" data-review-key="${batchAttr(x.saveRecordId)}" aria-label="Review book ${i+1}: ${batchAttr(x.fileName||'cover photo')}">
-   <div class="batch-book-head"><span class="scan-title-review-number" aria-hidden="true">${(reviewPage-1)*perPage+position+1}</span><div class="batch-book-source"><strong>${esc(x.title&&hasBookTitle(x.title)?x.title:x.fileName||'Uploaded cover')}</strong><span class="batch-path">${esc(x.fileName||'Uploaded image')}</span></div><div class="review-card-head-actions"><span class="batch-book-state ${hasBookTitle(x.title)?'ready':'incomplete'}">${status}</span>${x.reviewOwnerId&&x.reviewOwnerId!==session?.user?.id?'<span class="review-shared-tag" title="Scanned by another administrator">Team scan</span>':''}<button type="button" class="review-delete-image" data-delete-review="${i}" aria-label="Delete pending image ${batchAttr(x.fileName||'book cover')}" ${rowBusy?'disabled':''}>Delete image</button></div></div>
+   <div class="batch-book-head"><span class="scan-title-review-number" aria-hidden="true">${(reviewPage-1)*perPage+position+1}</span><div class="batch-book-source"><strong>${esc(x.title&&hasBookTitle(x.title)?x.title:x.fileName||'Uploaded cover')}</strong><span class="batch-path">${esc(x.fileName||'Uploaded image')}</span></div><div class="review-card-head-actions"><span class="batch-book-state ${hasBookTitle(x.title)?'ready':'incomplete'}">${status}</span>${x.reviewOwnerId&&x.reviewOwnerId!==session?.user?.id?'<span class="review-shared-tag" title="Scanned by another administrator">Team scan</span>':''}<button type="button" class="review-delete-image premium-delete" data-delete-review="${i}" aria-label="Delete pending image ${batchAttr(x.fileName||'book cover')}" ${rowBusy?'disabled':''}><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#trash"></use></svg><span>Delete image</span></button></div></div>
    <div class="batch-book-content"><div class="review-cover-column">${batchPhotoMarkup(x,'batch-book-photo','Cover photo from '+(x.fileName||'book'))}<span class="review-cover-caption">Cover reference</span></div>
     <form class="batch-book-fields review-edit-form" data-review-form="${i}" data-review-key="${batchAttr(x.saveRecordId)}" novalidate>
      <div class="scan-title-primary">${field('title','Book title <em>required</em>',350,'Enter the title on the cover')}</div>
@@ -3889,7 +3944,7 @@ async function discardPendingReviewImage(index){
  const key=String(row.saveRecordId||'');if(!validReviewKey(key))return reviewStatus('Cannot remove this image: the review ID is invalid.','error');
  const uploader=reviewSourceOwner(row,owner);
  const name=String(row.fileName||row.title||'this book');
- if(!confirm(`Delete the image “${name}” from Review?\n\nThe pending scan and its unsaved details will be removed. This will NOT delete any book already saved to Inventory.`))return;
+ if(!await confirmLibraryDeletion({title:'Delete this review image?',description:`${name} and its unsaved review details will be removed. Books already saved in Inventory are not affected.`,buttonLabel:'Delete image'}))return;
  row.reviewBusy=true;renderBatch();
  try{
   await reviewCloudSync.catch(error=>{throw Error('Previous Review sync failed: '+String(error?.message||error))});
@@ -4197,7 +4252,15 @@ $('batchResults').addEventListener('submit',async event=>{
   setReviewFormFeedback(form,'This book is busy. Other Review cards can still be saved.','error');return;
  }
  if(!session?.user?.id){setReviewFormFeedback(form,'Your session expired. Sign in and retry.','error');return}
- if(!reviewEditLeases.has(String(row.saveRecordId||''))||!(await renewReviewEdit(String(row.saveRecordId||'')))){setReviewFormFeedback(form,'Obtain an active editing lock before approval. Select a book field to request access.','error');return}
+ // Save must acquire the edit lock itself: Auto-Fill can populate a card without field focus.
+ const editKey=String(row.saveRecordId||'');
+ if(!reviewEditLeases.has(editKey)){
+  const acquired=await acquireReviewEdit(form);
+  if(!acquired)return;
+ }
+ if(!(await renewReviewEdit(editKey))){
+  setReviewFormFeedback(form,'Editing access expired. Please try Approve & Save again.','error');return;
+ }
  syncReviewFields(form,row);
  if(!hasBookTitle(row.title)){setReviewFormFeedback(form,'Enter a book title. ISBN is optional.','error');form.querySelector('[data-batch-field="title"]')?.focus();return}
  // Acquire an atomic cloud lease before approving a shared record.
@@ -4207,14 +4270,14 @@ $('batchResults').addEventListener('submit',async event=>{
   setReviewFormFeedback(form,'A valid administrator session and review ID are required.','error');return;
  }
  const {data:leaseGranted,error:leaseError}=await sb.rpc('library_claim_review_approval',{p_review_key:reviewLeaseKey});
- if(leaseError){setReviewFormFeedback(form,'Approval lock unavailable. Apply database migration 14 and retry. '+(leaseError.message||''),'error');return}
+ if(leaseError){setReviewFormFeedback(form,'Approval lock unavailable. Please retry or contact the administrator. '+(leaseError.message||''),'error');return}
  if(!leaseGranted){setReviewFormFeedback(form,'This book is already being approved by another administrator, or is no longer pending. Sync Review and retry.','error');return}
  try{
   row.selected=true;row.error='';row.saveError='';row.reviewUpdatedAt=Date.now();
   await saveReviewCard(row,form);
  }finally{
   reviewEditLeases.delete(reviewLeaseKey);
-  await sb.rpc('library_release_review_edit',{p_review_key:reviewLeaseKey}).catch(()=>{});
+  try{const {error:editReleaseError}=await sb.rpc('library_release_review_edit',{p_review_key:reviewLeaseKey});if(editReleaseError)console.warn('Review edit lease release:',editReleaseError)}catch(editReleaseError){console.warn('Review edit lease release:',editReleaseError)}
   const {error:releaseError}=await sb.rpc('library_release_review_approval',{p_review_key:reviewLeaseKey});
   if(releaseError)console.warn('Review lease will expire automatically:',releaseError);
  }

@@ -21,7 +21,7 @@ function mockDelete({saved=false,cloudError=false,confirmed=true,rowSaved=false}
   REVIEW_QUEUE:'library_review_queue', // invisible word joiner removed below
   BOOKS:'library_books',
   validReviewKey: key=>/^[0-9a-f-]{36}$/.test(key),
-  confirm:()=>confirmed,
+  confirmLibraryDeletion:async()=>confirmed,
   renderBatch:()=>calls.push(['render']),
   persistReviewDraft:async(owner,version)=>{calls.push(['persist',owner,version]);return true},
   reviewRowKey:x=>String(x?.saveRecordId||''),reviewSourceOwner:(row,owner)=>row.reviewOwnerId||owner,
@@ -86,7 +86,7 @@ test('Review exposes Delete Image only for unsaved pending image cards',()=>{
  assert.match(html,/data-delete-review="\$\{i\}"/);
  assert.match(html,/Delete image/);
  assert.match(html,/if\(!row\|\|row\.saved\|\|!owner/);
- assert.match(html,/This will NOT delete any book already saved to Inventory/);
+ assert.match(html,/Books already saved in Inventory are not affected/);
 });
 test('Deleted review image is cloud-resolved before local removal; fingerprint is reclaimed',async()=>{
  const a=mockDelete();await a.discard();
