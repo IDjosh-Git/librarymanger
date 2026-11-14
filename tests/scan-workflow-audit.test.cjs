@@ -24,7 +24,7 @@ function mockDelete({saved=false,cloudError=false,confirmed=true,rowSaved=false}
   confirm:()=>confirmed,
   renderBatch:()=>calls.push(['render']),
   persistReviewDraft:async(owner,version)=>{calls.push(['persist',owner,version]);return true},
-  reviewRowKey:x=>String(x?.saveRecordId||''),
+  reviewRowKey:x=>String(x?.saveRecordId||''),reviewSourceOwner:(row,owner)=>row.reviewOwnerId||owner,
   reviewStatus:(message,type)=>{calls.push(['status',message,type])},
   $:id=>id==='reviewActionStatus'?{set textContent(x){calls.push(['action',x])}}:null,
   URL:{revokeObjectURL:()=>{}},
@@ -122,7 +122,7 @@ test('Resolved cloud tombstones prevent removed review photos reappearing after 
  assert.match(html,/fetchCloudResolvedReviewKeys\(owner\)/);
  assert.match(html,/for\(const discarded of discardedKeys\)live\.delete\(discarded\)/);
  assert.match(html,/if\(item\.saved\|\|discardedKeys\.has\(key\)\)live\.delete\(key\)/);
- assert.match(html,/\.eq\('user_id',owner\)\.eq\('status','resolved'\)/);
+ assert.match(html,/if\(!isAdmin\(\)\)query=query\.eq\('user_id',owner\)/);
 });
 test('Replacement image only receives pending cloud status after backup succeeds',()=>{
  assert.match(html,/const backedUp=await persistReviewDraft\(owner,reviewDraftVersion\)/);

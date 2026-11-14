@@ -1,0 +1,4 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');const base=path.join(__dirname,'..');
+test('operations integration binds all three controls',()=>{const s=fs.readFileSync(path.join(base,'assets/operations-integration.js'),'utf8');for(const id of ['operationsRefresh','operationsQueue','operationsReservationsButton','operationsSnapshot'])assert.ok(s.includes(id));assert.match(s,/library_admin_operations_snapshot/);assert.match(s,/library_queue_due_notices/)});
+test('operations UI is included and initialized',()=>{const s=fs.readFileSync(path.join(base,'index.html'),'utf8');assert.match(s,/assets\/operations-integration\.js/);assert.match(s,/LibraryOperationsIntegration\?\.init/)});
+test('no notification is misrepresented as sent',()=>{const s=fs.readFileSync(path.join(base,'assets/operations-integration.js'),'utf8');assert.match(s,/no emails or SMS have been sent/)});

@@ -4769,3 +4769,18 @@ html[data-theme=dark] #review .review-save-feedback[data-status=error]:not(:empt
 /* Match the unified navy/teal palette in the scan report heading. */
 #shelfScan .scan-recent-heading .eyebrow{color:#0b7978!important;letter-spacing:.12em!important}
 :root[data-theme="dark"] #shelfScan .scan-recent-heading .eyebrow{color:#8bdfdf!important}
+
+
+/* v5.54: Shared administrator Review – small, readable uploader/source labels. */
+#review .review-shared-tag{display:inline-flex;align-items:center;justify-content:center;min-height:26px;padding:4px 9px;border:1px solid rgba(15,120,127,.24);border-radius:999px;background:#e9f6f5;color:#145e68;font-size:11px;font-weight:760;line-height:1.2;white-space:nowrap}
+:root[data-theme="dark"] #review .review-shared-tag{background:rgba(44,168,167,.13);border-color:rgba(127,218,211,.3);color:#b1ebe5}
+#mobileNavSheet [data-mobile-tab="review"] .review-nav-mobile-count{display:inline-flex;align-items:center;justify-content:center;margin-inline-start:auto;min-width:25px;min-height:25px;padding:3px 7px;border-radius:999px;background:#e5f4f3;color:#145e68;font-size:11px;font-weight:820;font-variant-numeric:tabular-nums}
+:root[data-theme="dark"] #mobileNavSheet [data-mobile-tab="review"] .review-nav-mobile-count{background:rgba(40,158,155,.2);color:#b1ebe5}
+
+/* v5.55 shared branding palette and compact recognition settings */
+:root{--library-primary:#144e58;--library-secondary:#1d727a;--library-action:linear-gradient(135deg,var(--library-primary),var(--library-secondary));--navy:var(--library-primary);--navy2:var(--library-secondary);--accent:var(--library-primary);--accent2:var(--library-secondary)}
+:root[data-brand-buttons="solid"]{--library-action:var(--library-primary)}
+header{background:linear-gradient(135deg,var(--library-primary),var(--library-secondary))}
+button:not(.light):not(.danger):not(.tab):not(.theme-switch):not(.header-icon-button):not(.notification-bell):not(.mobile-menu-toggle):not(.scan-recognition-switch),.scanbtn{background:var(--library-action)}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--library-secondary);outline-offset:2px}
+.branding-settings{margin:10px 0;border:1px solid var(--line);border-radius:12px;padding:9px 12px}.branding-settings summary{cursor:pointer;font-weight:750}.branding-form{display:grid;gap:10px;padding:12px 0}.branding-form p{margin:0;color:var(--muted)}.branding-form label{display:grid;gap:5px}.branding-colors{display:grid;grid-template-columns:1fr 1fr;gap:12px}.branding-form input[type=color]{padding:3px;min-height:42px;max-width:100%;cursor:pointer}.branding-form select{min-height:44px;border-radius:10px;padding:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)}.branding-form input[type=file]{padding:9px;min-height:unset}.recognition-account-settings>summary{padding:7px 10px!important;min-height:unset!important}.recognition-account-settings>p{margin:5px 0!important;line-height:1.35}.recognition-account-settings .scan-recognition-grid{gap:7px!important}.recognition-account-settings .scan-recognition-card{min-height:46px!important;padding:7px 9px!important}.recognition-account-settings .scan-recognition-copy small{line-height:1.25}.brand-logo-image{object-fit:contain}

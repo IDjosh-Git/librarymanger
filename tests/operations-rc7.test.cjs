@@ -1,0 +1,5 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');const root=path.join(__dirname,'..');
+test('notification worker claims rows atomically through RPC',()=>{const s=fs.readFileSync(path.join(root,'api/operations-cron.js'),'utf8');assert.match(s,/rpc\/library_claim_notification_batch/);assert.doesNotMatch(s,/const claimed=await db/)});
+test('report requires explicit recipient and is enqueued only on Monday',()=>{const s=fs.readFileSync(path.join(root,'api/operations-cron.js'),'utf8');assert.match(s,/REPORT_TO_EMAIL/);assert.match(s,/getUTCDay\(\)===1/)});
+test('operations health is protected by cron secret',()=>{const s=fs.readFileSync(path.join(root,'api/operations-health.js'),'utf8');assert.match(s,/req.headers.authorization/);assert.match(s,/Bearer /)});
+test('database claims are skip locked and scoped to service role',()=>{const s=fs.readFileSync(path.join(root,'database/20_delivery_claim_and_reporting.sql'),'utf8');assert.match(s,/FOR UPDATE SKIP LOCKED/);assert.match(s,/auth.role\(\)/);assert.match(s,/REVOKE ALL ON FUNCTION/)});

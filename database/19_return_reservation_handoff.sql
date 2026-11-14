@@ -1,0 +1,5 @@
+-- Applied to DataLearning as library_return_reservation_handoff_rc5.
+-- Trigger: on a loan return, promote the oldest waiting reservation to notified,
+-- then enqueue an idempotent reservation_available message.
+-- Production function definition is maintained in the Supabase migration history.
+-- This file is documentation only; do not run it as a standalone migration.

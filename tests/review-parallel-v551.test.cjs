@@ -15,7 +15,7 @@ function setup(){
  const ctx={sb,BOOKS:'library_books',session:{user:{id:owner}},authGeneration:0,reviewCardJobs:jobs,reviewDraftVersion:1,reviewSaveTimer:null,clearTimeout,reviewCloudSync:Promise.resolve(),
    batchImageUrls:new Map(),books:[],console,Date,Map,Set,URL:{revokeObjectURL:()=>{}},
    $:()=>({textContent:''}),clean:x=>String(x||'').trim(),uuid:()=>`generated-${Math.random()}`,
-   renderBatch:()=>{listRender++},reloadAll:async()=>{},persistReviewDraft:async()=>{drafts.push('backup')},deleteCloudReview:async()=>{},scanUploadGuard:{changeStatus:async()=>{}},
+   renderBatch:()=>{listRender++},reloadAll:async()=>{},persistReviewDraft:async()=>{drafts.push('backup')},deleteCloudReview:async()=>{},reviewSourceOwner:(row,owner)=>row.reviewOwnerId||owner,scanUploadGuard:{changeStatus:async()=>{}},
    setReviewFormFeedback:(form,text,kind)=>{form.feedback={text,kind};feedback.push({form:form.id,text,kind})}
  };
  vm.createContext(ctx);vm.runInContext(saveCode,ctx);

@@ -373,3 +373,8 @@ The Book of the Week feature now tries AI before other selection methods and can
 ## Release v5.53 — Scan percentage and completed history
 
 The live scan meter shows only a percentage, while the completed scan history provides detailed counts for Inventory, Review, skipped, and needs-attention results, plus an outcome breakdown. The six-hour retention, same-device offline recovery, and existing Review workflow remain in place. See `LIBRARY_SCAN_PERCENT_HISTORY_V553_20261113.md`.
+
+
+## Release v5.54 — Shared administrator Review queue (14 Nov 2026)
+
+Administrators now share one pending Review queue and count, while the original scanning uploader remains attached to each record. Cross-admin editing/approval resolves the existing row and the upload claim; member visibility stays restricted. Includes Supabase policy migration `database/12_shared_admin_review_queue.sql` (already applied to the connected production database), mobile/desktop counts, a fixed cloud restoration scoping bug, and service-worker cache update. See `LIBRARY_TEAM_SHARED_REVIEW_V554_20261114.md` for testing and deployment details.

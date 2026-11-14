@@ -76,5 +76,5 @@ test('the premium scan progress card has fixed desktop/mobile heights and clippe
  assert.match(css,/#shelfScan \.scan-auto-progress-shell \.premium-progress\{[\s\S]+?height:166px!important;min-height:166px!important;max-height:166px!important/);
  assert.match(css,/#shelfScan #batchStatus\{[\s\S]+?-webkit-line-clamp:2!important/);
  assert.match(css,/@media\(max-width:540px\)\{[\s\S]+?height:181px!important;min-height:181px!important;max-height:181px!important/);
- assert.match(html,/library-manager-v542\.css\?v=5\.53\.0/);
+ assert.match(html,/library-manager-v542\.css\?v=5\.55\.0/);
 });
