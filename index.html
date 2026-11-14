@@ -134,6 +134,69 @@
 body[data-theme="dark"] .premium-disclosure-chevron{background:#234956;border-color:#7baebb;color:#f0fbfd}
 @media(prefers-reduced-motion:reduce){.premium-disclosure-chevron,.premium-disclosure-chevron svg{transition:none}}
 </style>
+<style id="settings-compact-disclosure-rc16">
+/* RC16: suppress inherited native/legacy arrows, leaving one clear control. */
+body #accountCard :is(.account-tools,.lookupbox) > summary::after,
+body #accountCard .account-tools-body > details.premium-settings-card > summary::after,
+body #accountCard :is(.account-tools,.lookupbox) > summary::before,
+body #accountCard .account-tools-body > details.premium-settings-card > summary::before{
+ content:none!important;display:none!important;border:0!important;background:none!important;
+}
+body #accountCard :is(.account-tools,.lookupbox) > summary::-webkit-details-marker,
+body #accountCard .account-tools-body > details.premium-settings-card > summary::-webkit-details-marker{display:none!important}
+body #accountCard :is(.account-tools,.lookupbox) > summary,
+body #accountCard .account-tools-body > details.premium-settings-card > summary{list-style:none!important;list-style-type:none!important}
+/* Compact card headers, while preserving 44px touch targets. */
+body #accountCard .account-tools-body > details.premium-settings-card{
+ margin:7px 0!important;padding:0!important;border-radius:13px!important;box-shadow:0 3px 12px rgba(18,55,70,.06)!important;
+}
+body #accountCard .account-tools-body > details.premium-settings-card > summary{
+ min-height:48px!important;padding:7px 10px!important;gap:8px!important;
+}
+body #accountCard .premium-settings-heading{gap:9px!important}
+body #accountCard .premium-settings-emblem{width:32px!important;height:32px!important;flex:0 0 32px!important;border-radius:9px!important}
+body #accountCard .premium-settings-emblem svg{width:17px!important;height:17px!important}
+body #accountCard .premium-settings-text{gap:1px!important}
+body #accountCard .premium-settings-text strong{font-size:.82rem!important;line-height:1.2!important}
+body #accountCard .premium-settings-text small{font-size:.69rem!important;line-height:1.25!important}
+body #accountCard .premium-settings-toggle{width:32px!important;height:32px!important;flex:0 0 32px!important;border-radius:9px!important;font-size:21px!important}
+body #accountCard .account-tools-body > details.premium-settings-card > :not(summary){margin-left:12px!important;margin-right:12px!important}
+body #accountCard .account-tools-body > details.premium-settings-card > :last-child{margin-bottom:12px!important}
+body #accountCard .account-tools > summary,body #accountCard .lookupbox > summary.lookuphead{
+ min-height:48px!important;padding:7px 10px!important;gap:9px!important;
+}
+body #accountCard .premium-disclosure-chevron{width:32px!important;height:32px!important;flex:0 0 32px!important;border-radius:9px!important;margin-left:auto!important}
+body #accountCard .premium-disclosure-chevron svg{width:17px!important;height:17px!important}
+body #accountCard .lookuphead-icon{width:32px!important;height:32px!important;flex:0 0 32px!important}
+body #accountCard .lookuphead-copy strong{font-size:.82rem!important}
+body #accountCard .lookuphead-copy small{font-size:.69rem!important}
+body #accountCard .lookuphead-status{padding:2px 6px!important}
+@media(max-width:420px){body #accountCard .premium-settings-text small{font-size:.65rem!important}body #accountCard .lookuphead-status{display:none!important}}
+</style>
+<style id="settings-recognition-compact-rc17">
+/* Compact, single-column AI/OCR settings with accessible full-row switch targets. */
+body #accountCard .recognition-account-settings .scan-recognition-grid{display:grid!important;grid-template-columns:minmax(0,1fr)!important;gap:7px!important;margin:8px 0 9px!important}
+body #accountCard .recognition-account-settings .scan-recognition-card{display:grid!important;grid-template-columns:30px minmax(0,1fr) 45px!important;gap:9px!important;min-height:50px!important;padding:7px 10px!important;border-radius:11px!important;align-items:center!important}
+body #accountCard .recognition-account-settings .scan-recognition-icon{width:30px!important;height:30px!important;border-radius:9px!important;font-size:1rem!important}
+body #accountCard .recognition-account-settings .scan-recognition-copy{min-width:0!important;gap:1px!important}
+body #accountCard .recognition-account-settings .scan-recognition-copy strong{font-size:.8rem!important;line-height:1.2!important}
+body #accountCard .recognition-account-settings .scan-recognition-copy small{font-size:.7rem!important;line-height:1.25!important}
+body #accountCard .recognition-account-settings > p{margin:7px 12px 8px!important;font-size:.72rem!important;line-height:1.4!important}
+/* Explicit icons: previous generated-content plus/minus was overridden by inherited CSS. */
+body #accountCard .premium-settings-toggle::before,body #accountCard .premium-settings-toggle::after{content:none!important;display:none!important}
+body #accountCard .premium-settings-toggle svg{width:18px;height:18px;flex-shrink:0}
+body #accountCard .premium-settings-toggle .toggle-plus{display:block!important}
+body #accountCard .premium-settings-toggle .toggle-minus{display:none!important}
+body #accountCard details.premium-settings-card[open] > summary .premium-settings-toggle .toggle-plus{display:none!important}
+body #accountCard details.premium-settings-card[open] > summary .premium-settings-toggle .toggle-minus{display:block!important}
+body #accountCard .premium-disclosure-chevron{transform:none!important}
+body #accountCard .premium-disclosure-chevron svg{transition:transform .18s ease!important;transform:rotate(0deg)!important}
+body #accountCard .account-tools[open] > summary .premium-disclosure-chevron svg{transform:rotate(180deg)!important}
+/* Lookup is outside accountCard: its chevron must respond too. */
+body .lookupbox > summary .premium-disclosure-chevron svg{transform:rotate(0deg)!important;transition:transform .18s ease!important}
+body .lookupbox[open] > summary .premium-disclosure-chevron svg{transform:rotate(180deg)!important}
+@media(prefers-reduced-motion:reduce){body #accountCard .premium-disclosure-chevron svg,body .lookupbox .premium-disclosure-chevron svg{transition:none!important}}
+</style>
 </head>
 <body data-account="out">
 <a href="#mainContent" class="skip-link">Skip to main content</a>
@@ -253,7 +316,7 @@ body[data-theme="dark"] .premium-disclosure-chevron{background:#234956;border-co
     <a class="workspace-spotlight-link" href="book-of-the-week.html"><span class="spotlight-nav-mark" aria-hidden="true">✦</span><span>Book of the week<small>Featured reading pick</small></span><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#arrow-up-right"></use></svg></a>
   </div>
 </nav>
-<details class="account-tools"><summary><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span class="account-tools-label">Account settings</span><span class="premium-disclosure-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></summary><div class="account-tools-body"><details id="recognitionSettings" class="recognition-account-settings premium-settings-card"><summary><span class="premium-settings-heading"><span class="premium-settings-emblem" aria-hidden="true"><svg class="app-icon sm"><use href="assets/icons.svg#settings"></use></svg></span><span class="premium-settings-text"><strong>Book recognition settings</strong><small>Choose how books are identified</small></span></span><span class="premium-settings-toggle" aria-hidden="true"></span></summary><p>Book catalogue lookup always runs first when a printed identifier is available. These preferences apply automatically to Scan and Review on this device.</p><div class="scan-recognition-grid"><label class="scan-recognition-card" for="batchUseAI"><span class="scan-recognition-icon">✦</span><span class="scan-recognition-copy"><strong>AI</strong><small>Fills details when book catalogues cannot.</small></span><input id="batchUseAI" type="checkbox" role="switch" checked aria-label="Enable AI book recognition"><span class="scan-recognition-switch"></span></label><label class="scan-recognition-card" for="batchUseOCR"><span class="scan-recognition-icon">▤</span><span class="scan-recognition-copy"><strong>OCR</strong><small>Reads text from images to assist matching.</small></span><input id="batchUseOCR" type="checkbox" role="switch" checked aria-label="Enable OCR text recognition"><span class="scan-recognition-switch"></span></label></div><p id="recognitionSettingsStatus" role="status" aria-live="polite">Settings apply automatically. Save buttons are not required.</p></details><details class="branding-settings premium-settings-card"><summary><span class="premium-settings-heading"><span class="premium-settings-emblem" aria-hidden="true"><svg class="app-icon sm"><use href="assets/icons.svg#settings"></use></svg></span><span class="premium-settings-text"><strong>App appearance &amp; branding</strong><small>Personalise the library identity</small></span></span><span class="premium-settings-toggle" aria-hidden="true"></span></summary><form id="brandForm" class="branding-form"><p>Change the app name, logo, and consistent color palette for all library users.</p><label for="brandAppName">Application name</label><input id="brandAppName" maxlength="70" required value="Library Manager"><div class="branding-colors"><label for="brandPrimary">Primary color<input type="color" id="brandPrimary" value="#144e58"></label><label for="brandSecondary">Secondary color<input type="color" id="brandSecondary" value="#1d727a"></label></div><label for="brandButtonStyle">Button appearance</label><select id="brandButtonStyle"><option value="gradient">Gradient</option><option value="solid">Solid color</option></select><label for="brandLogoFile">App logo (PNG, JPG, WebP; max 1 MB)</label><input id="brandLogoFile" type="file" accept="image/png,image/jpeg,image/webp"><div class="row"><button type="submit" id="brandSave">Save shared branding</button><button type="button" id="brandRemoveLogo" class="light">Remove logo</button><button type="button" id="brandReset" class="light">Default palette</button></div><p id="brandStatus" role="status" aria-live="polite">Branding is shared across accounts.</p></form></details><div class="row"><button id="reload" class="green">Reload Database</button><button id="signOut" class="light">Sign Out</button></div>
+<details class="account-tools"><summary><svg class="app-icon" aria-hidden="true"><use href="assets/icons.svg#user"></use></svg><span class="account-tools-label">Account settings</span><span class="premium-disclosure-chevron" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="m6 9 6 6 6-6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span></summary><div class="account-tools-body"><details id="recognitionSettings" class="recognition-account-settings premium-settings-card"><summary><span class="premium-settings-heading"><span class="premium-settings-emblem" aria-hidden="true"><svg class="app-icon sm"><use href="assets/icons.svg#settings"></use></svg></span><span class="premium-settings-text"><strong>Book recognition settings</strong><small>Choose how books are identified</small></span></span><span class="premium-settings-toggle" aria-hidden="true"><svg class="toggle-plus" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg><svg class="toggle-minus" viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg></span></summary><p>Book catalogue lookup always runs first when a printed identifier is available. These preferences apply automatically to Scan and Review on this device.</p><div class="scan-recognition-grid"><label class="scan-recognition-card" for="batchUseAI"><span class="scan-recognition-icon">✦</span><span class="scan-recognition-copy"><strong>AI</strong><small>Fills details when book catalogues cannot.</small></span><input id="batchUseAI" type="checkbox" role="switch" checked aria-label="Enable AI book recognition"><span class="scan-recognition-switch"></span></label><label class="scan-recognition-card" for="batchUseOCR"><span class="scan-recognition-icon">▤</span><span class="scan-recognition-copy"><strong>OCR</strong><small>Reads text from images to assist matching.</small></span><input id="batchUseOCR" type="checkbox" role="switch" checked aria-label="Enable OCR text recognition"><span class="scan-recognition-switch"></span></label></div><p id="recognitionSettingsStatus" role="status" aria-live="polite">Settings apply automatically. Save buttons are not required.</p></details><details class="branding-settings premium-settings-card"><summary><span class="premium-settings-heading"><span class="premium-settings-emblem" aria-hidden="true"><svg class="app-icon sm"><use href="assets/icons.svg#settings"></use></svg></span><span class="premium-settings-text"><strong>App appearance &amp; branding</strong><small>Personalise the library identity</small></span></span><span class="premium-settings-toggle" aria-hidden="true"><svg class="toggle-plus" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg><svg class="toggle-minus" viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="2.3" stroke-linecap="round"/></svg></span></summary><form id="brandForm" class="branding-form"><p>Change the app name, logo, and consistent color palette for all library users.</p><label for="brandAppName">Application name</label><input id="brandAppName" maxlength="70" required value="Library Manager"><div class="branding-colors"><label for="brandPrimary">Primary color<input type="color" id="brandPrimary" value="#144e58"></label><label for="brandSecondary">Secondary color<input type="color" id="brandSecondary" value="#1d727a"></label></div><label for="brandButtonStyle">Button appearance</label><select id="brandButtonStyle"><option value="gradient">Gradient</option><option value="solid">Solid color</option></select><label for="brandLogoFile">App logo (PNG, JPG, WebP; max 1 MB)</label><input id="brandLogoFile" type="file" accept="image/png,image/jpeg,image/webp"><div class="row"><button type="submit" id="brandSave">Save shared branding</button><button type="button" id="brandRemoveLogo" class="light">Remove logo</button><button type="button" id="brandReset" class="light">Default palette</button></div><p id="brandStatus" role="status" aria-live="polite">Branding is shared across accounts.</p></form></details><div class="row"><button id="reload" class="green">Reload Database</button><button id="signOut" class="light">Sign Out</button></div>
 
 </div></details>
 <div id="memberAccountFooter" class="member-account-footer" hidden aria-label="Library Member session">
@@ -4038,7 +4101,7 @@ $("batchDeselectAll").onclick=batchDeselectAll;
 // The preview image was compressed to persist between devices, so a fresh photo may
 // be needed for very small print. An ISBN lookup always runs before image recognition.
 async function completeReviewRow(row,{mode='auto',index=-1,refresh=true}={}){
- if(!row||row.saved||row.reviewBusy)return false;
+ if(!row||row.saved)return false;
  const hasImage=!!(row.file||row.thumbnailData),canISBN=validIsbn(row.barcode);
  if(mode==='auto'&&!canISBN&&!hasImage){row.lookup_status='Add a cover photo or enter a valid ISBN to complete this book.';if(refresh)renderBatch();return false}
  row.reviewStaged=true;row.reviewApproval='';row.error='';row.aiNotice='';row.matches=[];
@@ -4067,7 +4130,7 @@ async function completeReviewRow(row,{mode='auto',index=-1,refresh=true}={}){
 }
 let reviewAutofillRunning=false;
 async function runSingleReviewAutofill(index,mode='auto'){
- const row=batchItems[index];if(!row||row.saved||batchActive||batchSaving||batchZipLoading||batchExcelLoading||reviewAutofillRunning)return;
+ const row=batchItems[index];if(!row||row.saved||row.reviewBusy||row.reviewSaving||batchActive||batchSaving||batchZipLoading||batchExcelLoading)return;
  for(const key of ['title','authors','barcode','publisher','publication_year']){
   const input=$('batchResults').querySelector(`[data-batch-index="${index}"][data-batch-field="${key}"]`);
   if(input)row[key]=key==='barcode'?clean(input.value):input.value.trim();
@@ -4079,10 +4142,10 @@ async function runSingleReviewAutofill(index,mode='auto'){
   $('reviewActionStatus').textContent=row.matches?.length?'Select the correct catalog result below to fill its details. ISBN is not inferred.':'No matching catalog record. Keep your entered title and complete details manually.';
   return;
  }
- reviewAutofillRunning=true;batchActive=true;
+ row.reviewBusy=true;
  const progress=$('reviewActionStatus');progress.textContent='Reading '+(row.fileName||'book')+'…';renderBatch();
- try{await completeReviewRow(row,{mode,index,refresh:false});progress.textContent=hasBookTitle(row.title)?'Details suggested. Check the title, author and ISBN, then click Save book.':(row.lookup_status||'Recognition finished. Add the missing details manually if needed.');}
- finally{reviewAutofillRunning=false;batchActive=false;renderBatch()}
+ try{await completeReviewRow(row,{mode,index,refresh:false});progress.textContent=hasBookTitle(row.title)?'Details suggested. Check the title, author and ISBN, then click Approve & save.':(row.lookup_status||'Recognition finished. Add the missing details manually if needed.');}
+ finally{row.reviewBusy=false;renderBatch()}
 }
 async function runReviewAutoFillAll(){
  if(reviewAutofillRunning||batchActive||batchSaving||batchZipLoading||batchExcelLoading)return;
@@ -4092,20 +4155,16 @@ async function runReviewAutoFillAll(){
  const savedPending=books.filter(b=>bookQuality(b).attention&&validIsbn(b.barcode)&&!savedISBNSuggestions.has(b.record_id));
  if(!pending.length&&!savedPending.length){$('reviewActionStatus').textContent='Nothing to complete automatically. Attach a cover photo or enter an ISBN on an incomplete book.';return}
  const queue=pending.slice(0,10),savedQueue=savedPending.slice(0,5),total=queue.length+savedQueue.length;let filled=0;
- // A typed title takes precedence over image OCR. Show edition choices instead of
- // guessing an ISBN or silently choosing a similarly named publication.
- if(row.title&&row.title.trim().length>=3&&!validIsbn(row.barcode)){
-  await batchTitleSearch(index,false);
-  $('reviewActionStatus').textContent=row.matches?.length?'Select the correct catalog result below to fill its details. ISBN is not inferred.':'No matching catalog record. Keep your entered title and complete details manually.';
-  return;
- }
- reviewAutofillRunning=true;batchActive=true;
+ reviewAutofillRunning=true;
  const progress=$('reviewActionStatus');renderBatch();
  try{
   for(let i=0;i<queue.length;i++){
    if(!session?.user){progress.textContent='Signed out; completion stopped.';break}
    progress.textContent=`Auto-filling ${i+1} of ${total}: ${queue[i].fileName||'book'}…`;
-   if(await completeReviewRow(queue[i],{mode:'auto',refresh:false}))filled++;
+   const item=queue[i];if(item.reviewBusy||item.reviewSaving)continue;
+   item.reviewBusy=true;renderBatch();
+   try{if(await completeReviewRow(item,{mode:'auto',refresh:false}))filled++;}
+   finally{item.reviewBusy=false;renderBatch()}
   }
   for(let i=0;i<savedQueue.length&&session?.user;i++){
    progress.textContent=`Checking saved book ${queue.length+i+1} of ${total}: ${savedQueue[i].book_id||'inventory copy'}…`;
@@ -4113,7 +4172,7 @@ async function runReviewAutoFillAll(){
    if(savedISBNSuggestions.has(savedQueue[i].record_id))filled++;
   }
   progress.textContent=`${filled} of ${total} books have suggested details. Check and approve the results before saving.${pending.length>10||savedPending.length>5?' Run again for the remaining records.':''}`;
- }finally{reviewAutofillRunning=false;batchActive=false;renderBatch()}
+ }finally{reviewAutofillRunning=false;renderBatch()}
 }
 // Existing inventory records are updated IN PLACE after explicit approval.
 // A newly uploaded photo is used for this suggestion only; it is not saved on the book.
