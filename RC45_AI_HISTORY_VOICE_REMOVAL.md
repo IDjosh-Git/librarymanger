@@ -1,1 +1,0 @@
-RC45: New chat is a local blank draft until the first user message is saved. Conversation list excludes threads without user messages. Individual delete controls remove only their corresponding thread. Voice button and speech-recognition setup removed. Existing RC44 CSS retained, with only targeted history controls styling. Browser visual regression not performed.

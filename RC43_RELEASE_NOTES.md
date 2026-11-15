@@ -1,1 +1,0 @@
-RC43: Branding update replaces upsert (which requires INSERT) with UPDATE of id=1, preserving RLS. Palette variables propagate to more app surfaces. Dark-mode contrast and lookup disclosure icon improved. Reservation search redesigned. Historical release notes removed from deployment package; runtime, migrations, tests retained. Live authenticated browser testing pending.

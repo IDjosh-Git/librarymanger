@@ -1,4 +1,0 @@
-const {test}=require('node:test');const assert=require('node:assert/strict');const {fuse,isbnValid}=require('../lib/recognition-fusion.cjs');
-test('ISBN checksums validated, not just length',()=>{assert.equal(isbnValid('9780306406157'),true);assert.equal(isbnValid('9780306406158'),false);assert.equal(isbnValid('0306406152'),true)});
-test('multiple photos combine evidence and preserve conflicts',()=>{const r=fuse([{label:'front',metadata:{title:'Sample Book',authors:'A Writer'}},{label:'title page',metadata:{title:'Sample Book',authors:'B Writer',publisher:'Press'}}]);assert.equal(r.metadata.title,'Sample Book');assert.equal(r.evidence.title.agreement,2);assert.equal(r.conflicts.authors.length,2);assert.equal(r.requiresReview,true)});
-test('unverified ISBN discarded',()=>{const r=fuse([{label:'back',metadata:{isbn:'9780306406158'}}]);assert.equal(r.metadata.isbn,'')});

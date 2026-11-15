@@ -35,6 +35,9 @@
  '--library-brand-tint':tint,
  '--navy':a,'--navy2':b,'--navy3':blend(a,'#000000',.28),
  '--accent':a,'--accent2':b,'--ring':b,
+ '--primary':a,'--primary-color':a,'--secondary':b,'--secondary-color':b,
+ '--brand':a,'--brand2':b,'--brand-primary':a,'--brand-secondary':b,
+ '--brand-hover':hover,'--brand-soft':soft,'--brand-border':border,
  '--brand-dark-gradient':`linear-gradient(125deg, ${a}, ${b})`
  };
  for(const [key,value] of Object.entries(semantic))root.style.setProperty(key,value);

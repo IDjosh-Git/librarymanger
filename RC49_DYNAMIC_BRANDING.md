@@ -1,1 +1,0 @@
-RC49 dynamic branding: derives contrast, gradient, hover, border, soft backgrounds and focus colours from saved App Appearance palette; theme changes recalculate tokens. Semantic status colours remain independent. Automated regression tests should be run before deploying.\n

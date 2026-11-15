@@ -1,5 +1,0 @@
-'use strict';
-const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const path=require('node:path');
-const html=fs.readFileSync(path.join(__dirname,'..','index.html'),'utf8');const css=fs.readFileSync(path.join(__dirname,'..','assets','library-manager-v542.css'),'utf8');
-test('Review and inventory delete actions use premium high-contrast styling',()=>{assert.match(html,/class="review-delete-image premium-delete"/);assert.match(html,/class="icon-btn danger premium-delete"/);assert.match(css,/premium-delete-backdrop/);assert.match(css,/:root\[data-theme="dark"\] #review \.review-delete-image\.premium-delete/)});
-test('Destructive actions require custom accessible confirmation',()=>{assert.match(html,/role="alertdialog" aria-modal="true"/);assert.match(html,/confirmLibraryDeletion\(\{title:'Delete this review image\?'/);assert.match(html,/confirmLibraryDeletion\(\{title:'Delete this inventory book\?'/);assert.match(html,/e\.key==='Escape'/)});

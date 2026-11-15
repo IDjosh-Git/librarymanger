@@ -1,1 +1,0 @@
-RC46: Saved conversations are titled from their first user question, trimmed to a readable 65-character label. Legacy New conversation entries are displayed using their first saved user message. No chat messages or IDs are changed. Existing history and deletion remain intact.
