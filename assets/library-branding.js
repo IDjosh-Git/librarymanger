@@ -5,7 +5,7 @@
  const validHex=v=>/^#[0-9a-fA-F]{6}$/.test(String(v||''));
  const safeName=v=>String(v||'').trim().slice(0,70);
  const safeLogo=v=>typeof v==='string'&&/^https:\/\//i.test(v)?v:null;
- const state={...DEFAULT};let client=null,session=null,role=null,ready=false;
+ const state={...DEFAULT};let client=null,session=null,role=null,ready=false,saveRevision=0;
  function apply(v){Object.assign(state,DEFAULT,v||{});const root=document.documentElement;
  const a=validHex(state.primary_color)?state.primary_color:DEFAULT.primary_color,b=validHex(state.secondary_color)?state.secondary_color:DEFAULT.secondary_color;
  root.style.setProperty('--library-primary',a);root.style.setProperty('--library-secondary',b);
@@ -22,7 +22,7 @@
  for(const [id,color] of [['brandPrimary',a],['brandSecondary',b]]){const el=$(id);if(el&&document.activeElement!==el)el.value=color;}
  const mode=$('brandButtonStyle');if(mode)mode.value=root.dataset.brandButtons;
  }
- async function refresh(){if(!client)return;const {data,error}=await client.from('library_app_settings').select('app_name,primary_color,secondary_color,button_style,logo_url').eq('id',1).maybeSingle();if(!error&&data){apply(data);ready=true;}else if(error){const s=$('brandStatus');if(s&&role==='admin')s.textContent='Shared branding is unavailable. Apply database migration 13 to enable it.';}}
+ async function refresh(){if(!client)return;const revision=saveRevision;const {data,error}=await client.from('library_app_settings').select('app_name,primary_color,secondary_color,button_style,logo_url').eq('id',1).maybeSingle();if(!error&&data){if(revision!==saveRevision)return;apply(data);ready=true;}else if(error){const s=$('brandStatus');if(s&&role==='admin')s.textContent='Shared branding is unavailable. Apply database migration 13 to enable it.';}}
  function setContext(s,r){const changed=session?.user?.id!==s?.user?.id||role!==r;session=s;role=r;if(changed)void refresh();}
  async function save(e){e.preventDefault();if(role!=='admin'||!session?.user){$('brandStatus').textContent='Administrator access required.';return;}
  const name=safeName($('brandAppName').value),primary=$('brandPrimary').value,secondary=$('brandSecondary').value,style=$('brandButtonStyle').value;
@@ -36,11 +36,13 @@
  logo=client.storage.from('library-branding').getPublicUrl(path).data.publicUrl;
  }
  const payload={id:1,app_name:name,primary_color:primary,secondary_color:secondary,button_style:style,logo_url:logo};
- const {error}=await client.from('library_app_settings').upsert(payload,{onConflict:'id'});if(error)throw error;
- apply(payload);$('brandLogoFile').value='';$('brandStatus').textContent='Branding saved for all users.';
+ const {data:saved,error}=await client.from('library_app_settings').upsert(payload,{onConflict:'id'}).select('app_name,primary_color,secondary_color,button_style,logo_url').single();if(error)throw error;
+ if(!saved||saved.primary_color.toLowerCase()!==primary.toLowerCase()||saved.secondary_color.toLowerCase()!==secondary.toLowerCase()||saved.button_style!==style)throw Error('Saved settings could not be verified.');
+ saveRevision++;apply(saved);$('brandLogoFile').value='';$('brandStatus').textContent='Appearance saved and applied across the app.';
  }catch(err){$('brandStatus').textContent='Unable to save: '+(err.message||String(err));}finally{btn.disabled=false;}}
  function init(sb){client=sb;apply(DEFAULT);$('brandForm')?.addEventListener('submit',save);
- $('brandReset')?.addEventListener('click',()=>{apply(DEFAULT);$('brandStatus').textContent='Default values loaded. Select Save to publish them.';});
+ $('brandReset')?.addEventListener('click',()=>{saveRevision++;apply(DEFAULT);$('brandStatus').textContent='Default values loaded. Select Save to publish them.';});
+ for(const id of ['brandPrimary','brandSecondary','brandButtonStyle'])$(id)?.addEventListener('input',()=>{const primary=$('brandPrimary').value,secondary=$('brandSecondary').value,style=$('brandButtonStyle').value;apply({...state,primary_color:primary,secondary_color:secondary,button_style:style});$('brandStatus').textContent='Preview only — select Save shared branding to publish.';});
  $('brandRemoveLogo')?.addEventListener('click',async()=>{if(role!=='admin')return;const {error}=await client.from('library_app_settings').update({logo_url:null}).eq('id',1);if(error){$('brandStatus').textContent=error.message;return;}apply({...state,logo_url:null});$('brandStatus').textContent='Default logo restored.';});
  void refresh();}
  window.LibraryBranding={init,setContext,refresh,apply};

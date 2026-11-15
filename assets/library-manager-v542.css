@@ -5079,3 +5079,20 @@ body .book-guide-root button:focus-visible,body .book-guide-root input:focus-vis
 .book-guide-root .book-guide-chat-main .book-guide-disclaimer{font-size:10px;text-align:center;opacity:.75;padding:6px 14px 12px}
 @media(max-width:899px){.book-guide-root .book-guide-panel{border-radius:0}.book-guide-root .sidebar-open .book-guide-sidebar{width:min(300px,88vw);flex-basis:min(300px,88vw)}.book-guide-root .sidebar-open .book-guide-head .book-guide-new-chat{display:flex}.book-guide-root .book-guide-chat-main .book-guide-messages{padding:14px 15px}.book-guide-root .book-guide-welcome h3{font-size:21px}.book-guide-root .book-guide-chat-main .book-guide-compose{width:calc(100% - 20px)}.book-guide-root .book-guide-chat-main .book-guide-prompts{padding:10px}.book-guide-root .book-guide-chat-main .book-guide-prompts button:nth-of-type(n+4){display:none}}
 @media(prefers-reduced-motion:reduce){.book-guide-root .book-guide-sidebar{transition:none}}
+
+/* RC42: viewport-safe AI workspace, readable reservation shortcut, compact web search */
+.reservation-fab,.reservation-fab:hover{color:#fff!important;background:var(--brand-dark-gradient,linear-gradient(135deg,#144e58,#1d727a))!important;border-color:rgba(255,255,255,.25)!important}
+.reservation-fab svg{color:#fff!important;stroke:#fff!important}
+.book-guide-root .book-guide-panel{height:min(740px,calc(100dvh - 32px))!important;max-height:calc(100dvh - 32px)!important;min-height:0!important}
+.book-guide-root .book-guide-workspace,.book-guide-root .book-guide-chat-main,.book-guide-root .book-guide-sidebar,.book-guide-root .book-guide-sidebar-scroll{min-height:0!important}
+.book-guide-root .book-guide-chat-main{overflow:hidden!important}
+.book-guide-root .book-guide-chat-main .book-guide-messages{min-height:0!important;overflow-y:auto!important;overflow-x:hidden!important}
+.book-guide-root .book-guide-web-switch{padding:7px 9px!important;align-items:center!important}
+.book-guide-root .book-guide-web-copy small{display:block;font-size:10px!important;line-height:1.3!important;margin-top:2px!important}
+.book-guide-root .book-guide-capabilities{padding:6px 3px!important;gap:4px!important}
+.book-guide-root .book-guide-reset-chat{width:100%;text-align:left;background:transparent;color:var(--guide-ink);border:1px solid var(--guide-border);border-radius:10px;min-height:36px;padding:7px 11px;margin:5px 0;font-size:12px;font-weight:700}
+.book-guide-root .book-guide-reset-chat:hover{background:var(--guide-paper)}
+.book-guide-root .book-guide-head .book-guide-title-wrap{min-width:0;overflow:hidden}
+.book-guide-root .book-guide-head .book-guide-title-wrap p,.book-guide-root .book-guide-head .book-guide-title-wrap h2{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+@media(max-width:899px){.book-guide-root .book-guide-panel{height:var(--guide-vv-height,100dvh)!important;max-height:var(--guide-vv-height,100dvh)!important}.book-guide-root .book-guide-head{min-height:54px!important;padding:9px 11px!important}.book-guide-root .book-guide-chat-main .book-guide-prompts{flex-shrink:0}.book-guide-root .book-guide-chat-main .book-guide-compose{flex-shrink:0}}
+@media(max-height:650px){.book-guide-root .book-guide-panel{height:calc(100dvh - 12px)!important;max-height:calc(100dvh - 12px)!important}.book-guide-root .book-guide-welcome{padding:5px!important}.book-guide-root .book-guide-chat-main .book-guide-prompts{padding:3px 8px!important}}
