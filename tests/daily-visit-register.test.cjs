@@ -73,8 +73,8 @@ test('CSV export prevents spreadsheet formula injection',()=>{
 });
 
 test('premium pages are hidden when inactive and remain responsive on mobile',()=>{
- assert.match(css,/\.panel\.vl-page\{display:none\}/);
- assert.match(css,/\.panel\.vl-page\.active\{display:grid\}/);
+ assert.match(css,/\.panel\.vl-page\{display:none;?\}/);
+ assert.match(css,/\.panel\.vl-page\.active\{display:grid;?\}/);
  assert.match(css,/@media\(max-width:680px\)/);
  assert.match(css,/\.vl-hero\{/);
  assert.match(css,/\.vl-table-wrap\{overflow-x:auto/);

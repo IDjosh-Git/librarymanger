@@ -31,7 +31,7 @@ function init(){if(ready)return;ready=true;
   <div class="book-guide-welcome" id="bookGuideWelcome" aria-hidden="true"><span class="book-guide-welcome-symbol" aria-hidden="true">✦</span><h3>How can I help you today?</h3></div>
   <div id="bookGuideMessages" class="book-guide-messages" role="log" aria-live="polite" aria-relevant="additions text"></div><div id="bookGuideBookResults" class="book-guide-book-results" aria-label="Matching library books" hidden></div>
   <div class="book-guide-prompts" id="bookGuidePrompts"><button type="button" id="bookGuideAdminInsights" hidden>Admin insights</button><button type="button" data-prompt="Find a book in the library catalogue">Find a book</button><button type="button" data-prompt="How do I check whether a book is available?">Availability</button><button type="button" data-prompt="How can I reserve a book?">Reservations</button><button type="button" data-prompt="What is the current Book of the Week?">This week’s book</button><button type="button" data-prompt="How do I use Library Manager?">App guide</button><button type="button" data-prompt="How do I scan, review and save a book?">Scan workflow</button><button type="button" data-prompt="How do I lend or return a library book?">Lend &amp; return</button><button type="button" data-prompt="How do I check in, record books read, and check out of the library?">Visit log</button><button type="button" data-prompt="Recommend three beginner-friendly books about data analysis.">Book ideas</button><button type="button" data-prompt="Explain the difference between a novel and a biography.">Ask a question</button><button type="button" data-prompt="What are some current developments in digital libraries?">Current research</button><button type="button" data-prompt="What is this book about?">Selected book</button></div>
-  <form class="book-guide-compose" id="bookGuideForm"><label for="bookGuideInput" class="sr-only">Ask Library AI anything</label><textarea id="bookGuideInput" rows="1" maxlength="1200" autocomplete="off" placeholder="Message Library AI…" required></textarea><button type="button" class="book-guide-voice" id="bookGuideVoice" aria-label="Dictate a question" title="Dictate a question">🎙</button><button type="submit" id="bookGuideSend" aria-label="Send question" title="Send question"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form>
+  <form class="book-guide-compose" id="bookGuideForm"><label for="bookGuideInput" class="sr-only">Ask Library AI anything</label><textarea id="bookGuideInput" rows="1" maxlength="1200" autocomplete="off" placeholder="Message Library AI…" required></textarea><button type="submit" id="bookGuideSend" aria-label="Send question" title="Send question"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form>
   <p class="book-guide-disclaimer" id="bookGuideDisclaimer">AI may make mistakes. Check important information.</p>
    </div></div>
  </section>`;document.body.appendChild(node);
@@ -54,7 +54,6 @@ function init(){if(ready)return;ready=true;
  $('bookGuidePrompts').addEventListener('click',e=>{const b=e.target.closest('[data-prompt]');if(b)void ask(b.dataset.prompt);});
  $('bookGuideForm').addEventListener('submit',e=>{e.preventDefault();const v=$('bookGuideInput').value.trim();if(v){$('bookGuideInput').value='';fitComposer();void ask(v);}});
  $('bookGuideInput').addEventListener('input',fitComposer);
- setupVoice();
  $('bookGuideInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('bookGuideForm').requestSubmit();}});
  document.addEventListener('keydown',e=>{
   const panel=$('bookGuidePanel');if(panel.hidden)return;
@@ -71,19 +70,6 @@ function init(){if(ready)return;ready=true;
  window.addEventListener('resize',()=>{if($('bookGuidePanel')?.hidden)return;if(isMobileSheet())lockBackground();else unlockBackground();
  $('bookGuideSettings').open=false;syncSheetViewport();});
  renderOptions();setVisible(visible);
-}
-function setupVoice(){
- const button=$('bookGuideVoice');const Recognition=root.SpeechRecognition||root.webkitSpeechRecognition;
- if(!Recognition){button.hidden=true;return;}
- button.addEventListener('click',()=>{
-  if(busy)return;
-  const recognition=new Recognition();recognition.lang=document.documentElement.lang||'en-US';recognition.interimResults=false;
-  button.disabled=true;button.setAttribute('aria-label','Listening for your question');
-  recognition.onresult=e=>{const transcript=e.results?.[0]?.[0]?.transcript||'';if(transcript){$('bookGuideInput').value=transcript.slice(0,1200);fitComposer();$('bookGuideInput').focus();}};
-  recognition.onerror=()=>{button.title='Microphone unavailable. You can type your question.';};
-  recognition.onend=()=>{button.disabled=false;button.setAttribute('aria-label','Dictate a question');};
-  try{recognition.start();}catch{button.disabled=false;}
- });
 }
 function renderBookResults(query){
  const container=$('bookGuideBookResults');if(!container)return;
@@ -247,19 +233,22 @@ async function showAdminInsights(){
 }
 function renderThreads(threads){
  const select=$('bookGuideThreads');if(!select)return;
- select.replaceChildren();for(const thread of threads){const option=new Option(String(thread.title||'New conversation').slice(0,80),thread.id);select.add(option);}
+ select.replaceChildren();for(const thread of threads){const option=new Option(String(thread.title||'Untitled chat').slice(0,80),thread.id);select.add(option);}
  if(activeThreadId)select.value=activeThreadId;
  const list=$('bookGuideThreadList');if(!list)return;list.replaceChildren();
  if(!threads.length){const empty=document.createElement('p');empty.className='book-guide-empty-history';empty.textContent='No saved conversations yet.';list.append(empty);return;}
- for(const thread of threads){const button=document.createElement('button');button.type='button';button.className='book-guide-thread-item';button.textContent=String(thread.title||'New conversation').slice(0,80);button.title=button.textContent;button.dataset.threadId=thread.id;button.setAttribute('aria-current',String(thread.id===activeThreadId));button.addEventListener('click',()=>{if(thread.id===activeThreadId)return;activeThreadId=thread.id;cloudLoaded=false;chatEpoch++;void loadCloud();if(window.matchMedia('(max-width: 899px)').matches)$('bookGuideSidebarClose').click();});list.append(button);}
+ for(const thread of threads){const button=document.createElement('button');button.type='button';button.className='book-guide-thread-item';button.textContent=String(thread.title||'Untitled chat').slice(0,80);button.title=button.textContent;button.dataset.threadId=thread.id;button.setAttribute('aria-current',String(thread.id===activeThreadId));button.addEventListener('click',()=>{if(thread.id===activeThreadId)return;activeThreadId=thread.id;cloudLoaded=false;chatEpoch++;void loadCloud();if(window.matchMedia('(max-width: 899px)').matches)$('bookGuideSidebarClose').click();});const entry=document.createElement('div');entry.className='book-guide-thread-entry';entry.append(button);const del=document.createElement('button');del.type='button';del.className='book-guide-thread-delete';del.textContent='×';del.title='Delete conversation';del.setAttribute('aria-label','Delete '+button.textContent);del.addEventListener('click',()=>{void deleteConversation(thread.id);});entry.append(del);list.append(entry);}
+}
+async function deleteConversation(threadId){
+ if(busy||!threadId||!root.confirm('Delete this conversation permanently?'))return;
+ try{await cloudRequest('DELETE','/api/library-ai-history?thread='+encodeURIComponent(threadId));if(activeThreadId===threadId){activeThreadId=null;clearChatView();}chatEpoch++;cloudLoaded=false;await loadCloud();}
+ catch{addMessage('assistant','Unable to delete that conversation. Please try again.');}
 }
 async function createConversation(){
  if(busy||!activeSession?.user)return;
- $('bookGuideCreateThread').disabled=true;$('bookGuideNewChat').disabled=true;$('bookGuideSideNew').disabled=true;
- try{const data=await cloudRequest('POST','/api/library-ai-history',{title:'New conversation'});
-  activeThreadId=data.thread.id;cloudLoaded=false;chatEpoch++;await loadCloud();
- }catch{addMessage('assistant','Unable to create a new conversation. Please try again.');}
- finally{$('bookGuideCreateThread').disabled=false;$('bookGuideNewChat').disabled=false;$('bookGuideSideNew').disabled=false;}
+ activeThreadId=null;chatEpoch++;cloudLoaded=true;clearChatView();
+ $('bookGuideProvider').textContent='Private AI assistant';$('bookGuideInput').value='';fitComposer();
+ $('bookGuideInput').focus({preventScroll:true});
 }
 async function resetConversation(){
  if(!activeSession?.user){authNotice();return;}
@@ -269,12 +258,12 @@ async function resetConversation(){
  $('bookGuideDeleteThread').disabled=true;$('bookGuideSend').disabled=true;
  // Retain the last confirmed connection state while the reset is in flight.
  try{
-  await cloudRequest('DELETE','/api/library-ai-history'+(activeThreadId?'?thread='+encodeURIComponent(activeThreadId):''));activeThreadId=null;if(epoch!==chatEpoch)return;chatEpoch++;cloudLoaded=true;
+  if(!activeThreadId){await createConversation();return;}await cloudRequest('DELETE','/api/library-ai-history?thread='+encodeURIComponent(activeThreadId));activeThreadId=null;if(epoch!==chatEpoch)return;chatEpoch++;cloudLoaded=true;
   clearChatView();current=null;$('bookGuideContextLabel').textContent='Add a book';
   $('bookGuideDetails').textContent='No book selected. Choose a title to add context.';
   $('bookGuideProvider').textContent='Private AI assistant';
   setCloudConnected(true);
-  addMessage('assistant',greeting);$('bookGuideSend').disabled=false;$('bookGuideInput').focus({preventScroll:true});
+  await loadCloud();$('bookGuideSend').disabled=false;$('bookGuideInput').focus({preventScroll:true});
  }catch(err){setCloudConnected(false);cloudLoaded=false;addMessage('assistant','Unable to reset this conversation. Please reconnect and try again.');$('bookGuideSend').disabled=true;}
  finally{$('bookGuideDeleteThread').disabled=false;}
 }
@@ -288,7 +277,7 @@ async function ask(question){
  const pending=addMessage('assistant',searchRequested?'Searching and preparing your answer…':'Thinking…');
  busy=true;$('bookGuideSend').disabled=true;$('bookGuideNewChat').disabled=true;
  try{
-  const response=await cloudRequest('POST','/api/book-chat',{book:current||null,question,searchWeb:searchRequested,threadId:activeThreadId});
+  const response=await cloudRequest('POST','/api/book-chat',{book:current||null,question,searchWeb:searchRequested,threadId:activeThreadId,newConversation:!activeThreadId});
   if(epoch!==chatEpoch)return;
   if(!response.cloud||typeof response.reply!=='string')throw Error('Cloud persistence was not confirmed.');
   setMessageText(pending,response.reply);addSources(pending,response);
@@ -296,6 +285,7 @@ async function ask(question){
   const names={gemini:'Gemini',openrouter:'OpenRouter',groq:'Groq','app-help':'Verified app guide','live-catalogue':'Live library spotlight','inventory':'Live inventory','inventory-research':'Inventory + verified external catalogues'};
   $('bookGuideProvider').textContent='Answered with '+(names[response.mode]||'Library AI');
   setCloudConnected(true);
+  if(response.threadId){activeThreadId=response.threadId;void cloudRequest('GET','/api/library-ai-history?thread='+encodeURIComponent(activeThreadId)).then(data=>{if(epoch===chatEpoch)renderThreads(data.threads||[]);}).catch(()=>{});}
  }catch(error){
   if(epoch!==chatEpoch)return;
   const saved=error?.userSaved===true;

@@ -54,7 +54,7 @@ function mockFetch(url,options={}){
   return Promise.resolve(reply(weeklyRecord?[weeklyRecord]:[]));
  }
  if(p==='/rest/v1/library_manager_ai_conversations'){
-  if(options.method==='DELETE'){const ids=new Set(conversations.filter(x=>x.user_id===caller).map(x=>x.id));conversations=conversations.filter(x=>x.user_id!==caller);messages=messages.filter(x=>!ids.has(x.conversation_id));return Promise.resolve(reply(null,204));}
+  if(options.method==='DELETE'){const id=u.searchParams.get('id')?.slice(3);const ids=new Set(conversations.filter(x=>x.user_id===caller&&(!id||x.id===id)).map(x=>x.id));conversations=conversations.filter(x=>!ids.has(x.id));messages=messages.filter(x=>!ids.has(x.conversation_id));return Promise.resolve(reply(null,204));}
   if(options.method==='POST'){const body=JSON.parse(options.body),row={id:String(++next),...body};conversations.push(row);return Promise.resolve(reply([row],201));}
   return Promise.resolve(reply(conversations.filter(x=>x.user_id===caller)));
  }
@@ -68,7 +68,7 @@ function mockFetch(url,options={}){
    if(failSaving||(failAssistantSave&&rows.some(x=>x.role==='assistant')))return Promise.resolve(reply({message:'Cloud save failed'},503));
    const records=rows.map(x=>({id:String(++next),created_at:'2026-11-12T10:00:00Z',...x}));messages.push(...records);return Promise.resolve(reply(records,201));
   }
-  return Promise.resolve(reply(messages.filter(x=>x.user_id===caller).slice(-60).reverse()));
+  return Promise.resolve(reply(messages.filter(x=>x.user_id===caller).filter(x=>{const role=u.searchParams.get('role');return !role||x.role===role.slice(3);}).map(x=>u.searchParams.get('select')==='conversation_id'?{conversation_id:x.conversation_id}:x).slice(-1000).reverse()));
  }
  throw Error('Unexpected URL '+u);
 }
@@ -78,10 +78,10 @@ test.after(()=>{global.fetch=nativeFetch;});
 test('requires a signed-in session before accessing cloud chat',async()=>{
  const r=res();await history({method:'GET',headers:{}},r);assert.equal(r.statusCode,401);assert.equal(r.body.code,'AUTH_REQUIRED');
 });
-test('member automatically receives a persistent cloud thread when opening AI chat',async()=>{
+test('opening AI chat does not create a blank conversation',async()=>{
  caller=member;const r=res();await history(authReq('GET'),r);assert.equal(r.statusCode,200);assert.deepEqual(r.body.messages,[]);
- assert.equal(conversations.length,1);assert.equal(conversations[0].user_id,member);
- const again=res();await history(authReq('GET'),again);assert.equal(conversations.length,1);
+ assert.equal(conversations.length,0);
+ const again=res();await history(authReq('GET'),again);assert.equal(conversations.length,0);
 });
 test('knowledge search chooses app help from Supabase',()=>{
  const hit=cloud.matchKnowledge('How do I scan books and review uploads?',articles,2);
@@ -178,12 +178,12 @@ test('a failed AI reply write preserves the already-saved question, without clai
 });
 test('another member can only see their own cloud history',async()=>{
  caller=other;const r=res();await history(authReq('GET'),r);assert.equal(r.statusCode,200);assert.deepEqual(r.body.messages,[]);
- assert.equal(conversations.length,2);
+ assert.equal(conversations.length,1);
 });
 test('reset permanently deletes only the signed-in member chat history',async()=>{
  caller=member;let r=res();await history(authReq('DELETE'),r);assert.equal(r.statusCode,200);assert.equal(r.body.reset,true);
  r=res();await history(authReq('GET'),r);assert.deepEqual(r.body.messages,[]);
- assert.equal(messages.filter(x=>x.user_id===other).length,0);assert.equal(conversations.filter(x=>x.user_id===member).length,1);
+ assert.equal(messages.filter(x=>x.user_id===other).length,0);assert.equal(conversations.filter(x=>x.user_id===member).length,0);
 });
 test('chat UI shows only a green or grey status dot, never legacy warning text',()=>{
  const app=fs.readFileSync(path.join(__dirname,'../assets/book-guide.js'),'utf8');

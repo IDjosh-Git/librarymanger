@@ -35,8 +35,8 @@
  const uploaded=await client.storage.from('library-branding').upload(path,file,{contentType:file.type,upsert:false});if(uploaded.error)throw uploaded.error;
  logo=client.storage.from('library-branding').getPublicUrl(path).data.publicUrl;
  }
- const payload={id:1,app_name:name,primary_color:primary,secondary_color:secondary,button_style:style,logo_url:logo};
- const {data:saved,error}=await client.from('library_app_settings').upsert(payload,{onConflict:'id'}).select('app_name,primary_color,secondary_color,button_style,logo_url').single();if(error)throw error;
+ const payload={app_name:name,primary_color:primary,secondary_color:secondary,button_style:style,logo_url:logo};
+ const {data:saved,error}=await client.from('library_app_settings').update(payload).eq('id',1).select('app_name,primary_color,secondary_color,button_style,logo_url').single();if(error)throw error;
  if(!saved||saved.primary_color.toLowerCase()!==primary.toLowerCase()||saved.secondary_color.toLowerCase()!==secondary.toLowerCase()||saved.button_style!==style)throw Error('Saved settings could not be verified.');
  saveRevision++;apply(saved);$('brandLogoFile').value='';$('brandStatus').textContent='Appearance saved and applied across the app.';
  }catch(err){$('brandStatus').textContent='Unable to save: '+(err.message||String(err));}finally{btn.disabled=false;}}

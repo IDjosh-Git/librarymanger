@@ -12,8 +12,8 @@ module.exports=async function handler(req,res){
    return res.status(200).json({reset:true,messages:[]});
   }
   // A signed-in member starts a persistent cloud thread automatically.
-  const thread=await cloud.ensureThread(member,threadId);
+  const threads=await cloud.listThreads(member);const thread=threadId?await cloud.ensureThread(member,threadId):(threads.length?await cloud.findThread(member,threads[0].id):null);
   const messages=await cloud.messages(member,thread);
-  return res.status(200).json({messages,thread,threads:await cloud.listThreads(member),cloud:true});
+  return res.status(200).json({messages,thread,threads,cloud:true});
  }catch(err){return res.status(err.status||503).json({error:err.message||'Cloud chat is unavailable.',code:err.code||'AI_CLOUD_ERROR'});}
 };

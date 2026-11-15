@@ -49,7 +49,7 @@ test('generator is inside Administrators page and absent from shared Account Set
  assert.ok(adminSection>=0 && generation>adminSection && generation<nextSection);
  const sharedSettings=html.slice(html.indexOf('<details class="account-tools">'),html.indexOf('<div id="status"'));
  assert.doesNotMatch(sharedSettings,/id="adminInvitePanel"/);
- assert.match(css,/#adminInvitePanel\[hidden\],body:not\(\[data-role="admin"\]\) #adminInvitePanel\{display:none!important\}/);
+ assert.match(css,/#adminInvitePanel\[hidden\],body:not\(\[data-role="admin"\]\) #adminInvitePanel\{display:none!important;?\}/);
  assert.match(html,/if\(!session\?\.user\|\|!isAdmin\(\)\)return msg\('Only an existing administrator can generate/);
 });
 test('Lending page has accessible selected-title availability card, distinct selector and live inventory counts',()=>{
@@ -61,7 +61,7 @@ test('Lending page has accessible selected-title availability card, distinct sel
  assert.match(html,/assets\/lending-catalogue\.js\?v=5\.46\.0/);
 });
 test('current visual theme uses navy and teal gradients with matching light/dark tokens',()=>{
- assert.match(css,/\/\* v5\.46 — unified navy\/teal components/);
+ assert.match(css,/#lend \.lend-availability-card/);
  assert.match(css,/--accent:#0b7280/);
  assert.match(css,/--bright-gradient:linear-gradient\(118deg,#143f5b/);
  assert.match(css,/:root\[data-theme="dark"\]/);

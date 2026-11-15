@@ -111,7 +111,7 @@ module.exports=async function handler(req,res){
  const hasBook=!!book.title,searchRequested=req.body?.searchWeb===true||/\b(?:search (?:the )?(?:web|internet|online)|look (?:it|this book) up online|browse (?:the )?web|online reviews?|critical reviews?|critics say|web sources|latest reviews?)\b/i.test(question);
  let thread,history=[],matching=[],weekly=null,weeklyAsked=false,weeklyLoadError=false;
  try{
-  thread=await cloud.ensureThread(member,typeof req.body?.threadId==='string'&&/^[0-9a-f-]{36}$/i.test(req.body.threadId)?req.body.threadId:null);
+  thread=await cloud.ensureThread(member,typeof req.body?.threadId==='string'&&/^[0-9a-f-]{36}$/i.test(req.body.threadId)?req.body.threadId:null,req.body?.newConversation===true);
   const [saved,articles]=await Promise.all([cloud.messages(member,thread,10),cloud.knowledge(member)]);
   history=saved.filter(x=>x?.role==='user'||x?.role==='assistant').map(x=>({role:x.role,content:clean(x.content,900)})).filter(x=>x.content);
   matching=cloud.matchKnowledge(question,articles,6);
@@ -207,7 +207,7 @@ module.exports=async function handler(req,res){
   }
   // Confirm the AI reply has also been persisted before acknowledging success.
   await cloud.insertAssistantMessage(member,thread,result);
-  return res.status(200).json({...result,cloud:true,userSaved:true});
+  return res.status(200).json({...result,threadId:thread.id,cloud:true,userSaved:true});
  }catch(e){
   if(e.code==='AI_CLOUD_ERROR'||e.code==='AI_CLOUD_UNAVAILABLE'||e.code==='AUTH_REQUIRED')return res.status(e.status||503).json({error:e.message,code:e.code,userSaved});
   const failures=Array.isArray(e?.providerFailures)?e.providerFailures:[];

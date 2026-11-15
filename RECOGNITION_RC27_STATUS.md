@@ -1,5 +1,0 @@
-# Recognition RC27 — implementation status
-
-Completed: checksum validation for ISBN-10/13; conservative multi-photo evidence fusion with per-field source labels and explicit conflicts; authenticated multi-photo AI suggestion endpoint supporting 2–3 labelled images; private Supabase recognition-job table with RLS; regression tests (253 passing). Existing OCR, image enhancement, independent Review cards, manual editing, and catalogue lookup remain unchanged.
-
-Not yet complete: front-end multi-photo upload workflow and image crop integration; trusted catalogue verification for fused fields; server-controlled durable job runner with real cancellation, progress and retry; calibrated confidence probabilities; privacy/retention audit and authenticated browser/provider tests. `library_recognition_jobs` is a foundation only, not an operational background worker. Do not enable automatic approval on these suggestions. Multi-photo endpoint performs sequential provider requests and can exceed a platform request timeout; production hardening remains necessary.
