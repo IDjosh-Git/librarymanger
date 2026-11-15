@@ -25,9 +25,6 @@
     }
   ],
   "functions": {
-    "api/book-lookup.js": {
-      "maxDuration": 30
-    },
     "api/book-vision.js": {
       "maxDuration": 30
     },
@@ -51,6 +48,9 @@
     },
     "api/operations-cron.js": {
       "maxDuration": 60
+    },
+    "api/catalog-router.js": {
+      "maxDuration": 30
     }
   },
   "crons": [
@@ -61,6 +61,20 @@
     {
       "path": "/api/operations-cron",
       "schedule": "0 7 * * *"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/api/title-search",
+      "destination": "/api/catalog-router?route=title"
+    },
+    {
+      "source": "/api/book-lookup",
+      "destination": "/api/catalog-router?route=lookup"
+    },
+    {
+      "source": "/api/operations-health",
+      "destination": "/api/catalog-router?route=health"
     }
   ]
 }

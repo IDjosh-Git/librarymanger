@@ -47,7 +47,7 @@ test('automatic bulk scanning has quicker recognition while manual retries remai
 
 test('title search preserves full provider list for manual lookups and has 2-provider fast path',()=>{
  const lookup=fs.readFileSync(path.join(__dirname,'../lib/title-search.cjs'),'utf8');
- const handler=fs.readFileSync(path.join(__dirname,'../api/title-search.js'),'utf8');
+ const handler=fs.readFileSync(path.join(__dirname,'../lib/endpoint-title-search.cjs'),'utf8');
  assert.match(lookup,/fast\?tasks\.slice\(0,2\):tasks/);
  assert.match(handler,/fast\?2500:6500/);
  assert.match(html,/findOCRCatalogMatches\(row,\{fast\}\)/);
