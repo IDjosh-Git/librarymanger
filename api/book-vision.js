@@ -10,9 +10,10 @@ module.exports=async function handler(req,res){
  if(req.method==='GET')return res.status(200).json({enabled:available().length>0,providers:available(),mode:'suggestions-only'});
  if(req.method!=='POST'){res.setHeader('Allow','GET, POST');return res.status(405).json({error:'Unsupported method'})}
  if(!available().length)return res.status(501).json({error:'Optional AI image reading is not configured. Add an OpenRouter, Groq, or Gemini API key.'});
+ try{
+ if(!req._trustedJob){
  const token=String(req.headers.authorization||'').replace(/^Bearer\s+/i,'');
  if(token.length<20||token.length>5000)return res.status(401).json({error:'Sign in to read a book image.'});
- try{
   const session=await fetch(project+'/auth/v1/user',{headers:{apikey:publishable,Authorization:'Bearer '+token},signal:AbortSignal.timeout(4500)});
   if(!session.ok)return res.status(401).json({error:'Sign-in expired.'});
   const user=await session.json();if(!user.id)return res.status(401).json({error:'Invalid session.'});
@@ -20,6 +21,7 @@ module.exports=async function handler(req,res){
   const maxVisionPerMinute=Math.min(40,Math.max(8,Number(process.env.BOOK_VISION_RATE_LIMIT_PER_MINUTE)||24));
   if(arr.length>=maxVisionPerMinute){rate.set(k,arr);res.setHeader('Retry-After','60');return res.status(429).json({error:'AI reading limit reached. Please use local OCR or retry later.'})}
   arr.push(now);rate.set(k,arr);if(rate.size>1000)for(const [id,t]of rate)if(!t.some(x=>x>now-60000))rate.delete(id);
+ }
   const image=req.body?.image;
   if(typeof image!=='string'||image.length<100||image.length>2600000||!/^[A-Za-z0-9+/]+={0,2}$/.test(image))return res.status(400).json({error:'Upload one resized JPEG image.'});
   const ocrText=typeof req.body?.ocrText==='string'?req.body.ocrText.replace(/[\x00-\x1f<>]/g,' ').slice(0,1400):'';

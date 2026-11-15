@@ -9,6 +9,10 @@
  function apply(v){Object.assign(state,DEFAULT,v||{});const root=document.documentElement;
  const a=validHex(state.primary_color)?state.primary_color:DEFAULT.primary_color,b=validHex(state.secondary_color)?state.secondary_color:DEFAULT.secondary_color;
  root.style.setProperty('--library-primary',a);root.style.setProperty('--library-secondary',b);
+ // Keep legacy workspace components on the same user-selected palette.
+ root.style.setProperty('--navy',a);root.style.setProperty('--navy2',b);root.style.setProperty('--navy3',`color-mix(in srgb, ${a} 72%, black)`);
+ root.style.setProperty('--library-brand-ink',`color-mix(in srgb, ${a} 62%, black)`);
+ root.style.setProperty('--library-brand-tint',`color-mix(in srgb, ${b} 9%, white)`);
  root.dataset.brandButtons=state.button_style==='solid'?'solid':'gradient';
  const name=safeName(state.app_name)||DEFAULT.app_name;
  document.querySelectorAll('[data-library-brand-name]').forEach(el=>el.textContent=name);

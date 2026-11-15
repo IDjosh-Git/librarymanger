@@ -4,7 +4,7 @@
 'use strict';
 let books=[],current=null,visible=true,ready=false,busy=false,publicCatalogCache=null,publicCatalogPromise=null,featured=null;
 let activeSession=null,cloudLoaded=false,cloudLoading=null,chatEpoch=0,cloudUser=null;
-let lockedPage=null,returnFocus=null;
+let lockedPage=null,returnFocus=null,activeThreadId=null;
 const $=id=>document.getElementById(id);
 const norm=s=>String(s||'').trim().slice(0,350);
 function safeBook(b){return {title:norm(b?.title),authors:norm(b?.authors),isbn:norm(b?.isbn),shelf:norm(b?.shelf),publisher:norm(b?.publisher),year:norm(b?.year),subject:norm(b?.subject),pages:norm(b?.pages),recordId:norm(b?.recordId),description:norm(b?.description).slice(0,1200)};}
@@ -13,22 +13,29 @@ function init(){if(ready)return;ready=true;
  <div class="book-guide-backdrop" id="bookGuideBackdrop" hidden aria-hidden="true"></div>
  <button type="button" class="book-guide-fab" id="bookGuideFab" aria-controls="bookGuidePanel" aria-expanded="false" aria-label="Open Library AI assistant" title="Chat with Library AI"><span class="book-guide-fab-symbol" aria-hidden="true">✦</span><span class="book-guide-fab-glow" aria-hidden="true"></span></button>
  <section class="book-guide-panel" id="bookGuidePanel" aria-labelledby="bookGuideTitle" role="dialog" aria-modal="false" hidden>
-  <header class="book-guide-head"><div class="book-guide-icon" aria-hidden="true">✦</div><div class="book-guide-title-wrap"><h2 id="bookGuideTitle">Library AI <span id="bookGuideCloudStatus" class="book-guide-cloud-status" data-connected="false" role="status" aria-label="Supabase disconnected" title="Supabase disconnected"><span class="book-guide-cloud-dot" aria-hidden="true"></span></span></h2><p id="bookGuideProvider">Private AI assistant</p></div><div class="book-guide-head-actions"><button class="book-guide-new-chat" type="button" id="bookGuideNewChat" aria-label="Reset cloud conversation" title="Reset conversation saved in Supabase">↻ <span>Reset</span></button><button class="book-guide-close" type="button" id="bookGuideClose" aria-label="Close book assistant">×</button></div></header>
+  <header class="book-guide-head"><div class="book-guide-icon" aria-hidden="true">✦</div><div class="book-guide-title-wrap"><h2 id="bookGuideTitle">Library AI <span id="bookGuideCloudStatus" class="book-guide-cloud-status" data-connected="false" role="status" aria-label="Supabase disconnected" title="Supabase disconnected"><span class="book-guide-cloud-dot" aria-hidden="true"></span></span></h2><p id="bookGuideProvider">Private AI assistant · Live catalogue</p></div><div class="book-guide-head-actions"><button class="book-guide-new-chat" type="button" id="bookGuideNewChat" aria-label="Reset cloud conversation" title="Reset conversation saved in Supabase">↻ <span>Reset</span></button><button class="book-guide-close" type="button" id="bookGuideClose" aria-label="Close book assistant">×</button></div></header>
   <details class="book-guide-settings" id="bookGuideSettings"><summary>⚙ <span>Chat options</span><small>Web search · Book context</small></summary><div class="book-guide-settings-body"><details class="book-guide-context" id="bookGuideContext"><summary><span>Library book context <small>Optional</small></span><span id="bookGuideContextLabel">Add a book</span></summary><div class="book-guide-selection"><div class="book-guide-selection-top"><label for="bookGuideSelect">OPTIONAL BOOK CONTEXT</label><span class="book-guide-count" id="bookGuideCount" role="status" aria-live="polite">Loading books…</span></div><label class="sr-only" for="bookGuideSearch">Search the library catalogue</label><input type="search" id="bookGuideSearch" autocomplete="off" placeholder="Find a library title (optional)…" aria-label="Search library titles and authors"><select id="bookGuideSelect" aria-label="Select optional book context"><option value="">No book selected — ask anything</option></select><p id="bookGuideDetails" class="book-guide-book-note">No book required. Select a title only when you want the AI to use its catalogue details.</p></div></details>
   <div class="book-guide-capabilities"><span class="book-guide-live"><span aria-hidden="true">●</span> Provider selected automatically</span><label for="bookGuideWebSearch" class="book-guide-web-switch"><input id="bookGuideWebSearch" type="checkbox"><span class="book-guide-web-slider" aria-hidden="true"></span><span class="book-guide-web-copy"><strong>Search the web</strong><small>External book-catalogue matching runs automatically for inventory questions. Turn this on for broader web research (AI provider required).</small></span></label></div></div></details>
-  <div id="bookGuideMessages" class="book-guide-messages" role="log" aria-live="polite" aria-relevant="additions text"></div>
-  <div class="book-guide-prompts" id="bookGuidePrompts"><button type="button" data-prompt="What is the current Book of the Week?">This week’s book</button><button type="button" data-prompt="How do I use Library Manager?">App guide</button><button type="button" data-prompt="How do I scan, review and save a book?">Scan workflow</button><button type="button" data-prompt="How do I lend or return a library book?">Lend &amp; return</button><button type="button" data-prompt="How do I check in, record books read, and check out of the library?">Visit log</button><button type="button" data-prompt="Recommend three beginner-friendly books about data analysis.">Book ideas</button><button type="button" data-prompt="Explain the difference between a novel and a biography.">Ask a question</button><button type="button" data-prompt="What are some current developments in digital libraries?">Current research</button><button type="button" data-prompt="What is this book about?">Selected book</button></div>
-  <form class="book-guide-compose" id="bookGuideForm"><label for="bookGuideInput" class="sr-only">Ask Library AI anything</label><textarea id="bookGuideInput" rows="1" maxlength="1200" autocomplete="off" placeholder="Message Library AI…" required></textarea><button type="submit" id="bookGuideSend" aria-label="Send question" title="Send question"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form>
+  <div class="book-guide-threadbar"><label for="bookGuideThreads">Conversation</label><select id="bookGuideThreads" aria-label="Select saved conversation"><option value="">Current conversation</option></select><button type="button" id="bookGuideCreateThread" title="Create a separate saved conversation" aria-label="New conversation">＋ New</button></div>
+  <div class="book-guide-handoff" id="bookGuideHandoff" hidden><button type="button" id="bookGuideReserveSelected">Reserve selected book</button></div>
+  <div id="bookGuideMessages" class="book-guide-messages" role="log" aria-live="polite" aria-relevant="additions text"></div><div id="bookGuideBookResults" class="book-guide-book-results" aria-label="Matching library books" hidden></div>
+  <div class="book-guide-prompts" id="bookGuidePrompts"><button type="button" id="bookGuideAdminInsights" hidden>Admin insights</button><button type="button" data-prompt="Find a book in the library catalogue">Find a book</button><button type="button" data-prompt="How do I check whether a book is available?">Availability</button><button type="button" data-prompt="How can I reserve a book?">Reservations</button><button type="button" data-prompt="What is the current Book of the Week?">This week’s book</button><button type="button" data-prompt="How do I use Library Manager?">App guide</button><button type="button" data-prompt="How do I scan, review and save a book?">Scan workflow</button><button type="button" data-prompt="How do I lend or return a library book?">Lend &amp; return</button><button type="button" data-prompt="How do I check in, record books read, and check out of the library?">Visit log</button><button type="button" data-prompt="Recommend three beginner-friendly books about data analysis.">Book ideas</button><button type="button" data-prompt="Explain the difference between a novel and a biography.">Ask a question</button><button type="button" data-prompt="What are some current developments in digital libraries?">Current research</button><button type="button" data-prompt="What is this book about?">Selected book</button></div>
+  <form class="book-guide-compose" id="bookGuideForm"><label for="bookGuideInput" class="sr-only">Ask Library AI anything</label><textarea id="bookGuideInput" rows="1" maxlength="1200" autocomplete="off" placeholder="Message Library AI…" required></textarea><button type="button" class="book-guide-voice" id="bookGuideVoice" aria-label="Dictate a question" title="Dictate a question">🎙</button><button type="submit" id="bookGuideSend" aria-label="Send question" title="Send question"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form>
   <p class="book-guide-disclaimer" id="bookGuideDisclaimer">AI may make mistakes. Check important information.</p>
  </section>`;document.body.appendChild(node);
  $('bookGuideFab').addEventListener('click',()=>open());$('bookGuideClose').addEventListener('click',close);
+ $('bookGuideAdminInsights').addEventListener('click',()=>{void showAdminInsights();});
  $('bookGuideNewChat').addEventListener('click',()=>{void resetConversation();});
+ $('bookGuideCreateThread').addEventListener('click',()=>{void createConversation();});
+ $('bookGuideThreads').addEventListener('change',e=>{activeThreadId=e.target.value||null;cloudLoaded=false;chatEpoch++;void loadCloud();});
+ $('bookGuideReserveSelected').addEventListener('click',()=>{if(current?.title&&root.LibraryMemberReservations?.openWithTitle(current.title))close();});
  $('bookGuideBackdrop').addEventListener('click',close);
  $('bookGuideSelect').addEventListener('change',e=>{const index=Number(e.target.value);if(e.target.value!==''&&books[index])selectBook(books[index]);else{current=null;$('bookGuideContextLabel').textContent='Add a book';$('bookGuideDetails').textContent='General questions are welcome. No library title is needed.';}});
  $('bookGuideSearch').addEventListener('input',renderOptions);
  $('bookGuidePrompts').addEventListener('click',e=>{const b=e.target.closest('[data-prompt]');if(b)void ask(b.dataset.prompt);});
  $('bookGuideForm').addEventListener('submit',e=>{e.preventDefault();const v=$('bookGuideInput').value.trim();if(v){$('bookGuideInput').value='';fitComposer();void ask(v);}});
  $('bookGuideInput').addEventListener('input',fitComposer);
+ setupVoice();
  $('bookGuideInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('bookGuideForm').requestSubmit();}});
  document.addEventListener('keydown',e=>{
   const panel=$('bookGuidePanel');if(panel.hidden)return;
@@ -45,6 +52,31 @@ function init(){if(ready)return;ready=true;
  window.addEventListener('resize',()=>{if($('bookGuidePanel')?.hidden)return;if(isMobileSheet())lockBackground();else unlockBackground();
  $('bookGuideSettings').open=false;syncSheetViewport();});
  renderOptions();setVisible(visible);
+}
+function setupVoice(){
+ const button=$('bookGuideVoice');const Recognition=root.SpeechRecognition||root.webkitSpeechRecognition;
+ if(!Recognition){button.hidden=true;return;}
+ button.addEventListener('click',()=>{
+  if(busy)return;
+  const recognition=new Recognition();recognition.lang=document.documentElement.lang||'en-US';recognition.interimResults=false;
+  button.disabled=true;button.setAttribute('aria-label','Listening for your question');
+  recognition.onresult=e=>{const transcript=e.results?.[0]?.[0]?.transcript||'';if(transcript){$('bookGuideInput').value=transcript.slice(0,1200);fitComposer();$('bookGuideInput').focus();}};
+  recognition.onerror=()=>{button.title='Microphone unavailable. You can type your question.';};
+  recognition.onend=()=>{button.disabled=false;button.setAttribute('aria-label','Dictate a question');};
+  try{recognition.start();}catch{button.disabled=false;}
+ });
+}
+function renderBookResults(query){
+ const container=$('bookGuideBookResults');if(!container)return;
+ const needle=String(query||'').trim().toLowerCase();
+ const matches=needle.length>=3?books.filter(b=>[b.title,b.authors,b.isbn,b.subject].some(v=>String(v||'').toLowerCase().includes(needle))).slice(0,5):[];
+ container.replaceChildren();container.hidden=!matches.length;
+ if(!matches.length)return;
+ const heading=document.createElement('strong');heading.textContent='Matching library titles';container.appendChild(heading);
+ for(const book of matches){const button=document.createElement('button');button.type='button';button.className='book-guide-result';
+  const title=document.createElement('strong');title.textContent=book.title;const author=document.createElement('small');author.textContent=book.authors||'Author not listed';
+  button.append(title,author);button.addEventListener('click',()=>{selectBook(book);container.hidden=true;void ask('Is this book available in our library?');});container.appendChild(button);
+ }
 }
 function fitComposer(){const box=$('bookGuideInput');if(!box)return;box.style.height='auto';box.style.height=Math.min(box.scrollHeight,126)+'px';}
 function renderOptions(){
@@ -79,10 +111,10 @@ function addMessage(role,message){
  if(role==='user'){$('bookGuidePanel').classList.add('has-conversation');$('bookGuideSettings').open=false;}
  $('bookGuideMessages').scrollTop=$('bookGuideMessages').scrollHeight;return m;
 }
-function selectBook(value){current=safeBook(value);if(!ready)init();$('bookGuideSettings').open=true;$('bookGuideContext').open=true;$('bookGuideContextLabel').textContent=current.title.slice(0,34);$('bookGuideDetails').textContent=[current.authors?'By '+current.authors:'Author unknown',current.shelf?'Shelf '+current.shelf:'Shelf not listed'].join(' · ')+' · Book context applies to your next question only.';renderOptions();}
+function selectBook(value){current=safeBook(value);if(!ready)init();$('bookGuideSettings').open=true;$('bookGuideContext').open=true;$('bookGuideContextLabel').textContent=current.title.slice(0,34);$('bookGuideHandoff').hidden=false;$('bookGuideDetails').textContent=[current.authors?'By '+current.authors:'Author unknown',current.shelf?'Shelf '+current.shelf:'Shelf not listed'].join(' · ')+' · Book context applies to your next question only.';renderOptions();}
 function openGeneral({search=false}={}){
  if(!ready)init();
- current=null;$('bookGuideSettings').open=false;
+ current=null;$('bookGuideHandoff').hidden=true;$('bookGuideSettings').open=false;
  $('bookGuideContextLabel').textContent='No book selected';
  $('bookGuideContext').open=false;
  $('bookGuideDetails').textContent='Ask about any topic; no library title is required.';
@@ -129,7 +161,7 @@ function clearChatView(){
  if(!ready)return;$('bookGuideMessages').replaceChildren();$('bookGuidePanel').classList.remove('has-conversation');
 }
 function authNotice(){
- clearChatView();setCloudConnected(false);
+ clearChatView();if($('bookGuideBookResults'))$('bookGuideBookResults').hidden=true;setCloudConnected(false);
  $('bookGuideProvider').textContent='Private AI assistant';
  addMessage('assistant','Sign in on the Library Manager homepage to use this assistant. Conversations are stored in Supabase, never in this browser.');
  $('bookGuideSend').disabled=true;
@@ -155,9 +187,9 @@ async function loadCloud(){
  setCloudConnected(false);$('bookGuideSend').disabled=true;
  cloudLoading=(async()=>{
   try{
-   const data=await cloudRequest('GET','/api/library-ai-history');
+   const data=await cloudRequest('GET','/api/library-ai-history'+(activeThreadId?'?thread='+encodeURIComponent(activeThreadId):''));
    if(epoch!==chatEpoch)return;
-   clearChatView();for(const m of data.messages||[]){
+   activeThreadId=data.thread?.id||null;renderThreads(data.threads||[]);clearChatView();for(const m of data.messages||[]){
     const node=addMessage(m.role,m.content);
     if(m.role==='assistant' && Array.isArray(m.sources)&&m.sources.length)addSources(node,{sources:m.sources});
    }
@@ -165,6 +197,7 @@ async function loadCloud(){
    cloudLoaded=true;setCloudConnected(true);
    $('bookGuideProvider').textContent='Private AI assistant';
    $('bookGuideSend').disabled=false;
+   void cloudRequest('GET','/api/library-ai-admin-insights').then(()=>{if(epoch===chatEpoch)$('bookGuideAdminInsights').hidden=false;}).catch(()=>{});
   }catch(err){
    if(epoch!==chatEpoch)return;
    cloudLoaded=false;setCloudConnected(false);
@@ -178,11 +211,33 @@ async function loadCloud(){
 function setSession(next){
  const oldId=cloudUser,nowId=next?.user?.id||null;
  activeSession=next?.user?.id&&next?.access_token?next:null;
+ if(ready)$('bookGuideAdminInsights').hidden=true;
  cloudUser=activeSession?.user?.id||null;
- if(oldId!==cloudUser){chatEpoch++;cloudLoaded=false;cloudLoading=null;busy=false;
+ if(oldId!==cloudUser){activeThreadId=null;chatEpoch++;cloudLoaded=false;cloudLoading=null;busy=false;
   if(ready){$('bookGuideSend').disabled=true;clearChatView();}
   if(cloudUser){void loadCloud();}else if(ready){authNotice();}
  }else if(cloudUser&&!cloudLoaded&&!cloudLoading){void loadCloud();}
+}
+async function showAdminInsights(){
+ if(!activeSession?.access_token)return;
+ const pending=addMessage('assistant','Checking administrator catalogue health…');
+ try{const data=await cloudRequest('GET','/api/library-ai-admin-insights');
+  $('bookGuideAdminInsights').hidden=false;
+  setMessageText(pending,'**Live administrator catalogue health**\n\nPending review: '+data.reviewPending+'\nTotal inventory copies: '+data.inventoryTotal+'\nMissing title: '+data.missingTitle+'\nMissing author: '+data.missingAuthor+'\nMissing shelf: '+data.missingShelf+'\n\nExact database counts. A book may appear in more than one missing-field category. Read-only; no records were changed.');
+ }catch{setMessageText(pending,'Administrator insights are unavailable for this account or connection.');}
+}
+function renderThreads(threads){
+ const select=$('bookGuideThreads');if(!select)return;
+ select.replaceChildren();for(const thread of threads){const option=new Option(String(thread.title||'New conversation').slice(0,80),thread.id);select.add(option);}
+ if(activeThreadId)select.value=activeThreadId;
+}
+async function createConversation(){
+ if(busy||!activeSession?.user)return;
+ $('bookGuideCreateThread').disabled=true;
+ try{const data=await cloudRequest('POST','/api/library-ai-history',{title:'New conversation'});
+  activeThreadId=data.thread.id;cloudLoaded=false;chatEpoch++;await loadCloud();
+ }catch{addMessage('assistant','Unable to create a new conversation. Please try again.');}
+ finally{$('bookGuideCreateThread').disabled=false;}
 }
 async function resetConversation(){
  if(!activeSession?.user){authNotice();return;}
@@ -192,7 +247,7 @@ async function resetConversation(){
  $('bookGuideNewChat').disabled=true;$('bookGuideSend').disabled=true;
  // Retain the last confirmed connection state while the reset is in flight.
  try{
-  await cloudRequest('DELETE','/api/library-ai-history');if(epoch!==chatEpoch)return;chatEpoch++;cloudLoaded=true;
+  await cloudRequest('DELETE','/api/library-ai-history'+(activeThreadId?'?thread='+encodeURIComponent(activeThreadId):''));activeThreadId=null;if(epoch!==chatEpoch)return;chatEpoch++;cloudLoaded=true;
   clearChatView();current=null;$('bookGuideContextLabel').textContent='Add a book';
   $('bookGuideDetails').textContent='No book selected. Choose a title to add context.';
   $('bookGuideProvider').textContent='Private AI assistant';
@@ -211,10 +266,11 @@ async function ask(question){
  const pending=addMessage('assistant',searchRequested?'Searching and preparing your answer…':'Thinking…');
  busy=true;$('bookGuideSend').disabled=true;$('bookGuideNewChat').disabled=true;
  try{
-  const response=await cloudRequest('POST','/api/book-chat',{book:current||null,question,searchWeb:searchRequested});
+  const response=await cloudRequest('POST','/api/book-chat',{book:current||null,question,searchWeb:searchRequested,threadId:activeThreadId});
   if(epoch!==chatEpoch)return;
   if(!response.cloud||typeof response.reply!=='string')throw Error('Cloud persistence was not confirmed.');
   setMessageText(pending,response.reply);addSources(pending,response);
+  if(response.mode==='inventory'||response.mode==='inventory-research')renderBookResults(current?.title||'');
   const names={gemini:'Gemini',openrouter:'OpenRouter',groq:'Groq','app-help':'Verified app guide','live-catalogue':'Live library spotlight','inventory':'Live inventory','inventory-research':'Inventory + verified external catalogues'};
   $('bookGuideProvider').textContent='Answered with '+(names[response.mode]||'Library AI');
   setCloudConnected(true);

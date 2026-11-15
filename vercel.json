@@ -42,6 +42,12 @@
     },
     "api/library-ai-history.js": {
       "maxDuration": 30
+    },
+    "api/recognition-worker.js": {
+      "maxDuration": 60
+    },
+    "api/recognition-jobs.js": {
+      "maxDuration": 30
     }
   },
   "crons": [
@@ -52,6 +58,10 @@
     {
       "path": "/api/operations-cron",
       "schedule": "0 7 * * *"
+    },
+    {
+      "path": "/api/recognition-worker",
+      "schedule": "* * * * *"
     }
   ]
 }

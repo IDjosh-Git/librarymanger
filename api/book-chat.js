@@ -111,7 +111,7 @@ module.exports=async function handler(req,res){
  const hasBook=!!book.title,searchRequested=req.body?.searchWeb===true||/\b(?:search (?:the )?(?:web|internet|online)|look (?:it|this book) up online|browse (?:the )?web|online reviews?|critical reviews?|critics say|web sources|latest reviews?)\b/i.test(question);
  let thread,history=[],matching=[],weekly=null,weeklyAsked=false,weeklyLoadError=false;
  try{
-  thread=await cloud.ensureThread(member);
+  thread=await cloud.ensureThread(member,typeof req.body?.threadId==='string'&&/^[0-9a-f-]{36}$/i.test(req.body.threadId)?req.body.threadId:null);
   const [saved,articles]=await Promise.all([cloud.messages(member,thread,10),cloud.knowledge(member)]);
   history=saved.filter(x=>x?.role==='user'||x?.role==='assistant').map(x=>({role:x.role,content:clean(x.content,900)})).filter(x=>x.content);
   matching=cloud.matchKnowledge(question,articles,6);

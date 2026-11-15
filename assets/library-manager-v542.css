@@ -4817,3 +4817,155 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible{ou
 :root[data-theme="dark"] .premium-delete-cancel{background:#223640!important;color:#fff!important;border-color:#8da4af!important}
 :root[data-theme="dark"] .premium-delete-cancel:hover:not(:disabled){background:#304b57!important}
 @media(prefers-reduced-motion:reduce){#review .review-delete-image.premium-delete,.inventory-copy-item .premium-delete{transition:none!important;transform:none!important}}
+/* RC19: compact, distinct floating reservation action and accessible title picker. */
+.reservation-fab{position:fixed!important;right:20px!important;bottom:104px!important;z-index:9995!important;width:42px!important;height:42px!important;min-width:42px!important;min-height:42px!important;max-width:42px!important;padding:0!important;display:grid!important;place-items:center!important;border:1px solid #d6e3f0!important;border-radius:14px!important;background:linear-gradient(145deg,#fff,#e9f1f9)!important;color:#153b5b!important;box-shadow:0 7px 20px rgba(15,45,73,.17)!important;cursor:pointer;transition:transform .18s,box-shadow .18s}
+.reservation-fab[hidden],.reservation-backdrop[hidden]{display:none!important}.reservation-fab:hover{transform:translateY(-2px);box-shadow:0 10px 24px rgba(15,45,73,.23)!important}.reservation-fab:focus-visible,.reservation-dialog :is(button,input):focus-visible{outline:3px solid #4d93c5!important;outline-offset:3px!important}
+body .book-guide-root .book-guide-fab{width:45px!important;height:45px!important;min-width:45px!important;min-height:45px!important;max-width:45px!important;max-height:45px!important;right:18px!important;bottom:26px!important}body .book-guide-root .book-guide-fab-symbol{width:29px!important;height:29px!important;min-width:29px!important;font-size:20px!important}
+.reservation-backdrop{position:fixed;inset:0;z-index:10020;display:grid;place-items:center;padding:18px;background:rgba(9,27,45,.55);backdrop-filter:blur(5px)}.reservation-dialog{box-sizing:border-box;width:min(100%,510px);max-height:min(88dvh,780px);overflow:auto;border:1px solid rgba(255,255,255,.75);border-radius:24px;background:#fff;color:#19324a;box-shadow:0 30px 85px rgba(5,24,44,.3);font-family:inherit}.reservation-head{display:flex;justify-content:space-between;align-items:start;gap:12px;padding:24px 25px 20px;background:linear-gradient(135deg,#133e60,#1a6774);color:#fff}.reservation-head h2{font-size:1.45rem;margin:5px 0 6px;color:#fff}.reservation-head p{font-size:.84rem;line-height:1.5;margin:0;color:#e3f3f5}.reservation-eyebrow{font-size:.65rem;letter-spacing:.15em;font-weight:800;color:#aee4df}.reservation-close{display:grid;place-items:center;flex:none;width:35px;height:35px;min-width:35px;padding:0!important;border:1px solid #ffffff60!important;border-radius:11px;background:#ffffff24!important;color:#fff!important;font-size:1.5rem;line-height:1;cursor:pointer}
+.reservation-form{padding:22px 25px 14px;display:grid;gap:11px}.reservation-label{font-weight:750;font-size:.82rem;color:#233c53}.reservation-search-wrap{display:flex;align-items:center;gap:10px;padding:0 13px;border:1.5px solid #bbd0e0;border-radius:14px;background:#f8fbfe;color:#54748e}.reservation-search-wrap:focus-within{border-color:#176a86;box-shadow:0 0 0 3px #176a861c}.reservation-search-wrap input{width:100%;min-width:0;min-height:47px!important;border:0!important;outline:none!important;box-shadow:none!important;background:transparent!important;color:#183a53!important;font-size:.91rem}.reservation-matches{display:grid;gap:5px;max-height:200px;overflow:auto;color:#5a7084;font-size:.81rem}.reservation-match{width:100%;min-height:40px;text-align:left;padding:10px 12px!important;border:1px solid #e0e9f0!important;border-radius:10px;background:#f7fafc!important;color:#1b3a52!important;font-size:.83rem!important;cursor:pointer}.reservation-match:hover{background:#e5f2f5!important;border-color:#a5c9d2!important}.reservation-selected{padding:10px 12px;border-radius:10px;background:#eaf7f2;color:#145a45;font-weight:700;font-size:.82rem}.reservation-submit{min-height:43px;border:0!important;border-radius:12px;background:linear-gradient(120deg,#15536d,#127c7b)!important;color:#fff!important;font-weight:800!important;cursor:pointer}.reservation-submit:disabled{opacity:.48;cursor:not-allowed}.reservation-status{min-height:1em;margin:0;font-size:.8rem;line-height:1.5;color:#34556c}.reservation-history{padding:14px 25px 24px;border-top:1px solid #e5edf2}.reservation-history h3{margin:0 0 13px;font-size:.96rem;color:#1a3952}.reservation-list{display:grid;gap:8px}.reservation-history-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border:1px solid #e0e9ef;border-radius:12px;background:#f9fbfd}.reservation-history-row div{display:grid;gap:4px;min-width:0}.reservation-history-row strong{font-size:.82rem;overflow-wrap:anywhere}.reservation-history-row small{font-size:.72rem;color:#647b8e;text-transform:capitalize}.reservation-cancel{flex:none;min-height:34px;padding:6px 11px!important;border-radius:9px!important;background:#fff!important;border:1px solid #d5a4a4!important;color:#9c3333!important;font-size:.74rem!important}.reservation-empty{font-size:.82rem;color:#60768b}
+:root[data-theme="dark"] .reservation-dialog{background:#172737;color:#eef5fc;border-color:#375064}:root[data-theme="dark"] .reservation-form,:root[data-theme="dark"] .reservation-history{color:#eef5fc}:root[data-theme="dark"] .reservation-label,:root[data-theme="dark"] .reservation-history h3{color:#eef5fc}:root[data-theme="dark"] .reservation-history-row,:root[data-theme="dark"] .reservation-match{background:#22394b!important;color:#eef5fc!important;border-color:#486073!important}:root[data-theme="dark"] .reservation-search-wrap{background:#203749;color:#a5bdce;border-color:#557087}:root[data-theme="dark"] .reservation-search-wrap input{color:#fff!important}:root[data-theme="dark"] .reservation-history-row small,:root[data-theme="dark"] .reservation-status{color:#bfd2e1}
+@media(max-width:899px){.reservation-fab{right:15px!important;bottom:calc(148px + env(safe-area-inset-bottom))!important}body .book-guide-root .book-guide-fab{right:14px!important;bottom:calc(86px + env(safe-area-inset-bottom))!important;width:43px!important;height:43px!important;min-width:43px!important;min-height:43px!important;max-width:43px!important;max-height:43px!important}}
+@media(max-width:540px){.reservation-backdrop{padding:10px}.reservation-dialog{border-radius:19px;max-height:90dvh}.reservation-head{padding:19px}.reservation-form{padding:18px 19px 12px}.reservation-history{padding:14px 19px 20px}}
+@media(prefers-reduced-motion:reduce){.reservation-fab{transition:none}}
+
+/* RC20: unified branding across legacy and newer surfaces. Status colors remain semantic. */
+:root{--library-brand-ink:#103c45;--library-brand-tint:#eaf4f5}
+header{background:linear-gradient(125deg,color-mix(in srgb,var(--library-primary,#144e58) 68%,black),color-mix(in srgb,var(--library-secondary,#1d727a) 66%,black))}
+.tabs .tab.active,.bottomnav .tab.active{border-color:var(--library-secondary,#1d727a)}
+:where(.tabs,.bottomnav) .tab[aria-selected="true"]{color:var(--library-brand-ink)}
+:where(.review-smart-primary,.scan-auto-main-button,.scan-stage-button,.scan-refresh-button,.scan-tool-primary){background:var(--library-brand-ink);color:#fff}
+:where(.review-smart-primary,.scan-auto-main-button,.scan-stage-button,.scan-refresh-button,.scan-tool-primary):focus-visible{outline:3px solid var(--library-secondary,#1d727a);outline-offset:3px}
+:where(.review-workspace,.account-tools,.inventory-workspace) :where(input,select,textarea):focus-visible{outline-color:var(--library-secondary,#1d727a)}
+:root[data-theme="dark"]{--library-brand-tint:color-mix(in srgb,var(--library-secondary,#1d727a) 16%,#15232c)}
+
+
+/* RC21: unified live branding gradient tokens; semantic status colours stay independent. */
+:root{
+ --brand-gradient:linear-gradient(125deg,var(--library-primary,#144e58),var(--library-secondary,#1d727a));
+ --brand-soft-gradient:linear-gradient(145deg,color-mix(in srgb,var(--library-primary,#144e58) 7%,white),color-mix(in srgb,var(--library-secondary,#1d727a) 13%,white));
+ --brand-hero-gradient:linear-gradient(125deg,color-mix(in srgb,var(--library-primary,#144e58) 17%,white),color-mix(in srgb,var(--library-secondary,#1d727a) 24%,white));
+ --brand-dark-gradient:linear-gradient(125deg,color-mix(in srgb,var(--library-primary,#144e58) 83%,black),color-mix(in srgb,var(--library-secondary,#1d727a) 76%,black));
+ --panel-gradient:var(--brand-soft-gradient);--hero-gradient:var(--brand-hero-gradient);--tip-bg:var(--brand-soft-gradient);
+ --library-action:var(--brand-gradient);
+}
+:root[data-brand-buttons="solid"]{
+ --brand-gradient:var(--library-primary,#144e58);
+ --brand-soft-gradient:color-mix(in srgb,var(--library-secondary,#1d727a) 8%,white);
+ --brand-hero-gradient:color-mix(in srgb,var(--library-secondary,#1d727a) 15%,white);
+ --brand-dark-gradient:color-mix(in srgb,var(--library-primary,#144e58) 82%,black);
+ --library-action:var(--library-primary,#144e58);
+}
+:root[data-theme="dark"]{
+ --brand-soft-gradient:linear-gradient(145deg,color-mix(in srgb,var(--library-primary,#144e58) 18%,#172536),color-mix(in srgb,var(--library-secondary,#1d727a) 20%,#1b2938));
+ --brand-hero-gradient:linear-gradient(125deg,color-mix(in srgb,var(--library-primary,#144e58) 23%,#1b2b3b),color-mix(in srgb,var(--library-secondary,#1d727a) 25%,#24374a));
+ --panel-gradient:var(--brand-soft-gradient);--hero-gradient:var(--brand-hero-gradient);--tip-bg:var(--brand-soft-gradient);
+}
+:root[data-theme="dark"][data-brand-buttons="solid"]{
+ --brand-soft-gradient:color-mix(in srgb,var(--library-secondary,#1d727a) 16%,#172536);
+ --brand-hero-gradient:color-mix(in srgb,var(--library-primary,#144e58) 21%,#1b2b3b);
+ --panel-gradient:var(--brand-soft-gradient);--hero-gradient:var(--brand-hero-gradient);--tip-bg:var(--brand-soft-gradient);
+}
+header,.reservation-head,.spotlight-feature{background:var(--brand-dark-gradient)!important}
+.account-tools-body > details.premium-settings-card,
+:root[data-theme="dark"] .account-tools-body > details.premium-settings-card{background:var(--brand-soft-gradient)!important;border-color:color-mix(in srgb,var(--library-secondary,#1d727a) 25%,var(--line))}
+.premium-settings-emblem,.reservation-fab,.spotlight-brand-icon{background:var(--brand-gradient)!important}
+:where(.review-smart-primary,.scan-auto-main-button,.scan-stage-button,.scan-refresh-button,.scan-tool-primary){background:var(--library-action)!important}
+:root[data-brand-buttons="solid"] :where(header,.reservation-head,.spotlight-feature){background:var(--brand-dark-gradient)!important}
+
+/* RC22: premium, compact, brand-aware Library AI */
+.book-guide-root .book-guide-fab{width:48px!important;height:48px!important;min-height:48px!important;padding:5px!important;justify-content:center!important;right:18px!important;border-radius:16px!important;background:var(--brand-gradient,linear-gradient(135deg,#144e58,#1d727a))!important;box-shadow:0 8px 24px rgba(10,40,60,.22)!important}
+.book-guide-root .book-guide-fab-symbol{width:34px!important;height:34px!important;font-size:19px!important;animation:none!important}
+.book-guide-root .book-guide-fab-symbol:after{animation:none!important}
+.book-guide-root .book-guide-head{padding:14px 16px!important;background:var(--brand-gradient,linear-gradient(135deg,#144e58,#1d727a))!important}
+.book-guide-root .book-guide-panel{border-radius:20px!important;box-shadow:0 20px 64px rgba(15,28,50,.24)!important}
+.book-guide-root .book-guide-prompts button{min-height:38px!important;font-size:12px!important;border-radius:12px!important}
+.book-guide-root .book-guide-voice{flex:none;width:38px;height:38px;min-height:38px;border:1px solid var(--guide-border);border-radius:12px;background:var(--guide-soft);color:var(--guide-ink);cursor:pointer}
+.book-guide-root .book-guide-voice[hidden]{display:none!important}
+.book-guide-root .book-guide-book-results{display:grid;gap:6px;padding:10px 15px;max-height:180px;overflow-y:auto;border-top:1px solid var(--guide-border)}
+.book-guide-root .book-guide-book-results[hidden]{display:none!important}
+.book-guide-root .book-guide-result{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:3px;padding:9px 12px;border:1px solid var(--guide-border);background:var(--guide-soft);color:var(--guide-ink);border-radius:12px;cursor:pointer}
+.book-guide-root .book-guide-result small{opacity:.75}
+.book-guide-root :is(.book-guide-result,.book-guide-voice):focus-visible{outline:3px solid var(--brand-primary,#144e58);outline-offset:2px}
+@media(prefers-reduced-motion:reduce){.book-guide-root *{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+/* RC35: cohesive, keyboard-accessible responsive presentation; no workflow handlers modified. */
+:root{--lm-radius:18px;--lm-focus:#e88b3c;--lm-ease:cubic-bezier(.2,.7,.2,1)}
+html{scroll-padding-top:80px}body{font-feature-settings:'cv11','ss01';-webkit-font-smoothing:antialiased}
+:where(button,input,select,textarea,summary,a){touch-action:manipulation}
+:where(button,a,input,select,textarea,summary,[tabindex]):focus-visible{outline:3px solid var(--lm-focus)!important;outline-offset:3px!important;box-shadow:0 0 0 5px color-mix(in srgb,var(--lm-focus) 20%,transparent)}
+:where(button,select,input,textarea){max-width:100%}
+:where(button){min-height:40px;transition:transform .16s var(--lm-ease),box-shadow .16s var(--lm-ease)}
+:where(button:not(:disabled)):active{transform:translateY(1px)}
+:where(button:disabled){cursor:not-allowed;opacity:.56}
+:where(input,textarea,select){font:inherit}
+:where(input,textarea,select)::placeholder{opacity:.72}
+:where(.panel,.section,.scan-tool-card,.scan-title-review-card){min-width:0}
+:where(.panel) :where(p,small,span,strong,h2,h3,h4){overflow-wrap:break-word}
+#review{--review-ink:var(--text,#182c44);--review-border:color-mix(in srgb,var(--primary,#254559) 18%,transparent)}
+#review .review-workspace-hero{border-radius:24px;overflow:hidden;position:relative;background:linear-gradient(125deg,color-mix(in srgb,var(--primary,#254559) 12%,var(--card,#fff)),var(--card,#fff) 68%);border:1px solid var(--review-border);box-shadow:0 14px 36px #091a2c0c}
+#review .review-workspace-hero h2{font-family:Manrope,Inter,sans-serif;letter-spacing:-.035em;line-height:1.15;text-wrap:balance}
+#review .review-workspace-hero p{max-width:62ch;line-height:1.6}
+#review .review-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-block:18px}
+#review .review-stats>span{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:16px 18px;border:1px solid var(--review-border);border-radius:18px;background:var(--card,#fff);box-shadow:0 7px 24px #091a2c08;line-height:1.4}
+#review .review-stats strong{font-family:Manrope,Inter,sans-serif;font-size:clamp(1.35rem,2.6vw,1.85rem);font-variant-numeric:tabular-nums}
+#review .review-editor-section{min-width:0}
+#review .scan-review-heading{gap:16px;align-items:center}
+#review .scan-review-heading h3{font-family:Manrope,Inter,sans-serif;letter-spacing:-.02em}
+#review .review-simple-steps{display:flex;flex-wrap:wrap;gap:9px;margin-block:14px}
+#review .review-simple-steps>span{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:7px 13px;border:1px solid var(--review-border);border-radius:999px;background:var(--card,#fff);font-size:.84rem}
+#review .review-simple-steps b{display:inline-grid;place-items:center;width:23px;height:23px;border-radius:50%;background:color-mix(in srgb,var(--primary,#254559) 14%,transparent);font-size:.77rem}
+#review .review-assist-toolbar{border-radius:18px;gap:14px;border:1px solid var(--review-border);box-shadow:0 8px 22px #091a2c09}
+#review .review-priority-controls{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border:1px solid var(--review-border);border-radius:15px;background:var(--card,#fff);margin-block:16px}
+#review .review-priority-controls label{font-weight:700}
+#review .review-priority-controls select{min-height:44px;flex:1 1 230px}
+#review .review-priority-controls #reviewPrioritySummary{flex:1 1 100%;font-size:.82rem;opacity:.8}
+#review .scan-title-review-card{border-radius:20px;box-shadow:0 10px 30px #091a2c0a;transition:box-shadow .18s var(--lm-ease)}
+#review .scan-title-review-card:focus-within{box-shadow:0 12px 35px #091a2c18}
+#review .multi-photo-review{border-radius:17px;border:1px solid var(--review-border);background:color-mix(in srgb,var(--primary,#254559) 3%,var(--card,#fff));padding:15px}
+#review .multi-photo-heading{align-items:baseline}
+#review .multi-photo-heading strong{font-family:Manrope,Inter,sans-serif;font-size:.95rem}
+#review .multi-photo-inputs{gap:12px}
+#review .multi-photo-inputs label{display:block;padding:12px;border:1px solid var(--review-border);border-radius:13px;background:var(--card,#fff);line-height:1.5}
+#review .multi-photo-inputs input[type=file]{min-height:44px;padding:7px 0;cursor:pointer;max-width:100%}
+#review .multi-photo-inputs input[type=file]::file-selector-button{border:1px solid var(--review-border);border-radius:9px;background:color-mix(in srgb,var(--primary,#254559) 9%,var(--card,#fff));padding:8px 10px;margin-right:9px;color:inherit;font-weight:650;cursor:pointer}
+#review .multi-photo-actions{display:flex;flex-wrap:wrap;gap:10px}
+#review .multi-photo-actions button{min-height:44px}
+#review .multi-photo-feedback{line-height:1.55}
+#review .scan-advanced-options{border-radius:18px;overflow:hidden;border:1px solid var(--review-border)}
+#review .scan-advanced-grid{gap:14px}
+#review .scan-tool-card{border-radius:16px;min-width:0}
+#review :where(.review-optional-tools,.compact-inline-help,.recognition-advanced) summary{min-height:44px;display:flex;align-items:center;cursor:pointer}
+#review .batch-review :where(input,select,textarea){min-height:42px}
+#review .review-action-status:empty{display:none}
+@media(max-width:760px){#review .review-workspace-hero{border-radius:18px}#review .review-stats{gap:9px}#review .review-stats>span{padding:12px;align-content:start}#review .review-stats strong{width:100%}#review .scan-review-heading{align-items:stretch}#review .scan-review-heading #reviewSaveCorrected{min-height:46px}#review .multi-photo-inputs{grid-template-columns:1fr}#review .review-priority-controls select{flex-basis:100%}}
+@media(max-width:430px){#review .review-stats{grid-template-columns:1fr}#review .review-stats>span{gap:8px}#review .review-stats strong{width:auto}#review .review-simple-steps>span{flex:1 1 100%;border-radius:12px}#review .multi-photo-review{padding:11px}#review .multi-photo-actions button{flex:1 1 120px}#review .review-hero-actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}#review .review-hero-actions button{min-width:0;white-space:normal}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+@media(forced-colors:active){#review :where(.scan-title-review-card,.multi-photo-review,.review-stats>span,.review-priority-controls){border:1px solid CanvasText}#review :where(button,input,select,textarea):focus-visible{outline:3px solid Highlight!important}}
+
+/* RC36: Sidebar visual refinement only. Existing navigation, roles and handlers unchanged. */
+body[data-account="in"] #accountCard{--side-ink:var(--lp-ink,#1c3045);--side-muted:var(--lp-muted,#60758a);--side-border:var(--lp-stroke,#dfe8ef);--side-paper:var(--lp-paper,#fff);--side-soft:var(--lp-soft,#f2f6fa);--side-accent:var(--lp-accent,#147d82);border-radius:24px!important;box-shadow:0 14px 44px rgba(19,37,63,.10)!important;scrollbar-gutter:stable;}
+body[data-account="in"] #accountCard .auth-content{padding:clamp(13px,1.4vw,19px)!important}
+body[data-account="in"] #accountCard .sidebar-title{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0;margin-bottom:12px!important;padding:4px 2px 13px!important;border-bottom:1px solid var(--side-border)!important}
+body[data-account="in"] #accountCard .sidebar-title strong{min-width:0;display:flex;align-items:center;gap:7px;line-height:1.35}
+body[data-account="in"] #accountCard .workspace-account{min-width:0;align-items:center;margin-bottom:15px!important}
+body[data-account="in"] #accountCard .workspace-account-details{min-width:0}
+body[data-account="in"] #accountCard .workspace-nav-header{margin-bottom:14px!important;border-radius:16px!important;padding:15px!important}
+body[data-account="in"] #accountCard .workspace-nav-header p{line-height:1.45!important}
+body[data-account="in"] #accountCard .workspace-nav-section{margin:0 0 13px!important;min-width:0}
+body[data-account="in"] #accountCard .workspace-nav-label{margin:0 0 7px!important;padding:0 10px!important;line-height:1.45!important;letter-spacing:.11em!important}
+body[data-account="in"] #accountCard .workspace-nav .tab{position:relative;display:flex!important;align-items:center!important;gap:11px!important;width:100%!important;min-width:0!important;min-height:45px!important;padding:10px 12px!important;margin:2px 0!important;border:1px solid transparent!important;border-radius:13px!important;text-align:left!important;line-height:1.35!important;transition:background .15s,border-color .15s,box-shadow .15s!important}
+body[data-account="in"] #accountCard .workspace-nav .tab>span:not(.nav-new-pill):not(.nav-current-mark):not(.notification-nav-count){min-width:0;flex:1;overflow-wrap:anywhere}
+body[data-account="in"] #accountCard .workspace-nav .tab>.app-icon{width:19px!important;height:19px!important;flex:0 0 19px!important}
+body[data-account="in"] #accountCard .workspace-nav .tab.active{font-weight:800!important;box-shadow:inset 3px 0 var(--side-accent),0 4px 12px rgba(19,37,63,.06)!important}
+body[data-account="in"] #accountCard .workspace-nav .tab:not(.active):hover{background:var(--side-soft)!important;border-color:var(--side-border)!important;transform:none!important}
+body[data-account="in"] #accountCard .workspace-nav .tab .nav-new-pill,body[data-account="in"] #accountCard .workspace-nav .tab .notification-nav-count{flex:0 0 auto;max-width:74px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body[data-account="in"] #accountCard :is(.workspace-utilities,.account-tools){margin-top:12px!important;border:1px solid var(--side-border)!important;border-radius:15px!important;overflow:hidden;background:var(--side-paper)!important}
+body[data-account="in"] #accountCard :is(.workspace-utilities,.account-tools)>summary{min-height:48px;display:flex;align-items:center;gap:10px;padding:11px 12px!important;cursor:pointer;line-height:1.35}
+body[data-account="in"] #accountCard :is(.workspace-utilities,.account-tools)[open]>summary{border-bottom:1px solid var(--side-border)!important;background:var(--side-soft)!important}
+body[data-account="in"] #accountCard :is(.workspace-spotlight-link,.workspace-nav-action){min-height:45px;border-radius:12px!important;display:flex;align-items:center;gap:10px;overflow-wrap:anywhere}
+body[data-account="in"] #accountCard :is(button,a,summary,input,select):focus-visible{outline:3px solid var(--side-accent)!important;outline-offset:3px!important}
+body[data-account="in"] #accountCard .account-tools-body{min-width:0;overflow-wrap:anywhere}
+body[data-account="in"] #accountCard .account-tools-body .row{gap:8px!important}
+body[data-account="in"] #accountCard .account-tools-body .row button{flex:1 1 120px;min-width:0}
+@media(min-width:900px){body[data-account="in"] #accountCard{max-height:calc(100dvh - 28px)!important;top:14px!important;overflow-y:auto!important;overscroll-behavior:contain}}
+@media(max-width:899px){body[data-account="in"] #accountCard{scrollbar-gutter:auto}body[data-account="in"] #accountCard .workspace-nav .tab{min-height:48px!important}}
+@media(prefers-reduced-motion:reduce){body[data-account="in"] #accountCard .workspace-nav .tab{transition:none!important}}
