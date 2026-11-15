@@ -48,6 +48,9 @@
     },
     "api/recognition-jobs.js": {
       "maxDuration": 30
+    },
+    "api/operations-cron.js": {
+      "maxDuration": 60
     }
   },
   "crons": [
@@ -58,10 +61,6 @@
     {
       "path": "/api/operations-cron",
       "schedule": "0 7 * * *"
-    },
-    {
-      "path": "/api/recognition-worker",
-      "schedule": "* * * * *"
     }
   ]
 }
