@@ -884,3 +884,79 @@ body .book-guide-root .book-guide-prompts button:hover{background:#e6f7f4!import
 .book-guide-handoff[hidden]{display:none}
 .book-guide-threadbar button:focus-visible,.book-guide-handoff button:focus-visible{outline:3px solid #8298ff;outline-offset:2px}
 @media(max-width:430px){.book-guide-threadbar{padding:8px 10px;gap:5px}.book-guide-threadbar label{font-size:10px}.book-guide-threadbar button{padding:6px 8px}}
+
+
+/* RC40 — conversation-first assistant with collapsible tools/history rail */
+.book-guide-root .book-guide-panel{width:min(1040px,calc(100vw - 32px));height:min(790px,calc(100dvh - 90px));max-height:calc(100dvh - 90px)}
+.book-guide-root .book-guide-head{background:var(--guide-paper)!important;color:var(--guide-ink)!important;border-bottom:1px solid var(--guide-border);padding:10px 15px!important}
+.book-guide-root .book-guide-head .book-guide-title-wrap p{color:var(--guide-muted)!important}
+.book-guide-root .book-guide-icon{background:var(--guide-soft);color:var(--guide-accent)}
+.book-guide-root .book-guide-head .book-guide-new-chat,.book-guide-root .book-guide-head .book-guide-close,.book-guide-root .book-guide-menu{color:var(--guide-ink)!important;background:var(--guide-soft)!important;border:1px solid var(--guide-border)!important;border-radius:10px;min-width:38px;height:38px;padding:0 10px;cursor:pointer}
+.book-guide-root .book-guide-head .book-guide-new-chat{width:auto;display:flex;gap:5px;font-size:13px;font-weight:750}
+.book-guide-root .book-guide-menu{font-size:18px;flex-shrink:0}
+.book-guide-root .book-guide-workspace{position:relative;display:flex;flex:1 1 auto;min-height:0;overflow:hidden}
+.book-guide-root .book-guide-chat-main{display:flex;flex-direction:column;min-width:0;min-height:0;flex:1 1 auto}
+.book-guide-root .book-guide-sidebar{position:relative;display:flex;flex-direction:column;width:0;flex:0 0 0;overflow:hidden;background:var(--guide-soft);border-right:0;transition:flex-basis .2s ease,width .2s ease;visibility:hidden}
+.book-guide-root .sidebar-open .book-guide-sidebar{width:260px;flex-basis:260px;border-right:1px solid var(--guide-border);visibility:visible}
+.book-guide-root .book-guide-sidebar-head{display:flex;justify-content:space-between;align-items:center;padding:17px 15px 10px;gap:10px}
+.book-guide-root .book-guide-sidebar-head strong{font-size:14px}
+.book-guide-root .book-guide-sidebar-head button{background:transparent;color:var(--guide-ink);border:0;font-size:24px;cursor:pointer}
+.book-guide-root .book-guide-side-new{margin:5px 12px 12px;padding:11px 13px;border-radius:12px;background:var(--guide-paper);border:1px solid var(--guide-border);text-align:left;color:var(--guide-ink);font-weight:750;cursor:pointer}
+.book-guide-root .book-guide-sidebar-scroll{overflow-y:auto;min-height:0;padding:0 10px 18px}
+.book-guide-root .book-guide-sidebar-scroll h3{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--guide-muted);margin:17px 8px 9px}
+.book-guide-root .book-guide-thread-list{display:grid;gap:3px}
+.book-guide-root .book-guide-thread-item{display:block;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:10px 11px;border-radius:10px;border:1px solid transparent;background:transparent;color:var(--guide-ink);font-size:12px;cursor:pointer}
+.book-guide-root .book-guide-thread-item:hover,.book-guide-root .book-guide-thread-item[aria-current="true"]{background:var(--guide-paper);border-color:var(--guide-border)}
+.book-guide-root .book-guide-empty-history{padding:9px;color:var(--guide-muted);font-size:12px}
+.book-guide-root .book-guide-sidebar .book-guide-settings{background:transparent;border:0}
+.book-guide-root .book-guide-sidebar .book-guide-settings>summary{padding:9px 8px;font-size:12px}
+.book-guide-root .book-guide-sidebar .book-guide-settings>summary small{display:none}
+.book-guide-root .book-guide-sidebar .book-guide-settings-body{max-height:none;overflow:visible}
+.book-guide-root .book-guide-sidebar .book-guide-context>summary{padding:9px 8px}
+.book-guide-root .book-guide-sidebar .book-guide-selection{padding:10px!important}
+.book-guide-root .book-guide-sidebar .book-guide-capabilities{padding:9px 3px}
+.book-guide-root .book-guide-delete-chat{display:block;width:100%;margin-top:18px;border:1px solid var(--guide-border);border-radius:10px;background:transparent;color:var(--guide-muted);font-size:12px;padding:10px;cursor:pointer}
+.book-guide-root .book-guide-chat-main .book-guide-messages{width:100%;max-width:820px;margin-inline:auto}
+.book-guide-root .book-guide-chat-main .book-guide-prompts{max-width:820px;width:100%;margin-inline:auto}
+.book-guide-root .book-guide-chat-main .book-guide-compose{width:calc(100% - 32px);max-width:800px;margin:8px auto 3px!important}
+.book-guide-root .book-guide-sideveil{display:none}
+.book-guide-root .book-guide-menu:focus-visible,.book-guide-root .book-guide-sidebar button:focus-visible{outline:3px solid var(--guide-accent);outline-offset:2px}
+@media(max-width:899px){.book-guide-root .book-guide-panel{height:var(--guide-vv-height,100dvh)!important;max-height:var(--guide-vv-height,100dvh)!important}.book-guide-root .book-guide-sidebar{position:absolute;z-index:5;left:0;top:0;bottom:0;box-shadow:12px 0 35px rgba(0,0,0,.15)}.book-guide-root .sidebar-open .book-guide-sidebar{width:min(290px,84vw);flex-basis:min(290px,84vw)}.book-guide-root .sidebar-open .book-guide-sideveil{display:block;position:absolute;inset:0;z-index:4;background:rgba(8,14,30,.45)}.book-guide-root .book-guide-head .book-guide-new-chat span{display:none}.book-guide-root .book-guide-head .book-guide-new-chat{min-width:38px;padding:0 10px}}
+@media(prefers-reduced-motion:reduce){.book-guide-root .book-guide-sidebar{transition:none}}
+
+.book-guide-root .book-guide-threadbar[hidden]{display:none!important}
+
+
+/* RC41 — familiar ChatGPT-inspired chat hierarchy, compact composer and calm navigation */
+.book-guide-root .book-guide-panel{width:min(1160px,calc(100vw - 24px));height:min(850px,calc(100dvh - 40px));max-height:calc(100dvh - 40px);border-radius:17px;overflow:hidden}
+.book-guide-root .book-guide-head{min-height:62px;gap:10px;box-shadow:none!important}
+.book-guide-root .book-guide-head .book-guide-title-wrap h2{font-size:15px;font-weight:650;letter-spacing:-.02em}
+.book-guide-root .book-guide-head .book-guide-title-wrap p{font-size:11px}
+.book-guide-root .book-guide-icon{display:none}
+.book-guide-root .book-guide-menu{display:grid;place-items:center;font-size:inherit;min-width:38px;padding:0}
+.book-guide-root .book-guide-head .book-guide-new-chat{display:flex;align-items:center;gap:8px}
+.book-guide-root .sidebar-open .book-guide-head .book-guide-new-chat{display:none}
+.book-guide-root .book-guide-sidebar{background:var(--guide-soft);transition:width .18s ease,flex-basis .18s ease}
+.book-guide-root .sidebar-open .book-guide-sidebar{width:272px;flex-basis:272px}
+.book-guide-root .book-guide-sidebar-head{min-height:62px;padding:12px 16px}
+.book-guide-root .book-guide-sidebar-head button{width:36px;height:36px;display:grid;place-items:center;border-radius:9px;font-size:inherit}
+.book-guide-root .book-guide-sidebar-head button:hover,.book-guide-root .book-guide-menu:hover{background:var(--guide-paper)!important}
+.book-guide-root .book-guide-side-new{display:flex;align-items:center;gap:12px;margin:2px 12px 18px;padding:11px 12px;font-size:13px;border:0;background:transparent}
+.book-guide-root .book-guide-side-new:hover{background:var(--guide-paper)}
+.book-guide-root .book-guide-thread-item{font-size:13px;padding:10px 12px;line-height:1.35}
+.book-guide-root .book-guide-sidebar-scroll h3{font-size:11px;letter-spacing:0;text-transform:none;font-weight:650;margin:15px 10px 8px}
+.book-guide-root .book-guide-chat-main{background:var(--guide-paper)}
+.book-guide-root .book-guide-welcome{flex:0 0 auto;text-align:center;margin:auto auto 10px;padding:10px 16px 0;color:var(--guide-ink)}
+.book-guide-root .book-guide-welcome-symbol{display:inline-grid;place-items:center;font-size:27px;width:52px;height:52px;border-radius:17px;background:var(--guide-soft);color:var(--guide-accent)}
+.book-guide-root .book-guide-welcome h3{font-size:clamp(19px,2.8vw,26px);font-weight:600;letter-spacing:-.035em;margin:15px 0 2px}
+.book-guide-root .book-guide-panel.has-conversation .book-guide-welcome{display:none}
+.book-guide-root .book-guide-chat-main .book-guide-prompts{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:710px;padding:10px 16px;margin:0 auto auto}
+.book-guide-root .book-guide-chat-main .book-guide-prompts button{font-size:12px;border-radius:999px;padding:9px 13px}
+.book-guide-root .book-guide-chat-main .book-guide-prompts button:nth-of-type(n+5){display:none}
+.book-guide-root .book-guide-chat-main .book-guide-messages{flex:1 1 auto;min-height:0;max-width:850px;padding:18px 28px}
+.book-guide-root .book-guide-panel:not(.has-conversation) .book-guide-chat-main .book-guide-messages:empty{flex:0 0 0;padding:0;overflow:hidden}
+.book-guide-root .book-guide-chat-main .book-guide-compose{max-width:790px;width:calc(100% - 38px);border-radius:22px!important;padding:9px 10px 9px 15px!important;box-shadow:0 2px 14px rgba(0,0,0,.07)!important}
+.book-guide-root .book-guide-chat-main .book-guide-compose textarea{font-size:14px;line-height:1.5}
+.book-guide-root .book-guide-chat-main .book-guide-disclaimer{font-size:10px;text-align:center;opacity:.75;padding:6px 14px 12px}
+@media(max-width:899px){.book-guide-root .book-guide-panel{border-radius:0}.book-guide-root .sidebar-open .book-guide-sidebar{width:min(300px,88vw);flex-basis:min(300px,88vw)}.book-guide-root .sidebar-open .book-guide-head .book-guide-new-chat{display:flex}.book-guide-root .book-guide-chat-main .book-guide-messages{padding:14px 15px}.book-guide-root .book-guide-welcome h3{font-size:21px}.book-guide-root .book-guide-chat-main .book-guide-compose{width:calc(100% - 20px)}.book-guide-root .book-guide-chat-main .book-guide-prompts{padding:10px}.book-guide-root .book-guide-chat-main .book-guide-prompts button:nth-of-type(n+4){display:none}}
+@media(prefers-reduced-motion:reduce){.book-guide-root .book-guide-sidebar{transition:none}}

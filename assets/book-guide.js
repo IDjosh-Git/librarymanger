@@ -13,19 +13,37 @@ function init(){if(ready)return;ready=true;
  <div class="book-guide-backdrop" id="bookGuideBackdrop" hidden aria-hidden="true"></div>
  <button type="button" class="book-guide-fab" id="bookGuideFab" aria-controls="bookGuidePanel" aria-expanded="false" aria-label="Open Library AI assistant" title="Chat with Library AI"><span class="book-guide-fab-symbol" aria-hidden="true">✦</span><span class="book-guide-fab-glow" aria-hidden="true"></span></button>
  <section class="book-guide-panel" id="bookGuidePanel" aria-labelledby="bookGuideTitle" role="dialog" aria-modal="false" hidden>
-  <header class="book-guide-head"><div class="book-guide-icon" aria-hidden="true">✦</div><div class="book-guide-title-wrap"><h2 id="bookGuideTitle">Library AI <span id="bookGuideCloudStatus" class="book-guide-cloud-status" data-connected="false" role="status" aria-label="Supabase disconnected" title="Supabase disconnected"><span class="book-guide-cloud-dot" aria-hidden="true"></span></span></h2><p id="bookGuideProvider">Private AI assistant · Live catalogue</p></div><div class="book-guide-head-actions"><button class="book-guide-new-chat" type="button" id="bookGuideNewChat" aria-label="Reset cloud conversation" title="Reset conversation saved in Supabase">↻ <span>Reset</span></button><button class="book-guide-close" type="button" id="bookGuideClose" aria-label="Close book assistant">×</button></div></header>
+  <header class="book-guide-head"><button type="button" id="bookGuideMenu" class="book-guide-menu" aria-label="Open AI tools and chat history" aria-controls="bookGuideSidebar" aria-expanded="false"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button><div class="book-guide-icon" aria-hidden="true">✦</div><div class="book-guide-title-wrap"><h2 id="bookGuideTitle">Library AI <span id="bookGuideCloudStatus" class="book-guide-cloud-status" data-connected="false" role="status" aria-label="Supabase disconnected" title="Supabase disconnected"><span class="book-guide-cloud-dot" aria-hidden="true"></span></span></h2><p id="bookGuideProvider">Private AI assistant · Live catalogue</p></div><div class="book-guide-head-actions"><button class="book-guide-new-chat" type="button" id="bookGuideNewChat" aria-label="New chat" title="Start a new conversation"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 20h9M16 4l4 4-11 11-5 1 1-5L16 4Z"/></svg><span>New chat</span></button><button class="book-guide-close" type="button" id="bookGuideClose" aria-label="Close book assistant">×</button></div></header>
+  <div class="book-guide-workspace" id="bookGuideWorkspace">
+   <div class="book-guide-sideveil" id="bookGuideSideveil" hidden></div>
+   <aside class="book-guide-sidebar" id="bookGuideSidebar" aria-label="AI chat history and tools" aria-hidden="true" inert>
+    <div class="book-guide-sidebar-head"><strong>Library AI</strong><button type="button" id="bookGuideSidebarClose" aria-label="Collapse sidebar" title="Close sidebar"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button></div>
+    <button type="button" id="bookGuideSideNew" class="book-guide-side-new"><span aria-hidden="true">✎</span> New chat</button>
+    <div class="book-guide-sidebar-scroll"><h3>Conversations</h3><nav id="bookGuideThreadList" class="book-guide-thread-list" aria-label="Saved conversations"><p class="book-guide-empty-history">Your conversations appear here.</p></nav><h3>Tools &amp; preferences</h3>
   <details class="book-guide-settings" id="bookGuideSettings"><summary>⚙ <span>Chat options</span><small>Web search · Book context</small></summary><div class="book-guide-settings-body"><details class="book-guide-context" id="bookGuideContext"><summary><span>Library book context <small>Optional</small></span><span id="bookGuideContextLabel">Add a book</span></summary><div class="book-guide-selection"><div class="book-guide-selection-top"><label for="bookGuideSelect">OPTIONAL BOOK CONTEXT</label><span class="book-guide-count" id="bookGuideCount" role="status" aria-live="polite">Loading books…</span></div><label class="sr-only" for="bookGuideSearch">Search the library catalogue</label><input type="search" id="bookGuideSearch" autocomplete="off" placeholder="Find a library title (optional)…" aria-label="Search library titles and authors"><select id="bookGuideSelect" aria-label="Select optional book context"><option value="">No book selected — ask anything</option></select><p id="bookGuideDetails" class="book-guide-book-note">No book required. Select a title only when you want the AI to use its catalogue details.</p></div></details>
   <div class="book-guide-capabilities"><span class="book-guide-live"><span aria-hidden="true">●</span> Provider selected automatically</span><label for="bookGuideWebSearch" class="book-guide-web-switch"><input id="bookGuideWebSearch" type="checkbox"><span class="book-guide-web-slider" aria-hidden="true"></span><span class="book-guide-web-copy"><strong>Search the web</strong><small>External book-catalogue matching runs automatically for inventory questions. Turn this on for broader web research (AI provider required).</small></span></label></div></div></details>
-  <div class="book-guide-threadbar"><label for="bookGuideThreads">Conversation</label><select id="bookGuideThreads" aria-label="Select saved conversation"><option value="">Current conversation</option></select><button type="button" id="bookGuideCreateThread" title="Create a separate saved conversation" aria-label="New conversation">＋ New</button></div>
+  <div class="book-guide-threadbar" hidden><select id="bookGuideThreads" aria-label="Select saved conversation"><option value="">Current conversation</option></select><button type="button" id="bookGuideCreateThread" aria-label="New conversation">＋ New</button></div>
+    <button type="button" id="bookGuideDeleteThread" class="book-guide-delete-chat">Delete current conversation</button>
+    </div>
+   </aside>
+   <div class="book-guide-chat-main">
   <div class="book-guide-handoff" id="bookGuideHandoff" hidden><button type="button" id="bookGuideReserveSelected">Reserve selected book</button></div>
+  <div class="book-guide-welcome" id="bookGuideWelcome" aria-hidden="true"><span class="book-guide-welcome-symbol" aria-hidden="true">✦</span><h3>How can I help you today?</h3></div>
   <div id="bookGuideMessages" class="book-guide-messages" role="log" aria-live="polite" aria-relevant="additions text"></div><div id="bookGuideBookResults" class="book-guide-book-results" aria-label="Matching library books" hidden></div>
   <div class="book-guide-prompts" id="bookGuidePrompts"><button type="button" id="bookGuideAdminInsights" hidden>Admin insights</button><button type="button" data-prompt="Find a book in the library catalogue">Find a book</button><button type="button" data-prompt="How do I check whether a book is available?">Availability</button><button type="button" data-prompt="How can I reserve a book?">Reservations</button><button type="button" data-prompt="What is the current Book of the Week?">This week’s book</button><button type="button" data-prompt="How do I use Library Manager?">App guide</button><button type="button" data-prompt="How do I scan, review and save a book?">Scan workflow</button><button type="button" data-prompt="How do I lend or return a library book?">Lend &amp; return</button><button type="button" data-prompt="How do I check in, record books read, and check out of the library?">Visit log</button><button type="button" data-prompt="Recommend three beginner-friendly books about data analysis.">Book ideas</button><button type="button" data-prompt="Explain the difference between a novel and a biography.">Ask a question</button><button type="button" data-prompt="What are some current developments in digital libraries?">Current research</button><button type="button" data-prompt="What is this book about?">Selected book</button></div>
   <form class="book-guide-compose" id="bookGuideForm"><label for="bookGuideInput" class="sr-only">Ask Library AI anything</label><textarea id="bookGuideInput" rows="1" maxlength="1200" autocomplete="off" placeholder="Message Library AI…" required></textarea><button type="button" class="book-guide-voice" id="bookGuideVoice" aria-label="Dictate a question" title="Dictate a question">🎙</button><button type="submit" id="bookGuideSend" aria-label="Send question" title="Send question"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button></form>
   <p class="book-guide-disclaimer" id="bookGuideDisclaimer">AI may make mistakes. Check important information.</p>
+   </div></div>
  </section>`;document.body.appendChild(node);
  $('bookGuideFab').addEventListener('click',()=>open());$('bookGuideClose').addEventListener('click',close);
  $('bookGuideAdminInsights').addEventListener('click',()=>{void showAdminInsights();});
- $('bookGuideNewChat').addEventListener('click',()=>{void resetConversation();});
+ $('bookGuideNewChat').addEventListener('click',()=>{void createConversation();});
+ $('bookGuideSideNew').addEventListener('click',()=>{void createConversation();});
+ $('bookGuideDeleteThread').addEventListener('click',()=>{void resetConversation();});
+ const setSidebar=open=>{const panel=$('bookGuidePanel'),sidebar=$('bookGuideSidebar');panel.classList.toggle('sidebar-open',open);sidebar.inert=!open;sidebar.setAttribute('aria-hidden',String(!open));$('bookGuideMenu').setAttribute('aria-expanded',String(open));$('bookGuideSideveil').hidden=!open;if(open)$('bookGuideSidebarClose').focus({preventScroll:true});else $('bookGuideMenu').focus({preventScroll:true});};
+ $('bookGuideMenu').addEventListener('click',()=>setSidebar(!$('bookGuidePanel').classList.contains('sidebar-open')));
+ $('bookGuideSidebarClose').addEventListener('click',()=>setSidebar(false));
+ $('bookGuideSideveil').addEventListener('click',()=>setSidebar(false));
  $('bookGuideCreateThread').addEventListener('click',()=>{void createConversation();});
  $('bookGuideThreads').addEventListener('change',e=>{activeThreadId=e.target.value||null;cloudLoaded=false;chatEpoch++;void loadCloud();});
  $('bookGuideReserveSelected').addEventListener('click',()=>{if(current?.title&&root.LibraryMemberReservations?.openWithTitle(current.title))close();});
@@ -39,7 +57,7 @@ function init(){if(ready)return;ready=true;
  $('bookGuideInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&!e.isComposing){e.preventDefault();$('bookGuideForm').requestSubmit();}});
  document.addEventListener('keydown',e=>{
   const panel=$('bookGuidePanel');if(panel.hidden)return;
-  if(e.key==='Escape'){e.preventDefault();close();return;}
+  if(e.key==='Escape'){e.preventDefault();if(panel.classList.contains('sidebar-open')){$('bookGuideSidebarClose').click();}else close();return;}
   if(e.key==='Tab'&&lockedPage){
    const tabbable=[...panel.querySelectorAll('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), a[href]')].filter(x=>x.getClientRects().length);
    if(!tabbable.length)return;const first=tabbable[0],last=tabbable[tabbable.length-1];
@@ -230,21 +248,24 @@ function renderThreads(threads){
  const select=$('bookGuideThreads');if(!select)return;
  select.replaceChildren();for(const thread of threads){const option=new Option(String(thread.title||'New conversation').slice(0,80),thread.id);select.add(option);}
  if(activeThreadId)select.value=activeThreadId;
+ const list=$('bookGuideThreadList');if(!list)return;list.replaceChildren();
+ if(!threads.length){const empty=document.createElement('p');empty.className='book-guide-empty-history';empty.textContent='No saved conversations yet.';list.append(empty);return;}
+ for(const thread of threads){const button=document.createElement('button');button.type='button';button.className='book-guide-thread-item';button.textContent=String(thread.title||'New conversation').slice(0,80);button.title=button.textContent;button.dataset.threadId=thread.id;button.setAttribute('aria-current',String(thread.id===activeThreadId));button.addEventListener('click',()=>{if(thread.id===activeThreadId)return;activeThreadId=thread.id;cloudLoaded=false;chatEpoch++;void loadCloud();if(window.matchMedia('(max-width: 899px)').matches)$('bookGuideSidebarClose').click();});list.append(button);}
 }
 async function createConversation(){
  if(busy||!activeSession?.user)return;
- $('bookGuideCreateThread').disabled=true;
+ $('bookGuideCreateThread').disabled=true;$('bookGuideNewChat').disabled=true;$('bookGuideSideNew').disabled=true;
  try{const data=await cloudRequest('POST','/api/library-ai-history',{title:'New conversation'});
   activeThreadId=data.thread.id;cloudLoaded=false;chatEpoch++;await loadCloud();
  }catch{addMessage('assistant','Unable to create a new conversation. Please try again.');}
- finally{$('bookGuideCreateThread').disabled=false;}
+ finally{$('bookGuideCreateThread').disabled=false;$('bookGuideNewChat').disabled=false;$('bookGuideSideNew').disabled=false;}
 }
 async function resetConversation(){
  if(!activeSession?.user){authNotice();return;}
  if(busy)return;
  if(!root.confirm('Reset Library AI conversation? This will permanently delete your AI chat history from Supabase on all devices. Your library books and loans will not be affected.'))return;
  const epoch=chatEpoch;
- $('bookGuideNewChat').disabled=true;$('bookGuideSend').disabled=true;
+ $('bookGuideDeleteThread').disabled=true;$('bookGuideSend').disabled=true;
  // Retain the last confirmed connection state while the reset is in flight.
  try{
   await cloudRequest('DELETE','/api/library-ai-history'+(activeThreadId?'?thread='+encodeURIComponent(activeThreadId):''));activeThreadId=null;if(epoch!==chatEpoch)return;chatEpoch++;cloudLoaded=true;
@@ -254,7 +275,7 @@ async function resetConversation(){
   setCloudConnected(true);
   addMessage('assistant',greeting);$('bookGuideSend').disabled=false;$('bookGuideInput').focus({preventScroll:true});
  }catch(err){setCloudConnected(false);cloudLoaded=false;addMessage('assistant','Unable to reset this conversation. Please reconnect and try again.');$('bookGuideSend').disabled=true;}
- finally{$('bookGuideNewChat').disabled=false;}
+ finally{$('bookGuideDeleteThread').disabled=false;}
 }
 async function ask(question){
  if(!ready)init();if(busy)return;question=String(question||'').trim().slice(0,1200);if(!question)return;
@@ -318,6 +339,7 @@ function open(){
  $('bookGuidePanel').hidden=false;$('bookGuideFab').setAttribute('aria-expanded','true');
  if(isMobileSheet())lockBackground();else unlockBackground();
  $('bookGuideSettings').open=false;
+ if(!isMobileSheet()&&!$('bookGuidePanel').classList.contains('sidebar-open'))$('bookGuideMenu').click();
  if(!activeSession?.user)authNotice();else if(!cloudLoaded&&!cloudLoading)void loadCloud();
  (isMobileSheet() ? $('bookGuideClose') : $('bookGuideInput')).focus({preventScroll:true});
 }
