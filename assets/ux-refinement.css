@@ -1,0 +1,71 @@
+/* RC53: task-first progressive refinement. Existing app tokens, behavior and permissions are preserved. */
+:root{--ux-space:clamp(14px,2vw,24px);--ux-radius:16px;--ux-line:var(--line,var(--app-brand-border));--ux-surface:var(--card,var(--surface));}
+.ux-public-paths{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0 14px}
+.ux-public-paths>a,.ux-public-paths>button{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:46px;padding:12px 18px;border-radius:13px;font-weight:750;text-decoration:none;cursor:pointer}
+.ux-public-paths .ux-explore{background:var(--library-action,var(--app-brand-gradient));color:var(--library-action-text,var(--app-on-gradient));border:1px solid transparent}
+.ux-public-paths .ux-staff{background:transparent;color:inherit;border:1px solid var(--ux-line)}
+.ux-public-paths :is(a,button):hover{transform:translateY(-1px);box-shadow:0 8px 20px color-mix(in srgb,var(--app-brand) 12%,transparent)}
+.ux-public-paths :is(a,button):focus-visible{outline:3px solid var(--app-brand-secondary);outline-offset:3px}
+body[data-account="out"] .auth-showcase{min-height:0!important}
+body[data-account="out"] .auth-showcase-copy h2{font-size:clamp(1.5rem,3.3vw,2.7rem)!important;line-height:1.13}
+body[data-account="out"] .auth-showcase-features{opacity:.7}
+body[data-account="out"] .auth-form-heading{margin-bottom:10px}
+body[data-account="out"] .auth-content{align-self:start}
+/* Compact admin workspace: bring primary controls and the real work above decoration. */
+#dashboard .dashboard-hero{padding:12px 18px!important;min-height:0!important;margin-block:8px 12px!important}
+#dashboard .dashboard-hero-art{display:none!important}
+#dashboard .dashboard-hero-copy h2{font-size:clamp(1.2rem,2vw,1.65rem)!important;line-height:1.2!important;margin:4px 0!important}
+#dashboard .dashboard-hero-copy p{font-size:.86rem!important;margin:4px 0 8px!important}
+#dashboard .dashboard-hero-copy br{display:none}
+#dashboard .dashboard-metrics{gap:10px!important;margin-bottom:12px!important}
+#dashboard .dashboard-metric{padding:12px!important;min-height:0!important}
+#dashboard .dashboard-insight-strip{margin-bottom:14px!important}
+#dashboard .dashboard-main-grid:not(.dashboard-lower-grid) .dashboard-attention{order:-1}
+#dashboard .dashboard-activity{opacity:.94}
+#inventory .hero-library,#history .history-hero,#notifications .notification-hero{min-height:0!important;padding:16px 20px!important;margin-bottom:12px!important}
+#inventory .hero-visual,#history .section-hero-art,#notifications .section-hero-art{display:none!important}
+#inventory .hero-library h2,#history .history-hero h2,#notifications .notification-hero h2{font-size:clamp(1.25rem,2.5vw,1.85rem)!important;margin:2px 0 6px!important}
+#inventory .hero-library p,#history .history-hero p,#notifications .notification-hero p{font-size:.87rem!important;margin:0 0 8px!important}
+#inventory .hero-highlights{display:none!important}
+#inventory .inventory-workspace-card{scroll-margin-top:90px}
+#inventory .inventory-toolbar{position:relative;z-index:1;gap:9px}
+#inventory .inventory-toolbar input{min-height:44px}
+#inventory .inventory-filter-launch{min-height:44px}
+#inventory .inventory-panel-heading{padding-bottom:8px!important}
+#inventory .inventory-panel-heading p{margin:0!important}
+#review .review-workspace-hero,#review .review-hero{min-height:0!important}
+#review .review-priority-controls{margin-bottom:12px}
+#review #batchResults{scroll-margin-top:100px}
+#history .history-data-surface{margin-top:10px}
+#notifications .notification-hero-counter{padding:10px 14px!important;min-width:0!important}
+#notifications .notification-controls{gap:10px}
+#accountCard .workspace-account{padding:10px!important;min-height:0!important}
+#accountCard .workspace-nav-header p{display:none!important}
+#accountCard .workspace-nav-section{margin-block:7px!important}
+#accountCard .workspace-nav .tab{min-height:42px}
+#accountCard .workspace-nav .app-icon{flex:none;width:19px;height:19px}
+#accountCard .workspace-nav .tab span{min-width:0}
+#accountCard .workspace-nav :is(button,a):focus-visible{outline:3px solid var(--app-brand-secondary);outline-offset:2px}
+/* Clear status indicators retain their text; do not convey state through colour alone. */
+#review :is(.review-priority-controls,.review-assignment-bar),#inventory .inventory-workspace-card,#history .history-data-surface{border-radius:var(--ux-radius)}
+#review :is(button,select,input),#inventory :is(button,select,input),#history :is(button,select,input),#notifications :is(button,select,input){scroll-margin-top:100px}
+#review :is(button,input,select):focus-visible,#inventory :is(button,input,select):focus-visible,#history :is(button,input,select):focus-visible,#notifications :is(button,input,select):focus-visible{outline:3px solid var(--app-brand-secondary)!important;outline-offset:2px}
+.spotlight-feature .spotlight-cta{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.spotlight-feature .spotlight-primary-cta{order:-1;min-height:48px}
+.spotlight-feature .spotlight-chat-cta,.spotlight-feature .spotlight-contact-cta{min-height:42px}
+:is(.showcase-contact-link,.mobile-contact-link,.spotlight-contact-link,.spotlight-contact-cta)[hidden]{display:none!important}
+@media(max-width:900px){#accountCard .workspace-nav-header{padding-block:8px!important}#dashboard .dashboard-main-grid{gap:12px!important}#inventory .hero-library,#history .history-hero,#notifications .notification-hero{padding:14px!important}}
+@media(max-width:600px){.ux-public-paths{display:grid;grid-template-columns:1fr;gap:8px}.ux-public-paths>a,.ux-public-paths>button{width:100%;min-height:48px}#dashboard .dashboard-metrics{grid-template-columns:repeat(2,minmax(0,1fr))!important}#dashboard .dashboard-insight-strip{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}#dashboard .dashboard-hero{padding:12px!important}#inventory .hero-actions{gap:8px!important}#inventory .inventory-toolbar{display:flex;flex-wrap:wrap}#inventory .inventory-toolbar .search-wrap{flex:1 1 100%;min-width:0}#history .toolbar,#notifications .notification-controls{flex-wrap:wrap}#history .toolbar .search-wrap{flex:1 1 100%}#accountCard .workspace-nav .tab{min-height:44px}}
+@media(prefers-reduced-motion:reduce){.ux-public-paths :is(a,button){transition:none!important;transform:none!important}}
+/* Review: queue and decision controls take precedence over editorial decoration. */
+#review .review-workspace-hero{min-height:0!important;padding:14px 18px!important;margin-bottom:10px!important}
+#review .review-workspace-hero h2{font-size:clamp(1.25rem,2.5vw,1.8rem)!important;margin:3px 0!important}
+#review .review-workspace-hero p{font-size:.86rem!important;margin:5px 0!important}
+#review .lm-review-hero-image{display:none!important}
+#review .review-stats{margin:8px 0 12px!important;gap:8px!important}
+#review .review-assist-help,#review .scan-advanced-options{margin-top:12px}
+#shelfScan .shelf-page-hero{min-height:0!important;padding:16px!important;margin-bottom:12px!important}
+#shelfScan .shelf-page-hero h2{font-size:clamp(1.25rem,2.5vw,1.8rem)!important}
+#shelfScan .scan-auto-stephead{gap:10px!important}
+#shelfScan .scan-auto-step-index{flex:none}
+@media(max-width:600px){#review .review-workspace-hero,#shelfScan .shelf-page-hero{padding:12px!important}#review .review-hero-actions{gap:8px!important}#shelfScan .scan-auto-stephead{align-items:flex-start}}

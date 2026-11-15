@@ -1,0 +1,1 @@
+RC48: Introduces shared semantic brand tokens for primary/secondary colours, gradients, contrast-aware text, hover/borders and focus. Existing surface/theme tokens remain intact to avoid overwriting light/dark surfaces. Test appearance save and contrast in Vercel Preview.

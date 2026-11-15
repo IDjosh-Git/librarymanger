@@ -62,8 +62,8 @@ test('Lending page has accessible selected-title availability card, distinct sel
 });
 test('current visual theme uses navy and teal gradients with matching light/dark tokens',()=>{
  assert.match(css,/#lend \.lend-availability-card/);
- assert.match(css,/--accent:#0b7280/);
- assert.match(css,/--bright-gradient:linear-gradient\(118deg,#143f5b/);
+ assert.match(css,/--accent:var\(--app-brand\)/);
+ assert.match(css,/--bright-gradient:linear-gradient\(118deg,var\(--app-brand\)/);
  assert.match(css,/:root\[data-theme="dark"\]/);
  assert.match(css,/#lend \.lend-availability-card/);
 });

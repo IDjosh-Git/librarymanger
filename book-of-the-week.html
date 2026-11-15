@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en">
-<head>
+<head>\n<link rel="stylesheet" href="assets/library-color-tokens.css?v=rc52">
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#14354f">
@@ -22,13 +22,14 @@
 <script defer src="assets/book-of-the-week.js"></script>
   <script defer src="assets/public-contact.js"></script>
   <link rel="stylesheet" href="assets/book-of-week-v542.css?v=5.47.0">
+<link rel="stylesheet" href="assets/ux-refinement.css?v=rc53">
 </head>
 <body data-public-spotlight="true">
   <a href="#main" class="skip-link">Skip to Book of the Week</a>
   <header class="spotlight-topbar">
     <div class="spotlight-container spotlight-top-inner">
       <a href="index.html" class="spotlight-brand" aria-label="Library Manager home"><span class="spotlight-brand-icon" aria-hidden="true"><img src="assets/book-logo.svg" class="spotlight-brand-mark" alt="" width="44" height="44"></span><span><strong>Library Manager</strong><small>Discover &amp; explore</small></span></a>
-      <nav class="spotlight-top-actions" aria-label="Public navigation"><a href="#publicContactArea" class="spotlight-contact-link">Contact</a><a href="index.html" class="spotlight-back">← Back to library</a><button id="spotlightThemeToggle" type="button" aria-label="Toggle dark appearance" title="Change appearance"><span aria-hidden="true">◐</span></button></nav>
+      <nav class="spotlight-top-actions" aria-label="Public navigation"><a href="#publicContactArea" class="spotlight-contact-link" hidden>Contact</a><a href="index.html" class="spotlight-back">← Back to library</a><button id="spotlightThemeToggle" type="button" aria-label="Toggle dark appearance" title="Change appearance"><span aria-hidden="true">◐</span></button></nav>
     </div>
   </header>
   <main id="main">
@@ -36,7 +37,7 @@
       <div class="spotlight-intro"><span class="spotlight-kicker"><span aria-hidden="true">✦</span> LIBRARY EDITORIAL</span><h2>This week’s story starts here.</h2><p>One real title from our shelves, a thoughtful reason to read it, and a new discovery each week.</p></div>
       <section class="spotlight-feature" aria-labelledby="spotlightTitle">
         <div class="spotlight-cover-column"><div class="spotlight-cover-frame"><div class="spotlight-cover-glow" aria-hidden="true"></div><img id="spotlightCover" src="assets/book-stack-fallback.jpg" alt="A photograph of a stack of books, until a book is featured" loading="eager" decoding="async"><div class="spotlight-cover-placeholder" id="spotlightCoverPlaceholder" hidden><span>✦</span><strong>Discover your next great read</strong></div></div><div class="spotlight-cover-caption">OUR COLLECTION <span aria-hidden="true">✦</span> YOUR NEXT READ</div></div>
-        <div class="spotlight-feature-content"><div class="spotlight-ribbon"><span class="ribbon-star" aria-hidden="true">✦</span> <span id="spotlightRibbonLabel">THE BOOK OF THE WEEK</span></div><div class="spotlight-edition" id="spotlightEdition">Library reading recommendation</div><p class="spotlight-overline" id="spotlightOverline">Curated by your library</p><h1 id="spotlightTitle">Your next great read awaits.</h1><p class="spotlight-author" id="spotlightAuthor">Discover a book worth sharing.</p><p class="spotlight-description" id="spotlightDescription">Discover a library title and the story behind its selection.</p><div class="spotlight-info" aria-label="Featured book details"><div><span>COLLECTION</span><strong>Our library shelves</strong></div><div><span>ISBN</span><strong id="spotlightIsbn">To be announced</strong></div><div><span>LOCATION</span><strong id="spotlightShelf">Ask the library</strong></div><div><span>SELECTED BY</span><strong id="spotlightSource">Library editorial</strong></div></div><div class="spotlight-cta"><button type="button" id="askFeaturedBook" class="spotlight-chat-cta">✦ Ask about this book</button><a href="reading-guide.html" class="spotlight-primary-cta">Explore the reading guide <span aria-hidden="true">↗</span></a><a href="#publicContactArea" class="spotlight-contact-cta">Contact the library</a><button id="shareSpotlight" type="button" class="spotlight-chat-cta">Share this pick ↗</button><span id="spotlightPublished" aria-live="polite">A new reading pick is on its way.</span></div></div>
+        <div class="spotlight-feature-content"><div class="spotlight-ribbon"><span class="ribbon-star" aria-hidden="true">✦</span> <span id="spotlightRibbonLabel">THE BOOK OF THE WEEK</span></div><div class="spotlight-edition" id="spotlightEdition">Library reading recommendation</div><p class="spotlight-overline" id="spotlightOverline">Curated by your library</p><h1 id="spotlightTitle">Your next great read awaits.</h1><p class="spotlight-author" id="spotlightAuthor">Discover a book worth sharing.</p><p class="spotlight-description" id="spotlightDescription">Discover a library title and the story behind its selection.</p><div class="spotlight-info" aria-label="Featured book details"><div><span>COLLECTION</span><strong>Our library shelves</strong></div><div><span>ISBN</span><strong id="spotlightIsbn">To be announced</strong></div><div><span>LOCATION</span><strong id="spotlightShelf">Ask the library</strong></div><div><span>SELECTED BY</span><strong id="spotlightSource">Library editorial</strong></div></div><div class="spotlight-cta"><a href="reading-guide.html" class="spotlight-primary-cta">Explore the reading guide <span aria-hidden="true">↗</span></a><button type="button" id="askFeaturedBook" class="spotlight-chat-cta">✦ Ask about this book</button><a href="#publicContactArea" class="spotlight-contact-cta" hidden>Contact the library</a><button id="shareSpotlight" type="button" class="spotlight-chat-cta">Share this pick ↗</button><span id="spotlightPublished" aria-live="polite">A new reading pick is on its way.</span></div></div>
       </section>
       <section class="weekly-editorial" id="weeklyEditorial" aria-labelledby="weeklyEditorialTitle">
         <div class="weekly-editorial-heading">

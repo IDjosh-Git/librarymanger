@@ -1,0 +1,1 @@
+RC52: appearance studio, palette presets, light/dark preview, corner preview, contrast guidance, dynamic branding and scoped premium styling. Existing Supabase save schema unchanged. Browser visual QA is still required.

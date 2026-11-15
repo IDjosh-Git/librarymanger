@@ -29,13 +29,14 @@
       el.textContent=name?`Connect with ${name} or follow us online for reading updates.`:
         'Connect with the library through the contact information and official links below.';
     });
+    let actionable=false;
     for(const [key,label] of Object.entries(LABELS)){
       document.querySelectorAll(`[data-contact-detail="${key}"]`).forEach(el=>{
         el.replaceChildren();const value=String(data?.[key]||'').trim();el.hidden=!value;
         if(!value)return;
         const t=document.createElement('strong');t.textContent=label;el.append(t);
-        if(key==='email'&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value))addAnchor(el,'mailto:'+value,value);
-        else if(key==='phone'&&/^[+0-9()\s.\-]{6,40}$/.test(value))addAnchor(el,'tel:'+value.replace(/[^+0-9]/g,''),value);
+        if(key==='email'&&/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)){addAnchor(el,'mailto:'+value,value);actionable=true;}
+        else if(key==='phone'&&/^[+0-9()\s.\-]{6,40}$/.test(value)){addAnchor(el,'tel:'+value.replace(/[^+0-9]/g,''),value);actionable=true;}
         else {const span=document.createElement('span');span.textContent=value;el.appendChild(span);}
       });
     }
@@ -51,16 +52,22 @@
         const a=addAnchor(container,'mailto:'+data.email,'✉  Email the library','public-social-link');a.setAttribute('aria-label','Email the library');
       }
       container.hidden=!container.children.length;
+      if(container.children.length)actionable=true;
+    });
+    document.querySelectorAll('.showcase-contact-link,.mobile-contact-link,.spotlight-contact-link,.spotlight-contact-cta').forEach(el=>{el.hidden=!actionable;});
+    document.querySelectorAll('[data-contact-detail="summary"]').forEach(el=>{
+      if(!actionable)el.textContent='Public contact details have not been published yet. Please check back later.';
     });
   }
   async function load(){
-    if(!document.querySelector('[data-public-socials]')||!window.supabase?.createClient)return;
+    if(!document.querySelector('[data-public-socials]'))return;
+    if(!window.supabase?.createClient){render({});return;}
     try{
       const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
       const {data,error}=await db.from('library_public_contact')
         .select('library_name,email,phone,location,hours,website,whatsapp,facebook,instagram,youtube,tiktok,x_url')
         .eq('id',1).maybeSingle();
-      if(!error)render(data||{});
+      if(!error)render(data||{});else render({});
     }catch{/* Missing migration or network: retain honest placeholder. */}
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',load,{once:true});else load();

@@ -47,8 +47,8 @@ test('Review displays per-card save failures and retry status instead of only Sc
 });
 
 test('review palette is scoped navy and teal in light/dark modes and touch targets are accessible',()=>{
- assert.match(css,/#review\{\s*--accent:#0b7280/);
- assert.match(css,/:root\[data-theme="dark"\] #review\{\s*--accent:#90dbe2/);
+ assert.match(css,/#review\{\s*--accent:var\(--app-brand\)/);
+ assert.match(css,/:root\[data-theme="dark"\] #review\{\s*--accent:var\(--app-brand\)/);
  assert.match(css,/\.review-approve-button\{[^}]*min-height:51px!important/);
  assert.match(css,/\.review-approve-button\{width:100%!important;min-width:0!important;min-height:54px!important/);
 });

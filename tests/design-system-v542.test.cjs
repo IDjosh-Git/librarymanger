@@ -12,10 +12,10 @@ const cssFiles = fs.readdirSync(path.join(root,'assets')).filter((f) => f.endsWi
 const appCss = read('assets/library-manager-v542.css');
 
 test('all old CSS files are removed and only current standalone bundles remain', () => {
-  assert.deepEqual(cssFiles, ['book-of-week-v542.css','library-manager-v542.css','reading-v542.css']);
+  assert.deepEqual(cssFiles, ['book-of-week-v542.css','library-color-tokens.css','library-manager-v542.css','reading-v542.css','ux-refinement.css']);
   for (const [html,expected] of [[app,'library-manager-v542.css'],[publicBook,'book-of-week-v542.css'],[publicGuide,'reading-v542.css']]) {
     const refs = [...html.matchAll(/href="assets\/([^"?]+\.css)(?:\?[^" ]*)?"/g)].map((x) => x[1]);
-    assert.deepEqual(refs,[expected]);
+    assert.deepEqual(refs, expected==='reading-v542.css'?['library-color-tokens.css',expected]:['library-color-tokens.css',expected,'ux-refinement.css']);
   }
 });
 
