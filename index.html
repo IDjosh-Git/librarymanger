@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
-<head>\n<link rel="stylesheet" href="assets/library-color-tokens.css?v=rc59">
+<head>\n<link rel="stylesheet" href="assets/library-color-tokens.css?v=rc63">
+
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#182c44">
@@ -54,14 +55,16 @@
 
 
 
-<script defer src="assets/library-branding.js?v=rc59"></script>
+<script defer src="assets/library-branding.js?v=rc63"></script>
 <script defer src="assets/compact-card-insights.js?v=5.17.0"></script>
 <script defer src="assets/premium-progress-upload.js?v=5.54.0"></script>
 <script defer src="assets/book-guide-format.js"></script>
 <script defer src="assets/book-guide.js?v=6.0.0-rc42"></script>
 <script defer src="assets/public-contact.js"></script>
-  <link rel="stylesheet" href="assets/library-manager-v542.css?v=rc59">
-<style id="automationCentreStyle">.automation-backdrop:not([hidden]){position:fixed;inset:0;background:var(--component-color-013);z-index:9998;display:grid;place-items:center;padding:16px}.automation-dialog{width:min(850px,100%);max-height:92vh;overflow:auto;background:var(--surface,var(--component-color-001));color:var(--text,var(--component-color-014));border-radius:20px;padding:clamp(18px,3vw,30px);box-shadow:0 24px 90px var(--component-color-015)}.automation-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}.automation-head h2{margin:5px 0}.automation-head p{margin:0 0 14px}.automation-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:18px 0}.automation-stat{border:1px solid var(--component-color-016);border-radius:14px;padding:15px}.automation-stat strong{font-size:26px;display:block}.automation-stat small{display:block;opacity:.78}.automation-actions{display:flex;flex-wrap:wrap;gap:10px}.automation-disclaimer{font-size:12px;opacity:.75;margin-top:16px}@media(max-width:550px){.automation-head{flex-direction:column}.automation-actions button{width:100%}}</style>
+  <link rel="stylesheet" href="assets/library-manager-v542.css?v=rc63">
+<link rel="stylesheet" href="assets/library-theme-rc62.css?v=rc63">
+<style id="automationCentreStyle">.automation-backdrop:not([hidden]){position:fixed;inset:0;background:var(--component-color-013);z-index:9998;display:grid;place-items:center;padding:16px}.automation-dialog{width:min(850px,100%);max-height:92vh;overflow:auto;background:var(--surface,var(--component-color-001));color:var(--text,var(--component-color-014));border-radius:20px;padding:clamp(18px,3vw,30px);box-shadow:0 24px 90px var(--component-color-015)}.automation-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}.automation-head h2{margin:5px 0}.automation-head p{margin:0 0 14px}.automation-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:18px 0}.automation-stat{border:1px solid var(--component-color-016);border-radius:14px;padding:15px}.automation-stat strong{font-size:26px;display:block}.automation-stat small{display:block;opacity:.78}.automation-actions{display:flex;flex-wrap:wrap;gap:10px}.automation-disclaimer{font-size:12px;opacity:.75;margin-top:16px}@media(max-width:550px){.automation-head{flex-direction:column}.automation-actions button{width:100%}} .inventory-inline-input{width:100%;min-width:115px;max-width:290px;box-sizing:border-box;border:1px solid transparent;border-radius:6px;padding:7px 8px;background:transparent;color:inherit;font:inherit} .inventory-inline-input:hover,.inventory-inline-input:focus{border-color:#9aaec1;background:var(--surface,#fff);color:#1b2c3a;outline-offset:1px} .inventory-inline-input:disabled{opacity:.65;cursor:not-allowed}
+</style>
 <style id="reviewSimpleAccessibleStyle">
 #review.review-workspace{--review-focus:var(--component-color-017)}
 #review .review-workspace-hero{padding-block:clamp(18px,3vw,32px)}
@@ -544,7 +547,7 @@ body #accountCard .scan-recognition-card {min-height:60px!important;}
   </div>
 </dialog>
 <div class="inventory-scanned-link"><div><strong>Scanned books</strong><span>Open completed scans</span></div><button id="viewScannedBooks" type="button">Open scanned →</button></div>
-<div class="table-actions"><span id="bookTableMeta" class="table-meta" aria-live="polite">Newest books first</span><div class="row"><button id="clearFilters" type="button" class="light smallbtn">Clear all filters</button><button id="exportBooks" type="button" class="light smallbtn"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export all · Excel</button></div></div><p class="table-scroll-hint" id="inventoryTableScrollHelp">Scroll horizontally to see all inventory columns. Book titles may wrap; other values stay on one line.</p><div id="bookTable" class="tablewrap" tabindex="0" role="region" aria-label="Inventory table" aria-describedby="inventoryTableScrollHelp"></div><div id="bookPager" class="pager" aria-label="Inventory pages"></div>
+<div class="table-actions"><span id="bookTableMeta" class="table-meta" aria-live="polite">Newest books first</span><div class="row"><button id="clearFilters" type="button" class="light smallbtn">Clear all filters</button><button id="bulkShelfEdit" type="button" class="light smallbtn">Find &amp; replace shelf</button><button id="exportBooks" type="button" class="light smallbtn"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#download"></use></svg> Export all · Excel</button></div></div><p class="table-scroll-hint" id="inventoryTableScrollHelp">Scroll horizontally to see all inventory columns. Book titles may wrap; other values stay on one line.</p><div id="bookTable" class="tablewrap" tabindex="0" role="region" aria-label="Inventory table" aria-describedby="inventoryTableScrollHelp"></div><div id="bookPager" class="pager" aria-label="Inventory pages"></div>
 </section>
 </div>
 <div id="shelfScan" class="panel shelf-scan-page" aria-labelledby="shelfScanTitle">
@@ -1672,11 +1675,11 @@ function renderBooks(){
  }else{
   $('bookTable').className='tablewrap';
   const header=(label,key)=>{const on=LibraryInventoryColumnFilters.active(columnFilters,selectedColumnValues).includes(key);return `<th scope="col"><div class="inventory-th-label"><span>${label}</span><button type="button" class="column-header-filter ${on?'is-filtered':''}" data-column-focus="${key}" aria-label="Filter ${label}" title="Filter ${label}" aria-pressed="${on}">${uiIcon('filter')}</button></div></th>`};
-  let h='<table><thead><tr><th scope="col">No.</th>'+header('ISBN / Barcode','isbn')+header('Title','title')+header('Authors','authors')+header('Available Copies','available')+header('On Loan','loan')+header('Status','status')+header('Details','details')+header('Shelf','shelf')+'<th scope="col">Actions</th></tr></thead><tbody>';
+  let h='<table><thead><tr><th scope="col">No.</th>'+header('ISBN / Barcode','isbn')+header('Title','title')+header('Authors','authors')+header('Available Copies','available')+header('On Loan','loan')+header('Status','status')+header('Shelf','shelf')+'<th scope="col">Actions</th></tr></thead><tbody>';
   pageGroups.forEach((g,i)=>{
    const b=g.representative,lend=g.availableCopy,ret=g.borrowedCopy;
    const shelf=g.shelves.length>1?'Multiple shelves':g.shelves[0]||'';
-   h+=`<tr><td data-label="No.">${start+i+1}</td><td data-label="ISBN / Barcode">${esc(inventoryGroupBarcode(g))}</td><td data-label="Title"><div class="inventory-title-with-cover">${editionCoverMarkup(b)}<span>${esc(b.title||'Untitled book')}</span></div></td><td data-label="Authors">${esc(b.authors||'')}</td><td data-label="Available Copies" class="inventory-count-cell">${g.availableCopies}</td><td data-label="On Loan">${g.borrowedCopies}</td><td data-label="Status">${inventoryGroupStatus(g)}</td><td data-label="Details">${inventoryGroupQuality(g).full?'Identified':'Needs title'}</td><td data-label="Shelf">${esc(shelf)}</td><td data-label="Actions"><div class="action-cell">${lend&&isCirculationUser()?`<button type="button" class="icon-btn" title="Lend one available copy" data-lend-book="${esc(lend.record_id)}">${uiIcon('arrow-up-right')}</button>`:''}${ret&&isCirculationUser()?`<button type="button" class="icon-btn" title="Return a borrowed copy" data-return-book="${esc(ret.record_id)}">${uiIcon('arrow-down-left')}</button>`:''}${g.totalCopies===1?`<button type="button" class="icon-btn" title="Edit this copy" data-edit-book="${esc(b.record_id)}">${uiIcon('pencil')}</button>`:''}<button type="button" class="icon-btn book-guide-action" data-book-chat="${esc(b.record_id)}" aria-label="Ask about this book" title="Ask about this book">${uiIcon('sparkles')}</button><button type="button" class="icon-btn" title="Find missing details" data-enrich-book="${esc(b.record_id)}">${uiIcon('refresh')}</button></div>${manageCopiesButton(g)}</td></tr>`;
+   h+=`<tr><td data-label="No.">${start+i+1}</td><td data-label="ISBN / Barcode">${esc(inventoryGroupBarcode(g))}</td><td data-label="Title"><div class="inventory-title-with-cover">${editionCoverMarkup(b)}${isAdmin()?`<input class="inventory-inline-input" aria-label="Edit title" data-inventory-edit="title" data-record-ids="${esc(g.copies.map(c=>c.record_id).join(','))}" value="${esc(b.title||'')}">`:`<span>${esc(b.title||'Untitled book')}</span>`}</div></td><td data-label="Authors">${isAdmin()?`<input class="inventory-inline-input" aria-label="Edit authors" data-inventory-edit="authors" data-record-ids="${esc(g.copies.map(c=>c.record_id).join(','))}" value="${esc(b.authors||'')}">`:esc(b.authors||'')}</td><td data-label="Available Copies" class="inventory-count-cell">${g.availableCopies}</td><td data-label="On Loan">${g.borrowedCopies}</td><td data-label="Status">${inventoryGroupStatus(g)}</td><td data-label="Shelf">${isAdmin()?`<input class="inventory-inline-input" data-inventory-edit="shelf_location" data-record-ids="${esc(g.copies.map(c=>c.record_id).join(','))}" value="${esc(shelf==='Multiple shelves'?'':shelf)}" placeholder="${shelf==='Multiple shelves'?'Multiple shelves — manage copies':'Unassigned'}" title="Edit shelf for all copies in this title" ${g.shelves.length>1?'disabled':''}>`:esc(shelf)}</td><td data-label="Actions"><div class="action-cell">${lend&&isCirculationUser()?`<button type="button" class="icon-btn" title="Lend one available copy" data-lend-book="${esc(lend.record_id)}">${uiIcon('arrow-up-right')}</button>`:''}${ret&&isCirculationUser()?`<button type="button" class="icon-btn" title="Return a borrowed copy" data-return-book="${esc(ret.record_id)}">${uiIcon('arrow-down-left')}</button>`:''}${g.totalCopies===1?`<button type="button" class="icon-btn" title="Edit this copy" data-edit-book="${esc(b.record_id)}">${uiIcon('pencil')}</button>`:''}<button type="button" class="icon-btn book-guide-action" data-book-chat="${esc(b.record_id)}" aria-label="Ask about this book" title="Ask about this book">${uiIcon('sparkles')}</button><button type="button" class="icon-btn" title="Find missing details" data-enrich-book="${esc(b.record_id)}">${uiIcon('refresh')}</button></div>${manageCopiesButton(g)}</td></tr>`;
   });
   h+='</tbody></table>';$('bookTable').innerHTML=h;
  }
@@ -4609,6 +4612,53 @@ $('columnFiltersPanel').addEventListener('click',e=>{
 $('columnFiltersPanel').addEventListener('input',e=>{const key=e.target.dataset.columnFilter;if(!key)return;columnFilters[key]=e.target.value;bookPage=1;scheduleBookRender()});
 $('columnFiltersPanel').addEventListener('change',e=>{const key=e.target.dataset.columnFilter;if(!key)return;columnFilters[key]=e.target.value;bookPage=1;renderBooks()});
 $('bookTable').addEventListener('click',e=>{const el=e.target.closest('[data-column-focus]');if(el)setColumnFiltersOpen(true,el.dataset.columnFocus)});
+// Inventory spreadsheet-style editing and bulk shelf cleanup. Only administrators may mutate records.
+async function inventoryUpdateCopies(ids,field,value){
+ if(!isAdmin()||!session?.user)throw Error('Administrator access required.');
+ const allowed=['title','authors','shelf_location'];if(!allowed.includes(field))throw Error('Unsupported field.');
+ const unique=[...new Set(ids)].filter(id=>books.some(b=>b.record_id===id));
+ if(!unique.length)throw Error('No matching book records.');
+ const patch={[field]:value||null,updated_at:new Date().toISOString()};
+ // Each update is scoped to an immutable record ID. Do not mutate borrowed/loan fields.
+ for(let i=0;i<unique.length;i+=100){
+  const batch=unique.slice(i,i+100);
+  const {data,error}=await sb.from(BOOKS).update(patch).in('record_id',batch).select('record_id');
+  if(error)throw Error(error.message);
+  if((data||[]).length!==batch.length)throw Error('Some records could not be updated. Refresh and verify the inventory.');
+  const done=new Set(batch);books=books.map(b=>done.has(b.record_id)?{...b,...patch}:b);
+ }
+ inventoryGroupCache=null;
+}
+$('bookTable').addEventListener('focusin',e=>{const el=e.target.closest('[data-inventory-edit]');if(el)el.dataset.original=el.value});
+$('bookTable').addEventListener('keydown',e=>{const el=e.target.closest('[data-inventory-edit]');if(!el)return;if(e.key==='Enter'){e.preventDefault();el.blur()}if(e.key==='Escape'){el.value=el.dataset.original||'';el.blur()}});
+$('bookTable').addEventListener('change',async e=>{
+ const el=e.target.closest('[data-inventory-edit]');if(!el)return;
+ const value=el.value.trim(),previous=el.dataset.original||'';
+ if(value===previous)return;
+ if(el.dataset.inventoryEdit==='title'&&!value){el.value=previous;return msg('Book title cannot be empty.','warn')}
+ const ids=el.dataset.recordIds.split(',');
+ if(ids.length>1&&!confirm(`Apply this ${el.dataset.inventoryEdit.replace('_',' ')} change to all ${ids.length} physical copies of this title?`)){el.value=previous;return}
+ el.disabled=true;
+ try{await inventoryUpdateCopies(ids,el.dataset.inventoryEdit,value);msg(`Updated ${ids.length} book ${ids.length===1?'copy':'copies'}.`,'ok');renderBooks();renderDashboard()}
+ catch(err){el.value=previous;msg('Update failed: '+err.message,'err')}finally{el.disabled=false}
+});
+$('bulkShelfEdit').onclick=async()=>{
+ if(!isAdmin())return msg('Administrator access required to bulk edit shelves.','warn');
+ const find=prompt('Find shelf location (case-insensitive). Example: Shelf 16');if(find===null||!find.trim())return;
+ const term=find.trim();const matching=books.filter(b=>String(b.shelf_location||'').toLocaleLowerCase().includes(term.toLocaleLowerCase()));
+ if(!matching.length)return msg('No shelf locations match "'+term+'".','warn');
+ const replacement=prompt(`${matching.length} physical copies match "${term}".\n\nEnter replacement text. Leave blank to CLEAR the matching shelf location entirely.\n\nOnly the matching text will be replaced (e.g., Shelf 16 → blank).`, '');
+ if(replacement===null)return;
+ const examples=[...new Set(matching.map(b=>String(b.shelf_location||'')))].slice(0,5);
+ const changed=matching.map(b=>({id:b.record_id,old:String(b.shelf_location||''),next:String(b.shelf_location||'').replace(new RegExp(term.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'gi'),replacement).trim()}));
+ if(!confirm(`Update ${changed.length} book copies?\n\nExamples: ${examples.join(' | ')}\n\n${replacement?'Replace matching text with: '+replacement:'Remove matching text (empty shelves become unassigned)'}\n\nThis will save directly to the database.`))return;
+ let completed=0;
+ try{
+  for(const row of changed){await inventoryUpdateCopies([row.id],'shelf_location',row.next);completed++}
+  msg(`Updated shelf locations for ${completed} copies.`,'ok');renderBooks();renderDashboard();
+ }catch(err){renderBooks();renderDashboard();msg(`Updated ${completed} of ${changed.length} copies. Error: ${err.message}`,'err')}
+};
+
 $('columnFiltersPanel').addEventListener('click',e=>{const button=e.target.closest('[data-show-column-values]');if(button)showColumnValuePicker(button.dataset.showColumnValues)});
 $('closeColumnValuePicker').onclick=()=>{$('columnValuePicker').hidden=true;columnPickerKey=null;document.querySelectorAll('[data-show-column-values]').forEach(b=>{b.classList.remove('active');b.setAttribute('aria-pressed','false')})};
 $('columnValueSearch').oninput=()=>renderColumnPickerOptions();
@@ -4839,6 +4889,6 @@ window.LibraryDailyVisits?.init({supabase:sb,getSession:()=>session,getRole:()=>
 })();
 </script>
 <script>if('serviceWorker' in navigator&&location.protocol==='https:')window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js',{scope:'/',updateViaCache:'none'}).catch(error=>console.info('Offline shell unavailable:',error?.message||error))},{once:true});</script>
-<script defer src="assets/ux-refinement.js?v=rc59"></script>
+<script defer src="assets/ux-refinement.js?v=rc63"></script>
 </body>
 </html>

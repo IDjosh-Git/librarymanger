@@ -1,0 +1,117 @@
+/* RC62 — unified brand palette and accessible interaction layer.
+   Retains RC59 teal (#144e58 / #1d727a); adds only sea-glass #49a6a3.
+   Status colours are deliberately left independent of brand colours. */
+:root{
+ --library-primary:#144e58;
+ --library-secondary:#1d727a;
+ --library-gradient-accent:#49a6a3;
+ --app-brand:var(--library-primary);
+ --app-brand-secondary:var(--library-secondary);
+ --theme-brand-dark:#103e47;
+ --theme-brand-on:#ffffff;
+ --theme-ink:#19333c;
+ --theme-muted:#45636c;
+ --theme-surface:#ffffff;
+ --theme-surface-soft:#f1f8f8;
+ --theme-border:#b9d2d5;
+ --theme-focus:#087e88;
+ --theme-gradient:linear-gradient(115deg,var(--library-primary) 0%,var(--library-secondary) 58%,var(--library-gradient-accent) 100%);
+ --theme-gradient-subtle:linear-gradient(125deg,#edf7f7 0%,#e1f2f2 65%,#d4eeee 100%);
+ color-scheme:light;
+}
+/* Make the approved palette the sole source for branded, non-status actions. */
+:where(.head,.app-header,.workspace-nav-header) :is(.brand-wordmark,.brand-overline){color:inherit}
+:where(button,a,input,select,textarea,[role="button"]):focus-visible{
+ outline:3px solid var(--theme-focus)!important;
+ outline-offset:3px;
+}
+:where(input,select,textarea):not([disabled]){accent-color:var(--library-secondary)}
+:where(input,select,textarea):not([disabled]):focus{border-color:var(--library-secondary)}
+:where(.card,.inventory-workspace-card,.history-data-surface) :is(th,[role="columnheader"]){border-bottom-color:var(--theme-border)}
+#inventory :is(table,[role="table"]) :is(td,th){vertical-align:middle}
+#inventory :is(table,[role="table"]) tbody tr:hover{background-color:rgba(73,166,163,.075)}
+#inventory :is(table,[role="table"]) tbody tr:focus-within{background-color:rgba(73,166,163,.12)}
+#inventory :is(input,select,textarea):focus-visible{outline-color:var(--theme-focus)!important}
+/* Consistent branded gradients on branded hero panels; no blanket override of warning/danger/status elements. */
+:where(.auth-showcase,.hero-library,.review-workspace-hero,.shelf-page-hero){
+ --brand-gradient:var(--theme-gradient);
+ --hero-gradient:var(--theme-gradient);
+}
+/* Neutral/quiet controls should never lose their text on hover. */
+:where(.card,.inventory-workspace-card) :is(button,a){text-underline-offset:3px}
+@media (prefers-reduced-motion:reduce){
+ :where(button,a,input,select,textarea){scroll-behavior:auto;transition-duration:.01ms!important}
+}
+/* Dark theme: keep text legible without forcing light surfaces. */
+:is([data-theme="dark"],.dark-mode,.theme-dark){
+ --theme-ink:#e6f4f5;
+ --theme-muted:#bfd5d8;
+ --theme-surface:#102b33;
+ --theme-surface-soft:#143640;
+ --theme-border:#49747c;
+ --theme-focus:#78d3d0;
+ color-scheme:dark;
+}
+
+/* RC62: Legacy component blues migrated to the approved teal family; original lightness retained. */
+:root{
+ --component-color-004:#f2f8f9;
+ --component-color-005:#17393d;
+ --component-color-006:#142e31;
+ --component-color-007:#eef7f8;
+ --component-color-008:#dcebed;
+ --component-color-009:#204247;
+ --component-color-010:#385f64;
+ --component-color-014:#163236;
+ --component-color-017:#1a7e8b;
+ --component-color-018:#d4e1e3;
+ --component-color-020:#284144;
+ --component-color-022:#c6dadd;
+ --component-color-024:#f1f7f8;
+ --component-color-027:#73a7ae;
+ --component-color-029:#d8edf0;
+ --component-color-030:#145f69;
+ --component-color-031:#144147;
+ --component-color-032:#46696e;
+ --component-color-033:#9bc0c5;
+ --component-color-034:#15555d;
+ --component-color-035:#c9dde0;
+ --component-color-039:#54929a;
+ --component-color-040:#1a373b;
+ --component-color-041:#204247;
+ --component-color-042:#4c7a80;
+ --component-color-043:#f2f9fa;
+ --component-color-044:#c0dbdf;
+ --component-color-045:#294f54;
+ --component-color-046:#729fa5;
+ --component-color-047:#7db0b7;
+ --component-color-048:#e7f4f6;
+ --component-color-049:#16535b;
+ --component-color-051:#d3ecef;
+ --component-color-052:#367f89;
+ --component-color-053:#235056;
+ --component-color-054:#7bb4bb;
+ --component-color-055:#f1fbfc;
+ --component-color-059:#268591;
+ --component-color-060:#183539;
+ --component-color-063:#288692;
+ --component-color-069:#2592a0;
+ --component-color-070:#56c9d8;
+ --component-color-073:#469aa5;
+}
+
+/* Consistent action and navigation semantics without changing destructive/status controls. */
+:root{
+ --brand-primary:var(--library-primary);
+ --brand-secondary:var(--library-secondary);
+ --brand-gradient:var(--theme-gradient);
+ --primary:var(--library-primary);
+ --accent:var(--library-secondary);
+ --focus-ring:var(--theme-focus);
+}
+:is(.auth-showcase,.hero-library,.review-workspace-hero,.shelf-page-hero){background-image:var(--theme-gradient)}
+:is(.inventory-inline-input):hover{border-color:var(--theme-border);background:var(--theme-surface);color:var(--theme-ink)}
+:is(.inventory-inline-input):focus{border-color:var(--library-secondary);background:var(--theme-surface);color:var(--theme-ink)}
+:where(button,[role="button"],a):focus-visible{outline:3px solid var(--theme-focus)!important;outline-offset:3px!important}
+:where(input,select,textarea):focus-visible{outline:3px solid var(--theme-focus)!important;outline-offset:2px!important}
+@media (forced-colors:active){:where(button,a,input,select,textarea):focus-visible{outline-color:Highlight!important}}
