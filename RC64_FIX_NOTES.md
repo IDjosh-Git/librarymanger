@@ -1,0 +1,1 @@
+RC64 fixes literal \n in all three HTML heads, replaces three legacy navy base tokens, corrects theme-color metadata and theme toggle, and adds final brand overrides. Other historical component colours have not all been removed; live visual QA remains necessary.

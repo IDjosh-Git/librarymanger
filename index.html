@@ -1,10 +1,11 @@
 <!doctype html>
 <html lang="en">
-<head>\n<link rel="stylesheet" href="assets/library-color-tokens.css?v=rc63">
+<head>
+<link rel="stylesheet" href="assets/library-color-tokens.css?v=rc64">
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#182c44">
+<meta name="theme-color" content="#144e58">
 <meta name="description" content="Library Manager: shared book inventory, scanning, shelf imports, lending, returns and overdue tracking.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -55,14 +56,14 @@
 
 
 
-<script defer src="assets/library-branding.js?v=rc63"></script>
+<script defer src="assets/library-branding.js?v=rc64"></script>
 <script defer src="assets/compact-card-insights.js?v=5.17.0"></script>
 <script defer src="assets/premium-progress-upload.js?v=5.54.0"></script>
 <script defer src="assets/book-guide-format.js"></script>
 <script defer src="assets/book-guide.js?v=6.0.0-rc42"></script>
 <script defer src="assets/public-contact.js"></script>
-  <link rel="stylesheet" href="assets/library-manager-v542.css?v=rc63">
-<link rel="stylesheet" href="assets/library-theme-rc62.css?v=rc63">
+  <link rel="stylesheet" href="assets/library-manager-v542.css?v=rc64">
+<link rel="stylesheet" href="assets/library-theme-rc62.css?v=rc64">
 <style id="automationCentreStyle">.automation-backdrop:not([hidden]){position:fixed;inset:0;background:var(--component-color-013);z-index:9998;display:grid;place-items:center;padding:16px}.automation-dialog{width:min(850px,100%);max-height:92vh;overflow:auto;background:var(--surface,var(--component-color-001));color:var(--text,var(--component-color-014));border-radius:20px;padding:clamp(18px,3vw,30px);box-shadow:0 24px 90px var(--component-color-015)}.automation-head{display:flex;justify-content:space-between;align-items:flex-start;gap:15px}.automation-head h2{margin:5px 0}.automation-head p{margin:0 0 14px}.automation-stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:18px 0}.automation-stat{border:1px solid var(--component-color-016);border-radius:14px;padding:15px}.automation-stat strong{font-size:26px;display:block}.automation-stat small{display:block;opacity:.78}.automation-actions{display:flex;flex-wrap:wrap;gap:10px}.automation-disclaimer{font-size:12px;opacity:.75;margin-top:16px}@media(max-width:550px){.automation-head{flex-direction:column}.automation-actions button{width:100%}} .inventory-inline-input{width:100%;min-width:115px;max-width:290px;box-sizing:border-box;border:1px solid transparent;border-radius:6px;padding:7px 8px;background:transparent;color:inherit;font:inherit} .inventory-inline-input:hover,.inventory-inline-input:focus{border-color:#9aaec1;background:var(--surface,#fff);color:#1b2c3a;outline-offset:1px} .inventory-inline-input:disabled{opacity:.65;cursor:not-allowed}
 </style>
 <style id="reviewSimpleAccessibleStyle">
@@ -259,6 +260,7 @@ body #accountCard .scan-recognition-card .scan-recognition-copy small:empty {dis
 body #accountCard .scan-recognition-card {min-height:60px!important;}
 @media(prefers-reduced-motion:reduce){body details.lookupbox > summary.lookuphead .premium-disclosure-chevron svg{transition:none!important;}}
 </style>
+<link rel="stylesheet" href="assets/library-theme-rc64-fixes.css?v=rc64">
 </head>
 <body data-account="out">
 <a href="#mainContent" class="skip-link">Skip to main content</a>
@@ -4595,7 +4597,7 @@ $('batchResults').addEventListener('change',event=>{
  if(selected){const row=batchItems[Number(selected.dataset.batchSelect)];if(row&&!row.saved)row.selected=!!selected.checked;batchSummary()}
 });
 
-function applyTheme(mode){const dark=mode==="dark";document.documentElement.dataset.theme=dark?"dark":"light";$("themeLabel").textContent=dark?"Switch to light mode":"Switch to dark mode";$("themeToggle").setAttribute("aria-label",dark?"Switch to light mode":"Switch to dark mode");$("themeToggle").setAttribute("aria-pressed",String(dark));$("themeToggle").title=dark?"Switch to light mode":"Switch to dark mode";document.querySelector('meta[name="theme-color"]').content=dark?"#101924":"#182c44";try{localStorage.setItem("library_manager_theme_v2",dark?"dark":"light")}catch{}}
+function applyTheme(mode){const dark=mode==="dark";document.documentElement.dataset.theme=dark?"dark":"light";$("themeLabel").textContent=dark?"Switch to light mode":"Switch to dark mode";$("themeToggle").setAttribute("aria-label",dark?"Switch to light mode":"Switch to dark mode");$("themeToggle").setAttribute("aria-pressed",String(dark));$("themeToggle").title=dark?"Switch to light mode":"Switch to dark mode";document.querySelector('meta[name="theme-color"]').content=dark?"#103e47":"#144e58";try{localStorage.setItem("library_manager_theme_v2",dark?"dark":"light")}catch{}}
 applyTheme(document.documentElement.dataset.theme);$("themeToggle").onclick=()=>applyTheme(document.documentElement.dataset.theme==="dark"?"light":"dark");
 $("bookSearch").addEventListener("input",e=>{bookSearch=e.target.value;bookPage=1;scheduleBookRender()});
 $("toggleColumnFilters").onclick=()=>setColumnFiltersOpen(!$('columnFiltersPanel').open);
@@ -4889,6 +4891,6 @@ window.LibraryDailyVisits?.init({supabase:sb,getSession:()=>session,getRole:()=>
 })();
 </script>
 <script>if('serviceWorker' in navigator&&location.protocol==='https:')window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js',{scope:'/',updateViaCache:'none'}).catch(error=>console.info('Offline shell unavailable:',error?.message||error))},{once:true});</script>
-<script defer src="assets/ux-refinement.js?v=rc63"></script>
+<script defer src="assets/ux-refinement.js?v=rc64"></script>
 </body>
 </html>
