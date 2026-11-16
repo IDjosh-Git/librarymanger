@@ -1,0 +1,49 @@
+/* RC70: Notifications hero only. Override legacy grid rows and excessive vertical spacing. */
+#notifications .notification-hero {
+  display:flex!important;
+  flex-direction:row!important;
+  align-items:center!important;
+  justify-content:space-between!important;
+  gap:clamp(12px,2vw,24px)!important;
+  min-height:0!important;
+  height:auto!important;
+  grid-template-rows:none!important;
+  padding:clamp(14px,1.6vw,20px) clamp(16px,2vw,24px)!important;
+  margin-bottom:12px!important;
+}
+#notifications .notification-hero-copy {
+  flex:1 1 auto!important;
+  min-width:0!important;
+  padding:0!important;
+  margin:0!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+}
+#notifications .notification-hero .eyebrow {margin:0 0 5px!important;}
+#notifications .notification-hero h2 {margin:0 0 5px!important;line-height:1.2!important;font-size:clamp(1.25rem,2vw,1.7rem)!important;}
+#notifications .notification-hero p {margin:0!important;line-height:1.45!important;max-width:68ch;}
+#notifications .notification-hero-actions {margin-top:10px!important;gap:8px!important;}
+#notifications .notification-hero-actions button {min-height:38px!important;padding:8px 12px!important;}
+#notifications .notification-hero-counter {
+  position:relative!important;
+  flex:0 0 auto!important;
+  align-self:center!important;
+  justify-self:auto!important;
+  grid-column:auto!important;
+  grid-row:auto!important;
+  margin:0!important;
+  padding:10px 14px!important;
+  min-width:125px!important;
+  min-height:0!important;
+}
+#notifications .notification-hero .section-hero-art {display:none!important;}
+@media(max-width:700px){
+  #notifications .notification-hero {flex-direction:column!important;align-items:stretch!important;gap:10px!important;padding:13px 14px!important;}
+  #notifications .notification-hero-counter {align-self:flex-start!important;min-width:0!important;padding:8px 12px!important;}
+  #notifications .notification-hero-actions {display:flex!important;flex-wrap:wrap!important;}
+  #notifications .notification-hero-actions button {flex:1 1 150px!important;}
+}
+@media(max-width:390px){
+  #notifications .notification-hero {padding:12px!important;}
+  #notifications .notification-hero-actions button {flex:1 1 100%!important;}
+}

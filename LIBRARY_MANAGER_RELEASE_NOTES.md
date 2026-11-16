@@ -111,3 +111,13 @@ Based on RC68. Added a scoped responsive stylesheet loaded after the existing th
 
 ## Validation limitations
 Static checks and automated unit tests do not establish correct rendering at all device widths or guarantee keyboard-open behavior on real mobile devices. Test at 320, 360, 390, 430, 768, 1024, 1440, 1920px; both themes; mobile landscape; 200% zoom; inventory editing, reservation, and AI chat.
+
+
+## RC70 — Notifications Hero Height Fix
+
+- Reduced excessive Notifications hero height by overriding legacy grid row sizing and vertical spacing.
+- Kept the heading, explanatory copy, overdue counter and action buttons visible in a compact layout.
+- Applied responsive stacking below 700px and narrow-phone button layout below 390px.
+- Scoped all changes to `#notifications` so other page heroes remain unchanged.
+- Updated application version, service worker caches and automated checks.
+- Live visual/device testing remains recommended.
