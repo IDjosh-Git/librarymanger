@@ -9,11 +9,14 @@ const read=name=>fs.readFileSync(path.join(root,name),'utf8');
 test('all HTML pages load the current shared theme after their base stylesheet',()=>{
  for(const page of pages){
   const html=read(page);
-  const theme=html.indexOf('assets/library-theme-rc62.css?v=rc64');
+  const theme=html.indexOf('assets/library-theme-rc62.css?v=rc65');
   assert.ok(theme>=0,`${page}: shared theme missing`);
-  const base=[...html.matchAll(/assets\/(?:library-manager-v542|reading-v542|book-of-week-v542)\.css\?v=rc64/g)].map(x=>x.index);
+  const base=[...html.matchAll(/assets\/(?:library-manager-v542|reading-v542|book-of-week-v542)\.css\?v=rc65/g)].map(x=>x.index);
   assert.ok(base.length&&base.every(i=>i<theme),`${page}: theme must follow base CSS`);
-  assert.ok(html.includes('assets/library-theme-rc64-fixes.css?v=rc64'),`${page}: final colour fixes missing`);
+  assert.ok(html.includes('assets/library-theme-rc65-contrast.css?v=rc66'),`${page}: contrast fixes missing`);
+  assert.ok(html.includes('assets/library-theme-rc68-ai-layout.css?v=rc68'),`${page}: RC68 AI layout missing`);
+  assert.ok(html.includes('assets/library-theme-rc67-navigation-ai.css?v=rc67'),`${page}: RC67 refinements missing`);
+  assert.ok(html.includes('assets/library-theme-rc66-unified.css?v=rc66'),`${page}: unified header and hero theme missing`);
   assert.ok(!html.includes('<head>\\n'),`${page}: literal newline escape in head`);
  }
 });
@@ -26,14 +29,19 @@ test('referenced local script, stylesheet and image paths exist',()=>{
   }
  }
 });
-test('service worker uses RC64 caches and precaches shared theme',()=>{
+test('service worker uses RC69 caches and precaches shared theme',()=>{
  const sw=read('sw.js');
- assert.match(sw,/lm-app-shell-rc64/);
- assert.match(sw,/lm-libraries-rc64/);
- assert.match(sw,/\/assets\/library-theme-rc62\.css\?v=rc64/);
+ assert.match(sw,/lm-app-shell-rc69/);
+ assert.match(sw,/lm-libraries-rc69/);
+ assert.match(sw,/\/assets\/library-theme-rc62\.css\?v=rc66/);
  assert.doesNotMatch(sw,/\?v=rc59|lm-app-shell-v59/);
  for(const m of sw.matchAll(/['"](\/assets\/[^'"?#]+)(?:\?[^'"]+)?['"]/g)){
   assert.ok(fs.existsSync(path.join(root,m[1].slice(1))),`missing precache ${m[1]}`);
  }
 });
-test('release metadata is current',()=>assert.equal(JSON.parse(read('package.json')).version,'6.0.0-rc64'));
+test('release metadata is current',()=>assert.equal(JSON.parse(read('package.json')).version,'6.0.0-rc69'));
+
+test('responsive stylesheet is loaded last on every page and cached',()=>{
+ for(const page of pages){const html=read(page);const a=html.indexOf('assets/library-theme-rc68-ai-layout.css?v=rc68');const b=html.indexOf('assets/library-theme-rc69-responsive.css?v=rc69');assert.ok(b>a,`${page}: responsive stylesheet must follow RC68`)}
+ assert.ok(read('sw.js').includes('/assets/library-theme-rc69-responsive.css?v=rc69'));
+});

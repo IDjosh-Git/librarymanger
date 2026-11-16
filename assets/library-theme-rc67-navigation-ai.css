@@ -1,0 +1,52 @@
+/* RC67 — Navigation, Reservations and Library AI. Scoped visual refinements; existing JS handlers retained. */
+:root{--rc67-deep:#144E58;--rc67-mid:#1D727A;--rc67-sea:#49A6A3;--rc67-paper:#fff;--rc67-ink:#16343A;--rc67-border:#B9D7D5;--rc67-muted:#526B70}
+/* Workspace navigation, with clear hierarchy and contrast */
+.workspace-nav{border-radius:18px!important;border:1px solid rgba(73,166,163,.28)!important;background:linear-gradient(155deg,#123D46,#144E58 65%,#1D727A)!important;color:#fff!important;box-shadow:0 16px 32px rgba(11,49,57,.15)!important;padding:12px!important}
+.workspace-nav :is(.workspace-nav-header,.workspace-nav-eyebrow,.workspace-nav-label){color:#C8EEEA!important}
+.workspace-nav :is(a,button,.tab){color:#F3FFFE!important;border-radius:11px!important;min-height:40px;transition:background-color .18s ease,border-color .18s ease!important}
+.workspace-nav :is(a,button,.tab):hover{background:rgba(255,255,255,.13)!important;color:#fff!important}
+.workspace-nav :is(.active,[aria-current="page"],[aria-selected="true"]){background:#1D727A!important;color:#fff!important;border-color:#72C6C0!important;box-shadow:inset 3px 0 0 #A9E7E2!important}
+.workspace-nav :is(a,button,.tab):focus-visible{outline:3px solid #BCEFEA!important;outline-offset:2px!important}
+.workspace-nav svg{color:currentColor!important;stroke:currentColor!important}
+/* Brand mark: retain the existing open-book SVG and align it across navigation and page headers */
+.brand-logo-image,.auth-logo-image{object-fit:contain!important;display:block!important}
+header .logo{display:grid;place-items:center;border-radius:13px;overflow:hidden}
+/* Reservation modal, its own dedicated floating control and readable result list */
+.reservation-fab{background:linear-gradient(145deg,#144E58,#1D727A)!important;color:#fff!important;border:2px solid rgba(255,255,255,.9)!important;box-shadow:0 9px 25px rgba(9,50,57,.25)!important}
+.reservation-fab:hover{filter:brightness(1.12)}
+.reservation-backdrop{z-index:110!important;background:rgba(7,30,35,.62)!important;backdrop-filter:blur(3px)}
+.reservation-dialog{background:var(--surface,#fff)!important;color:var(--ink,#16343A)!important;border:1px solid var(--line,#B9D7D5)!important;border-radius:20px!important;box-shadow:0 24px 65px rgba(4,30,36,.28)!important;overflow:auto;max-height:min(92dvh,900px)}
+.reservation-head{background:linear-gradient(115deg,#144E58,#1D727A)!important;color:#fff!important;border-radius:16px 16px 0 0}
+.reservation-head :is(h2,p,.reservation-eyebrow){color:#fff!important}
+.reservation-head .reservation-eyebrow{color:#D1F2EE!important}
+.reservation-close{color:#fff!important;background:rgba(255,255,255,.16)!important;border:1px solid rgba(255,255,255,.35)!important;border-radius:10px!important;min-width:38px;min-height:38px}
+.reservation-dialog :is(.reservation-label,.reservation-history h3){color:var(--ink,#16343A)!important}
+.reservation-search-wrap{background:var(--surface,#fff)!important;color:var(--ink,#16343A)!important;border:1px solid var(--line,#B9D7D5)!important;border-radius:12px!important}
+.reservation-search-wrap input{background:transparent!important;color:var(--ink,#16343A)!important}
+.reservation-search-wrap input::placeholder{color:var(--muted,#526B70)!important;opacity:1}
+.reservation-match,.reservation-history-row,.reservation-selected{background:var(--surface2,#F0F8F7)!important;color:var(--ink,#16343A)!important;border:1px solid var(--line,#B9D7D5)!important;border-radius:11px!important}
+.reservation-match:hover{border-color:#1D727A!important}
+.reservation-history-row :is(strong,small),.reservation-selected :is(strong,small){color:var(--ink,#16343A)!important}
+.reservation-submit{background:#14616A!important;color:#fff!important;border-radius:11px!important}
+.reservation-submit:disabled{opacity:.56!important;cursor:not-allowed}
+.reservation-dialog :is(button,input):focus-visible{outline:3px solid #49A6A3!important;outline-offset:2px}
+/* Floating AI control: visible, calm, keyboard accessible */
+.book-guide-root .book-guide-fab{background:linear-gradient(145deg,#144E58,#1D727A)!important;color:#fff!important;border:2px solid #D9F4F0!important;box-shadow:0 10px 28px rgba(8,51,59,.3)!important;animation:none!important}
+.book-guide-root .book-guide-fab-glow{display:none!important}
+.book-guide-root .book-guide-fab:focus-visible{outline:3px solid #49A6A3!important;outline-offset:4px}
+/* Assistant header, sidebar, chat and composer */
+.book-guide-root .book-guide-panel{border:1px solid var(--line,#B9D7D5)!important;border-radius:18px!important;box-shadow:0 22px 60px rgba(6,37,43,.3)!important;overflow:hidden;background:var(--surface,#fff)!important;color:var(--ink,#16343A)!important}
+.book-guide-root .book-guide-head{background:linear-gradient(115deg,#144E58,#1D727A)!important;color:#fff!important}
+.book-guide-root .book-guide-head :is(h2,p,button,.book-guide-icon){color:#fff!important}
+.book-guide-root .book-guide-head button{border-radius:9px!important}
+.book-guide-root .book-guide-sidebar{background:var(--surface2,#F0F8F7)!important;color:var(--ink,#16343A)!important;border-right:1px solid var(--line,#B9D7D5)!important}
+.book-guide-root .book-guide-sidebar :is(h3,strong,summary,label,button){color:var(--ink,#16343A)!important}
+.book-guide-root .book-guide-messages,.book-guide-root .book-guide-chat-main{background:var(--surface,#fff)!important;color:var(--ink,#16343A)!important}
+.book-guide-root .book-guide-prompts button{border:1px solid var(--line,#B9D7D5)!important;background:var(--surface2,#F0F8F7)!important;color:var(--ink,#16343A)!important;border-radius:999px!important}
+.book-guide-root :is(input,textarea,select){color:var(--ink,#16343A)!important;background:var(--surface,#fff)!important;border-color:var(--line,#B9D7D5)!important}
+.book-guide-root :is(input,textarea)::placeholder{color:var(--muted,#526B70)!important;opacity:1}
+.book-guide-root :is(button,input,textarea,select):focus-visible{outline:3px solid #49A6A3!important;outline-offset:2px!important}
+:root[data-theme="dark"] .reservation-dialog,:root[data-theme="dark"] .book-guide-root .book-guide-panel{--ink:#F0FBFA;--muted:#B6D4D1;--surface:#152D33;--surface2:#1D3C43;--line:#476D72}
+:root[data-theme="dark"] .reservation-dialog :is(.reservation-match,.reservation-history-row,.reservation-selected),:root[data-theme="dark"] .book-guide-root .book-guide-prompts button{color:#F0FBFA!important}
+@media(max-width:700px){.reservation-dialog{width:min(100%,560px)!important;max-height:94dvh!important;border-radius:16px!important}.book-guide-root .book-guide-panel{max-width:100vw!important;max-height:calc(100dvh - env(safe-area-inset-top))!important;border-radius:14px 14px 0 0!important}.workspace-nav{border-radius:13px!important}}
+@media(prefers-reduced-motion:reduce){.workspace-nav :is(a,button,.tab){transition:none!important}}

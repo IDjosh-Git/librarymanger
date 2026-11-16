@@ -1,0 +1,60 @@
+/* RC64: fixes old navy branding while retaining semantic status colours. */
+:root,:root[data-theme="light"] {
+ --navy:#144e58;--navy2:#1d727a;--navy3:#103e47;
+ --lp-gradient:linear-gradient(115deg,#144e58 0%,#1d727a 58%,#49a6a3 100%);
+ --brand-primary:#144e58;--brand-secondary:#1d727a;
+}
+header,body > header {background:linear-gradient(115deg,#144e58 0%,#1d727a 58%,#49a6a3 100%)!important;color:#fff}
+header .brand-wordmark,header .brand-overline,header .header-context,header .head h1 {color:#fff}
+header .head p {color:#e8f7f7}
+:root[data-theme="dark"] {--navy:#103e47;--navy2:#144e58;--navy3:#092d34;--lp-gradient:linear-gradient(115deg,#103e47,#144e58 58%,#1d727a)}
+:root[data-theme="dark"] header {background:linear-gradient(115deg,#103e47,#144e58 58%,#1d727a)!important}
+.inventory-inline-input:hover,.inventory-inline-input:focus {border-color:#1d727a;background:#fff;color:#19333c}
+
+/* RC65: readable foreground/background pairs for interactive content. */
+:root,[data-theme="light"] {
+ --lm65-ink:#19333c;--lm65-muted:#45636c;--lm65-surface:#ffffff;
+ --lm65-soft:#f1f8f8;--lm65-border:#b9d2d5;--lm65-input:#ffffff;
+}
+:root[data-theme="dark"],.dark-mode,.theme-dark {
+ --lm65-ink:#eaf5f5;--lm65-muted:#c4dadd;--lm65-surface:#142e36;
+ --lm65-soft:#1b3c45;--lm65-border:#527780;--lm65-input:#193842;
+ --navy:#a5e5e3;--navy2:#80d1d0;--muted:#c4dadd;
+}
+/* Limit text overrides to content surfaces; branded header and semantic badges retain their own foregrounds. */
+:root[data-theme="dark"] body,
+:root[data-theme="dark"] main,
+:root[data-theme="dark"] .card,
+:root[data-theme="dark"] .panel,
+:root[data-theme="dark"] .tablewrap,
+:root[data-theme="dark"] dialog,
+:root[data-theme="dark"] .inventory-filter-dialog,
+:root[data-theme="dark"] .column-filters-panel {
+ color:var(--lm65-ink);
+}
+:root[data-theme="dark"] :is(.card,.book-card,.stat,.lookupbox,.lookupbody,.column-filters-panel,.inventory-filter-dialog,.inventory-workspace-card,.admin-directory-table-scroll,.vl-table-wrap,.scan-table-scroll) {
+ background-color:var(--lm65-surface);border-color:var(--lm65-border);color:var(--lm65-ink);
+}
+:root[data-theme="dark"] :is(table,thead,tbody,tr,td) {color:var(--lm65-ink)}
+:root[data-theme="dark"] :is(th,[role="columnheader"]) {background:var(--lm65-soft);color:var(--lm65-ink);border-color:var(--lm65-border)}
+:root[data-theme="dark"] :is(tbody tr,.tablewrap tr,.scan-summary-table tr) {border-color:var(--lm65-border)}
+:root[data-theme="dark"] :is(.tablewrap tbody tr,.scan-summary-table tbody tr,.admin-directory-table tbody tr):hover {background-color:#254e56}
+:root[data-theme="dark"] :is(input:not([type="checkbox"]):not([type="radio"]),textarea,select,.inventory-inline-input) {
+ background:var(--lm65-input)!important;color:var(--lm65-ink)!important;border-color:var(--lm65-border);
+}
+:root[data-theme="dark"] :is(input,textarea)::placeholder {color:#c4dadd;opacity:1}
+:root[data-theme="dark"] :is(option,optgroup) {background:#193842;color:#eaf5f5}
+:root[data-theme="dark"] :is(label,dt,.book-author,.empty,.lookupnote,.column-filter-help,.column-filter-summary) {color:var(--lm65-muted)}
+:root[data-theme="dark"] :is(.card,.panel,.inventory-filter-dialog,dialog) :is(h1,h2,h3,h4,p,dt,dd,small,strong) {color:inherit}
+:root[data-theme="dark"] :is(.light,.smallbtn.light,.icon-btn,.bottomnav button:not(.active)) {background:#d9f0f0;color:#103e47}
+:root[data-theme="dark"] :is(.light,.smallbtn.light,.icon-btn,.bottomnav button:not(.active)):hover {background:#bde4e3;color:#103e47}
+:root[data-theme="dark"] :is(.tabs,.lookuphead,.stat,.hero) {background:var(--lm65-soft);color:var(--lm65-ink)}
+:root[data-theme="dark"] :is(.tab.active,.inventory-inline-input:focus) {background:var(--lm65-input);color:var(--lm65-ink)}
+:root[data-theme="dark"] :is(.status,.badge,.pill,.available,.borrowed,.overdue,.danger,.green) { /* Semantic status foregrounds remain unchanged. */ }
+/* The column-level filter affordance is removed from generated markup; guard stale cached markup. */
+#bookTable .column-header-filter {display:none!important}
+#bookTable .inventory-th-label {display:block}
+/* Explicit contrast for inline inventory editing in either theme. */
+.inventory-inline-input {color:var(--lm65-ink,#19333c);background:var(--lm65-input,#fff)}
+:root[data-theme="dark"] .inventory-inline-input:hover,
+:root[data-theme="dark"] .inventory-inline-input:focus {background:#234650!important;color:#f1fafa!important}

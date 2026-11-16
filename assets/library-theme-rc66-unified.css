@@ -1,0 +1,27 @@
+/* RC66 unified header and hero system — visual-only, preserves existing actions. */
+:root{--lm-hero-deep:#144E58;--lm-hero-mid:#1D727A;--lm-hero-accent:#49A6A3;--lm-hero-ink:#fff;--lm-hero-muted:#E2F4F2;--lm-hero-gradient:linear-gradient(115deg,#144E58 0%,#1D727A 70%,#287E80 100%)}
+header:has(>.head){background:var(--lm-hero-gradient)!important;color:#fff!important;border-bottom:1px solid rgba(255,255,255,.17)!important}
+header .head{max-width:1480px;margin-inline:auto;gap:14px}
+header .brand-wordmark h1,header .brand-wordmark h1 *,header .brand-wordmark p,header .brand-overline,header .header-context,header .header-context *{color:#fff!important}
+header .brand-wordmark p,header .brand-overline{opacity:.86}
+header .head-actions button{color:#fff!important;border-color:rgba(255,255,255,.32)!important;background:rgba(255,255,255,.12)!important}
+header .head-actions button:hover,header .head-actions button:focus-visible{background:rgba(255,255,255,.23)!important;outline-color:#fff!important}
+.dashboard-hero,.hero-library,.shelf-page-hero,.review-workspace-hero,.scanned-hero,.circulation-hero,.notification-hero,.public-settings-hero,.admin-directory-hero,.vl-hero{background:var(--lm-hero-gradient)!important;color:var(--lm-hero-ink)!important;border:1px solid rgba(255,255,255,.16)!important;border-radius:18px!important;overflow:hidden;position:relative;isolation:isolate;box-shadow:0 12px 28px rgba(10,54,61,.12)}
+.dashboard-hero h2,.hero-library h2,.shelf-page-hero h2,.review-workspace-hero h2,.scanned-hero h2,.circulation-hero h2,.notification-hero h2,.public-settings-hero h2,.admin-directory-hero h2,.vl-hero h2,.dashboard-hero p,.hero-library p,.shelf-page-hero p,.review-workspace-hero p,.scanned-hero p,.circulation-hero p,.notification-hero p,.public-settings-hero p,.admin-directory-hero p,.vl-hero p{color:#fff!important}
+.dashboard-hero .eyebrow,.hero-library .eyebrow,.shelf-page-hero .eyebrow,.review-workspace-hero .eyebrow,.scanned-hero .eyebrow,.circulation-hero .eyebrow,.notification-hero .eyebrow,.public-settings-hero .eyebrow,.admin-directory-hero .eyebrow,.vl-hero .vl-kicker{color:#C5EEEA!important}
+.dashboard-hero-art,.hero-visual,.shelf-page-image,.lm-review-hero-image,.section-hero-art{overflow:hidden;border-radius:14px;min-width:0}
+.dashboard-hero-art img,.hero-visual img,.shelf-page-image img,.lm-review-hero-image img,.section-hero-art img{width:100%;height:100%;object-fit:cover;display:block;filter:saturate(.82) contrast(1.04);}
+.dashboard-hero-art,.hero-visual,.shelf-page-image,.lm-review-hero-image,.section-hero-art{box-shadow:0 8px 22px rgba(4,35,40,.2)}
+.dashboard-hero .light,.hero-library .light,.shelf-page-hero .light,.review-workspace-hero .light,.scanned-hero .light,.circulation-hero .light,.notification-hero .light,.admin-directory-hero button{background:#fff!important;color:#144E58!important;border:1px solid #fff!important}
+.dashboard-hero button:focus-visible,.hero-library button:focus-visible,.circulation-hero button:focus-visible{outline:3px solid #C5EEEA;outline-offset:3px}
+.spotlight-topbar{background:var(--lm-hero-gradient)!important;color:#fff!important}
+.spotlight-topbar .spotlight-brand,.spotlight-topbar .spotlight-brand strong,.spotlight-topbar .spotlight-brand small,.spotlight-topbar a,.spotlight-topbar button{color:#fff!important}
+.spotlight-topbar a:focus-visible,.spotlight-topbar button:focus-visible{outline:3px solid #C5EEEA;outline-offset:3px}
+.spotlight-intro{border-radius:18px;padding:clamp(20px,3vw,34px)!important;background:var(--lm-hero-gradient)!important;color:#fff!important;margin-block:14px 20px}
+.spotlight-intro h2,.spotlight-intro p,.spotlight-intro .spotlight-kicker{color:#fff!important}
+.spotlight-feature{border-radius:18px!important;overflow:hidden}
+.guide-hero{background:var(--lm-hero-gradient)!important;color:#fff!important;border-radius:18px!important;overflow:hidden}
+.guide-hero h1,.guide-hero p,.guide-hero .guide-edition{color:#fff!important}
+.guide-hero .guide-cover-shell img,.spotlight-cover-frame img{object-fit:cover}
+@media(max-width:700px){header .head{gap:8px}.header-context{display:none!important}.dashboard-hero,.hero-library,.shelf-page-hero,.review-workspace-hero,.scanned-hero,.circulation-hero,.notification-hero,.public-settings-hero,.admin-directory-hero,.vl-hero{border-radius:14px!important}.dashboard-hero-art,.hero-visual,.shelf-page-image,.lm-review-hero-image,.section-hero-art{max-height:145px}.spotlight-intro{padding:20px!important}}
+@media(prefers-reduced-motion:reduce){.dashboard-hero img,.hero-visual img,.section-hero-art img{transition:none!important}}

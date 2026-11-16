@@ -1,0 +1,53 @@
+/* RC69: cross-device responsive hardening. Keep existing routes, handlers and data logic. */
+*,*::before,*::after{box-sizing:border-box}
+html{max-width:100%;-webkit-text-size-adjust:100%}
+body{max-width:100%;min-width:0;overflow-x:clip}
+img,svg,video,canvas{max-width:100%}
+img,video{height:auto}
+:where(main,section,article,.container,.content,.dashboard,.workspace,.page,.card,.grid,.hero-copy){min-width:0}
+:where(.tablewrap,.scanned-table-wrap,.scan-table-scroll,.admin-directory-table-scroll,.vl-table-wrap,.table-scroll,.table-responsive){max-width:100%;min-width:0;overflow-x:auto;overscroll-behavior-x:contain;-webkit-overflow-scrolling:touch}
+:where(.tablewrap,.scanned-table-wrap,.scan-table-scroll,.admin-directory-table-scroll,.vl-table-wrap) table{width:max-content;min-width:100%}
+:where(.tablewrap,.scanned-table-wrap,.scan-table-scroll,.admin-directory-table-scroll,.vl-table-wrap) th,:where(.tablewrap,.scanned-table-wrap,.scan-table-scroll,.admin-directory-table-scroll,.vl-table-wrap) td{overflow-wrap:normal}
+:where(input,textarea,select,button){max-width:100%}
+:where(.dashboard-hero,.hero-library,.circulation-hero,.shelf-page-hero,.review-workspace-hero,.scanned-hero){max-width:100%;min-width:0}
+:where(.dashboard-hero-copy,.hero-copy,.circulation-hero-copy,.shelf-page-hero-actions,.hero-actions){min-width:0}
+:where(.dashboard-hero,.hero-library,.circulation-hero,.shelf-page-hero,.review-workspace-hero,.scanned-hero) :is(h1,h2,p){overflow-wrap:break-word}
+:where(.hero-photo,.hero-visual,.dashboard-hero-art,.section-hero-art,.lm-review-hero-image){max-width:100%;min-width:0}
+:where(.reservation-backdrop,.book-guide-root){max-width:100vw}
+.reservation-dialog{width:min(94vw,820px)!important;max-width:calc(100vw - 24px)!important;max-height:calc(100dvh - 24px)!important;overscroll-behavior:contain}
+.book-guide-root .book-guide-panel{max-width:100vw!important;max-height:100dvh!important}
+.book-guide-root .book-guide-workspace,.book-guide-root .book-guide-chat-main{min-width:0!important}
+.book-guide-root .book-guide-chat-main .book-guide-compose{max-width:calc(100% - 16px)!important}
+.book-guide-root .book-guide-messages{overflow-wrap:anywhere}
+:where(button,a,input,textarea,select):focus-visible{outline:3px solid #49A6A3;outline-offset:2px}
+@media(max-width:1023px){
+ :where(.dashboard-hero,.hero-library,.circulation-hero,.shelf-page-hero,.review-workspace-hero,.scanned-hero){gap:clamp(12px,2vw,24px)}
+ :where(.dashboard-hero-art,.hero-visual,.section-hero-art){max-width:42%}
+ .workspace-nav{max-width:100%}
+}
+@media(max-width:767px){
+ :where(.dashboard-hero,.hero-library,.circulation-hero,.shelf-page-hero,.review-workspace-hero,.scanned-hero){padding:clamp(14px,4vw,24px)!important;min-height:0!important}
+ :where(.dashboard-hero,.hero-library,.circulation-hero,.shelf-page-hero,.review-workspace-hero,.scanned-hero) :is(h1,h2){font-size:clamp(1.35rem,5vw,2rem)!important;line-height:1.2!important}
+ :where(.dashboard-hero-art,.hero-visual,.section-hero-art){max-width:36%;object-fit:cover}
+ :where(.hero-actions,.dashboard-hero-actions,.shelf-page-hero-actions,.review-hero-actions,.scanned-hero-actions){display:flex;flex-wrap:wrap;gap:8px}
+ :where(.hero-actions,.dashboard-hero-actions,.shelf-page-hero-actions,.review-hero-actions,.scanned-hero-actions)>*{min-width:0}
+ .reservation-dialog{width:calc(100vw - 16px)!important;max-width:calc(100vw - 16px)!important;max-height:calc(100dvh - 16px)!important;border-radius:16px!important}
+ .book-guide-root .book-guide-panel{width:100vw!important;max-width:100vw!important;height:100dvh!important;max-height:100dvh!important;border-radius:0!important}
+ .book-guide-root .book-guide-sidebar{max-width:min(86vw,320px)!important}
+ .book-guide-root .book-guide-chat-main .book-guide-compose{width:calc(100% - 16px)!important;margin:6px auto 2px!important}
+ .book-guide-root .book-guide-chat-main .book-guide-prompts{max-height:76px!important}
+ :where(.reservation-fab,.book-guide-root .book-guide-fab){max-width:calc(100vw - 24px)}
+}
+@media(max-width:480px){
+ :where(.dashboard-hero-art,.hero-visual,.section-hero-art){display:none!important}
+ :where(.dashboard-hero,.hero-library,.circulation-hero,.shelf-page-hero,.review-workspace-hero,.scanned-hero){display:block!important}
+ :where(.dashboard-hero-copy,.hero-copy,.circulation-hero-copy){width:100%!important;max-width:100%!important}
+ :where(.hero-actions,.dashboard-hero-actions,.shelf-page-hero-actions,.review-hero-actions,.scanned-hero-actions){margin-top:12px}
+ :where(.hero-actions,.dashboard-hero-actions,.shelf-page-hero-actions,.review-hero-actions,.scanned-hero-actions) button{min-height:42px}
+ .book-guide-root .book-guide-head{min-width:0;gap:6px!important}
+ .book-guide-root .book-guide-head button{min-width:36px;min-height:36px}
+ .book-guide-root .book-guide-chat-main .book-guide-compose{padding:6px 8px!important}
+ .reservation-dialog{width:100vw!important;max-width:100vw!important;max-height:100dvh!important;border-radius:0!important}
+}
+@media(max-width:767px) and (orientation:landscape){.book-guide-root .book-guide-panel{height:100dvh!important}.book-guide-root .book-guide-chat-main .book-guide-prompts{max-height:45px!important}}
+@media(prefers-reduced-motion:reduce){html:focus-within{scroll-behavior:auto!important}}

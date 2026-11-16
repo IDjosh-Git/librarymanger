@@ -1,0 +1,29 @@
+/* RC68: Library AI layout refinement. Presentation only; existing AI logic retained. */
+.book-guide-root .book-guide-panel{display:flex;flex-direction:column;min-width:0;isolation:isolate}
+.book-guide-root .book-guide-panel[hidden]{display:none!important}
+.book-guide-root .book-guide-head{flex:0 0 auto;gap:10px}
+.book-guide-root .book-guide-workspace{display:flex;flex:1 1 auto;min-height:0;min-width:0;overflow:hidden}
+.book-guide-root .book-guide-sidebar{min-height:0;max-height:100%;overflow:hidden;flex-shrink:0}
+.book-guide-root .book-guide-sidebar-scroll{min-height:0;overflow-y:auto;overscroll-behavior:contain}
+.book-guide-root .book-guide-thread-list{min-width:0}
+.book-guide-root .book-guide-thread-list button{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.book-guide-root .book-guide-chat-main{display:flex;flex:1 1 auto;flex-direction:column;min-width:0;min-height:0;overflow:hidden!important}
+.book-guide-root .book-guide-chat-main .book-guide-messages{flex:1 1 auto;min-height:0;overflow-y:auto!important;overscroll-behavior:contain}
+.book-guide-root .book-guide-chat-main .book-guide-book-results{flex-shrink:0;max-height:30%;overflow-y:auto}
+.book-guide-root .book-guide-chat-main .book-guide-prompts{flex:0 0 auto;max-height:94px;overflow-y:auto;align-content:start}
+.book-guide-root .book-guide-chat-main .book-guide-compose{box-sizing:border-box!important;display:flex!important;flex-direction:row!important;align-items:flex-end!important;gap:10px!important;flex:0 0 auto!important;width:calc(100% - 28px)!important;max-width:790px!important;min-width:0!important;margin:8px auto 3px!important;padding:8px 9px 8px 16px!important;border:1px solid var(--line,#B9D7D5)!important;border-radius:19px!important;background:var(--surface,#fff)!important;color:var(--ink,#16343A)!important}
+.book-guide-root .book-guide-compose textarea{display:block!important;flex:1 1 auto!important;width:100%!important;min-width:0!important;min-height:25px!important;max-height:126px!important;margin:0!important;padding:7px 0!important;border:0!important;box-shadow:none!important;outline:none!important;resize:none!important;overflow-y:auto!important;background:transparent!important;color:var(--ink,#16343A)!important;font-size:14px!important;line-height:1.5!important}
+.book-guide-root .book-guide-compose textarea:focus-visible{outline:none!important}
+.book-guide-root .book-guide-compose:focus-within{border-color:#49A6A3!important;box-shadow:0 0 0 3px rgba(73,166,163,.2)!important}
+.book-guide-root .book-guide-compose button[type=submit]{flex:0 0 39px!important;align-self:flex-end!important;display:grid!important;place-items:center!important;width:39px!important;height:39px!important;min-width:39px!important;min-height:39px!important;padding:0!important;border:0!important;border-radius:12px!important;background:#1D727A!important;color:#fff!important}
+.book-guide-root .book-guide-compose button[type=submit]:disabled{opacity:.55;cursor:not-allowed}
+.book-guide-root .book-guide-compose button[type=submit] svg{width:19px;height:19px;stroke:#fff}
+.book-guide-root .book-guide-chat-main .book-guide-disclaimer{flex:0 0 auto!important;margin:0!important;padding:4px 12px 10px!important;color:var(--muted,#526B70)!important}
+.book-guide-root .book-guide-sidebar :is(button,summary):focus-visible,.book-guide-root .book-guide-head button:focus-visible{outline:2px solid #49A6A3!important;outline-offset:2px}
+:root[data-theme=dark] .book-guide-root .book-guide-compose{background:#152D33!important;border-color:#476D72!important;color:#F0FBFA!important}
+:root[data-theme=dark] .book-guide-root .book-guide-compose textarea{color:#F0FBFA!important}
+:root[data-theme=dark] .book-guide-root .book-guide-compose textarea::placeholder{color:#B6D4D1!important}
+:root[data-theme=dark] .book-guide-root .book-guide-chat-main .book-guide-disclaimer{color:#B6D4D1!important}
+@media(max-width:899px){.book-guide-root .book-guide-chat-main .book-guide-compose{width:calc(100% - 20px)!important;margin:6px auto 2px!important}.book-guide-root .book-guide-chat-main .book-guide-prompts{max-height:78px}.book-guide-root .book-guide-sidebar{max-width:88vw}.book-guide-root .book-guide-head .book-guide-new-chat span{display:none}}
+@media(max-width:480px){.book-guide-root .book-guide-chat-main .book-guide-compose{padding:6px 7px 6px 12px!important;border-radius:16px!important}.book-guide-root .book-guide-compose button[type=submit]{width:38px!important;height:38px!important;min-width:38px!important;min-height:38px!important;flex-basis:38px!important}.book-guide-root .book-guide-chat-main .book-guide-disclaimer{padding-bottom:calc(7px + env(safe-area-inset-bottom))!important}}
+@media(prefers-reduced-motion:reduce){.book-guide-root .book-guide-compose,.book-guide-root .book-guide-sidebar{transition:none!important}}
