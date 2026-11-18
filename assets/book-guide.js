@@ -20,7 +20,7 @@ function init(){if(ready)return;ready=true;
     <div class="book-guide-sidebar-head"><strong>Library AI</strong><button type="button" id="bookGuideSidebarClose" aria-label="Collapse sidebar" title="Close sidebar"><svg aria-hidden="true" width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M9 4v16"/></svg></button></div>
     <button type="button" id="bookGuideSideNew" class="book-guide-side-new"><span aria-hidden="true"><svg class="" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9M16 4l4 4-11 11-5 1 1-5L16 4Z"/></svg></span> New chat</button>
     <div class="book-guide-sidebar-scroll"><h3>Conversations</h3><nav id="bookGuideThreadList" class="book-guide-thread-list" aria-label="Saved conversations"><p class="book-guide-empty-history">Your conversations appear here.</p></nav><h3>Tools &amp; preferences</h3>
-  <details class="book-guide-settings" id="bookGuideSettings"><summary><svg class="" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-2.06 2.06-.06-.06A1.7 1.7 0 0 0 15.8 18.6a1.7 1.7 0 0 0-1.08 1.56V21h-3v-.84a1.7 1.7 0 0 0-1.09-1.56 1.7 1.7 0 0 0-1.88.34l-.06.06-2.06-2.06.06-.06A1.7 1.7 0 0 0 7.03 15a1.7 1.7 0 0 0-1.56-1.09H4.5v-3h.97A1.7 1.7 0 0 0 7.03 9.8a1.7 1.7 0 0 0-.34-1.88l-.06-.06L8.7 5.8l.06.06A1.7 1.7 0 0 0 10.63 6.2a1.7 1.7 0 0 0 1.09-1.56V4h3v.64a1.7 1.7 0 0 0 1.08 1.56 1.7 1.7 0 0 0 1.88-.34l.06-.06 2.06 2.06-.06.06A1.7 1.7 0 0 0 19.4 9.8a1.7 1.7 0 0 0 1.56 1.09h.54v3h-.54A1.7 1.7 0 0 0 19.4 15Z"/></svg> <span>Chat options</span><small>Web search · Book context</small></summary><div class="book-guide-settings-body"><details class="book-guide-context" id="bookGuideContext"><summary><span>Library book context <small>Optional</small></span><span id="bookGuideContextLabel">Add a book</span></summary><div class="book-guide-selection"><div class="book-guide-selection-top"><label for="bookGuideSelect">OPTIONAL BOOK CONTEXT</label><span class="book-guide-count" id="bookGuideCount" role="status" aria-live="polite">Loading books…</span></div><label class="sr-only" for="bookGuideSearch">Search the library catalogue</label><input type="search" id="bookGuideSearch" autocomplete="off" placeholder="Find a library title (optional)…" aria-label="Search library titles and authors"><select id="bookGuideSelect" aria-label="Select optional book context"><option value="">No book selected — ask anything</option></select><p id="bookGuideDetails" class="book-guide-book-note">No book required. Select a title only when you want the AI to use its catalogue details.</p></div></details>
+  <details class="book-guide-settings" id="bookGuideSettings"><summary><span class="book-guide-options-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 17h16"/><circle cx="9" cy="7" r="2.25" fill="currentColor" stroke="none"/><circle cx="16" cy="17" r="2.25" fill="currentColor" stroke="none"/></svg></span><span class="book-guide-options-copy"><strong>Chat options</strong><small>Search &amp; context</small></span><svg class="book-guide-options-chevron" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 10 5 5 5-5"/></svg></summary><div class="book-guide-settings-body"><details class="book-guide-context" id="bookGuideContext"><summary><span>Library book context <small>Optional</small></span><span id="bookGuideContextLabel">Add a book</span></summary><div class="book-guide-selection"><div class="book-guide-selection-top"><label for="bookGuideSelect">OPTIONAL BOOK CONTEXT</label><span class="book-guide-count" id="bookGuideCount" role="status" aria-live="polite">Loading books…</span></div><label class="sr-only" for="bookGuideSearch">Search the library catalogue</label><input type="search" id="bookGuideSearch" autocomplete="off" placeholder="Find a library title (optional)…" aria-label="Search library titles and authors"><select id="bookGuideSelect" aria-label="Select optional book context"><option value="">No book selected — ask anything</option></select><p id="bookGuideDetails" class="book-guide-book-note">No book required. Select a title only when you want the AI to use its catalogue details.</p></div></details>
   <div class="book-guide-capabilities"><span class="book-guide-live"><span aria-hidden="true">●</span> Provider selected automatically</span><label for="bookGuideWebSearch" class="book-guide-web-switch"><input id="bookGuideWebSearch" type="checkbox"><span class="book-guide-web-slider" aria-hidden="true"></span><span class="book-guide-web-copy"><strong>Search the web</strong><small>Include broader web results in AI answers.</small></span></label></div></div></details>
   <div class="book-guide-threadbar" hidden><select id="bookGuideThreads" aria-label="Select saved conversation"><option value="">Current conversation</option></select><button type="button" id="bookGuideCreateThread" aria-label="New conversation">＋ New</button></div>
     <button type="button" id="bookGuideReset" class="book-guide-reset-chat"><svg class="" aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg> Reset chat</button><button type="button" id="bookGuideDeleteThread" class="book-guide-delete-chat"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4.8A1.8 1.8 0 0 1 9.8 3h4.4A1.8 1.8 0 0 1 16 4.8V6"/><path d="M18 6l-.85 12.1A2 2 0 0 1 15.16 20H8.84a2 2 0 0 1-1.99-1.9L6 6"/><path d="M10 10.2v5.6M14 10.2v5.6"/></svg><span>Delete current conversation</span></button>
@@ -194,11 +194,16 @@ async function loadCloud(){
   try{
    const data=await cloudRequest('GET','/api/library-ai-history'+(activeThreadId?'?thread='+encodeURIComponent(activeThreadId):''));
    if(epoch!==chatEpoch)return;
-   activeThreadId=data.thread?.id||null;renderThreads(data.threads||[]);clearChatView();for(const m of data.messages||[]){
-    const node=addMessage(m.role,m.content);
-    if(m.role==='assistant' && Array.isArray(m.sources)&&m.sources.length)addSources(node,{sources:m.sources});
+   // Only restore messages when the user explicitly selects a saved conversation.
+   // The history endpoint may return the latest thread by default; never adopt it silently.
+   const requestedThread=activeThreadId;
+   renderThreads(data.threads||[]);clearChatView();
+   if(requestedThread){
+    for(const m of data.messages||[]){
+     const node=addMessage(m.role,m.content);
+     if(m.role==='assistant' && Array.isArray(m.sources)&&m.sources.length)addSources(node,{sources:m.sources});
+    }
    }
-   if(!(data.messages||[]).length)addMessage('assistant',greeting);
    cloudLoaded=true;setCloudConnected(true);
    $('bookGuideProvider').textContent='Private AI assistant';
    $('bookGuideSend').disabled=false;
@@ -235,6 +240,7 @@ function renderThreads(threads){
  const select=$('bookGuideThreads');if(!select)return;
  select.replaceChildren();for(const thread of threads){const option=new Option(String(thread.title||'Untitled chat').slice(0,80),thread.id);select.add(option);}
  if(activeThreadId)select.value=activeThreadId;
+ if(!activeThreadId)select.selectedIndex=-1;
  const list=$('bookGuideThreadList');if(!list)return;list.replaceChildren();
  if(!threads.length){const empty=document.createElement('p');empty.className='book-guide-empty-history';empty.textContent='No saved conversations yet.';list.append(empty);return;}
  for(const thread of threads){const button=document.createElement('button');button.type='button';button.className='book-guide-thread-item';button.textContent=String(thread.title||'Untitled chat').slice(0,80);button.title=button.textContent;button.dataset.threadId=thread.id;button.setAttribute('aria-current',String(thread.id===activeThreadId));button.addEventListener('click',()=>{if(thread.id===activeThreadId)return;activeThreadId=thread.id;cloudLoaded=false;chatEpoch++;void loadCloud();if(window.matchMedia('(max-width: 899px)').matches)$('bookGuideSidebarClose').click();});const entry=document.createElement('div');entry.className='book-guide-thread-entry';entry.append(button);const del=document.createElement('button');del.type='button';del.className='book-guide-thread-delete';del.innerHTML='<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M8 6V4.8A1.8 1.8 0 0 1 9.8 3h4.4A1.8 1.8 0 0 1 16 4.8V6"/><path d="M18 6l-.85 12.1A2 2 0 0 1 15.16 20H8.84a2 2 0 0 1-1.99-1.9L6 6"/><path d="M10 10.2v5.6M14 10.2v5.6"/></svg>';del.title='Delete conversation';del.setAttribute('aria-label','Delete '+button.textContent);del.addEventListener('click',()=>{void deleteConversation(thread.id);});entry.append(del);list.append(entry);}
@@ -324,8 +330,19 @@ function unlockBackground(){
  body.style.position=state.bodyPosition;body.style.top=state.bodyTop;body.style.left=state.bodyLeft;body.style.right=state.bodyRight;body.style.width=state.bodyWidth;body.style.overflow=state.bodyOverflow;html.style.overflow=state.htmlOverflow;
  body.classList.remove('book-guide-sheet-open');root.scrollTo(0,state.y);
 }
+function startBlankConversation(){
+ // Forget only the selected thread, never delete saved history from Supabase.
+ activeThreadId=null;chatEpoch++;cloudLoaded=false;cloudLoading=null;
+ clearChatView();
+ $('bookGuideInput').value='';fitComposer();
+ $('bookGuideProvider').textContent='Private AI assistant';
+ $('bookGuideBookResults').hidden=true;
+ $('bookGuideSend').disabled=true;
+}
 function open(){
  if(!ready)init();if(!visible)return;
+ if(!$('bookGuidePanel').hidden)return;
+ startBlankConversation();
  returnFocus=document.activeElement;
  $('bookGuidePanel').hidden=false;$('bookGuideFab').setAttribute('aria-expanded','true');$('bookGuideFab').setAttribute('aria-label','Close Library AI assistant');$('bookGuideFab').title='Close Library AI';
  if(isMobileSheet())lockBackground();else unlockBackground();

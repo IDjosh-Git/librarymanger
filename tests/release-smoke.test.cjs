@@ -31,15 +31,15 @@ test('referenced local script, stylesheet and image paths exist',()=>{
 });
 test('service worker uses RC72 caches and precaches shared theme',()=>{
  const sw=read('sw.js');
- assert.match(sw,/lm-app-shell-rc75/);
- assert.match(sw,/lm-libraries-rc75/);
+ assert.match(sw,/lm-app-shell-rc76/);
+ assert.match(sw,/lm-libraries-rc76/);
  assert.match(sw,/\/assets\/library-theme-rc62\.css\?v=rc66/);
  assert.doesNotMatch(sw,/\?v=rc59|lm-app-shell-v59/);
  for(const m of sw.matchAll(/['"](\/assets\/[^'"?#]+)(?:\?[^'"]+)?['"]/g)){
   assert.ok(fs.existsSync(path.join(root,m[1].slice(1))),`missing precache ${m[1]}`);
  }
 });
-test('release metadata is current',()=>assert.equal(JSON.parse(read('package.json')).version,'6.0.0-rc75'));
+test('release metadata is current',()=>assert.equal(JSON.parse(read('package.json')).version,'6.0.0-rc76'));
 
 test('responsive stylesheet is loaded last on every page and cached',()=>{
  for(const page of pages){const html=read(page);const a=html.indexOf('assets/library-theme-rc68-ai-layout.css?v=rc68');const b=html.indexOf('assets/library-theme-rc69-responsive.css?v=rc69');assert.ok(b>a,`${page}: responsive stylesheet must follow RC68`)}
@@ -98,4 +98,16 @@ test('RC75 Library AI composer remains one-row height across themes',()=>{
  assert.match(read('assets/book-guide.js'),/box\.style\.height='26px'/);
  for(const page of pages) assert.ok(read(page).includes('assets/library-theme-rc75-ai-compact-compose.css?v=rc75'));
  assert.ok(read('sw.js').includes('/assets/library-theme-rc75-ai-compact-compose.css?v=rc75'));
+});
+
+test('RC76 chat options styling and blank-by-default history behavior',()=>{
+ const css=read('assets/library-theme-rc76-ai-chat-options.css');
+ const js=read('assets/book-guide.js');
+ assert.match(css,/book-guide-options-glyph/);
+ assert.match(css,/book-guide-options-chevron/);
+ assert.match(js,/function startBlankConversation\(\)/);
+ assert.match(js,/const requestedThread=activeThreadId/);
+ assert.match(js,/if\(requestedThread\)/);
+ for(const page of pages)assert.ok(read(page).includes('assets/library-theme-rc76-ai-chat-options.css?v=rc76'));
+ assert.ok(read('sw.js').includes('/assets/library-theme-rc76-ai-chat-options.css?v=rc76'));
 });

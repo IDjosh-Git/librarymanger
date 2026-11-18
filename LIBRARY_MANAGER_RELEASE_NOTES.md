@@ -139,3 +139,9 @@ Static checks and automated unit tests do not establish correct rendering at all
 - Compact one-row AI message composer (54px overall, 26px text region).
 - Multiline input remains scrollable inside the compact field, with send button aligned to the right.
 - Updated cache/version identifiers.
+
+## RC76
+- Redesigned Chat Options into an accessible premium expandable settings card.
+- New blank chat on each Floating AI panel opening. Saved chats are available from history but never automatically restored.
+- Preserved RC75 compact message input, RC74 collapse and RC73 wider panel.
+- Updated service-worker cache and asset versions.
