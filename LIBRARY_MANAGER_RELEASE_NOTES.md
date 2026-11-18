@@ -134,3 +134,8 @@ Static checks and automated unit tests do not establish correct rendering at all
 - Fixed collapsed AI sidebar retaining the RC73 forced desktop width.
 - Chat content now reclaims the full space when sidebar is closed.
 - CSS and service worker version bumped for cache refresh.
+
+## RC75
+- Compact one-row AI message composer (54px overall, 26px text region).
+- Multiline input remains scrollable inside the compact field, with send button aligned to the right.
+- Updated cache/version identifiers.

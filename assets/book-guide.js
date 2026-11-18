@@ -83,7 +83,7 @@ function renderBookResults(query){
   button.append(title,author);button.addEventListener('click',()=>{selectBook(book);container.hidden=true;void ask('Is this book available in our library?');});container.appendChild(button);
  }
 }
-function fitComposer(){const box=$('bookGuideInput');if(!box)return;box.style.height='auto';box.style.height=Math.min(box.scrollHeight,126)+'px';}
+function fitComposer(){const box=$('bookGuideInput');if(!box)return;box.style.height='26px';box.scrollTop=box.scrollHeight;}
 function renderOptions(){
  if(!ready)return;
  const select=$('bookGuideSelect'),query=norm($('bookGuideSearch')?.value).toLowerCase();
