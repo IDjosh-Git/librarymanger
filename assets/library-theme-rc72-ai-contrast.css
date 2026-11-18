@@ -1,0 +1,99 @@
+/* RC72: explicit matched foreground/surface palettes for Floating AI. */
+.book-guide-root {
+ --ai-fg:#16343A;--ai-muted:#46636A;--ai-bg:#FFFFFF;--ai-surface:#F0F8F7;
+ --ai-border:#B3CFCD;--ai-control:#FFFFFF;--ai-accent:#144E58;
+ --guide-ink:var(--ai-fg);--guide-muted:var(--ai-muted);--guide-paper:var(--ai-bg);
+ --guide-soft:var(--ai-surface);--guide-border:var(--ai-border);
+ color:var(--ai-fg)!important;
+}
+:root[data-theme="dark"] .book-guide-root {
+ --ai-fg:#F0FBFA;--ai-muted:#C5DAD8;--ai-bg:#152D33;--ai-surface:#1D3C43;
+ --ai-border:#62888A;--ai-control:#244851;--ai-accent:#A9E7E2;
+ --guide-ink:var(--ai-fg);--guide-muted:var(--ai-muted);--guide-paper:var(--ai-bg);
+ --guide-soft:var(--ai-surface);--guide-border:var(--ai-border);
+ color:var(--ai-fg)!important;
+}
+/* Explicit backgrounds and corresponding readable foregrounds. */
+.book-guide-root .book-guide-panel,
+.book-guide-root .book-guide-workspace,
+.book-guide-root .book-guide-chat-main,
+.book-guide-root .book-guide-messages,
+.book-guide-root .book-guide-welcome,
+.book-guide-root .book-guide-prompts,
+.book-guide-root .book-guide-disclaimer {
+ background:var(--ai-bg)!important;color:var(--ai-fg)!important;
+}
+.book-guide-root .book-guide-sidebar,
+.book-guide-root .book-guide-sidebar-scroll,
+.book-guide-root .book-guide-sidebar-head,
+.book-guide-root .book-guide-settings,
+.book-guide-root .book-guide-settings-body,
+.book-guide-root .book-guide-context,
+.book-guide-root .book-guide-selection {
+ background:var(--ai-surface)!important;color:var(--ai-fg)!important;
+}
+.book-guide-root .book-guide-sidebar :is(h3,strong,label,p,small,summary,button,span),
+.book-guide-root .book-guide-sidebar .book-guide-thread-item,
+.book-guide-root .book-guide-sidebar .book-guide-thread-delete,
+.book-guide-root .book-guide-sidebar .book-guide-empty-history,
+.book-guide-root .book-guide-context > summary,
+.book-guide-root .book-guide-settings > summary,
+.book-guide-root .book-guide-welcome :is(h3,p),
+.book-guide-root .book-guide-disclaimer {
+ color:var(--ai-fg)!important;
+}
+.book-guide-root .book-guide-sidebar :is(.book-guide-side-new,.book-guide-reset-chat,.book-guide-thread-item,.book-guide-thread-delete,.book-guide-delete-chat,.book-guide-sidebar-head button),
+.book-guide-root .book-guide-prompts button,
+.book-guide-root .book-guide-result {
+ background:var(--ai-surface)!important;color:var(--ai-fg)!important;
+ border-color:var(--ai-border)!important;
+}
+.book-guide-root .book-guide-sidebar :is(button,summary):hover,
+.book-guide-root .book-guide-sidebar .book-guide-thread-item[aria-current="true"],
+.book-guide-root .book-guide-prompts button:hover,
+.book-guide-root .book-guide-result:hover {
+ background:var(--ai-control)!important;color:var(--ai-fg)!important;
+}
+.book-guide-root .book-guide-message.assistant .book-guide-message-body {
+ background:var(--ai-bg)!important;color:var(--ai-fg)!important;
+}
+.book-guide-root .book-guide-message.user .book-guide-message-body {
+ background:#144E58!important;color:#FFFFFF!important;border-color:#144E58!important;
+}
+.book-guide-root .book-guide-message.user .book-guide-message-body :is(p,span,strong,em,li,a,code){color:#FFFFFF!important}
+.book-guide-root .book-guide-message.assistant .book-guide-message-body :is(p,span,strong,em,li,code){color:var(--ai-fg)!important}
+.book-guide-root .book-guide-message.assistant .book-guide-message-avatar,
+.book-guide-root .book-guide-welcome-symbol {
+ background:var(--ai-surface)!important;color:var(--ai-fg)!important;
+}
+.book-guide-root .book-guide-message.assistant .book-guide-message-body a,
+.book-guide-root .book-guide-sources a {color:var(--ai-accent)!important;text-decoration:underline}
+.book-guide-root :is(.book-guide-grounding,.book-guide-source-heading,.book-guide-book-note,.book-guide-count,.book-guide-settings small,.book-guide-web-copy small){color:var(--ai-muted)!important}
+.book-guide-root :is(input,textarea,select),
+.book-guide-root .book-guide-selection :is(input,select),
+.book-guide-root .book-guide-compose,
+.book-guide-root .book-guide-context :is(input,select) {
+ background:var(--ai-bg)!important;color:var(--ai-fg)!important;border-color:var(--ai-border)!important;
+ color-scheme:light;
+}
+:root[data-theme="dark"] .book-guide-root :is(input,textarea,select),
+:root[data-theme="dark"] .book-guide-root .book-guide-selection :is(input,select),
+:root[data-theme="dark"] .book-guide-root .book-guide-compose {color-scheme:dark}
+.book-guide-root :is(input,textarea)::placeholder {color:var(--ai-muted)!important;opacity:1}
+/* Deliberately isolate white-on-teal controls from inherited dark palettes. */
+.book-guide-root .book-guide-head,
+.book-guide-root .book-guide-fab {background:linear-gradient(125deg,#144E58,#1D727A)!important;color:#FFFFFF!important}
+.book-guide-root .book-guide-head :is(h2,p,button,span,.book-guide-icon),
+.book-guide-root .book-guide-fab :is(span,svg),
+.book-guide-root .book-guide-head svg {color:#FFFFFF!important;stroke:currentColor!important}
+.book-guide-root .book-guide-compose button[type="submit"] {background:#1D727A!important;color:#FFFFFF!important}
+.book-guide-root .book-guide-compose button[type="submit"] svg {stroke:#FFFFFF!important}
+/* SVGs inherit button foreground: avoid black strokes on dark surfaces. */
+.book-guide-root .book-guide-sidebar svg,
+.book-guide-root .book-guide-welcome svg,
+.book-guide-root .book-guide-message-avatar svg,
+.book-guide-root .book-guide-settings svg {color:inherit!important;stroke:currentColor!important}
+.book-guide-root :is(button,summary,input,textarea,select,a):focus-visible {outline:3px solid var(--ai-accent)!important;outline-offset:2px!important}
+.book-guide-root .book-guide-head button:focus-visible,
+.book-guide-root .book-guide-fab:focus-visible,
+.book-guide-root .book-guide-compose button[type="submit"]:focus-visible {outline-color:#D9F4F0!important}
