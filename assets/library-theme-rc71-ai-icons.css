@@ -1,0 +1,28 @@
+/* RC71: Icon consistency and contrast in Library AI; presentation only. */
+.book-guide-root .book-guide-fab-symbol{display:grid!important;place-items:center!important;font-size:0!important;line-height:1!important}
+.book-guide-root .book-guide-fab-symbol > span{display:grid;place-items:center}
+.book-guide-root .book-guide-fab-symbol svg{display:block;width:24px;height:24px;stroke:currentColor;stroke-width:1.9;fill:none}
+.book-guide-root .book-guide-fab[aria-expanded="false"] .book-guide-icon-open,.book-guide-root .book-guide-fab[aria-expanded="true"] .book-guide-icon-closed{display:none!important}
+.book-guide-root .book-guide-fab[aria-expanded="true"] .book-guide-icon-open{display:grid!important}
+.book-guide-root :is(.book-guide-icon,.book-guide-welcome-symbol,.book-guide-message-avatar){display:grid;place-items:center}
+.book-guide-root :is(.book-guide-icon,.book-guide-welcome-symbol) svg{display:block;width:23px;height:23px;stroke-width:1.9}
+.book-guide-root .book-guide-message-avatar svg{display:block;width:17px;height:17px}
+.book-guide-root :is(.book-guide-close,.book-guide-new-chat,.book-guide-menu,.book-guide-sidebar-head button,.book-guide-side-new,.book-guide-reset-chat){align-items:center;gap:8px}
+.book-guide-root :is(.book-guide-close,.book-guide-new-chat,.book-guide-menu,.book-guide-sidebar-head button,.book-guide-side-new,.book-guide-reset-chat) svg{display:inline-block;width:19px;height:19px;flex:none;vertical-align:middle;stroke:currentColor;stroke-width:1.9}
+.book-guide-root .book-guide-close{display:grid;place-items:center;font-size:0!important;min-width:40px;min-height:40px}
+.book-guide-root .book-guide-head :is(.book-guide-close,.book-guide-menu,.book-guide-new-chat){color:#fff!important}
+.book-guide-root .book-guide-sidebar :is(.book-guide-side-new,.book-guide-reset-chat,.book-guide-settings summary){color:#16343A!important}
+.book-guide-root .book-guide-settings > summary{display:flex;align-items:center;gap:8px;flex-wrap:wrap;cursor:pointer}
+.book-guide-root .book-guide-settings > summary > svg{width:19px;height:19px;flex:none;stroke-width:1.9}
+.book-guide-root .book-guide-fab{background:linear-gradient(145deg,#144E58,#1D727A)!important;color:#fff!important;border:2px solid #D9F4F0!important;box-shadow:0 10px 28px rgba(8,51,59,.3)!important}
+.book-guide-root .book-guide-fab:hover{filter:brightness(1.08)}
+.book-guide-root .book-guide-compose button[type=submit]{background:#1D727A!important;color:#fff!important}
+.book-guide-root .book-guide-head :is(button):focus-visible{outline:3px solid #D9F4F0!important;outline-offset:2px!important}
+.book-guide-root .book-guide-sidebar :is(button,summary):focus-visible,.book-guide-root .book-guide-fab:focus-visible{outline:3px solid #1D727A!important;outline-offset:3px!important}
+:root[data-theme="dark"] .book-guide-root .book-guide-sidebar :is(.book-guide-side-new,.book-guide-reset-chat,.book-guide-settings summary){color:#F0FBFA!important}
+:root[data-theme="dark"] .book-guide-root .book-guide-sidebar :is(button,summary):focus-visible{outline-color:#A9E7E2!important}
+@media (pointer:coarse){.book-guide-root :is(.book-guide-close,.book-guide-menu,.book-guide-sidebar-head button,.book-guide-side-new,.book-guide-reset-chat){min-height:44px}}
+@media(prefers-reduced-motion:reduce){.book-guide-root .book-guide-fab{transition:none!important}}
+
+.book-guide-root .book-guide-fab-symbol{animation:none!important;background:rgba(255,255,255,.10)!important}
+.book-guide-root .book-guide-fab::before{animation:none!important}

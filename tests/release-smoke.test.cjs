@@ -29,17 +29,17 @@ test('referenced local script, stylesheet and image paths exist',()=>{
   }
  }
 });
-test('service worker uses RC70 caches and precaches shared theme',()=>{
+test('service worker uses RC71 caches and precaches shared theme',()=>{
  const sw=read('sw.js');
- assert.match(sw,/lm-app-shell-rc70/);
- assert.match(sw,/lm-libraries-rc70/);
+ assert.match(sw,/lm-app-shell-rc71/);
+ assert.match(sw,/lm-libraries-rc71/);
  assert.match(sw,/\/assets\/library-theme-rc62\.css\?v=rc66/);
  assert.doesNotMatch(sw,/\?v=rc59|lm-app-shell-v59/);
  for(const m of sw.matchAll(/['"](\/assets\/[^'"?#]+)(?:\?[^'"]+)?['"]/g)){
   assert.ok(fs.existsSync(path.join(root,m[1].slice(1))),`missing precache ${m[1]}`);
  }
 });
-test('release metadata is current',()=>assert.equal(JSON.parse(read('package.json')).version,'6.0.0-rc70'));
+test('release metadata is current',()=>assert.equal(JSON.parse(read('package.json')).version,'6.0.0-rc71'));
 
 test('responsive stylesheet is loaded last on every page and cached',()=>{
  for(const page of pages){const html=read(page);const a=html.indexOf('assets/library-theme-rc68-ai-layout.css?v=rc68');const b=html.indexOf('assets/library-theme-rc69-responsive.css?v=rc69');assert.ok(b>a,`${page}: responsive stylesheet must follow RC68`)}
@@ -51,4 +51,12 @@ test('RC70 notification hero fix loads after responsive styles and is scoped',()
  assert.match(css,/#notifications \.notification-hero/);
  for(const page of pages){const html=read(page);assert.ok(html.indexOf('library-theme-rc70-notification-hero.css?v=rc70')>html.indexOf('library-theme-rc69-responsive.css?v=rc69'));}
  assert.ok(read('sw.js').includes('/assets/library-theme-rc70-notification-hero.css?v=rc70'));
+});
+
+test('RC71 AI icon contrast and SVG controls are included',()=>{
+ const js=read('assets/book-guide.js'),css=read('assets/library-theme-rc71-ai-icons.css'),html=read('index.html');
+ assert.match(js,/book-guide-icon-closed/);assert.match(js,/book-guide-icon-open/);
+ assert.match(css,/#144E58/);assert.match(css,/:focus-visible/);
+ assert.ok(html.indexOf('library-theme-rc71-ai-icons.css?v=rc71')>html.indexOf('library-theme-rc70-notification-hero.css?v=rc70'));
+ assert.ok(read('sw.js').includes('/assets/library-theme-rc71-ai-icons.css?v=rc71'));
 });
