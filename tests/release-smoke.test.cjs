@@ -31,15 +31,15 @@ test('referenced local script, stylesheet and image paths exist',()=>{
 });
 test('service worker uses RC72 caches and precaches shared theme',()=>{
  const sw=read('sw.js');
- assert.match(sw,/lm-app-shell-rc73/);
- assert.match(sw,/lm-libraries-rc73/);
+ assert.match(sw,/lm-app-shell-rc74/);
+ assert.match(sw,/lm-libraries-rc74/);
  assert.match(sw,/\/assets\/library-theme-rc62\.css\?v=rc66/);
  assert.doesNotMatch(sw,/\?v=rc59|lm-app-shell-v59/);
  for(const m of sw.matchAll(/['"](\/assets\/[^'"?#]+)(?:\?[^'"]+)?['"]/g)){
   assert.ok(fs.existsSync(path.join(root,m[1].slice(1))),`missing precache ${m[1]}`);
  }
 });
-test('release metadata is current',()=>assert.equal(JSON.parse(read('package.json')).version,'6.0.0-rc73'));
+test('release metadata is current',()=>assert.equal(JSON.parse(read('package.json')).version,'6.0.0-rc74'));
 
 test('responsive stylesheet is loaded last on every page and cached',()=>{
  for(const page of pages){const html=read(page);const a=html.indexOf('assets/library-theme-rc68-ai-layout.css?v=rc68');const b=html.indexOf('assets/library-theme-rc69-responsive.css?v=rc69');assert.ok(b>a,`${page}: responsive stylesheet must follow RC68`)}
@@ -77,4 +77,14 @@ test('RC73 premium header, wider panel and sidebar icon layer are loaded and cac
  assert.ok(read('sw.js').includes('/assets/library-theme-rc73-ai-premium.css?v=rc73'));
  assert.match(read('assets/book-guide.js'),/book-guide-delete-chat/);
  assert.match(read('assets/book-guide.js'),/book-guide-thread-delete/);
+});
+
+
+test('RC74 collapse releases sidebar width and lets chat flex',()=>{
+ const css=read('assets/library-theme-rc74-ai-sidebar-collapse.css');
+ assert.match(css, /:not\(\.sidebar-open\) \.book-guide-sidebar/);
+ assert.match(css, /flex-basis:0px!important/);
+ assert.match(css, /\.book-guide-chat-main/);
+ for(const page of pages) assert.ok(read(page).includes('assets/library-theme-rc74-ai-sidebar-collapse.css?v=rc74'));
+ assert.ok(read('sw.js').includes('/assets/library-theme-rc74-ai-sidebar-collapse.css?v=rc74'));
 });

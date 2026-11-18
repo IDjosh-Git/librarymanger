@@ -1,0 +1,63 @@
+/* RC74: Collapsed sidebar must release its layout width; chat fills available space. */
+@media (min-width:900px) {
+  .book-guide-root .book-guide-panel:not(.sidebar-open) .book-guide-sidebar {
+    width:0!important;
+    min-width:0!important;
+    max-width:0!important;
+    flex:0 0 0px!important;
+    flex-basis:0px!important;
+    padding:0!important;
+    margin:0!important;
+    border:0!important;
+    box-shadow:none!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+  .book-guide-root .book-guide-panel.sidebar-open .book-guide-sidebar {
+    width:326px!important;
+    min-width:0!important;
+    max-width:326px!important;
+    flex:0 0 326px!important;
+    flex-basis:326px!important;
+    padding:14px!important;
+    visibility:visible!important;
+    pointer-events:auto!important;
+  }
+}
+@media (max-width:899px) {
+  .book-guide-root .book-guide-panel:not(.sidebar-open) .book-guide-sidebar {
+    width:0!important;
+    max-width:0!important;
+    flex-basis:0!important;
+    padding:0!important;
+    visibility:hidden!important;
+    pointer-events:none!important;
+  }
+  .book-guide-root .book-guide-panel.sidebar-open .book-guide-sidebar {
+    width:min(340px,88vw)!important;
+    max-width:min(340px,88vw)!important;
+    padding:12px!important;
+    visibility:visible!important;
+    pointer-events:auto!important;
+  }
+}
+.book-guide-root .book-guide-panel .book-guide-workspace {
+  display:flex!important;
+  width:100%!important;
+  min-width:0!important;
+}
+.book-guide-root .book-guide-panel .book-guide-chat-main {
+  flex:1 1 0%!important;
+  width:auto!important;
+  min-width:0!important;
+  max-width:100%!important;
+}
+.book-guide-root .book-guide-chat-main .book-guide-messages,
+.book-guide-root .book-guide-chat-main .book-guide-compose,
+.book-guide-root .book-guide-chat-main .book-guide-prompts {
+  min-width:0!important;
+  max-width:100%!important;
+}
+.book-guide-root .book-guide-messages .book-guide-message {
+  max-width:100%!important;
+}

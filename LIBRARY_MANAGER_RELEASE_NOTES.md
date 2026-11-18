@@ -128,3 +128,9 @@ Static checks and automated unit tests do not establish correct rendering at all
 - Widened the AI panel on desktop/window view.
 - Upgraded sidebar action and conversation delete icons to SVG and improved placement.
 - Added a final RC73 theme layer plus service-worker cache bump for Vercel refreshes.
+
+
+## RC74
+- Fixed collapsed AI sidebar retaining the RC73 forced desktop width.
+- Chat content now reclaims the full space when sidebar is closed.
+- CSS and service worker version bumped for cache refresh.
