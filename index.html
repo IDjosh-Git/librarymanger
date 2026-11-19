@@ -2040,19 +2040,34 @@ $('editorResults').addEventListener('click',e=>{
  editorFill(row,false);$('editorResults').textContent='Selected title details added. Verify and save. ISBN was not altered.';
 });
 $('bookEditorForm').onsubmit=async e=>{
- e.preventDefault();if(!editingRecordId||!session?.user)return;
- const recordId=editingRecordId,patch={};
+ e.preventDefault();
+ const target=$('editorResults');
+ if(!editingRecordId||!session?.user){target.textContent='Please sign in and reopen the book editor before saving.';return}
+ const recordId=editingRecordId,old=books.find(x=>x.record_id===recordId);
+ if(!old){target.textContent='This book is no longer in the loaded inventory. Refresh and try again.';return}
+ const patch={};
  for(const k of ['barcode','title','authors','publisher','publication_year','shelf_location','language','pages','subject'])patch[k]=editorFormField(k).value.trim()||null;
+ if(!patch.title){target.textContent='A book title is required. Enter a title before saving.';editorFormField('title').focus();return}
  // No silently inferred ISBN, no deduping physical copies.
  patch.updated_at=new Date().toISOString();patch.lookup_status='Reviewed / edited manually';
- const old=books.find(x=>x.record_id===recordId);
- const btn=$('bookEditorForm').querySelector('[type="submit"]');btn.disabled=true;
- try{let request=sb.from(BOOKS).update(patch).eq('record_id',recordId);
- if(latest.updated_at)request=request.eq('updated_at',latest.updated_at);
- const {data,error}=await request.select('*').maybeSingle();
-  if(error)throw error;closeBookEditor();await reloadAll();msg('Updated '+(data?.book_id||old?.book_id||'book')+' successfully.','ok');
- }catch(error){$('editorResults').textContent='Save failed: '+String(error.message||error)}finally{btn.disabled=false}
+ const btn=$('bookEditorForm').querySelector('[type="submit"]');
+ btn.disabled=true;btn.textContent='Saving…';target.textContent='Saving book changes…';
+ try{
+  let request=sb.from(BOOKS).update(patch).eq('record_id',recordId);
+  // Use the loaded record's timestamp, never an undefined variable. Detect concurrent changes.
+  if(old.updated_at)request=request.eq('updated_at',old.updated_at);
+  const {data,error}=await request.select('*').maybeSingle();
+  if(error)throw error;
+  if(!data)throw Error('The book was not updated. Another user may have changed it, or your account may not have edit permission. Refresh the inventory and try again.');
+  books=books.map(b=>b.record_id===recordId?{...b,...data}:b);
+  inventoryGroupCache=null;
+  closeBookEditor();
+  msg('Updated '+(data.book_id||old.book_id||'book')+' successfully.','ok');
+  try{await reloadAll()}catch(refreshError){console.warn('Book saved, but inventory refresh failed:',refreshError);msg('Book saved. Refresh the inventory to see the latest list.','warn')}
+ }catch(error){target.textContent='Save failed: '+String(error?.message||error);msg('Could not save book changes. See the error in the editor.','err')}
+ finally{btn.disabled=false;btn.textContent='Save book changes'}
 };
+
 async function addBook(code){
  if(!session?.user)return msg("Sign in first.","warn");
  if(busy)return msg("Finish the current operation first.","warn");
