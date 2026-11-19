@@ -5,6 +5,9 @@
  'use strict';
  const URL='https://hotysnqorkqbiconjskl.supabase.co';
  const KEY='sb_publishable_OL7r2hmR6n7OOWY5m-3bRw_Peft2X9q';
+ window.LibraryBranding?.init(window.supabase?.createClient(URL,KEY,{
+  auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
+ }));
  const $=id=>document.getElementById(id);
  const put=(id,value)=>{const el=$(id);if(el)el.textContent=String(value||'')};
  const normalize=value=>String(value||'').toLowerCase().replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();

@@ -10,6 +10,13 @@ This document consolidates the original release notes and theme audit history fr
 
 ## Release history
 
+## RC78 — Shared branding across Library Manager
+
+- Apply the saved library name, logo, palette, and surface style on Book of the Week and Reading Guide, as well as in the main workspace.
+- Match branded headers, active navigation, primary actions, and Library AI controls to the published appearance.
+- Keep the last successfully loaded branding available on the device when the settings request is unavailable.
+- Adjust gradient tones where needed to maintain readable action text.
+
 ## RC77 — Sidebar and App Appearance Studio
 
 - Match the branding and Book Lookup disclosures with a chevron that follows the actual expanded state.

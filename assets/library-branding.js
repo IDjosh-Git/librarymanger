@@ -7,9 +7,23 @@
  const safeLogo=v=>typeof v==='string'&&/^https:\/\//i.test(v)?v:null;
  const state={...DEFAULT};
  const columns='app_name,primary_color,secondary_color,button_style,logo_url';
+ const cacheKey='library_manager_published_branding_v1';
  const logoTypes={'image/png':'png','image/jpeg':'jpg','image/webp':'webp'};
  let client=null,session=null,role=null,revision=0,busy=false;
  let published={...DEFAULT},dirty=false,removeLogo=false,previewUrl=null;
+ function cachedBranding(){
+  try {
+   const saved=JSON.parse(localStorage.getItem(cacheKey));
+   if(saved&&validHex(saved.primary_color)&&validHex(saved.secondary_color)
+      &&['solid','gradient'].includes(saved.button_style))return saved;
+  } catch {}
+  return null;
+ }
+ function publish(settings,{cache=true}={}){
+  published={...DEFAULT,...settings};
+  apply(published);
+  if(cache)try{localStorage.setItem(cacheKey,JSON.stringify(published));}catch{}
+ }
  function luminance(hex){
   return [1,3,5].map(i=>parseInt(hex.slice(i,i+2),16)/255)
    .map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4)
@@ -19,51 +33,65 @@
   const a=luminance(x),b=luminance(y);
   return (Math.max(a,b)+.05)/(Math.min(a,b)+.05);
  }
+ const hexRgb=hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
+ const toHex=channels=>'#'+channels.map(n=>Math.round(n).toString(16).padStart(2,'0')).join('');
+ const blend=(a,b,weight)=>toHex(hexRgb(a).map((value,i)=>value*(1-weight)+hexRgb(b)[i]*weight));
  const ink=color=>contrast(color,'#ffffff')>=4.5?'#ffffff':'#000000';
+ function gradientContrast(a,b,color){
+  if(color==='#ffffff')return Math.min(contrast(a,color),contrast(b,color));
+  const second=hexRgb(b);
+  const darkest=toHex(hexRgb(a).map((channel,i)=>Math.min(channel,second[i])));
+  return contrast(darkest,color);
+ }
  function actionColors(a,b,style){
-  if(style==='solid')return {background:a,foreground:ink(a),fallback:false};
-  const foreground=['#ffffff','#000000'].find(color=>[a,b].every(stop=>contrast(stop,color)>=4.5));
-  return foreground?{background:`linear-gradient(125deg, ${a}, ${b})`,foreground,fallback:false}
-   :{background:a,foreground:ink(a),fallback:true};
+  if(style==='solid')return {background:a,foreground:ink(a),adjusted:false};
+  const matchingInk=['#ffffff','#000000'].find(color=>gradientContrast(a,b,color)>=4.5);
+  const foreground=matchingInk||ink(a);
+  let end=b;
+  if(!matchingInk){
+   for(let step=1;step<=20;step++){
+    end=blend(b,a,step/20);
+    if(gradientContrast(a,end,foreground)>=4.5)break;
+   }
+  }
+  return {background:`linear-gradient(125deg, ${a}, ${end})`,foreground,adjusted:end!==b};
  }
  function apply(v){Object.assign(state,{...DEFAULT,...v});const root=document.documentElement;
  const a=validHex(state.primary_color)?state.primary_color:DEFAULT.primary_color,b=validHex(state.secondary_color)?state.secondary_color:DEFAULT.secondary_color;
  root.style.setProperty('--library-primary',a);root.style.setProperty('--library-secondary',b);
  // Derive the visual system from the saved palette; fixed values below are only initial fallbacks.
- const hexRgb=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));
- const toHex=arr=>'#'+arr.map(n=>Math.max(0,Math.min(255,Math.round(n))).toString(16).padStart(2,'0')).join('');
- const blend=(c,d,weight)=>toHex(hexRgb(c).map((v,i)=>v*(1-weight)+hexRgb(d)[i]*weight));
  const gradient=actionColors(a,b,'gradient');
  const action=actionColors(a,b,state.button_style);
- const brandGradient=gradient.fallback?`linear-gradient(125deg, ${a}, ${a})`:gradient.background;
  const dark=root.dataset.theme==='dark';
  const surface=dark?'#182b3b':'#ffffff';
  const tint=blend(b,surface,dark?.20:.10);
  const soft=blend(a,surface,dark?.24:.08);
  const border=blend(a,surface,dark?.44:.25);
  const hover=blend(a,dark?'#ffffff':'#000000',dark?.18:.13);
+ const readableAccent=contrast(a,surface)>=4.5?a:blend(a,ink(surface),.8);
  const semantic={
  '--app-brand':a,'--app-brand-secondary':b,'--app-brand-hover':hover,
  '--app-brand-soft':soft,'--app-brand-soft-strong':blend(a,surface,dark?.32:.16),
- '--app-brand-border':border,'--app-brand-gradient':brandGradient,
+ '--app-brand-border':border,'--app-brand-gradient':gradient.background,
  '--app-on-brand':ink(a),'--app-on-secondary':ink(b),'--app-on-gradient':gradient.foreground,
- '--app-focus-ring':blend(b,surface,.45),'--app-brand-contrast':ink(a),
+ '--app-focus-ring':readableAccent,'--app-brand-contrast':ink(a),
  '--library-action':action.background,'--library-action-text':action.foreground,
- '--library-brand-ink':dark?blend(a,'#ffffff',.65):blend(a,'#000000',.25),
+ '--library-brand-ink':readableAccent,
  '--library-brand-tint':tint,
  '--navy':a,'--navy2':b,'--navy3':blend(a,'#000000',.28),
  '--accent':a,'--accent2':b,'--ring':b,
  '--primary':a,'--primary-color':a,'--secondary':b,'--secondary-color':b,
  '--brand':a,'--brand2':b,'--brand-primary':a,'--brand-secondary':b,
  '--brand-hover':hover,'--brand-soft':soft,'--brand-border':border,
- '--brand-dark-gradient':brandGradient
+ '--brand-dark-gradient':gradient.background
  };
  for(const [key,value] of Object.entries(semantic))root.style.setProperty(key,value);
  root.dataset.brandButtons=state.button_style==='solid'?'solid':'gradient';
  const name=safeName(state.app_name)||DEFAULT.app_name;
  document.querySelectorAll('[data-library-brand-name]').forEach(el=>el.textContent=name);
  document.querySelectorAll('[data-library-brand-logo]').forEach(img=>{img.src=safeLogo(state.logo_url)||'assets/book-logo.svg';});
- document.title=name+' | Library Workspace';
+ document.querySelectorAll('[data-library-brand-home]').forEach(el=>el.setAttribute('aria-label',name+' home'));
+ document.title=root.dataset.libraryPageTitle?root.dataset.libraryPageTitle+' | '+name:name+' | Library Workspace';
  }
  function setStatus(message){$('brandStatus').textContent=message;}
  function selectColor(id,fallback){const value=$(id).value;return validHex(value)?value.toLowerCase():fallback;}
@@ -100,10 +128,10 @@
    preset.setAttribute('aria-pressed',String(selected));
   }
   const status=$('appearanceContrast');
-  status.textContent=action.fallback
-   ?'These colours use a solid action background for readable text.'
+  status.textContent=action.adjusted
+   ?'The gradient is adjusted to keep button text readable.'
    :'The preview action uses readable text contrast.';
-  status.dataset.warning=String(action.fallback);
+  status.dataset.warning=String(action.adjusted);
  }
  function writeFields(settings){
   $('brandAppName').value=safeName(settings.app_name)||DEFAULT.app_name;
@@ -135,9 +163,8 @@
    if(request!==revision)return;
    if(error)throw error;
    if(!data)throw Error('Missing shared branding settings.');
-   published={...DEFAULT,...data};
-   apply(published);
-   if(!dirty){
+   publish(data);
+   if($('brandForm')&&!dirty){
     resetDraft();
     setStatus('Branding is shared across accounts.');
    }
@@ -185,8 +212,7 @@
    const matches=data&&Object.entries(draft).every(([key,value])=>
     (key.endsWith('_color')?String(data[key]).toLowerCase():data[key])===value);
    if(!matches)throw Error('Saved settings could not be verified.');
-   published={...DEFAULT,...data};
-   apply(published);
+   publish(data);
    resetDraft();
    setStatus('Branding saved and applied across the app.');
   }catch(error){
@@ -199,11 +225,19 @@
  function init(sb,currentSession=null,currentRole=null){
   if(client)return;
   client=sb;session=currentSession;role=currentRole;
-  apply(DEFAULT);
+  publish(cachedBranding()||DEFAULT,{cache:false});
+  new MutationObserver(()=>apply(state)).observe(document.documentElement,{attributeFilter:['data-theme']});
+  window.addEventListener('storage',event=>{
+   if(event.key!==cacheKey||busy)return;
+   const cached=cachedBranding();
+   if(!cached)return;
+   publish(cached,{cache:false});
+   if($('brandForm')&&!dirty)resetDraft();
+  });
+  if(!$('brandForm')){void refresh();return;}
   $('appearancePreviewTheme').value=document.documentElement.dataset.theme==='dark'?'dark':'light';
   resetDraft();
   syncAccess();
-  new MutationObserver(()=>apply(state)).observe(document.documentElement,{attributeFilter:['data-theme']});
   $('brandForm').addEventListener('submit',save);
   for(const id of ['brandAppName','brandPrimary','brandSecondary','brandButtonStyle']){
    $(id).addEventListener('input',()=>queueDraft());

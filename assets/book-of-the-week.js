@@ -3,6 +3,9 @@
  'use strict';
  const SUPABASE_URL='https://hotysnqorkqbiconjskl.supabase.co';
  const SUPABASE_KEY='sb_publishable_OL7r2hmR6n7OOWY5m-3bRw_Peft2X9q';
+ window.LibraryBranding?.init(window.supabase?.createClient(SUPABASE_URL,SUPABASE_KEY,{
+  auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
+ }));
  const $=id=>document.getElementById(id);
  async function ensureWeeklyPick(){
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),24000);

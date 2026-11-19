@@ -1,0 +1,87 @@
+/* Shared branding across the workspace, public reading pages, and Library AI. */
+:root[data-brand-buttons] {
+  --lm-hero-gradient:var(--library-action);
+  --lm-hero-ink:var(--library-action-text);
+  --lm-hero-muted:var(--library-action-text);
+  --theme-brand-dark:var(--library-brand-ink);
+  --theme-focus:var(--app-focus-ring);
+  --theme-gradient:var(--app-brand-gradient);
+  --theme-gradient-subtle:linear-gradient(125deg,var(--app-brand-soft),var(--app-brand-soft-strong));
+}
+
+:root[data-brand-buttons] body :is(
+  header:has(>.head),.auth-showcase,.dashboard-hero,.hero-library,.shelf-page-hero,
+  .review-workspace-hero,.scanned-hero,.circulation-hero,.notification-hero,
+  .public-settings-hero,.admin-directory-hero,.vl-hero,.history-hero,
+  .spotlight-topbar,.spotlight-intro,.guide-hero
+) {
+  background:var(--library-action)!important;
+  color:var(--library-action-text)!important;
+}
+:root[data-brand-buttons] body :is(
+  .auth-showcase,.dashboard-hero,.hero-library,.shelf-page-hero,.review-workspace-hero,
+  .scanned-hero,.circulation-hero,.notification-hero,.public-settings-hero,.admin-directory-hero,
+  .vl-hero,.history-hero,.spotlight-intro,.guide-hero
+) :is(h1,h2,p,.eyebrow,.vl-kicker,.spotlight-kicker,.guide-edition) {
+  color:var(--library-action-text)!important;
+}
+:root[data-brand-buttons] body :is(.head,.spotlight-topbar) :is(
+  .brand-wordmark h1,.brand-wordmark h1 *,.brand-wordmark p,.brand-overline,
+  .header-context,.header-context *,.head-actions button,.spotlight-brand,
+  .spotlight-brand strong,.spotlight-brand small,.spotlight-top-actions a,.spotlight-top-actions button
+) {
+  color:var(--library-action-text)!important;
+}
+:root[data-brand-buttons] body :is(.head-actions,.spotlight-top-actions) :is(button,a):focus-visible {
+  outline-color:var(--library-action-text)!important;
+}
+:root[data-brand-buttons] body #accountCard.auth .workspace-nav .workspace-nav-section button.tab:is(.active,[aria-current="page"]) {
+  background:var(--library-action)!important;
+  color:var(--library-action-text)!important;
+  border-color:var(--app-brand-border)!important;
+}
+:root[data-brand-buttons] body #accountCard.auth .workspace-nav .workspace-nav-section button.tab:is(.active,[aria-current="page"]) > :is(.app-icon,span:first-of-type) {
+  color:var(--library-action-text)!important;
+  stroke:currentColor!important;
+}
+:root[data-brand-buttons] body #accountCard.auth .workspace-nav .workspace-nav-section button.tab:is(.active,[aria-current="page"]) > .app-icon {
+  background:transparent!important;
+}
+
+/* Only non-status primary actions inherit the selected surface style. */
+:root[data-brand-buttons] body :is(
+  #accountCard #brandSave,.spotlight-primary-cta,.guide-primary,
+  .circulation-submit,.review-smart-primary,.notification-primary,.scan-tool-primary
+) {
+  background:var(--library-action)!important;
+  color:var(--library-action-text)!important;
+  border-color:var(--app-brand-border)!important;
+}
+:root[data-brand-buttons] body :is(.guide-primary,.spotlight-primary-cta) :is(span,svg) {color:inherit!important;}
+
+:root[data-brand-buttons] .book-guide-root {
+  --ai-accent:var(--library-brand-ink);
+}
+:root[data-brand-buttons] body .book-guide-root :is(
+  .book-guide-head,.book-guide-fab,.book-guide-compose button[type="submit"],
+  .book-guide-message.user .book-guide-message-body
+) {
+  background:var(--library-action)!important;
+  color:var(--library-action-text)!important;
+  border-color:var(--app-brand-border)!important;
+}
+:root[data-brand-buttons] body .book-guide-root :is(
+  .book-guide-head :is(h2,p,button,span,svg),.book-guide-fab :is(span,svg),
+  .book-guide-compose button[type="submit"] svg,
+  .book-guide-message.user .book-guide-message-body :is(p,span,strong,em,li,a,code)
+) {
+  color:var(--library-action-text)!important;
+}
+:root[data-brand-buttons] body .book-guide-root :is(
+  .book-guide-head svg,.book-guide-fab svg,.book-guide-compose button[type="submit"] svg
+) {stroke:currentColor!important;}
+:root[data-brand-buttons][data-theme] body .book-guide-root .book-guide-options-glyph {
+  background:var(--app-brand-soft-strong)!important;
+  color:var(--library-brand-ink)!important;
+  border-color:var(--app-brand-border)!important;
+}

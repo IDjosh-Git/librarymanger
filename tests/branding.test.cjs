@@ -19,12 +19,16 @@ function node(value = '') {
  };
 }
 
-function studio() {
+function studio({readOnly=false, storage=new Map()}={}) {
  const ids = Object.fromEntries(('brandStatus brandAppName brandPrimary brandSecondary brandButtonStyle brandLogoFile '+
  'appearancePreview appearanceCorners appearancePreviewTheme appearancePreviewLogo appearancePreviewName appearanceContrast '+
  'brandDiscard brandFields brandForm brandRemoveLogo brandReset').split(' ').map(id=>[id,node()]));
  ids.appearanceCorners.value='rounded';
  const documentElement=node();
+ if(readOnly){
+  delete ids.brandForm;
+  documentElement.dataset.libraryPageTitle='Reading Guide';
+ }
  for(const el of [documentElement,ids.appearancePreview])el.style.setProperty=el.style.set.bind(el.style);
  const brandLabel=node(), brandLogo=node(), preset=node();
  preset.dataset={primary:'#6246a5',secondary:'#9c79d6'};
@@ -57,10 +61,11 @@ function studio() {
    return query;
   }
  };
- const window={};
+ const window={addEventListener(){}};
  let themeChanged;
  vm.runInNewContext(read('assets/library-branding.js'),{
   window,document,
+  localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,value)},
   URL:{createObjectURL:()=> 'blob:preview',revokeObjectURL(){}},
   MutationObserver:class {constructor(callback){themeChanged=callback;}observe(){}}
  });
@@ -71,10 +76,44 @@ function studio() {
 
 test('branding controls start after the deferred script and lookup uses a native disclosure',()=>{
  const html=read('index.html');
- assert.match(html,/<script defer src="assets\/library-branding.js\?v=rc77">/);
+ assert.match(html,/<script defer src="assets\/library-branding.js\?v=rc78">/);
  assert.match(html,/document\.addEventListener\('DOMContentLoaded',\(\)=>\{\s*const activeRole=[^\n]+\n\s*window\.LibraryBranding\?\.init\(sb,activeRole\?session:null,activeRole\)/);
  assert.match(html,/<details class="lookupbox">\s*<summary class="lookuphead">[^\n]+sidebar-settings-chevron/);
  assert.match(read('assets/library-sidebar-rc77.css'),/\.lookupbox\)\[open\] > summary .*sidebar-settings-chevron::before/);
+});
+
+test('shared branding CSS and the read-only loader are wired into both public pages',()=>{
+ const css=read('assets/library-brand-rc78.css');
+ for(const selector of ['.dashboard-hero','.spotlight-intro','.guide-hero','.book-guide-head','.workspace-nav-section']){
+  assert(css.includes(selector),selector);
+ }
+ assert.match(css,/background:var\(--library-action\)!important/);
+ assert.match(css,/color:var\(--library-action-text\)!important/);
+ for(const page of ['book-of-the-week','reading-guide']){
+  const html=read(page+'.html');
+  assert(html.includes('data-library-brand-name'));
+  assert(html.includes('data-library-brand-logo'));
+  assert(html.includes('library-brand-rc78.css?v=rc78'));
+  assert(html.indexOf('library-branding.js?v=rc78')<html.indexOf(page+'.js?v=rc78'));
+  assert.match(read('assets/'+page+'.js'),/LibraryBranding\?\.init\(window\.supabase\?\.createClient/);
+ }
+});
+
+test('reading pages load a published palette without requiring admin form controls',async()=>{
+ const storage=new Map();
+ const publicPage=studio({readOnly:true,storage});
+ publicPage.server.settings={app_name:'Reading Library',primary_color:'#2548a0',secondary_color:'#5685d8',
+  button_style:'gradient',logo_url:'https://example.test/reading.png'};
+ publicPage.controller.init(publicPage.sb);
+ await tick();
+ assert.equal(publicPage.brandLabel.textContent,'Reading Library');
+ assert.equal(publicPage.brandLogo.src,'https://example.test/reading.png');
+ assert.match(publicPage.documentElement.style.get('--library-action'),/^linear-gradient/);
+ assert.equal(publicPage.server.writes,0);
+ const offline=studio({readOnly:true,storage});
+ offline.controller.init(null);
+ assert.equal(offline.brandLabel.textContent,'Reading Library');
+ assert.equal(offline.brandLogo.src,'https://example.test/reading.png');
 });
 
 test('name, presets, surface style and preview theme stay local until saved',async()=>{

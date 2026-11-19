@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-library-page-title="Reading Guide">
 <head>
 <link rel="stylesheet" href="assets/library-color-tokens.css?v=rc65">
 
@@ -18,7 +18,8 @@
 <title>Reading Guide · Book of the Week | Library Manager</title>
 <script>try{document.documentElement.dataset.theme=localStorage.getItem('library_manager_theme_v2')==='dark'?'dark':'light'}catch(_){document.documentElement.dataset.theme='light'}</script>
 <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.115.0/dist/umd/supabase.min.js"></script>
-<script defer src="assets/reading-guide.js?v=5.23.0"></script>
+<script defer src="assets/library-branding.js?v=rc78"></script>
+<script defer src="assets/reading-guide.js?v=rc78"></script>
   <link rel="stylesheet" href="assets/reading-v542.css?v=rc65">
 <link rel="stylesheet" href="assets/library-theme-rc62.css?v=rc65">
 <link rel="stylesheet" href="assets/library-theme-rc65-contrast.css?v=rc66">
@@ -33,10 +34,11 @@
 <link rel="stylesheet" href="assets/library-theme-rc74-ai-sidebar-collapse.css?v=rc74">
 <link rel="stylesheet" href="assets/library-theme-rc75-ai-compact-compose.css?v=rc75">
 <link rel="stylesheet" href="assets/library-theme-rc76-ai-chat-options.css?v=rc76">
+<link rel="stylesheet" href="assets/library-brand-rc78.css?v=rc78">
 </head>
 <body class="reading-guide-page">
 <a href="#guideMain" class="skip-link">Skip to the reading guide</a>
-<header class="spotlight-topbar"><div class="spotlight-container spotlight-top-inner"><a href="index.html" class="spotlight-brand"><span class="spotlight-brand-icon"><img src="assets/book-logo.svg" alt="" width="42" height="42"></span><span><strong>Library Manager</strong><small>Reading room</small></span></a><nav class="spotlight-top-actions" aria-label="Reading guide navigation"><a href="book-of-the-week.html" class="spotlight-back">← Book of the Week</a><button type="button" id="guideTheme" aria-label="Change appearance">◐</button></nav></div></header>
+<header class="spotlight-topbar"><div class="spotlight-container spotlight-top-inner"><a href="index.html" class="spotlight-brand" data-library-brand-home><span class="spotlight-brand-icon"><img src="assets/book-logo.svg" data-library-brand-logo alt="" width="42" height="42"></span><span><strong data-library-brand-name>Library Manager</strong><small>Reading room</small></span></a><nav class="spotlight-top-actions" aria-label="Reading guide navigation"><a href="book-of-the-week.html" class="spotlight-back">← Book of the Week</a><button type="button" id="guideTheme" aria-label="Change appearance">◐</button></nav></div></header>
 <main class="guide-main" id="guideMain">
  <div class="spotlight-container">
   <nav class="guide-crumb" aria-label="Breadcrumb"><a href="index.html">Library</a><span aria-hidden="true">/</span><a href="book-of-the-week.html">Book of the Week</a><span aria-hidden="true">/</span><span>Reading guide</span></nav>
@@ -62,6 +64,6 @@
   <section class="guide-outro"><div><span class="guide-step">NEXT CHAPTER</span><h2>Every great read starts with curiosity.</h2><p>Discover this title in our library, then come back next week for another recommendation.</p></div><a class="guide-primary" href="book-of-the-week.html">See Book of the Week ↗</a></section>
  </div>
 </main>
-<footer><div class="spotlight-container spotlight-footer-inner"><strong>Library Manager</strong><p>A reading guide grounded in the book's catalogue record. Descriptions are attributed to Open Library when available.</p><a href="index.html">Return to library ↗</a></div></footer>
+<footer><div class="spotlight-container spotlight-footer-inner"><strong data-library-brand-name>Library Manager</strong><p>A reading guide grounded in the book's catalogue record. Descriptions are attributed to Open Library when available.</p><a href="index.html">Return to library ↗</a></div></footer>
 </body>
 </html>

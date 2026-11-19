@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-library-page-title="Book of the Week">
 <head>
 <link rel="stylesheet" href="assets/library-color-tokens.css?v=rc65">
 
@@ -21,7 +21,8 @@
   <script defer src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.115.0/dist/umd/supabase.min.js"></script>
   <script defer src="assets/book-guide-format.js"></script>
   <script defer src="assets/book-guide.js?v=6.0.0-rc76"></script>
-<script defer src="assets/book-of-the-week.js"></script>
+<script defer src="assets/library-branding.js?v=rc78"></script>
+<script defer src="assets/book-of-the-week.js?v=rc78"></script>
   <script defer src="assets/public-contact.js"></script>
   <link rel="stylesheet" href="assets/book-of-week-v542.css?v=rc65">
 <link rel="stylesheet" href="assets/library-theme-rc62.css?v=rc65">
@@ -38,12 +39,13 @@
 <link rel="stylesheet" href="assets/library-theme-rc74-ai-sidebar-collapse.css?v=rc74">
 <link rel="stylesheet" href="assets/library-theme-rc75-ai-compact-compose.css?v=rc75">
 <link rel="stylesheet" href="assets/library-theme-rc76-ai-chat-options.css?v=rc76">
+<link rel="stylesheet" href="assets/library-brand-rc78.css?v=rc78">
 </head>
 <body data-public-spotlight="true">
   <a href="#main" class="skip-link">Skip to Book of the Week</a>
   <header class="spotlight-topbar">
     <div class="spotlight-container spotlight-top-inner">
-      <a href="index.html" class="spotlight-brand" aria-label="Library Manager home"><span class="spotlight-brand-icon" aria-hidden="true"><img src="assets/book-logo.svg" class="spotlight-brand-mark" alt="" width="44" height="44"></span><span><strong>Library Manager</strong><small>Discover &amp; explore</small></span></a>
+      <a href="index.html" class="spotlight-brand" data-library-brand-home aria-label="Library Manager home"><span class="spotlight-brand-icon" aria-hidden="true"><img src="assets/book-logo.svg" data-library-brand-logo class="spotlight-brand-mark" alt="" width="44" height="44"></span><span><strong data-library-brand-name>Library Manager</strong><small>Discover &amp; explore</small></span></a>
       <nav class="spotlight-top-actions" aria-label="Public navigation"><a href="#publicContactArea" class="spotlight-contact-link" hidden>Contact</a><a href="index.html" class="spotlight-back">← Back to library</a><button id="spotlightThemeToggle" type="button" aria-label="Toggle dark appearance" title="Change appearance"><span aria-hidden="true">◐</span></button></nav>
     </div>
   </header>
@@ -73,6 +75,6 @@
       <section class="spotlight-contact" id="publicContactArea" aria-labelledby="publicContactTitle"><div><span class="spotlight-kicker">STAY CONNECTED</span><h2 id="publicContactTitle">Keep the conversation going.</h2><p data-contact-detail="summary">Contact details and social accounts appear here when published by the library.</p><div class="public-contact-facts"><span data-contact-detail="email"></span><span data-contact-detail="phone"></span><span data-contact-detail="location"></span><span data-contact-detail="hours"></span></div></div><div class="public-social-links" data-public-socials aria-label="Connect with the library"></div></section>
     </div>
   </main>
-  <footer><div class="spotlight-container spotlight-footer-inner"><strong>Library Manager</strong><p>Discover a selected title from your library. Picks come from the real library collection. Editorial and AI suggestions are reviewed against inventory records.</p><a href="index.html">Back to the library ↗</a></div></footer>
+  <footer><div class="spotlight-container spotlight-footer-inner"><strong data-library-brand-name>Library Manager</strong><p>Discover a selected title from your library. Picks come from the real library collection. Editorial and AI suggestions are reviewed against inventory records.</p><a href="index.html">Back to the library ↗</a></div></footer>
 </body>
 </html>
