@@ -275,6 +275,7 @@ body #accountCard .scan-recognition-card {min-height:60px!important;}
 <link rel="stylesheet" href="assets/library-sidebar-rc77.css?v=rc77">
 <link rel="stylesheet" href="assets/library-brand-rc78.css?v=rc80">
 <link rel="stylesheet" href="assets/library-dark-rc81.css?v=rc81">
+<link rel="stylesheet" href="assets/library-review-rc82-mobile.css?v=rc82">
 </head>
 <body data-account="out">
 <a href="#mainContent" class="skip-link">Skip to main content</a>
@@ -2780,7 +2781,8 @@ async function restoreReviewDraftRaw(force=false){
    const existing=live.get(raw.saveRecordId);
    // Never overwrite live unsaved edits with an older cloud snapshot.
    const remote={...raw,reviewOwnerId:row.user_id,reviewStaged:true,matches:[]};
-   if(!existing||Number(raw.reviewUpdatedAt||0)>Number(existing.reviewUpdatedAt||0)){
+   const editingKey=document.activeElement?.closest?.('#batchResults [data-review-form]')?.dataset.reviewKey;
+   if(!existing||(String(raw.saveRecordId)!==editingKey&&Number(raw.reviewUpdatedAt||0)>Number(existing.reviewUpdatedAt||0))){
     live.set(raw.saveRecordId,remote);
    }
    reviewRemoteOwners.set(raw.saveRecordId,row.user_id);
@@ -3004,6 +3006,10 @@ function renderSavedAttentionReview(reviewQuery=''){
  }).join('');
  el.innerHTML=`<div class="saved-review-heading"><div><h3>Saved books needing attention <span>${attention.length}</span></h3><p>Correct these saved copies — no duplicates.</p></div><span class="review-view-count">${(savedAttentionPage-1)*SAVED_ATTENTION_PAGE_SIZE+1}–${Math.min(attention.length,savedAttentionPage*SAVED_ATTENTION_PAGE_SIZE)} of ${attention.length}</span></div><div class="saved-review-list">${cards}</div>${pages>1?`<nav class="review-pager" aria-label="Saved books requiring attention pages"><button type="button" class="light smallbtn" data-saved-attention-page="${savedAttentionPage-1}" ${savedAttentionPage===1?'disabled':''}>Previous</button><span>Page ${savedAttentionPage} of ${pages}</span><button type="button" class="light smallbtn" data-saved-attention-page="${savedAttentionPage+1}" ${savedAttentionPage===pages?'disabled':''}>Next</button></nav>`:''}`;
 }
+function reviewHasActiveEditor(){
+ const active=document.activeElement;
+ return !!(active?.matches?.('[data-batch-field]')&&active.closest('#batchResults [data-review-form]'));
+}
 function renderBatch(){
  updateScanProgressVisibility();
  if($('reviewAssignmentBar'))$('reviewAssignmentBar').hidden=!isAdmin()||!session?.user;
@@ -3047,7 +3053,9 @@ function renderBatch(){
  const counter=$('scanNeedsTitleCount');if(counter)counter.textContent=String(reviewItems.length);
  const readyCount=$('scanReadyCount');if(readyCount)readyCount.textContent=String(identified.length);
  const perPage=4,pages=Math.max(1,Math.ceil(unidentified.length/perPage));reviewPage=Math.min(Math.max(1,reviewPage),pages);
- if(reviewCardJobs.size)return;
+ // Background refreshes must never destroy a focused input or its mobile keyboard.
+ // Counts and status still update; the card rerenders once editing has ended.
+ if(reviewCardJobs.size||reviewHasActiveEditor())return;
  if(!unidentified.length){$('batchResults').innerHTML=priority!=='original'?'<div class="scan-empty-review"><strong>No books in this filter</strong><p>Choose All books to return to the full queue.</p></div>':reviewQuery?'<div class="scan-empty-review"><strong>No matching review books</strong><p>Try another title, ISBN, filename, author or shelf.</p></div>':'<div class="scan-empty-review"><span aria-hidden="true">✓</span><strong>All caught up</strong><p>No books are awaiting approval. Scan new covers whenever you are ready.</p></div>';scheduleReviewDraftSave();return}
  let h=`<div class="batch-review-toolbar"><strong>${unidentified.length}${reviewQuery?' matching':''} book${unidentified.length===1?'':'s'} waiting for review</strong><span>Page ${reviewPage} of ${pages}</span></div><div class="batch-book-list" role="list">`;
  unidentified.slice((reviewPage-1)*perPage,reviewPage*perPage).forEach(({x,i},position)=>{
@@ -4610,13 +4618,15 @@ async function acquireReviewEdit(form){
  if(reviewEditPending.has(key))return false;
  reviewEditPending.add(key);
  const fields=[...form.querySelectorAll('[data-batch-field]')];
- fields.forEach(f=>f.disabled=true);
+ // Leave the focused input enabled while requesting the lock; disabling it
+ // causes mobile keyboards to dismiss and drops the user's in-progress typing.
  setReviewFormFeedback(form,'Requesting exclusive editing access…','working');
  try{
   const {data,error}=await sb.rpc('library_claim_review_edit',{p_review_key:key});
   if(error)throw error;
   if(!data){setReviewFormFeedback(form,'Another administrator is editing this book. Wait for the lock to be released, then try again.','error');return false}
   reviewEditLeases.set(key,Date.now());
+  syncReviewFields(form,row);scheduleReviewDraftSave();
   fields.forEach(f=>f.disabled=false);
   setReviewFormFeedback(form,'Editing reserved for you for 15 minutes. Save your changes before the lease expires.','success');
   return true;
@@ -4637,10 +4647,12 @@ setInterval(()=>{for(const key of reviewEditLeases.keys())void renewReviewEdit(k
 $('batchResults').addEventListener('input',event=>{
  const field=event.target.closest('[data-batch-field]');if(!field||batchSaving)return;
  const form=field.closest('[data-review-form]');
- const row=reviewRowForForm(form);if(!row||row.saved||!reviewEditLeases.has(String(row.saveRecordId||'')))return;
+ const row=reviewRowForForm(form);if(!row||row.saved)return;
+ // Keep an immediate in-memory draft even while the asynchronous edit lease is pending.
+ // This avoids losing keystrokes during a background synchronization.
  syncReviewFields(form,row);row.error='';row.saveError='';row.reviewApproval='';
  updateReviewFormState(form,row);setReviewFormFeedback(form,'');
- scheduleReviewDraftSave();
+ if(reviewEditLeases.has(String(row.saveRecordId||'')))scheduleReviewDraftSave();
 });
 $('batchResults').addEventListener('change',event=>{
  const field=event.target.closest('[data-batch-field]');
@@ -4650,7 +4662,8 @@ $('batchResults').addEventListener('change',event=>{
   const row=reviewRowForForm(form);if(!row||row.saved)return;syncReviewFields(form,row);
   row.error='';row.saveError='';row.reviewApproval='';
   row.duplicate=batchDuplicate(row.barcode,row);
-  updateReviewFormState(form,row);scheduleReviewDraftSave();
+  updateReviewFormState(form,row);
+  if(reviewEditLeases.has(String(row.saveRecordId||'')))scheduleReviewDraftSave();
   // Crucial on iOS/Android: NO renderBatch() here. Replacing the card on blur
   // cancels a pending touch/click of its Approve & save button.
   return;
