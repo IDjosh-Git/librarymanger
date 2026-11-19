@@ -10,6 +10,13 @@ This document consolidates the original release notes and theme audit history fr
 
 ## Release history
 
+## RC77 — Sidebar and App Appearance Studio
+
+- Match the branding and Book Lookup disclosures with a chevron that follows the actual expanded state.
+- Initialize branding after the page and deferred script are ready. Preview identity, logo, palette, and surface style before saving shared settings.
+- Allow administrators to discard unsaved changes, preview defaults, or stage logo removal. Keep appearance mode and corner controls local to the preview.
+- Reuse the existing shared branding settings and logo storage.
+
 # RC62 — Theme consolidation and static audit
 
 Approved palette: primary #144e58, secondary #1d727a, added gradient accent #49a6a3.

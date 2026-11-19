@@ -1,0 +1,138 @@
+/* Sidebar disclosures and the shared-branding editor. */
+body #accountCard :is(.branding-settings > summary,.lookupbox > summary.lookuphead) {
+  min-height:52px!important;
+  align-items:center;
+  gap:10px;
+}
+body #accountCard :is(.premium-settings-text,.lookuphead-copy) {
+  min-width:0;
+  overflow-wrap:anywhere;
+}
+body #accountCard .sidebar-settings-chevron {
+  flex:0 0 30px;
+  display:grid;
+  place-items:center;
+  width:30px;
+  height:30px;
+  margin-inline-start:auto;
+  border:1px solid var(--lm65-border);
+  border-radius:8px;
+  background:var(--lm65-soft);
+  color:var(--lm65-ink);
+  pointer-events:none;
+}
+body #accountCard .sidebar-settings-chevron::before {
+  content:"";
+  box-sizing:border-box;
+  width:9px;
+  height:9px;
+  border-inline-end:2px solid;
+  border-block-end:2px solid;
+  transform:translateY(-2px) rotate(45deg);
+  transition:transform .18s ease;
+}
+body #accountCard :is(.branding-settings,.lookupbox)[open] > summary .sidebar-settings-chevron::before {
+  transform:translateY(2px) rotate(225deg);
+}
+body #accountCard :is(.branding-settings > summary,.lookupbox > summary.lookuphead):focus-visible {
+  outline:2px solid var(--lm65-ink);
+  outline-offset:2px;
+}
+@media(prefers-reduced-motion:reduce) {
+  body #accountCard .sidebar-settings-chevron::before {transition:none;}
+}
+
+body #accountCard .branding-form {
+  display:grid;
+  gap:12px;
+  min-width:0;
+  padding:12px!important;
+  color:var(--lm65-ink);
+}
+#accountCard .brand-fields {
+  min-width:0;
+  margin:0;
+  padding:0;
+  border:0;
+  display:grid;
+  gap:14px;
+}
+#accountCard .brand-sr-only {
+  position:absolute;
+  width:1px;
+  height:1px;
+  padding:0;
+  overflow:hidden;
+  clip-path:inset(50%);
+  white-space:nowrap;
+}
+#accountCard :is(.brand-field-group,.appearance-studio) {
+  min-width:0;
+  display:grid;
+  gap:8px;
+}
+body #accountCard .appearance-studio {
+  padding:12px 0 0;
+  border:0;
+  border-top:1px solid var(--lm65-border);
+  border-radius:0;
+  background:transparent;
+}
+#accountCard .appearance-studio-head h3 {margin:0;color:var(--lm65-ink);font-size:.95rem;}
+#accountCard .appearance-studio-head p,
+#accountCard :is(#brandLogoHelp,#brandStatus) {
+  margin:0;
+  color:var(--lm65-muted);
+  font-size:.8rem;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+#accountCard :is(.appearance-presets,.branding-colors,.appearance-preview-controls) {
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(min(100%,100px),1fr));
+  gap:8px;
+}
+#accountCard .brand-fields label {margin:0;color:var(--lm65-ink);line-height:1.4;}
+#accountCard .brand-fields :is(input,select,button) {
+  box-sizing:border-box;
+  max-width:100%;
+  min-width:0;
+  min-height:44px;
+}
+#accountCard .brand-fields :is(input,select) {width:100%;}
+#accountCard .brand-fields input[type="color"] {padding:5px;cursor:pointer;}
+#accountCard .appearance-presets .appearance-preset {
+  display:flex;
+  justify-content:flex-start;
+  align-items:center;
+  gap:7px;
+  background:var(--lm65-surface)!important;
+  color:var(--lm65-ink)!important;
+  border:1px solid var(--lm65-border)!important;
+  box-shadow:none!important;
+}
+#accountCard .appearance-presets .appearance-preset[aria-pressed="true"] {
+  border-color:var(--lm65-ink)!important;
+  box-shadow:inset 0 0 0 1px var(--lm65-ink)!important;
+}
+#accountCard .appearance-preview {min-width:0;padding:12px;overflow-wrap:anywhere;}
+#accountCard .appearance-preview-mark {
+  flex:0 0 36px;
+  overflow:hidden;
+  background:var(--preview-action);
+  color:var(--preview-on-brand);
+}
+#accountCard .appearance-preview-mark img {width:100%;height:100%;object-fit:contain;padding:3px;box-sizing:border-box;}
+#accountCard .appearance-preview-primary {background:var(--preview-action);color:var(--preview-on-brand);}
+#accountCard .appearance-preview[data-corners="soft"] .appearance-preview-mark {border-radius:5px;}
+#accountCard .appearance-preview[data-corners="pill"] .appearance-preview-mark {border-radius:50%;}
+#accountCard .brand-actions {
+  display:grid;
+  gap:8px;
+  padding-top:12px;
+  border-top:1px solid var(--lm65-border);
+}
+#accountCard .brand-actions button {width:100%;white-space:normal;}
+@media(max-width:600px) {
+  #accountCard .brand-fields :is(input:not([type="color"]),select) {font-size:16px;}
+}
