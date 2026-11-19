@@ -10,6 +10,12 @@ This document consolidates the original release notes and theme audit history fr
 
 ## Release history
 
+## RC79 — Palette-derived legacy colours
+
+- Replaced the duplicate fixed legacy branding rules with 1,920 palette-derived colours, retaining the original lightness and opacity where possible.
+- Applied the custom palette to soft surfaces, table highlights, sidebar settings icons, and Library AI selection and focus styles.
+- Kept success, warning, and danger tokens outside the palette overrides. The original colour values remain a fallback where relative CSS colours are unavailable.
+
 ## RC78 — Shared branding across Library Manager
 
 - Apply the saved library name, logo, palette, and surface style on Book of the Week and Reading Guide, as well as in the main workspace.

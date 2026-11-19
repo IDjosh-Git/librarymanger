@@ -85,3 +85,69 @@
   color:var(--library-brand-ink)!important;
   border-color:var(--app-brand-border)!important;
 }
+
+/* Derive the existing soft surfaces and borders from the published palette. */
+:root[data-brand-custom] {
+  --lm65-ink:#19242f;
+  --lm65-muted:#475569;
+  --lm65-surface:#fff;
+  --lm65-input:#fff;
+  --lm65-soft:var(--app-brand-soft);
+  --lm65-border:var(--app-brand-border);
+}
+:root[data-brand-custom][data-theme="dark"] {
+  --lm65-ink:#edf2f7;
+  --lm65-muted:#c9d2de;
+  --lm65-surface:color-mix(in srgb,#14212e 88%,var(--library-primary));
+  --lm65-input:color-mix(in srgb,#182736 90%,var(--library-secondary));
+  --lm65-soft:var(--app-brand-soft);
+  --lm65-border:var(--app-brand-border);
+}
+:root[data-brand-custom] {
+  --theme-ink:var(--lm65-ink);
+  --theme-muted:var(--lm65-muted);
+  --theme-surface:var(--lm65-surface);
+  --theme-surface-soft:var(--lm65-soft);
+  --theme-border:var(--lm65-border);
+  --lp-gradient:var(--library-action);
+}
+:root[data-brand-custom] .book-guide-root,
+:root[data-brand-custom][data-theme] .book-guide-root {
+  --ai-fg:var(--lm65-ink);
+  --ai-muted:var(--lm65-muted);
+  --ai-bg:var(--lm65-surface);
+  --ai-surface:var(--lm65-soft);
+  --ai-border:var(--lm65-border);
+  --ai-control:var(--lm65-input);
+}
+:root[data-brand-custom][data-theme] .book-guide-root .book-guide-thread-item[aria-current="true"] {
+  background:var(--app-brand-soft)!important;
+  border-color:var(--app-brand-border)!important;
+  box-shadow:inset 3px 0 0 var(--library-secondary)!important;
+}
+:root[data-brand-custom][data-theme] .book-guide-root .book-guide-settings[open] > summary {
+  border-color:var(--app-brand-border)!important;
+  box-shadow:0 0 0 2px var(--app-brand-soft-strong)!important;
+}
+:root[data-brand-custom][data-theme] .book-guide-root .book-guide-sidebar .book-guide-settings :is(summary,input,select):focus-visible {
+  outline-color:var(--app-focus-ring)!important;
+}
+:root[data-brand-custom][data-theme] .book-guide-root :is(
+  .book-guide-side-new > span[aria-hidden="true"],.book-guide-reset-chat > svg
+) {
+  background:var(--app-brand-soft)!important;
+  color:var(--library-brand-ink)!important;
+}
+:root[data-brand-custom][data-theme] body #accountCard :is(
+  .premium-settings-emblem,.lookuphead-icon,.sidebar-settings-chevron
+) {
+  background:var(--app-brand-soft)!important;
+  color:var(--library-brand-ink)!important;
+  border-color:var(--app-brand-border)!important;
+}
+:root[data-brand-custom][data-theme="dark"] :is(.tablewrap,.scan-summary-table,.admin-directory-table) tbody tr:hover {
+  background-color:var(--app-brand-soft-strong);
+}
+:root[data-brand-custom] :is(.inventory-inline-input,#inventory input):focus-visible {
+  outline-color:var(--app-focus-ring)!important;
+}

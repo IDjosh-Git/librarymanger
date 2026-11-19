@@ -87,6 +87,9 @@
  };
  for(const [key,value] of Object.entries(semantic))root.style.setProperty(key,value);
  root.dataset.brandButtons=state.button_style==='solid'?'solid':'gradient';
+ if(a.toLowerCase()!==DEFAULT.primary_color||b.toLowerCase()!==DEFAULT.secondary_color){
+  root.dataset.brandCustom='';
+ }else delete root.dataset.brandCustom;
  const name=safeName(state.app_name)||DEFAULT.app_name;
  document.querySelectorAll('[data-library-brand-name]').forEach(el=>el.textContent=name);
  document.querySelectorAll('[data-library-brand-logo]').forEach(img=>{img.src=safeLogo(state.logo_url)||'assets/book-logo.svg';});

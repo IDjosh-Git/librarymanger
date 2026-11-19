@@ -76,7 +76,7 @@ function studio({readOnly=false, storage=new Map()}={}) {
 
 test('branding controls start after the deferred script and lookup uses a native disclosure',()=>{
  const html=read('index.html');
- assert.match(html,/<script defer src="assets\/library-branding.js\?v=rc78">/);
+ assert.match(html,/<script defer src="assets\/library-branding.js\?v=rc79">/);
  assert.match(html,/document\.addEventListener\('DOMContentLoaded',\(\)=>\{\s*const activeRole=[^\n]+\n\s*window\.LibraryBranding\?\.init\(sb,activeRole\?session:null,activeRole\)/);
  assert.match(html,/<details class="lookupbox">\s*<summary class="lookuphead">[^\n]+sidebar-settings-chevron/);
  assert.match(read('assets/library-sidebar-rc77.css'),/\.lookupbox\)\[open\] > summary .*sidebar-settings-chevron::before/);
@@ -93,10 +93,29 @@ test('shared branding CSS and the read-only loader are wired into both public pa
   const html=read(page+'.html');
   assert(html.includes('data-library-brand-name'));
   assert(html.includes('data-library-brand-logo'));
-  assert(html.includes('library-brand-rc78.css?v=rc78'));
-  assert(html.indexOf('library-branding.js?v=rc78')<html.indexOf(page+'.js?v=rc78'));
+  assert(html.includes('library-brand-rc78.css?v=rc79'));
+  assert(html.indexOf('library-branding.js?v=rc79')<html.indexOf(page+'.js?v=rc78'));
   assert.match(read('assets/'+page+'.js'),/LibraryBranding\?\.init\(window\.supabase\?\.createClient/);
  }
+});
+
+test('legacy brand tokens inherit the custom palette and semantic status colors stay fixed',()=>{
+ const css=read('assets/library-color-tokens.css');
+ const names=section=>[...section.matchAll(/(--legacy-color-\d+):/g)].map(match=>match[1]);
+ const palette=names(css.split('/* brand-or-info:')[1].split('/* status-success:')[0]);
+ const statuses=names(css.split('/* status-success:')[1].split('/* RC57:')[0]);
+ const dynamic=css.slice(css.indexOf(':root[data-brand-custom]'));
+ const overrides=new Set(names(dynamic));
+ assert(palette.length>1800);
+ assert(statuses.length>400);
+ assert.deepEqual(overrides,new Set(palette));
+ assert(statuses.every(name=>!overrides.has(name)));
+ assert.match(dynamic,/oklch\(from var\(--library-primary\)/);
+ assert.match(dynamic,/oklch\(from var\(--library-secondary\)/);
+ for(const page of ['index','reading-guide','book-of-the-week']){
+  assert(read(page+'.html').includes('library-color-tokens.css?v=rc79'));
+ }
+ assert(read('sw.js').includes('/assets/library-color-tokens.css?v=rc79'));
 });
 
 test('reading pages load a published palette without requiring admin form controls',async()=>{
@@ -108,6 +127,7 @@ test('reading pages load a published palette without requiring admin form contro
  await tick();
  assert.equal(publicPage.brandLabel.textContent,'Reading Library');
  assert.equal(publicPage.brandLogo.src,'https://example.test/reading.png');
+ assert.equal(publicPage.documentElement.dataset.brandCustom,'');
  assert.match(publicPage.documentElement.style.get('--library-action'),/^linear-gradient/);
  assert.equal(publicPage.server.writes,0);
  const offline=studio({readOnly:true,storage});
@@ -121,6 +141,7 @@ test('name, presets, surface style and preview theme stay local until saved',asy
  controller.init(sb,admin,'admin');
  await tick();
  assert.equal(brandLabel.textContent,'Library One');
+ assert(!('brandCustom' in documentElement.dataset));
  ids.brandAppName.value='New name';
  ids.brandAppName.fire('input');
  preset.fire('click');
@@ -142,6 +163,7 @@ test('name, presets, surface style and preview theme stay local until saved',asy
  await ids.brandForm.fire('submit');
  assert.equal(brandLabel.textContent,'New name');
  assert.equal(server.settings.primary_color,'#6246a5');
+ assert.equal(documentElement.dataset.brandCustom,'');
  assert.equal(server.writes,1);
  documentElement.dataset.theme='dark';
  themeChanged();
