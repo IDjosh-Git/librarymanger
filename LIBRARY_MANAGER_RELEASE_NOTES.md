@@ -10,6 +10,18 @@ This document consolidates the original release notes and theme audit history fr
 
 ## Release history
 
+## RC81 — Review and workspace contrast
+
+- Pair dark-mode backgrounds and foregrounds for Review cards, inputs, expandable tools, and status messages.
+- Apply shared dark surfaces to dashboard and inventory cards, circulation forms, and table headers.
+- Keep the reading pages' body and card text readable in dark mode.
+
+## RC80 — Dark-mode icon and text contrast
+
+- Pair sidebar, dashboard, mobile navigation, scan, and Library AI foregrounds with their actual backgrounds.
+- Keep soft surfaces predominantly neutral and use a matching readable foreground for each brand tint.
+- Check contrast with very dark, very light, and saturated custom palettes.
+
 ## RC79 — Palette-derived legacy colours
 
 - Replaced the duplicate fixed legacy branding rules with 1,920 palette-derived colours, retaining the original lightness and opacity where possible.

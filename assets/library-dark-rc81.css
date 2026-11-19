@@ -1,0 +1,162 @@
+/* Dark-mode pairs for workspace content, review states, and menu controls. */
+:root[data-theme="dark"] {
+  --workspace-panel:var(--lm65-surface,#142e36);
+  --workspace-raised:color-mix(in srgb,var(--workspace-panel) 90%,var(--library-secondary,#1d727a));
+  --workspace-field:var(--lm65-input,#193842);
+  --workspace-ink:var(--lm65-ink,#edf2f7);
+  --workspace-muted:var(--lm65-muted,#c9d2de);
+  --workspace-focus:var(--app-focus-ring,#8de2de);
+  --workspace-line:color-mix(in srgb,var(--workspace-panel) 58%,var(--workspace-muted));
+  --state-success-bg:#163a30;--state-success-ink:#b1f2cb;
+  --state-warning-bg:#412c16;--state-warning-ink:#ffe0a5;
+  --state-error-bg:#492633;--state-error-ink:#ffd4db;
+  --state-info-bg:#23384d;--state-info-ink:#d5eaff;
+}
+:root[data-theme="dark"] #libraryArea,
+:root[data-theme="dark"] #libraryArea #review {
+  --ink:var(--workspace-ink);
+  --text:var(--workspace-ink);
+  --muted:var(--workspace-muted);
+  --surface:var(--workspace-panel);
+  --surface2:var(--workspace-raised);
+  --card:var(--workspace-panel);
+  --border:var(--workspace-line);
+  --soft:var(--workspace-raised);
+}
+:root[data-theme="dark"] #libraryArea :is(
+  .dashboard-surface,.dashboard-metric,.inventory-workspace-card,.book-card,
+  .scanned-data-card,.inventory-command-card,.inventory-filter-dialog,.column-filters-panel,
+  .automation-dialog,.reservation-dialog,.circulation-form-modern
+) {
+  background:var(--workspace-panel)!important;
+  color:var(--workspace-ink)!important;
+  border-color:var(--workspace-line)!important;
+}
+:root[data-theme="dark"] #libraryArea :is(
+  .dashboard-card-heading h3,.inventory-panel-heading h3,.book-card h3,
+  .scanned-data-heading h3,.circulation-form-modern label,.dashboard-metric strong
+) {color:var(--workspace-ink)!important;}
+:root[data-theme="dark"] #libraryArea :is(
+  .dashboard-card-heading p,.dashboard-metric small,.book-author,.table-meta,
+  .column-filter-help
+),
+:root[data-theme="dark"] #libraryArea .inventory-inline-input::placeholder {
+  color:var(--workspace-muted)!important;opacity:1;
+}
+:root[data-theme="dark"] #libraryArea :is(table,.vl-table-wrap) :is(th,[role="columnheader"]) {
+  background:var(--workspace-raised)!important;
+  color:var(--workspace-ink)!important;
+  border-color:var(--workspace-line)!important;
+}
+:root[data-theme="dark"] #libraryArea :is(
+  .inventory-inline-input,.column-filters-panel input,.column-filters-panel select,
+  .circulation-form-modern input,.circulation-form-modern select
+) {
+  background:var(--workspace-field)!important;
+  color:var(--workspace-ink)!important;
+  border-color:var(--workspace-line)!important;
+}
+:root[data-theme="dark"] #libraryArea :is(
+  .dashboard-hero,.hero-library,.shelf-page-hero,.review-workspace-hero,.scanned-hero,
+  .circulation-hero,.notification-hero,.public-settings-hero,.admin-directory-hero,.vl-hero
+) {
+  background:var(--library-action,#1d727a)!important;
+  color:var(--library-action-text,#fff)!important;
+}
+:root[data-theme="dark"] #libraryArea :is(
+  .dashboard-hero,.hero-library,.shelf-page-hero,.review-workspace-hero,.scanned-hero,
+  .circulation-hero,.notification-hero,.public-settings-hero,.admin-directory-hero,.vl-hero
+) :is(h1,h2,p,.eyebrow,.vl-kicker,.shelf-kicker) {color:var(--library-action-text,#fff)!important;}
+:root[data-theme="dark"] #libraryArea #shelfScan .shelf-page-copy,
+:root[data-theme="dark"] #libraryArea #review .review-workspace-hero > div:first-child {
+  background:none!important;
+}
+
+/* Review is a mix of legacy cards, expandable tools, and live status badges. */
+:root[data-theme="dark"] #libraryArea #review :is(
+  .review-editor-section,.scan-title-review-card,.saved-review-panel,.saved-review-book,
+  .scan-tool-card,.scan-empty-review,.multi-photo-inputs label
+) {
+  background:var(--workspace-panel)!important;
+  color:var(--workspace-ink)!important;
+  border-color:var(--workspace-line)!important;
+}
+:root[data-theme="dark"] #libraryArea #review :is(
+  .review-stats > span,.review-simple-steps > span,.review-assist-toolbar,.review-assignment-bar,
+  .review-priority-controls,.batch-review-toolbar,.review-details-hint,.multi-photo-review,
+  .review-cover-column .batch-book-photo,.review-optional-tools[open],.scan-advanced-options[open],
+  .scan-card-more > summary,.review-optional-tools > summary,.scan-advanced-options > summary,
+  .scan-extra-exports > summary,.ocr-text > summary,.ocr-text > pre
+) {
+  background:var(--workspace-raised)!important;
+  color:var(--workspace-ink)!important;
+  border-color:var(--workspace-line)!important;
+}
+:root[data-theme="dark"] #libraryArea #review :is(
+  .scan-review-heading h3,.batch-book-source strong,.batch-book-field,
+  .review-assist-copy strong,.scan-advanced-heading strong,.scan-advanced-intro h4,
+  .multi-photo-heading strong,.scan-tool-card h4,.review-save-instructions strong,
+  .batch-review-toolbar strong,.review-stats > span strong
+) {color:var(--workspace-ink)!important;}
+:root[data-theme="dark"] #libraryArea #review :is(
+  .batch-path,.batch-book-field small,.review-cover-caption,.review-optional-label,.review-simple-note,
+  .review-assist-copy small,.multi-photo-heading small,.review-save-instructions span,
+  .review-card-lookup-status,.scan-advanced-heading small,.scan-tool-card p,.scan-advanced-intro p
+) {color:var(--workspace-muted)!important;opacity:1;}
+:root[data-theme="dark"] #libraryArea #review :is(.batch-book-field input,.batch-book-field select,.review-search-input input,.review-priority-controls select) {
+  background:var(--workspace-field)!important;
+  color:var(--workspace-ink)!important;
+  border-color:var(--workspace-line)!important;
+}
+:root[data-theme="dark"] #libraryArea #review :is(input,textarea)::placeholder {
+  color:var(--workspace-muted)!important;opacity:1;
+}
+:root[data-theme="dark"] #libraryArea #review :is(.review-simple-steps b,.scan-title-review-number,.review-assist-symbol,.scan-advanced-emblem,.scan-tool-symbol) {
+  background:var(--app-brand-soft,#1b3c45)!important;
+  color:var(--app-on-soft,#fff)!important;
+}
+:root[data-theme="dark"] #libraryArea #review :is(summary > .app-icon,summary .review-search-icon,button .app-icon) {
+  color:inherit!important;stroke:currentColor!important;
+}
+:root[data-theme="dark"] #libraryArea #review :is(.review-hero-actions button,.review-optional-tools button.light,.review-pager button) {
+  background:var(--workspace-field)!important;
+  color:var(--workspace-ink)!important;
+  border-color:var(--workspace-line)!important;
+}
+:root[data-theme="dark"] #libraryArea #review :is(.review-auto-fill,.review-smart-primary) {
+  background:var(--library-action,#1d727a)!important;
+  color:var(--library-action-text,#fff)!important;
+}
+:root[data-theme="dark"] #libraryArea #review :is(.review-approve-button,#reviewSaveCorrected) {
+  background:var(--state-success-bg)!important;
+  color:var(--state-success-ink)!important;
+  border-color:var(--state-success-ink)!important;
+}
+:root[data-theme="dark"] #libraryArea #review :is(.batch-book-state.ready,.review-save-feedback[data-status="success"]) {
+  background:var(--state-success-bg)!important;color:var(--state-success-ink)!important;border-color:currentColor!important;
+}
+:root[data-theme="dark"] #libraryArea #review :is(.batch-book-state.incomplete,.review-duplicate-warning) {
+  background:var(--state-warning-bg)!important;color:var(--state-warning-ink)!important;border-color:currentColor!important;
+}
+:root[data-theme="dark"] #libraryArea #review :is(.review-save-feedback[data-status="error"],.review-sync-status:is(.err,.error),.review-delete-image.premium-delete) {
+  background:var(--state-error-bg)!important;color:var(--state-error-ink)!important;border-color:currentColor!important;
+}
+:root[data-theme="dark"] #libraryArea #review :is(.review-save-feedback[data-status="working"],.review-save-feedback[data-status="info"],.review-shared-tag) {
+  background:var(--state-info-bg)!important;color:var(--state-info-ink)!important;border-color:currentColor!important;
+}
+:root[data-theme="dark"] #libraryArea #review :is(button,input,select,textarea,summary,a):focus-visible {
+  outline-color:var(--workspace-focus)!important;
+}
+
+/* Reading pages have separate legacy card rules. Keep their body copy readable. */
+:root[data-theme="dark"] body :is(.spotlight-feature,.weekly-reason,.weekly-detail,.guide-panel,.guide-aside-card,.guide-outro) {
+  background:var(--workspace-panel)!important;
+  color:var(--workspace-ink)!important;
+  border-color:var(--workspace-line)!important;
+}
+:root[data-theme="dark"] body :is(.spotlight-feature,.weekly-reason,.weekly-detail,.guide-panel,.guide-aside-card,.guide-outro) :is(h1,h2,h3,dt) {
+  color:var(--workspace-ink)!important;
+}
+:root[data-theme="dark"] body :is(.spotlight-feature,.weekly-reason,.weekly-detail,.guide-panel,.guide-aside-card,.guide-outro) :is(p,dd,small) {
+  color:var(--workspace-muted)!important;
+}

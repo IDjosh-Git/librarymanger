@@ -151,3 +151,80 @@
 :root[data-brand-custom] :is(.inventory-inline-input,#inventory input):focus-visible {
   outline-color:var(--app-focus-ring)!important;
 }
+
+/* Pair foregrounds with the surfaces beneath them, independently of palette hue. */
+:root[data-brand-buttons][data-theme="dark"] body[data-account] #accountCard.auth .workspace-nav .workspace-nav-section
+  :is(button.tab,.workspace-nav-action):not(:is(.active,[aria-current="page"])) {
+  color:var(--lm65-ink)!important;
+}
+:root[data-brand-buttons][data-theme="dark"] body[data-account] #accountCard.auth .workspace-nav .workspace-nav-section
+  :is(button.tab,.workspace-nav-action):not(:is(.active,[aria-current="page"])) > :is(span:first-of-type,.app-icon) {
+  color:inherit!important;
+}
+:root[data-brand-buttons][data-theme="dark"] body #accountCard :is(.account-tools,.lookupbox) > summary {
+  color:var(--lm65-ink)!important;
+}
+:root[data-brand-buttons][data-theme="dark"] body #accountCard :is(
+  .account-tools-label,.lookuphead-copy strong,.premium-settings-text strong
+) {color:var(--lm65-ink)!important;}
+:root[data-brand-buttons][data-theme="dark"] body #accountCard :is(
+  .lookuphead-copy small,.premium-settings-text small
+) {color:var(--lm65-muted)!important;}
+:root[data-brand-buttons][data-theme="dark"] body #accountCard :is(
+  .workspace-spotlight-link,.account-tools > summary,.lookupbox > summary
+) > .app-icon {color:inherit!important;stroke:currentColor!important;}
+
+:root[data-brand-buttons][data-theme="dark"] body :is(#dashboard,#inventory,#shelfScan,#review,#accountCard) :is(
+  .dashboard-metric-icon,.dashboard-activity-icon,.overview-insights-summary-icon,
+  .quickadd-icon,.premium-upload-icon,.scan-tool-symbol,.scan-advanced-emblem,.review-assist-symbol,
+  .saved-review-icon,.premium-settings-emblem,.lookuphead-icon,.sidebar-settings-chevron
+) {
+  background:var(--app-brand-soft)!important;
+  color:var(--app-on-soft)!important;
+}
+:root[data-brand-buttons][data-theme="dark"] body :is(
+  .dashboard-metric-icon,.dashboard-activity-icon,.overview-insights-summary-icon,
+  .quickadd-icon,.premium-upload-icon,.premium-settings-emblem,.lookuphead-icon,.review-assist-symbol
+) svg {
+  color:inherit!important;
+  stroke:currentColor!important;
+}
+:root[data-brand-buttons][data-theme="dark"] body #libraryArea :is(
+  .inventory-panel-heading h3,.inventory-stats-grid .stat b,.dashboard-metric strong,
+  .batch-head h3,.batch-picker label,.scan-review-heading h3,.scanned-data-heading h3
+) {color:var(--lm65-ink)!important;}
+:root[data-brand-buttons][data-theme="dark"] body #libraryArea :is(
+  .dashboard-link,.overview-kicker,.dashboard-section-header .eyebrow,.dashboard-card-heading .eyebrow,
+  .inventory-copy-expand summary,.inventory-manage-copies,.column-filters-heading .eyebrow,
+  .column-value-picker-heading .eyebrow,.compact-insight-toggle,.compact-inline-help summary,
+  .scan-review-heading .eyebrow,.batch-kicker,.scan-advanced-label,.scan-tool-eyebrow
+) {color:var(--library-brand-ink)!important;}
+
+:root[data-brand-buttons][data-theme="dark"] body .bottomnav button:not(.active) {
+  background:var(--lm65-soft)!important;
+  color:var(--lm65-ink)!important;
+}
+:root[data-brand-buttons][data-theme="dark"] body .bottomnav button.active {
+  background:var(--library-action)!important;
+  color:var(--library-action-text)!important;
+}
+:root[data-brand-buttons][data-theme="dark"] body .bottomnav button .app-icon {
+  color:inherit!important;
+  stroke:currentColor!important;
+}
+:root[data-brand-buttons][data-theme="dark"] body .book-guide-root .book-guide-options-glyph {
+  color:var(--app-on-soft-strong)!important;
+}
+:root[data-brand-buttons][data-theme="dark"] body .book-guide-root :is(
+  .book-guide-options-glyph,.book-guide-thread-item,.book-guide-sidebar-head button
+) svg {
+  color:inherit!important;
+  stroke:currentColor!important;
+}
+:root[data-brand-buttons][data-theme="dark"] body :is(
+  .lookup-key-input > .app-icon,.reservation-search-wrap > svg,
+  .sidebar-title > .app-icon,.inventory-stats-grid .stat .app-icon
+) {
+  color:var(--library-brand-ink)!important;
+  stroke:currentColor!important;
+}

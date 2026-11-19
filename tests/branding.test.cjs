@@ -7,6 +7,13 @@ const vm = require('node:vm');
 const root = path.join(__dirname, '..');
 const read = file => fs.readFileSync(path.join(root, file), 'utf8');
 const tick = () => new Promise(resolve => setImmediate(resolve));
+const luminance = color => [1,3,5].map(i=>parseInt(color.slice(i,i+2),16)/255)
+ .map(x=>x<=.04045?x/12.92:((x+.055)/1.055)**2.4)
+ .reduce((total,value,i)=>total+value*[.2126,.7152,.0722][i],0);
+function ratio(a,b){
+ const x=luminance(a),y=luminance(b);
+ return (Math.max(x,y)+.05)/(Math.min(x,y)+.05);
+}
 
 function node(value = '') {
  const handlers = new Map();
@@ -76,7 +83,7 @@ function studio({readOnly=false, storage=new Map()}={}) {
 
 test('branding controls start after the deferred script and lookup uses a native disclosure',()=>{
  const html=read('index.html');
- assert.match(html,/<script defer src="assets\/library-branding.js\?v=rc79">/);
+ assert.match(html,/<script defer src="assets\/library-branding.js\?v=rc80">/);
  assert.match(html,/document\.addEventListener\('DOMContentLoaded',\(\)=>\{\s*const activeRole=[^\n]+\n\s*window\.LibraryBranding\?\.init\(sb,activeRole\?session:null,activeRole\)/);
  assert.match(html,/<details class="lookupbox">\s*<summary class="lookuphead">[^\n]+sidebar-settings-chevron/);
  assert.match(read('assets/library-sidebar-rc77.css'),/\.lookupbox\)\[open\] > summary .*sidebar-settings-chevron::before/);
@@ -93,9 +100,41 @@ test('shared branding CSS and the read-only loader are wired into both public pa
   const html=read(page+'.html');
   assert(html.includes('data-library-brand-name'));
   assert(html.includes('data-library-brand-logo'));
-  assert(html.includes('library-brand-rc78.css?v=rc79'));
-  assert(html.indexOf('library-branding.js?v=rc79')<html.indexOf(page+'.js?v=rc78'));
+  assert(html.includes('library-brand-rc78.css?v=rc80'));
+  assert(html.indexOf('library-branding.js?v=rc80')<html.indexOf(page+'.js?v=rc78'));
   assert.match(read('assets/'+page+'.js'),/LibraryBranding\?\.init\(window\.supabase\?\.createClient/);
+ }
+});
+
+test('dark-theme icons and labels receive readable foregrounds for extreme branding palettes',()=>{
+ const {documentElement,controller}=studio();
+ documentElement.dataset.theme='dark';
+ const css=read('assets/library-brand-rc78.css');
+ assert.match(css,/\.lookuphead-icon,\.sidebar-settings-chevron\s*\)\s*\{\s*background:var\(--app-brand-soft\)!important;\s*color:var\(--app-on-soft\)!important;/);
+ assert.match(css,/\.bottomnav button.active[\s\S]*?color:var\(--library-action-text\)!important/);
+ for(const color of ['#111014','#000000','#ffffff','#6543b0','#004002','#fbca00']){
+  controller.apply({primary_color:color,secondary_color:'#8ab4f8',button_style:'solid'});
+  const value=key=>documentElement.style.get(key);
+  assert(ratio(value('--app-brand-soft'),value('--app-on-soft'))>=4.5,color);
+  assert(ratio(value('--app-brand-soft-strong'),value('--app-on-soft-strong'))>=4.5,color);
+  assert(ratio(value('--app-brand-soft-strong'),value('--library-brand-ink'))>=4.5,
+   color+' on '+value('--app-brand-soft-strong')+' with '+value('--library-brand-ink'));
+  assert(ratio(value('--library-action'),value('--library-action-text'))>=4.5,color);
+ }
+});
+
+test('review dark-mode states, fields and surfaces use explicit contrasting pairs',()=>{
+ const css=read('assets/library-dark-rc81.css');
+ const palette=new Map([...css.matchAll(/(--state-[a-z-]+):(#[\da-f]{6})/gi)].map(match=>match.slice(1)));
+ for(const state of ['success','warning','error','info']){
+  assert(ratio(palette.get('--state-'+state+'-bg'),palette.get('--state-'+state+'-ink'))>=4.5,state);
+ }
+ assert.match(css,/#libraryArea #review :is\(\s*\.review-editor-section,\.scan-title-review-card,[^}]+background:var\(--workspace-panel\)!important;\s*color:var\(--workspace-ink\)!important/);
+ assert.match(css,/\.batch-book-field input[^}]+background:var\(--workspace-field\)!important;\s*color:var\(--workspace-ink\)!important/);
+ assert.match(css,/\.review-save-feedback\[data-status="error"\][^}]+background:var\(--state-error-bg\)!important;color:var\(--state-error-ink\)!important/);
+ for(const page of ['index','reading-guide','book-of-the-week']){
+  const html=read(page+'.html');
+  assert(html.indexOf('library-dark-rc81.css?v=rc81')>html.indexOf('library-brand-rc78.css?v=rc80'));
  }
 });
 

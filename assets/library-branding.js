@@ -36,7 +36,15 @@
  const hexRgb=hex=>[1,3,5].map(i=>parseInt(hex.slice(i,i+2),16));
  const toHex=channels=>'#'+channels.map(n=>Math.round(n).toString(16).padStart(2,'0')).join('');
  const blend=(a,b,weight)=>toHex(hexRgb(a).map((value,i)=>value*(1-weight)+hexRgb(b)[i]*weight));
- const ink=color=>contrast(color,'#ffffff')>=4.5?'#ffffff':'#000000';
+ const ink=color=>contrast(color,'#ffffff')>=contrast(color,'#000000')?'#ffffff':'#000000';
+ function readableInk(accent,surfaces){
+  const foreground=ink(surfaces[0]);
+  for(let step=0;step<=10;step++){
+   const color=blend(accent,foreground,step/10);
+   if(surfaces.every(surface=>contrast(color,surface)>=4.5))return color;
+  }
+  return foreground;
+ }
  function gradientContrast(a,b,color){
   if(color==='#ffffff')return Math.min(contrast(a,color),contrast(b,color));
   const second=hexRgb(b);
@@ -64,14 +72,16 @@
  const action=actionColors(a,b,state.button_style);
  const dark=root.dataset.theme==='dark';
  const surface=dark?'#182b3b':'#ffffff';
- const tint=blend(b,surface,dark?.20:.10);
- const soft=blend(a,surface,dark?.24:.08);
- const border=blend(a,surface,dark?.44:.25);
+ const tint=blend(surface,b,dark?.20:.10);
+ const soft=blend(surface,a,dark?.24:.08);
+ const softStrong=blend(surface,a,dark?.32:.16);
+ const border=blend(surface,a,dark?.44:.25);
  const hover=blend(a,dark?'#ffffff':'#000000',dark?.18:.13);
- const readableAccent=contrast(a,surface)>=4.5?a:blend(a,ink(surface),.8);
+ const readableAccent=readableInk(a,[surface,soft,softStrong]);
  const semantic={
  '--app-brand':a,'--app-brand-secondary':b,'--app-brand-hover':hover,
- '--app-brand-soft':soft,'--app-brand-soft-strong':blend(a,surface,dark?.32:.16),
+ '--app-brand-soft':soft,'--app-brand-soft-strong':softStrong,
+ '--app-on-soft':ink(soft),'--app-on-soft-strong':ink(softStrong),
  '--app-brand-border':border,'--app-brand-gradient':gradient.background,
  '--app-on-brand':ink(a),'--app-on-secondary':ink(b),'--app-on-gradient':gradient.foreground,
  '--app-focus-ring':readableAccent,'--app-brand-contrast':ink(a),
