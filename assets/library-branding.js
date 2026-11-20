@@ -1,12 +1,13 @@
 /* Shared library branding. The database is the source of truth; browser defaults are fallbacks. */
 (()=>{'use strict';
- const DEFAULT={app_name:'Library Manager',primary_color:'#144e58',secondary_color:'#1d727a',button_style:'gradient',logo_url:null};
+ const DEFAULT={app_name:'Library Manager',primary_color:'#144e58',secondary_color:'#1d727a',contrast_color:'#c7f5ec',button_style:'gradient',logo_url:null};
+ const DARK_SURFACES=['#14212e','#182b3b','#253241','#364354'];
  const $=id=>document.getElementById(id);
  const validHex=v=>/^#[0-9a-fA-F]{6}$/.test(String(v||''));
  const safeName=v=>String(v||'').trim().slice(0,70);
  const safeLogo=v=>typeof v==='string'&&/^https:\/\//i.test(v)?v:null;
  const state={...DEFAULT};
- const columns='app_name,primary_color,secondary_color,button_style,logo_url';
+ const columns='app_name,primary_color,secondary_color,contrast_color,button_style,logo_url';
  const cacheKey='library_manager_published_branding_v1';
  const logoTypes={'image/png':'png','image/jpeg':'jpg','image/webp':'webp'};
  let client=null,session=null,role=null,revision=0,busy=false;
@@ -19,8 +20,14 @@
   } catch {}
   return null;
  }
+ function missingContrastColumn(error){
+  return error?.code==='42703'||(/contrast_color/i.test(String(error?.message||error))
+   &&/(column|schema cache|field)/i.test(String(error?.message||error)));
+ }
+ const migrationMessage='Apply supabase/migrations/20261120000000_add_contrast_color_to_library_app_settings.sql to enable the shared contrast colour.';
  function publish(settings,{cache=true}={}){
   published={...DEFAULT,...settings};
+  if(!validHex(published.contrast_color))published.contrast_color=DEFAULT.contrast_color;
   apply(published);
   if(cache)try{localStorage.setItem(cacheKey,JSON.stringify(published));}catch{}
  }
@@ -65,7 +72,7 @@
   return {background:`linear-gradient(125deg, ${a}, ${end})`,foreground,adjusted:end!==b};
  }
  function apply(v){Object.assign(state,{...DEFAULT,...v});const root=document.documentElement;
- const a=validHex(state.primary_color)?state.primary_color:DEFAULT.primary_color,b=validHex(state.secondary_color)?state.secondary_color:DEFAULT.secondary_color;
+ const a=validHex(state.primary_color)?state.primary_color:DEFAULT.primary_color,b=validHex(state.secondary_color)?state.secondary_color:DEFAULT.secondary_color,c=validHex(state.contrast_color)?state.contrast_color:DEFAULT.contrast_color;
  root.style.setProperty('--library-primary',a);root.style.setProperty('--library-secondary',b);
  // Derive the visual system from the saved palette; fixed values below are only initial fallbacks.
  const gradient=actionColors(a,b,'gradient');
@@ -78,13 +85,16 @@
  const border=blend(surface,a,dark?.44:.25);
  const hover=blend(a,dark?'#ffffff':'#000000',dark?.18:.13);
  const readableAccent=readableInk(a,[surface,soft,softStrong]);
+ const darkSurfaces=dark?[...DARK_SURFACES,surface,tint,soft,softStrong,blend(surface,b,.1)]:DARK_SURFACES;
+ const darkLayerInk=readableInk(c,darkSurfaces);
  const semantic={
  '--app-brand':a,'--app-brand-secondary':b,'--app-brand-hover':hover,
  '--app-brand-soft':soft,'--app-brand-soft-strong':softStrong,
- '--app-on-soft':ink(soft),'--app-on-soft-strong':ink(softStrong),
+ '--app-on-soft':dark?darkLayerInk:ink(soft),'--app-on-soft-strong':dark?darkLayerInk:ink(softStrong),
  '--app-brand-border':border,'--app-brand-gradient':gradient.background,
  '--app-on-brand':ink(a),'--app-on-secondary':ink(b),'--app-on-gradient':gradient.foreground,
  '--app-focus-ring':readableAccent,'--app-brand-contrast':ink(a),
+ '--app-on-dark-layer':darkLayerInk,
  '--library-action':action.background,'--library-action-text':action.foreground,
  '--library-brand-ink':readableAccent,
  '--library-brand-tint':tint,
@@ -96,8 +106,15 @@
  '--brand-dark-gradient':gradient.background
  };
  for(const [key,value] of Object.entries(semantic))root.style.setProperty(key,value);
+ if(dark){
+  root.style.setProperty('--lm65-ink',darkLayerInk);
+  root.style.setProperty('--theme-ink',darkLayerInk);
+ }else{
+  root.style.removeProperty('--lm65-ink');
+  root.style.removeProperty('--theme-ink');
+ }
  root.dataset.brandButtons=state.button_style==='solid'?'solid':'gradient';
- if(a.toLowerCase()!==DEFAULT.primary_color||b.toLowerCase()!==DEFAULT.secondary_color){
+ if(a.toLowerCase()!==DEFAULT.primary_color||b.toLowerCase()!==DEFAULT.secondary_color||c.toLowerCase()!==DEFAULT.contrast_color){
   root.dataset.brandCustom='';
  }else delete root.dataset.brandCustom;
  const name=safeName(state.app_name)||DEFAULT.app_name;
@@ -113,6 +130,7 @@
    app_name:safeName($('brandAppName').value),
    primary_color:selectColor('brandPrimary',DEFAULT.primary_color),
    secondary_color:selectColor('brandSecondary',DEFAULT.secondary_color),
+   contrast_color:selectColor('brandContrast',DEFAULT.contrast_color),
    button_style:$('brandButtonStyle').value,
    logo_url:removeLogo?null:safeLogo(published.logo_url)
   };
@@ -125,12 +143,14 @@
  function renderPreview(){
   const el=$('appearancePreview');
   const draft=draftValues();
-  const {primary_color:a,secondary_color:b,button_style:style}=draft;
+  const {primary_color:a,secondary_color:b,contrast_color:c,button_style:style}=draft;
   const action=actionColors(a,b,style);
+  const darkInk=readableInk(c,DARK_SURFACES);
   el.style.setProperty('--preview-primary',a);
   el.style.setProperty('--preview-secondary',b);
   el.style.setProperty('--preview-action',action.background);
   el.style.setProperty('--preview-on-brand',action.foreground);
+  el.style.setProperty('--preview-on-dark',darkInk);
   el.dataset.corners=$('appearanceCorners').value;
   el.dataset.previewTheme=$('appearancePreviewTheme').value;
   const badge=$('appearancePreviewLogo');
@@ -141,15 +161,19 @@
    preset.setAttribute('aria-pressed',String(selected));
   }
   const status=$('appearanceContrast');
-  status.textContent=action.adjusted
+  status.textContent=[action.adjusted
    ?'The gradient is adjusted to keep button text readable.'
-   :'The preview action uses readable text contrast.';
-  status.dataset.warning=String(action.adjusted);
+   :'The preview action uses readable text contrast.',
+   darkInk.toLowerCase()===c.toLowerCase()
+    ?'Dark-surface text and icons meet contrast.'
+    :'The dark-surface colour is lightened for readable text and icons.'].join(' ');
+  status.dataset.warning=String(action.adjusted||darkInk.toLowerCase()!==c.toLowerCase());
  }
  function writeFields(settings){
   $('brandAppName').value=safeName(settings.app_name)||DEFAULT.app_name;
   $('brandPrimary').value=validHex(settings.primary_color)?settings.primary_color:DEFAULT.primary_color;
   $('brandSecondary').value=validHex(settings.secondary_color)?settings.secondary_color:DEFAULT.secondary_color;
+  $('brandContrast').value=validHex(settings.contrast_color)?settings.contrast_color:DEFAULT.contrast_color;
   $('brandButtonStyle').value=settings.button_style==='solid'?'solid':'gradient';
   renderPreview();
  }
@@ -181,8 +205,8 @@
     resetDraft();
     setStatus('Branding is shared across accounts.');
    }
-  }catch{
-   if(request===revision&&canEdit()&&!dirty)setStatus('Shared branding is unavailable. Reload this page to retry.');
+  }catch(error){
+   if(request===revision&&canEdit()&&!dirty)setStatus(missingContrastColumn(error)?migrationMessage:'Shared branding is unavailable. Reload this page to retry.');
   }
  }
  function setContext(nextSession,nextRole){
@@ -229,7 +253,7 @@
    resetDraft();
    setStatus('Branding saved and applied across the app.');
   }catch(error){
-   if(revision===saveRequest)setStatus('Unable to save: '+(error.message||String(error)));
+   if(revision===saveRequest)setStatus(missingContrastColumn(error)?migrationMessage:'Unable to save: '+(error.message||String(error)));
   }finally{
    busy=false;syncAccess();
    if(revision!==saveRequest)void refresh();
@@ -252,13 +276,14 @@
   resetDraft();
   syncAccess();
   $('brandForm').addEventListener('submit',save);
-  for(const id of ['brandAppName','brandPrimary','brandSecondary','brandButtonStyle']){
+  for(const id of ['brandAppName','brandPrimary','brandSecondary','brandContrast','brandButtonStyle']){
    $(id).addEventListener('input',()=>queueDraft());
   }
   for(const preset of document.querySelectorAll('.appearance-preset')){
    preset.addEventListener('click',()=>{
     $('brandPrimary').value=preset.dataset.primary;
     $('brandSecondary').value=preset.dataset.secondary;
+    $('brandContrast').value=preset.dataset.contrast;
     queueDraft();
    });
   }

@@ -275,6 +275,7 @@ body #accountCard .scan-recognition-card {min-height:60px!important;}
 <link rel="stylesheet" href="assets/library-dark-rc81.css?v=rc81">
 <link rel="stylesheet" href="assets/library-review-rc82-mobile.css?v=rc82">
 <link rel="stylesheet" href="assets/library-spacing-rc83.css?v=rc83">
+<link rel="stylesheet" href="assets/library-appearance-rc84.css?v=rc84">
 </head>
 <body data-account="out">
 <a href="#mainContent" class="skip-link">Skip to main content</a>
@@ -412,16 +413,17 @@ body #accountCard .scan-recognition-card {min-height:60px!important;}
         <p>Preview changes here, then save to apply them across the app.</p>
       </div>
       <div class="appearance-presets" role="group" aria-label="Brand palette presets">
-        <button type="button" class="appearance-preset" data-palette="ocean" data-primary="#144e58" data-secondary="#1d727a" aria-pressed="false"><span class="preset-swatch" style="--preset-a:#144e58;--preset-b:#1d727a" aria-hidden="true"></span>Ocean</button>
-        <button type="button" class="appearance-preset" data-palette="royal" data-primary="#2548a0" data-secondary="#5685d8" aria-pressed="false"><span class="preset-swatch" style="--preset-a:#2548a0;--preset-b:#5685d8" aria-hidden="true"></span>Royal</button>
-        <button type="button" class="appearance-preset" data-palette="forest" data-primary="#176b55" data-secondary="#51a18a" aria-pressed="false"><span class="preset-swatch" style="--preset-a:#176b55;--preset-b:#51a18a" aria-hidden="true"></span>Forest</button>
-        <button type="button" class="appearance-preset" data-palette="violet" data-primary="#6246a5" data-secondary="#9c79d6" aria-pressed="false"><span class="preset-swatch" style="--preset-a:#6246a5;--preset-b:#9c79d6" aria-hidden="true"></span>Violet</button>
-        <button type="button" class="appearance-preset" data-palette="copper" data-primary="#98522f" data-secondary="#d18a53" aria-pressed="false"><span class="preset-swatch" style="--preset-a:#98522f;--preset-b:#d18a53" aria-hidden="true"></span>Copper</button>
+        <button type="button" class="appearance-preset" data-palette="ocean" data-primary="#144e58" data-secondary="#1d727a" data-contrast="#c7f5ec" aria-pressed="false"><span class="preset-swatch" style="--preset-a:#144e58;--preset-b:#1d727a" aria-hidden="true"></span>Ocean</button>
+        <button type="button" class="appearance-preset" data-palette="royal" data-primary="#2548a0" data-secondary="#5685d8" data-contrast="#d9e5ff" aria-pressed="false"><span class="preset-swatch" style="--preset-a:#2548a0;--preset-b:#5685d8" aria-hidden="true"></span>Royal</button>
+        <button type="button" class="appearance-preset" data-palette="forest" data-primary="#176b55" data-secondary="#51a18a" data-contrast="#c9f0d8" aria-pressed="false"><span class="preset-swatch" style="--preset-a:#176b55;--preset-b:#51a18a" aria-hidden="true"></span>Forest</button>
+        <button type="button" class="appearance-preset" data-palette="violet" data-primary="#6246a5" data-secondary="#9c79d6" data-contrast="#ece0ff" aria-pressed="false"><span class="preset-swatch" style="--preset-a:#6246a5;--preset-b:#9c79d6" aria-hidden="true"></span>Violet</button>
+        <button type="button" class="appearance-preset" data-palette="copper" data-primary="#98522f" data-secondary="#d18a53" data-contrast="#ffe2cc" aria-pressed="false"><span class="preset-swatch" style="--preset-a:#98522f;--preset-b:#d18a53" aria-hidden="true"></span>Copper</button>
       </div>
       <div class="branding-colors">
         <label for="brandPrimary">Primary colour<input type="color" id="brandPrimary" value="#144e58"></label>
         <label for="brandSecondary">Secondary colour<input type="color" id="brandSecondary" value="#1d727a"></label>
       </div>
+      <label class="appearance-contrast-control" for="brandContrast"><span><strong>Dark-surface text &amp; icons</strong><small>Used for readable labels and icons on dark panels.</small></span><input type="color" id="brandContrast" value="#c7f5ec"></label>
       <label for="brandButtonStyle">Surface style</label>
       <select id="brandButtonStyle"><option value="gradient">Gradient</option><option value="solid">Solid</option></select>
       <div class="appearance-preview-controls" aria-label="Preview-only settings" role="group">
@@ -434,6 +436,7 @@ body #accountCard .scan-recognition-card {min-height:60px!important;}
           <strong id="appearancePreviewName">Library Manager</strong>
         </div>
         <div class="appearance-preview-actions"><span class="appearance-preview-primary">Add new book</span><span class="appearance-preview-secondary">View catalogue</span></div>
+        <div class="appearance-preview-dark"><svg class="app-icon sm" aria-hidden="true"><use href="assets/icons.svg#check-circle"></use></svg><span><strong>Dark surfaces, clear type</strong><small>Text and icons stay easy to read.</small></span></div>
         <p id="appearanceContrast" class="appearance-contrast" role="status" aria-live="polite"></p>
       </div>
     </section>

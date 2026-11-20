@@ -17,9 +17,11 @@ function ratio(a,b){
 
 function node(value = '') {
  const handlers = new Map();
+ const style = new Map();
+ style.removeProperty = key => style.delete(key);
  return {
   value, textContent:'', hidden:false, disabled:false, dataset:{}, attributes:{},
-  style:new Map(), files:[], focus(){},
+  style, files:[], focus(){},
   setAttribute(name,value){this.attributes[name]=value;},
   addEventListener(name,listener){handlers.set(name,listener);},
   fire(name){return handlers.get(name)?.({preventDefault(){}});}
@@ -27,7 +29,7 @@ function node(value = '') {
 }
 
 function studio({readOnly=false, storage=new Map()}={}) {
- const ids = Object.fromEntries(('brandStatus brandAppName brandPrimary brandSecondary brandButtonStyle brandLogoFile '+
+ const ids = Object.fromEntries(('brandStatus brandAppName brandPrimary brandSecondary brandContrast brandButtonStyle brandLogoFile '+
  'appearancePreview appearanceCorners appearancePreviewTheme appearancePreviewLogo appearancePreviewName appearanceContrast '+
  'brandDiscard brandFields brandForm brandRemoveLogo brandReset').split(' ').map(id=>[id,node()]));
  ids.appearanceCorners.value='rounded';
@@ -38,7 +40,7 @@ function studio({readOnly=false, storage=new Map()}={}) {
  }
  for(const el of [documentElement,ids.appearancePreview])el.style.setProperty=el.style.set.bind(el.style);
  const brandLabel=node(), brandLogo=node(), preset=node();
- preset.dataset={primary:'#6246a5',secondary:'#9c79d6'};
+ preset.dataset={primary:'#6246a5',secondary:'#9c79d6',contrast:'#ece0ff'};
  const document={
   documentElement,
   getElementById:id=>ids[id],
@@ -49,7 +51,7 @@ function studio({readOnly=false, storage=new Map()}={}) {
   })[selector]||[]
  };
  const server={
-  settings:{app_name:'Library One',primary_color:'#144e58',secondary_color:'#1d727a',
+  settings:{app_name:'Library One',primary_color:'#144e58',secondary_color:'#1d727a',contrast_color:'#c7f5ec',
    button_style:'gradient',logo_url:'https://example.test/current.png'},
   writes:0, fail:false
  };
@@ -101,6 +103,7 @@ test('shared branding CSS and the read-only loader are wired into both public pa
   assert(html.includes('data-library-brand-name'));
   assert(html.includes('data-library-brand-logo'));
   assert(html.includes('library-brand-rc78.css?v=rc82'));
+  assert(html.includes('library-appearance-rc84.css?v=rc84'));
   assert(html.indexOf('library-branding.js?v=rc80')<html.indexOf(page+'.js?v=rc78'));
   assert.match(read('assets/'+page+'.js'),/LibraryBranding\?\.init\(window\.supabase\?\.createClient/);
  }
@@ -121,10 +124,41 @@ test('dark-theme icons and labels receive readable foregrounds for extreme brand
   assert(ratio(value('--app-brand-secondary'),value('--app-on-secondary'))>=4.5,color+' secondary icon contrast');
   assert(ratio(value('--app-brand-soft'),value('--app-on-soft'))>=4.5,color);
   assert(ratio(value('--app-brand-soft-strong'),value('--app-on-soft-strong'))>=4.5,color);
+  assert(ratio(value('--app-brand-soft'),value('--app-on-dark-layer'))>=4.5,
+   color+' soft surface and dark-layer text/icon');
   assert(ratio(value('--app-brand-soft-strong'),value('--library-brand-ink'))>=4.5,
    color+' on '+value('--app-brand-soft-strong')+' with '+value('--library-brand-ink'));
+  assert(ratio(value('--app-brand-soft-strong'),value('--app-on-dark-layer'))>=4.5,
+   color+' elevated surface and dark-layer text/icon');
   assert(ratio(value('--library-action'),value('--library-action-text'))>=4.5,color);
+  assert(ratio('#14212e',value('--app-on-dark-layer'))>=4.5,color+' dark-layer text/icon contrast');
+  assert(ratio('#364354',value('--app-on-dark-layer'))>=4.5,color+' elevated dark-layer contrast');
  }
+});
+
+test('contrast colour is saved, previewed, and applied to dark-surface text and icons',async()=>{
+ const {ids,documentElement,server,controller,admin,sb}=studio();
+ controller.init(sb,admin,'admin');
+ await tick();
+ ids.brandContrast.value='#dbeafe';
+ ids.brandContrast.fire('input');
+ assert.equal(ids.appearancePreview.style.get('--preview-on-dark'),'#dbeafe');
+ await ids.brandForm.fire('submit');
+ assert.equal(server.settings.contrast_color,'#dbeafe');
+ assert.equal(documentElement.style.get('--app-on-dark-layer'),'#dbeafe');
+ assert.match(read('assets/library-appearance-rc84.css'),/--workspace-ink:var\(--app-on-dark-layer/);
+ assert.match(read('supabase/migrations/20261120000000_add_contrast_color_to_library_app_settings.sql'),/add column if not exists contrast_color/);
+});
+
+test('inventory table uses content-based columns and the shared theme tokens',()=>{
+ const css=read('assets/library-appearance-rc84.css');
+ assert.match(css,/#inventory #bookTable\.tablewrap:not\(\.grid-wrap\) table\s*\{[^}]*table-layout:auto!important/);
+ assert.match(css,/#inventory #bookTable\.tablewrap:not\(\.grid-wrap\) :is\(th,td\)\s*\{[^}]*min-width:0!important/);
+ assert.match(css,/#inventory #bookTable thead th\s*\{[^}]*background:var\(--app-brand-soft\)!important/);
+ assert.match(css,/#inventory #bookTable tbody tr:hover > td\s*\{[^}]*background:var\(--app-brand-soft\)!important/);
+ assert.match(css,/background:var\(--app-brand-soft,var\(--theme-surface-soft\)\)!important/);
+ assert(read('index.html').includes('library-appearance-rc84.css?v=rc84'));
+ assert(read('sw.js').includes('/assets/library-appearance-rc84.css?v=rc84'));
 });
 
 test('review dark-mode states, fields and surfaces use explicit contrasting pairs',()=>{
@@ -196,6 +230,7 @@ test('name, presets, surface style and preview theme stay local until saved',asy
  ids.appearanceCorners.fire('change');
  assert.equal(ids.appearancePreviewName.textContent,'New name');
  assert.equal(ids.appearancePreview.style.get('--preview-action'),'#6246a5');
+ assert.equal(ids.appearancePreview.style.get('--preview-on-dark'),'#ece0ff');
  assert.equal(ids.appearancePreview.dataset.previewTheme,'dark');
  assert.equal(ids.appearancePreview.dataset.corners,'soft');
  assert.equal(preset.attributes['aria-pressed'],'true');
@@ -206,6 +241,7 @@ test('name, presets, surface style and preview theme stay local until saved',asy
  await ids.brandForm.fire('submit');
  assert.equal(brandLabel.textContent,'New name');
  assert.equal(server.settings.primary_color,'#6246a5');
+ assert.equal(server.settings.contrast_color,'#ece0ff');
  assert.equal(documentElement.dataset.brandCustom,'');
  assert.equal(server.writes,1);
  documentElement.dataset.theme='dark';
