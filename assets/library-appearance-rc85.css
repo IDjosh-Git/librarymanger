@@ -1,0 +1,39 @@
+@media(min-width:900px) {
+  body[data-account="in"] .layout {
+    grid-template-columns:minmax(340px,360px) minmax(0,1fr)!important;
+    gap:18px!important;
+  }
+}
+
+#inventory .book-card {
+  padding:14px!important;
+}
+#inventory .book-card .inventory-quantity > div {
+  padding:9px 5px;
+}
+
+:root[data-theme="dark"] #libraryArea #inventory .book-card .inventory-quantity > div {
+  background:var(--workspace-raised)!important;
+  color:var(--app-on-dark-layer)!important;
+  border-color:var(--workspace-line)!important;
+}
+:root[data-theme="dark"] #libraryArea #inventory .book-card .inventory-quantity :is(b,span) {
+  color:var(--app-on-dark-layer)!important;
+}
+:root[data-theme="dark"] #libraryArea #inventory .book-card .book-monogram {
+  background:var(--library-action)!important;
+  color:var(--library-action-text)!important;
+}
+:root[data-theme="dark"] #libraryArea #inventory .book-card .book-card-actions .card-primary {
+  background:var(--workspace-raised)!important;
+  color:var(--app-on-dark-layer)!important;
+  border-color:var(--workspace-line)!important;
+}
+:root[data-theme="dark"] #libraryArea #inventory .book-card .book-card-actions .card-primary :is(.app-icon,svg) {
+  color:inherit!important;
+  stroke:currentColor!important;
+}
+
+@media(max-width:600px) {
+  #inventory .book-card {padding:12px!important;}
+}

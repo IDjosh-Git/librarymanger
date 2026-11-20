@@ -71,6 +71,37 @@
   }
   return {background:`linear-gradient(125deg, ${a}, ${end})`,foreground,adjusted:end!==b};
  }
+ let logoTemplatePromise;
+ const logoCache=new Map();
+ function brandedLogoSource(primary,secondary){
+  const key=primary.toLowerCase()+'|'+secondary.toLowerCase();
+  if(logoCache.has(key))return Promise.resolve(logoCache.get(key));
+  if(!logoTemplatePromise)logoTemplatePromise=fetch('assets/book-logo.svg').then(response=>{
+   if(!response.ok)throw new Error('Unable to load the default library logo.');
+   return response.text();
+  });
+  return logoTemplatePromise.then(template=>{
+   const replacements=[
+    ['#144E58',primary],['#1D727A',secondary],['#49A6A3',blend(primary,secondary,.55)],
+    ['#9AE7D9',blend(secondary,'#ffffff',.52)],['#43BDBA',secondary],
+    ['#174B6B',blend(primary,'#000000',.24)],['#0D6C7F',blend(secondary,primary,.35)]
+   ];
+   const svg=replacements.reduce((source,[from,to])=>source.replace(new RegExp(from,'gi'),to),template);
+   const source='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+   if(logoCache.size>=12)logoCache.delete(logoCache.keys().next().value);
+   logoCache.set(key,source);
+   return source;
+  });
+ }
+ function setLogoSource(img,url,primary,secondary){
+  const request=String((Number(img.dataset.brandLogoRequest)||0)+1);
+  img.dataset.brandLogoRequest=request;
+  if(url){img.src=url;return;}
+  img.src='assets/book-logo.svg';
+  brandedLogoSource(primary,secondary).then(source=>{
+   if(img.dataset.brandLogoRequest===request)img.src=source;
+  }).catch(error=>console.error('Unable to apply the selected palette to the default library logo.',error));
+ }
  function apply(v){Object.assign(state,{...DEFAULT,...v});const root=document.documentElement;
  const a=validHex(state.primary_color)?state.primary_color:DEFAULT.primary_color,b=validHex(state.secondary_color)?state.secondary_color:DEFAULT.secondary_color,c=validHex(state.contrast_color)?state.contrast_color:DEFAULT.contrast_color;
  root.style.setProperty('--library-primary',a);root.style.setProperty('--library-secondary',b);
@@ -119,7 +150,7 @@
  }else delete root.dataset.brandCustom;
  const name=safeName(state.app_name)||DEFAULT.app_name;
  document.querySelectorAll('[data-library-brand-name]').forEach(el=>el.textContent=name);
- document.querySelectorAll('[data-library-brand-logo]').forEach(img=>{img.src=safeLogo(state.logo_url)||'assets/book-logo.svg';});
+ document.querySelectorAll('[data-library-brand-logo]').forEach(img=>setLogoSource(img,safeLogo(state.logo_url),a,b));
  document.querySelectorAll('[data-library-brand-home]').forEach(el=>el.setAttribute('aria-label',name+' home'));
  document.title=root.dataset.libraryPageTitle?root.dataset.libraryPageTitle+' | '+name:name+' | Library Workspace';
  }
@@ -154,7 +185,7 @@
   el.dataset.corners=$('appearanceCorners').value;
   el.dataset.previewTheme=$('appearancePreviewTheme').value;
   const badge=$('appearancePreviewLogo');
-  badge.src=previewUrl||draft.logo_url||'assets/book-logo.svg';
+  setLogoSource(badge,previewUrl||draft.logo_url,a,b);
   $('appearancePreviewName').textContent=draft.app_name||DEFAULT.app_name;
   for(const preset of document.querySelectorAll('.appearance-preset')){
    const selected=preset.dataset.primary===a&&preset.dataset.secondary===b;

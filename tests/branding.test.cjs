@@ -74,6 +74,7 @@ function studio({readOnly=false, storage=new Map()}={}) {
  let themeChanged;
  vm.runInNewContext(read('assets/library-branding.js'),{
   window,document,
+  fetch:async()=>({ok:true,text:async()=>read('assets/book-logo.svg')}),
   localStorage:{getItem:key=>storage.get(key)||null,setItem:(key,value)=>storage.set(key,value)},
   URL:{createObjectURL:()=> 'blob:preview',revokeObjectURL(){}},
   MutationObserver:class {constructor(callback){themeChanged=callback;}observe(){}}
@@ -104,6 +105,7 @@ test('shared branding CSS and the read-only loader are wired into both public pa
   assert(html.includes('data-library-brand-logo'));
   assert(html.includes('library-brand-rc78.css?v=rc82'));
   assert(html.includes('library-appearance-rc84.css?v=rc84'));
+  assert(html.includes('library-appearance-rc85.css?v=rc85'));
   assert(html.indexOf('library-branding.js?v=rc80')<html.indexOf(page+'.js?v=rc78'));
   assert.match(read('assets/'+page+'.js'),/LibraryBranding\?\.init\(window\.supabase\?\.createClient/);
  }
@@ -150,6 +152,17 @@ test('contrast colour is saved, previewed, and applied to dark-surface text and 
  assert.match(read('supabase/migrations/20261120000000_add_contrast_color_to_library_app_settings.sql'),/add column if not exists contrast_color/);
 });
 
+test('default library logo colors follow the saved brand palette',async()=>{
+ const {brandLogo,controller}=studio();
+ controller.apply({primary_color:'#6246a5',secondary_color:'#9c79d6',contrast_color:'#ece0ff',logo_url:null});
+ await tick();
+ assert.match(brandLogo.src,/^data:image\/svg\+xml;charset=utf-8,/);
+ const svg=decodeURIComponent(brandLogo.src.split(',')[1]);
+ assert(svg.includes('stop-color="#6246a5"'));
+ assert(svg.includes('stop-color="#9c79d6"'));
+ assert(!svg.includes('stop-color="#144E58"'));
+});
+
 test('inventory table uses content-based columns and the shared theme tokens',()=>{
  const css=read('assets/library-appearance-rc84.css');
  assert.match(css,/#inventory #bookTable\.tablewrap:not\(\.grid-wrap\) table\s*\{[^}]*table-layout:auto!important/);
@@ -158,7 +171,13 @@ test('inventory table uses content-based columns and the shared theme tokens',()
  assert.match(css,/#inventory #bookTable tbody tr:hover > td\s*\{[^}]*background:var\(--app-brand-soft\)!important/);
  assert.match(css,/background:var\(--app-brand-soft,var\(--theme-surface-soft\)\)!important/);
  assert(read('index.html').includes('library-appearance-rc84.css?v=rc84'));
+ assert(read('index.html').includes('library-appearance-rc85.css?v=rc85'));
  assert(read('sw.js').includes('/assets/library-appearance-rc84.css?v=rc84'));
+ assert(read('sw.js').includes('/assets/library-appearance-rc85.css?v=rc85'));
+ assert.match(css,/--workspace-ink:var\(--app-on-dark-layer/);
+ const refinements=read('assets/library-appearance-rc85.css');
+ assert.match(refinements,/#inventory \.book-card\s*\{\s*padding:14px!important/);
+ assert.match(refinements,/book-card-actions \.card-primary\s*\{[^}]*color:var\(--app-on-dark-layer\)!important/);
 });
 
 test('review dark-mode states, fields and surfaces use explicit contrasting pairs',()=>{
@@ -269,7 +288,7 @@ test('logo removal is staged, failed saves retain drafts, and members cannot pub
  server.fail=false;
  await ids.brandForm.fire('submit');
  assert.equal(server.settings.logo_url,null);
- assert.equal(brandLogo.src,'assets/book-logo.svg');
+ assert.match(brandLogo.src,/^data:image\/svg\+xml;charset=utf-8,/);
  controller.setContext({user:{id:'member'}},'user');
  assert.equal(ids.brandFields.disabled,true);
  await ids.brandForm.fire('submit');
