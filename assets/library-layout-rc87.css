@@ -1,0 +1,79 @@
+/* Give workspace sections and reading content a steadier, roomier rhythm. */
+#mainContent .layout {
+  gap: clamp(16px, 1.7vw, 24px);
+}
+
+#mainContent #libraryArea .panel.active {
+  gap: clamp(20px, 1.6vw, 26px);
+}
+
+#mainContent #libraryArea .section {
+  margin-top: 24px;
+}
+
+#mainContent #libraryArea .hero {
+  padding: clamp(20px, 2.4vw, 32px);
+}
+
+#mainContent #libraryArea .grid3 {
+  gap: clamp(12px, 1.1vw, 16px);
+  margin-top: 18px;
+}
+
+#mainContent #libraryArea .dashboard-surface {
+  padding: clamp(20px, 1.8vw, 26px);
+}
+
+.weekly-editorial-heading {
+  margin-bottom: 24px;
+}
+
+.weekly-editorial-grid {
+  gap: clamp(18px, 2vw, 26px);
+}
+
+.guide-content {
+  gap: clamp(24px, 2.5vw, 36px);
+}
+
+.guide-story,
+.guide-side {
+  gap: 20px;
+}
+
+.guide-panel,
+.guide-aside-card {
+  padding: clamp(24px, 3vw, 38px);
+}
+
+@media (max-width: 600px) {
+  #mainContent .layout {
+    gap: 16px;
+  }
+
+  #mainContent #libraryArea .panel.active {
+    gap: 18px;
+  }
+
+  #mainContent #libraryArea .section {
+    margin-top: 20px;
+  }
+
+  #mainContent #libraryArea .hero {
+    padding: 18px;
+  }
+
+  #mainContent #libraryArea .grid3 {
+    gap: 12px;
+    margin-top: 14px;
+  }
+
+  #mainContent #libraryArea .dashboard-surface {
+    padding: 18px;
+  }
+
+  .guide-panel,
+  .guide-aside-card {
+    padding: 22px;
+  }
+}

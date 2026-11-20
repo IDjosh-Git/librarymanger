@@ -21,6 +21,12 @@
   --state-info-ink: #d5eaff;
 }
 
+body #accountCard .appearance-studio {
+  gap: 10px;
+  margin-inline: -12px;
+  padding: 10px 12px;
+}
+
 :root[data-brand-buttons] body :is(
   .dashboard-hero, .hero-library, .shelf-page-hero, .review-workspace-hero,
   .scanned-hero, .circulation-hero, .notification-hero, .public-settings-hero,

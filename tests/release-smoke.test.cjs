@@ -19,6 +19,10 @@ test('all HTML pages load the current shared theme after their base stylesheet',
   assert.ok(html.includes('assets/library-theme-rc66-unified.css?v=rc66'),`${page}: unified header and hero theme missing`);
   assert.ok(html.includes('assets/library-theme-rc86-coverage.css?v=rc86'),`${page}: shared appearance coverage missing`);
   assert.ok(html.indexOf('library-theme-rc86-coverage.css?v=rc86')>html.indexOf('library-appearance-rc85.css?v=rc85'),`${page}: appearance coverage must follow previous theme overrides`);
+  assert.ok(html.includes('assets/library-layout-rc87.css?v=rc87'),`${page}: roomier layout styles missing`);
+  assert.ok(html.indexOf('library-layout-rc87.css?v=rc87')>html.indexOf('library-theme-rc86-coverage.css?v=rc86'),`${page}: layout overrides must follow shared appearance styles`);
+  assert.ok(html.includes('assets/library-theme-rc88-navigation-contrast.css?v=rc88'),`${page}: dark navigation contrast styles missing`);
+  assert.ok(html.indexOf('library-theme-rc88-navigation-contrast.css?v=rc88')>html.indexOf('library-layout-rc87.css?v=rc87'),`${page}: navigation contrast overrides must load last`);
   assert.ok(!html.includes('<head>\\n'),`${page}: literal newline escape in head`);
  }
 });
@@ -33,10 +37,12 @@ test('referenced local script, stylesheet and image paths exist',()=>{
 });
 test('service worker uses current caches and precaches shared theme',()=>{
  const sw=read('sw.js');
- assert.match(sw,/lm-app-shell-rc86/);
- assert.match(sw,/lm-libraries-rc86/);
+ assert.match(sw,/lm-app-shell-rc88/);
+ assert.match(sw,/lm-libraries-rc88/);
  assert.match(sw,/\/assets\/library-theme-rc62\.css\?v=rc66/);
  assert.match(sw,/\/assets\/library-theme-rc86-coverage\.css\?v=rc86/);
+ assert.match(sw,/\/assets\/library-layout-rc87\.css\?v=rc87/);
+ assert.match(sw,/\/assets\/library-theme-rc88-navigation-contrast\.css\?v=rc88/);
  assert.doesNotMatch(sw,/\?v=rc59|lm-app-shell-v59/);
  for(const m of sw.matchAll(/['"](\/assets\/[^'"?#]+)(?:\?[^'"]+)?['"]/g)){
   assert.ok(fs.existsSync(path.join(root,m[1].slice(1))),`missing precache ${m[1]}`);
