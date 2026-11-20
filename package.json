@@ -1,6 +1,6 @@
 {
   "name": "library-manager",
-  "version": "6.0.0-rc81",
+  "version": "6.0.0-rc83",
   "private": true,
   "engines": {
     "node": "22.x"

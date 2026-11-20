@@ -142,7 +142,7 @@
   .premium-settings-emblem,.lookuphead-icon,.sidebar-settings-chevron
 ) {
   background:var(--app-brand-soft)!important;
-  color:var(--library-brand-ink)!important;
+  color:var(--app-on-soft)!important;
   border-color:var(--app-brand-border)!important;
 }
 :root[data-brand-custom][data-theme="dark"] :is(.tablewrap,.scan-summary-table,.admin-directory-table) tbody tr:hover {

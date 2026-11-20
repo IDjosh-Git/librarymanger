@@ -31,19 +31,24 @@ test('referenced local script, stylesheet and image paths exist',()=>{
 });
 test('service worker uses current caches and precaches shared theme',()=>{
  const sw=read('sw.js');
- assert.match(sw,/lm-app-shell-rc81/);
- assert.match(sw,/lm-libraries-rc81/);
+ assert.match(sw,/lm-app-shell-rc83/);
+ assert.match(sw,/lm-libraries-rc83/);
  assert.match(sw,/\/assets\/library-theme-rc62\.css\?v=rc66/);
  assert.doesNotMatch(sw,/\?v=rc59|lm-app-shell-v59/);
  for(const m of sw.matchAll(/['"](\/assets\/[^'"?#]+)(?:\?[^'"]+)?['"]/g)){
   assert.ok(fs.existsSync(path.join(root,m[1].slice(1))),`missing precache ${m[1]}`);
  }
 });
-test('release metadata is current',()=>assert.equal(JSON.parse(read('package.json')).version,'6.0.0-rc81'));
+test('release metadata is current',()=>assert.equal(JSON.parse(read('package.json')).version,'6.0.0-rc83'));
 
-test('responsive stylesheet is loaded last on every page and cached',()=>{
+test('responsive stylesheet follows RC68 and app spacing follows responsive styles',()=>{
  for(const page of pages){const html=read(page);const a=html.indexOf('assets/library-theme-rc68-ai-layout.css?v=rc68');const b=html.indexOf('assets/library-theme-rc69-responsive.css?v=rc69');assert.ok(b>a,`${page}: responsive stylesheet must follow RC68`)}
+ const app=read('index.html');
+ assert.ok(app.indexOf('library-spacing-rc83.css?v=rc83')>app.indexOf('library-theme-rc69-responsive.css?v=rc69'));
+ assert.ok(!read('reading-guide.html').includes('library-spacing-rc83.css'));
+ assert.ok(!read('book-of-the-week.html').includes('library-spacing-rc83.css'));
  assert.ok(read('sw.js').includes('/assets/library-theme-rc69-responsive.css?v=rc69'));
+ assert.ok(read('sw.js').includes('/assets/library-spacing-rc83.css?v=rc83'));
 });
 
 test('RC70 notification hero fix loads after responsive styles and is scoped',()=>{

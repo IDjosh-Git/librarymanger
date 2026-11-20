@@ -100,7 +100,7 @@ test('shared branding CSS and the read-only loader are wired into both public pa
   const html=read(page+'.html');
   assert(html.includes('data-library-brand-name'));
   assert(html.includes('data-library-brand-logo'));
-  assert(html.includes('library-brand-rc78.css?v=rc80'));
+  assert(html.includes('library-brand-rc78.css?v=rc82'));
   assert(html.indexOf('library-branding.js?v=rc80')<html.indexOf(page+'.js?v=rc78'));
   assert.match(read('assets/'+page+'.js'),/LibraryBranding\?\.init\(window\.supabase\?\.createClient/);
  }
@@ -110,11 +110,15 @@ test('dark-theme icons and labels receive readable foregrounds for extreme brand
  const {documentElement,controller}=studio();
  documentElement.dataset.theme='dark';
  const css=read('assets/library-brand-rc78.css');
+ const html=read('index.html');
+ assert.match(html,/:root\[data-theme="dark"\] body #accountCard \.premium-settings-card > summary \.premium-settings-emblem \{background:var\(--app-brand-secondary[^}]*color:var\(--app-on-secondary,/);
+ assert.match(html,/premium-settings-emblem :is\(svg,\.app-icon\) \{color:inherit!important/);
  assert.match(css,/\.lookuphead-icon,\.sidebar-settings-chevron\s*\)\s*\{\s*background:var\(--app-brand-soft\)!important;\s*color:var\(--app-on-soft\)!important;/);
  assert.match(css,/\.bottomnav button.active[\s\S]*?color:var\(--library-action-text\)!important/);
  for(const color of ['#111014','#000000','#ffffff','#6543b0','#004002','#fbca00']){
   controller.apply({primary_color:color,secondary_color:'#8ab4f8',button_style:'solid'});
   const value=key=>documentElement.style.get(key);
+  assert(ratio(value('--app-brand-secondary'),value('--app-on-secondary'))>=4.5,color+' secondary icon contrast');
   assert(ratio(value('--app-brand-soft'),value('--app-on-soft'))>=4.5,color);
   assert(ratio(value('--app-brand-soft-strong'),value('--app-on-soft-strong'))>=4.5,color);
   assert(ratio(value('--app-brand-soft-strong'),value('--library-brand-ink'))>=4.5,
@@ -134,7 +138,7 @@ test('review dark-mode states, fields and surfaces use explicit contrasting pair
  assert.match(css,/\.review-save-feedback\[data-status="error"\][^}]+background:var\(--state-error-bg\)!important;color:var\(--state-error-ink\)!important/);
  for(const page of ['index','reading-guide','book-of-the-week']){
   const html=read(page+'.html');
-  assert(html.indexOf('library-dark-rc81.css?v=rc81')>html.indexOf('library-brand-rc78.css?v=rc80'));
+  assert(html.indexOf('library-dark-rc81.css?v=rc81')>html.indexOf('library-brand-rc78.css?v=rc82'));
  }
 });
 

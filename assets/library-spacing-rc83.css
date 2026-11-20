@@ -1,0 +1,116 @@
+#mainContent {
+  --layout-space-1: 4px;
+  --layout-space-2: 8px;
+  --layout-space-3: 12px;
+  --layout-space-4: 16px;
+  padding-bottom: 64px !important;
+}
+
+#mainContent .layout {
+  gap: var(--layout-space-4);
+}
+
+#mainContent .auth-showcase-inner {
+  gap: clamp(var(--layout-space-4), 2vw, 24px);
+  padding: clamp(28px, 3vw, 40px);
+}
+
+#mainContent .auth-showcase-copy h2 {
+  margin-block: 12px 14px;
+}
+
+#mainContent .showcase-spotlight-link {
+  margin-block: 10px 4px;
+}
+
+#mainContent .ux-public-paths {
+  margin-block: 12px 10px;
+}
+
+#mainContent #accountCard.auth .auth-content {
+  padding: clamp(24px, 3vw, 40px);
+}
+
+#mainContent .auth-form-heading {
+  margin: 8px 0 14px;
+}
+
+#mainContent .auth-form-heading h2 {
+  margin-block: 8px var(--layout-space-1);
+}
+
+#mainContent #accountForm label {
+  margin: 8px 0 5px;
+}
+
+#mainContent #authSubmit {
+  margin-top: var(--layout-space-3);
+}
+
+#mainContent .auth-links {
+  margin-top: var(--layout-space-2);
+}
+
+#mainContent #libraryArea .tabs {
+  margin-bottom: var(--layout-space-4);
+}
+
+#mainContent #libraryArea .hero {
+  padding: clamp(16px, 1.8vw, 22px);
+}
+
+#mainContent #libraryArea .section {
+  margin-top: var(--layout-space-4);
+}
+
+#mainContent #libraryArea .grid3 {
+  gap: 9px;
+  margin-top: var(--layout-space-3);
+}
+
+@media (max-width: 899px) {
+  #mainContent {
+    padding-bottom: 108px !important;
+  }
+
+  #mainContent .auth-showcase-inner {
+    gap: var(--layout-space-3);
+    padding: 20px;
+  }
+
+  #mainContent #accountCard.auth .auth-content {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  #mainContent .layout {
+    gap: 10px;
+  }
+
+  #mainContent .auth-showcase-inner {
+    gap: var(--layout-space-2);
+    padding: 16px;
+  }
+
+  #mainContent #accountCard.auth .auth-content {
+    padding: 16px;
+  }
+
+  #mainContent #libraryArea .tabs {
+    margin-bottom: var(--layout-space-3);
+  }
+
+  #mainContent #libraryArea .section {
+    margin-top: var(--layout-space-3);
+  }
+
+  #mainContent #libraryArea .hero {
+    padding: 14px;
+  }
+
+  #mainContent #libraryArea .grid3 {
+    gap: var(--layout-space-2);
+    margin-top: 10px;
+  }
+}

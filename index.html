@@ -244,11 +244,9 @@ body .lookupbox[open] > summary .premium-disclosure-chevron svg{transform:rotate
 <style id="recognition-rc26">.recognition-options{display:grid;gap:9px;margin:10px 0}.recognition-option{display:flex;align-items:center;gap:11px;padding:10px 12px;border:1px solid var(--line,var(--component-color-066));border-radius:13px;background:var(--card,var(--component-color-001));font-size:.83rem}.recognition-option>span{display:grid;gap:3px}.recognition-option small{opacity:.8;font-size:.74rem}.recognition-option input[type=checkbox]{width:20px;height:20px;accent-color:var(--brand-primary,var(--component-color-019))}.recognition-option:has(select){display:grid;gap:6px}.recognition-option select{width:100%;min-height:40px}.recognition-advanced{border:1px solid var(--line,var(--component-color-066));border-radius:12px;padding:9px 12px;font-size:.78rem}.recognition-advanced summary{cursor:pointer;font-weight:650}.review-smart-primary{min-height:44px}.review-card-lookup-status{overflow-wrap:anywhere}.recognition-options :focus-visible{outline:3px solid var(--brand-secondary,var(--component-color-067));outline-offset:3px}@media(max-width:540px){.recognition-options{gap:7px}.recognition-option{padding:9px 10px}}</style><style id="multi-photo-review-rc28">.multi-photo-review{border:1px solid var(--line,var(--component-color-068));border-radius:15px;padding:12px;margin:12px 0;background:var(--card,var(--component-color-001))}.multi-photo-heading{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}.multi-photo-heading small{opacity:.75}.multi-photo-inputs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:10px 0}.multi-photo-inputs label{font-size:.8rem;font-weight:650;min-width:0}.multi-photo-inputs input{width:100%;font-size:.75rem;margin-top:5px}.multi-photo-actions{display:flex;gap:8px}.multi-photo-feedback{font-size:.79rem;overflow-wrap:anywhere;margin:8px 0 0}.multi-photo-review button:focus-visible{outline:3px solid var(--brand-secondary,var(--component-color-067));outline-offset:2px}@media(max-width:600px){.multi-photo-inputs{grid-template-columns:1fr}.multi-photo-review{padding:10px}}</style>
 <style id="rc54-settings-refinement">
 /* RC54: compact settings, distinct icon contrast and reliable disclosure affordance. */
-body #accountCard .premium-settings-card > summary .premium-settings-emblem,
-body #accountCard .premium-settings-card > summary .premium-settings-emblem svg,
-body #accountCard .premium-settings-card > summary .premium-settings-emblem .app-icon {color:var(--app-on-brand,var(--component-color-001))!important;stroke:currentColor!important;}
-body #accountCard .premium-settings-card > summary .premium-settings-emblem {background:var(--app-brand,var(--library-primary))!important;}
-:root[data-theme="dark"] body #accountCard .premium-settings-card > summary .premium-settings-emblem {background:var(--app-brand-secondary,var(--library-secondary))!important;}
+body #accountCard .premium-settings-card > summary .premium-settings-emblem {background:var(--app-brand,var(--library-primary))!important;color:var(--app-on-brand,var(--component-color-001))!important;}
+body #accountCard .premium-settings-card > summary .premium-settings-emblem :is(svg,.app-icon) {color:inherit!important;stroke:currentColor!important;}
+:root[data-theme="dark"] body #accountCard .premium-settings-card > summary .premium-settings-emblem {background:var(--app-brand-secondary,var(--library-secondary))!important;color:var(--app-on-secondary,var(--component-color-001))!important;}
 body details.lookupbox > summary.lookuphead .premium-disclosure-chevron {transform:none!important;display:inline-grid!important;place-items:center!important;}
 body details.lookupbox > summary.lookuphead .premium-disclosure-chevron svg {transform:rotate(0deg)!important;transform-origin:center!important;transition:transform .2s ease!important;}
 body details.lookupbox[open] > summary.lookuphead .premium-disclosure-chevron svg {transform:rotate(180deg)!important;}
@@ -273,9 +271,10 @@ body #accountCard .scan-recognition-card {min-height:60px!important;}
 <link rel="stylesheet" href="assets/library-theme-rc75-ai-compact-compose.css?v=rc75">
 <link rel="stylesheet" href="assets/library-theme-rc76-ai-chat-options.css?v=rc76">
 <link rel="stylesheet" href="assets/library-sidebar-rc77.css?v=rc77">
-<link rel="stylesheet" href="assets/library-brand-rc78.css?v=rc80">
+<link rel="stylesheet" href="assets/library-brand-rc78.css?v=rc82">
 <link rel="stylesheet" href="assets/library-dark-rc81.css?v=rc81">
 <link rel="stylesheet" href="assets/library-review-rc82-mobile.css?v=rc82">
+<link rel="stylesheet" href="assets/library-spacing-rc83.css?v=rc83">
 </head>
 <body data-account="out">
 <a href="#mainContent" class="skip-link">Skip to main content</a>
