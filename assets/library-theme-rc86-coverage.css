@@ -1,0 +1,113 @@
+/* Keep shared branding consistent across page heroes, primary actions, and status tags. */
+:root {
+  --state-success-bg: #e8f4ec;
+  --state-success-ink: #14532d;
+  --state-warning-bg: #fff3dc;
+  --state-warning-ink: #713f12;
+  --state-error-bg: #fde8e8;
+  --state-error-ink: #8f1d1d;
+  --state-info-bg: #e8f1ff;
+  --state-info-ink: #1e3a8a;
+}
+
+:root[data-theme="dark"] {
+  --state-success-bg: #163a30;
+  --state-success-ink: #b1f2cb;
+  --state-warning-bg: #412c16;
+  --state-warning-ink: #ffe0a5;
+  --state-error-bg: #492633;
+  --state-error-ink: #ffd4db;
+  --state-info-bg: #23384d;
+  --state-info-ink: #d5eaff;
+}
+
+:root[data-brand-buttons] body :is(
+  .dashboard-hero, .hero-library, .shelf-page-hero, .review-workspace-hero,
+  .scanned-hero, .circulation-hero, .notification-hero, .public-settings-hero,
+  .admin-directory-hero, .vl-hero, .history-hero, .spotlight-topbar,
+  .spotlight-intro, .spotlight-feature, .spotlight-contact, .guide-hero
+) {
+  background: var(--library-action) !important;
+  color: var(--library-action-text) !important;
+  border-color: var(--app-brand-border) !important;
+}
+
+:root[data-brand-buttons] body :is(
+  .spotlight-feature, .spotlight-contact
+) :is(
+  h1, h2, h3, p, .spotlight-overline, .spotlight-author, .spotlight-description,
+  .spotlight-info span, .spotlight-info strong, .spotlight-cover-caption,
+  .spotlight-cta > span, .spotlight-kicker
+) {
+  color: var(--library-action-text) !important;
+}
+
+:root[data-brand-buttons] body :is(
+  .dashboard-hero, .hero-library, .shelf-page-hero, .review-workspace-hero,
+  .scanned-hero, .circulation-hero, .notification-hero, .public-settings-hero,
+  .admin-directory-hero, .vl-hero, .history-hero, .spotlight-feature,
+  .spotlight-contact, .guide-hero
+) :is(button.light, a.light, .spotlight-chat-cta, .spotlight-contact-cta) {
+  background: var(--app-brand-soft) !important;
+  color: var(--app-on-soft) !important;
+  border-color: var(--app-brand-border) !important;
+}
+
+:root[data-brand-buttons] body :is(button.green, input.green):not(.review-approve-button),
+:root[data-brand-buttons] body #reload {
+  background: var(--library-action) !important;
+  color: var(--library-action-text) !important;
+  border-color: var(--app-brand-border) !important;
+}
+
+:root[data-brand-buttons] body :is(button.green, input.green):not(.review-approve-button):hover,
+:root[data-brand-buttons] body #reload:hover {
+  background: var(--app-brand-hover) !important;
+}
+
+:root[data-brand-buttons] #accountCard :is(.nav-new-pill, .sidebar-title .badge) {
+  background: var(--app-brand-soft) !important;
+  color: var(--app-on-soft) !important;
+  border-color: var(--app-brand-border) !important;
+}
+
+body span.pill.available,
+body .batch-book-state.ready,
+body .review-save-feedback[data-status="success"] {
+  background: var(--state-success-bg) !important;
+  color: var(--state-success-ink) !important;
+  border-color: currentColor !important;
+}
+
+body span.pill.borrowed,
+body .review-shared-tag,
+body .review-save-feedback[data-status="info"],
+body .review-save-feedback[data-status="working"] {
+  background: var(--state-info-bg) !important;
+  color: var(--state-info-ink) !important;
+  border-color: currentColor !important;
+}
+
+body span.pill.overdue,
+body .review-save-feedback[data-status="error"] {
+  background: var(--state-error-bg) !important;
+  color: var(--state-error-ink) !important;
+  border-color: currentColor !important;
+}
+
+body .batch-book-state.incomplete,
+body .review-duplicate-warning,
+body .review-save-feedback[data-status="warning"] {
+  background: var(--state-warning-bg) !important;
+  color: var(--state-warning-ink) !important;
+  border-color: currentColor !important;
+}
+
+:root[data-brand-buttons] body :is(
+  .dashboard-hero, .hero-library, .shelf-page-hero, .review-workspace-hero,
+  .scanned-hero, .circulation-hero, .notification-hero, .public-settings-hero,
+  .admin-directory-hero, .vl-hero, .history-hero, .spotlight-topbar,
+  .spotlight-intro, .spotlight-feature, .spotlight-contact, .guide-hero
+) :is(button, a):focus-visible {
+  outline-color: var(--library-action-text) !important;
+}

@@ -214,6 +214,25 @@ test('legacy brand tokens inherit the custom palette and semantic status colors 
  assert(read('sw.js').includes('/assets/library-color-tokens.css?v=rc79'));
 });
 
+test('shared appearance coverage uses brand actions and readable semantic tags in both themes',()=>{
+ const css=read('assets/library-theme-rc86-coverage.css');
+ assert.match(css,/#reload[^}]+background:\s*var\(--library-action\)/);
+ assert.match(css,/\.spotlight-feature/);
+ assert.match(css,/background:\s*var\(--library-action\)\s*!important/);
+ assert.match(css,/body span\.pill\.available/);
+ assert.match(css,/body span\.pill\.borrowed/);
+ assert.match(css,/body span\.pill\.overdue/);
+ const themes=[css.split(':root[data-theme="dark"]')[0],css.split(':root[data-theme="dark"]')[1]];
+ for(const theme of themes){
+  for(const state of ['success','warning','error','info']){
+   const bg=theme.match(new RegExp(`--state-${state}-bg:\\s*(#[\\da-f]{6})`,'i'))?.[1];
+   const ink=theme.match(new RegExp(`--state-${state}-ink:\\s*(#[\\da-f]{6})`,'i'))?.[1];
+   assert.ok(bg&&ink,`${state} colors missing`);
+   assert.ok(ratio(bg,ink)>=4.5,`${state} contrast below WCAG AA`);
+  }
+ }
+});
+
 test('reading pages load a published palette without requiring admin form controls',async()=>{
  const storage=new Map();
  const publicPage=studio({readOnly:true,storage});

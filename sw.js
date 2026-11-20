@@ -3,7 +3,7 @@
    uploaded book images, Supabase/auth requests and API responses are NEVER cached.
    Those remain in Supabase or the authenticated user's IndexedDB scan journal. */
 'use strict';
-const VERSION='lm-app-shell-rc85',SHELL='lm-app-shell-rc85',LIBRARIES='lm-libraries-rc85';
+const VERSION='lm-app-shell-rc86',SHELL='lm-app-shell-rc86',LIBRARIES='lm-libraries-rc86';
 const PAGES=['/','/index.html','/book-of-the-week.html','/reading-guide.html'];
 const LOCAL=[
  '/assets/library-dark-rc81.css?v=rc81',
@@ -11,6 +11,7 @@ const LOCAL=[
  '/assets/library-spacing-rc83.css?v=rc83',
  '/assets/library-appearance-rc84.css?v=rc84',
  '/assets/library-appearance-rc85.css?v=rc85',
+ '/assets/library-theme-rc86-coverage.css?v=rc86',
  '/assets/library-branding.js?v=rc80','/assets/book-of-the-week.js?v=rc78','/assets/reading-guide.js?v=rc78',
  '/assets/library-theme-rc76-ai-chat-options.css?v=rc76', '/assets/library-theme-rc75-ai-compact-compose.css?v=rc75', '/assets/library-theme-rc74-ai-sidebar-collapse.css?v=rc74', '/assets/library-theme-rc73-ai-premium.css?v=rc73', '/assets/library-theme-rc72-ai-contrast.css?v=rc72', '/assets/library-theme-rc71-ai-icons.css?v=rc71', '/assets/book-guide.js?v=6.0.0-rc76', '/assets/library-theme-rc69-responsive.css?v=rc69', '/assets/library-theme-rc70-notification-hero.css?v=rc70', '/assets/library-theme-rc67-navigation-ai.css?v=rc67', '/assets/library-theme-rc68-ai-layout.css?v=rc68',
  '/assets/library-theme-rc62.css?v=rc66','/assets/library-theme-rc65-contrast.css?v=rc66','/assets/library-color-tokens.css?v=rc79','/assets/library-manager-v542.css?v=rc66','/assets/reading-v542.css?v=rc66','/assets/book-of-week-v542.css?v=rc66','/assets/ux-refinement.js?v=rc66',
