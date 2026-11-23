@@ -1,5 +1,4 @@
-(()=>{'use strict';
-const q=(s,r=document)=>r.querySelector,sAll=(s,r=document)=>[...r.querySelectorAll(s)];
+(()=>{'use strict';const q=(s,r=document)=>r.querySelector(s),sAll=(s,r=document)=>[...r.querySelectorAll(s)];
 const nav=q('.workspace-nav'),account=q('#accountCard'),pad=q('#libraryArea .pad');
 if(!nav||!account||!pad)return;
 const tools=q('.account-tools'),recognition=q('#recognitionSettings'),branding=q('.branding-settings'),lookup=q('.lookupbox');
