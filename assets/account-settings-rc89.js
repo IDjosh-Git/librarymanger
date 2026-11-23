@@ -2,7 +2,7 @@
 const q=(s,r=document)=>r.querySelector,sAll=(s,r=document)=>[...r.querySelectorAll(s)];
 const nav=q('.workspace-nav'),account=q('#accountCard'),pad=q('#libraryArea .pad');
 if(!nav||!account||!pad)return;
-const tools=q('.account-tools',account),recognition=q('#recognitionSettings'),branding=q('.branding-settings',account),lookup=q('.lookupbox',account);
+const tools=q('.account-tools',account),recognition=q('#recognitionSettings'),branding=q('.branding-settings',account),lookup=q('.lookupbox');
 if(!tools||!recognition||!branding||!lookup||!q('#brandForm'))return;
 const section=(title,description,icon)=>{const el=document.createElement('section');el.className='account-settings-section';el.innerHTML='<div class="account-settings-section-heading"><span class="account-settings-emblem" aria-hidden="true"><svg class="app-icon"><use href="assets/icons.svg#'+icon+'"></use></svg></span><div><h3>'+title+'</h3><p>'+description+'</p></div></div><div class="account-settings-section-content"></div>';return el};
 const page=document.createElement('section');page.id='accountSettings';page.className='panel account-settings-page';page.setAttribute('aria-labelledby','accountSettingsTitle');
