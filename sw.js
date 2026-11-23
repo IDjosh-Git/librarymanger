@@ -3,7 +3,7 @@
    uploaded book images, Supabase/auth requests and API responses are NEVER cached.
    Those remain in Supabase or the authenticated user's IndexedDB scan journal. */
 'use strict';
-const VERSION='lm-app-shell-rc89',SHELL='lm-app-shell-rc89',LIBRARIES='lm-libraries-rc89';
+const VERSION='lm-app-shell-rc90',SHELL='lm-app-shell-rc90',LIBRARIES='lm-libraries-rc90';
 const PAGES=['/','/index.html','/book-of-the-week.html','/reading-guide.html'];
 const LOCAL=['/assets/account-settings-rc89.js?v=rc89','/assets/account-settings-rc89.css?v=rc89',
  '/assets/library-dark-rc81.css?v=rc81',
