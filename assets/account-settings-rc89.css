@@ -66,3 +66,36 @@
 :root[data-brand-custom] body :is(#accountCard,#libraryArea,#publicContactArea,main,footer) :is(.tab:hover,.filter-chip:hover,.view-toggle button:hover,.pagination button:hover){color:var(--app-on-soft-strong)!important;border-color:var(--app-brand-border)!important;}
 :root[data-theme=dark] #accountSettings{--si:var(--app-on-dark-layer);--sm:var(--theme-muted,var(--lm65-muted));--ss:var(--theme-surface,var(--lm65-surface));--sf:var(--app-brand-soft);--sb:var(--app-brand-border);}
 @media(max-width:760px){.account-settings-page{padding:16px;}.account-settings-hero{align-items:flex-start;flex-wrap:wrap;}.account-settings-hero-copy{flex-basis:calc(100% - 64px);}.account-settings-status{margin-inline-start:61px;}.account-settings-layout{grid-template-columns:minmax(0,1fr);}.account-settings-section:last-child{grid-column:auto;}}
+
+
+/* Expanded recognition preferences: clear hierarchy, aligned controls, and theme contrast. */
+#accountSettings #recognitionSettings{min-width:0;padding-bottom:2px;border-color:var(--app-brand-border);background:var(--theme-surface,var(--lm65-surface));color:var(--theme-ink,var(--lm65-ink));}
+#accountSettings #recognitionSettings>summary{min-height:74px;padding:16px 18px;border-bottom:1px solid var(--app-brand-border);}
+#accountSettings #recognitionSettings>summary .premium-settings-toggle{flex:0 0 36px;width:36px;height:36px;border-color:var(--app-brand-border);background:var(--app-brand-soft);color:var(--app-on-soft);}
+#accountSettings #recognitionSettings>:not(summary){box-sizing:border-box;max-width:100%;margin-inline:18px;}
+#accountSettings #recognitionSettings .scan-recognition-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-block:16px 10px;}
+#accountSettings #recognitionSettings .scan-recognition-card{display:grid;grid-template-columns:38px minmax(0,1fr) 20px;align-items:center;gap:12px;min-width:0;min-height:66px;padding:12px 14px;border:1px solid var(--app-brand-border);border-radius:15px;background:var(--app-brand-soft);color:var(--app-on-soft);cursor:pointer;transition:border-color .18s ease,box-shadow .18s ease,transform .18s ease;}
+#accountSettings #recognitionSettings .scan-recognition-card:hover{border-color:var(--library-secondary);box-shadow:0 6px 16px color-mix(in srgb,var(--library-primary) 12%,transparent);transform:translateY(-1px);}
+#accountSettings #recognitionSettings .scan-recognition-card:focus-within{outline:2px solid var(--app-focus-ring);outline-offset:2px;}
+#accountSettings #recognitionSettings .scan-recognition-icon{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;background:var(--theme-surface,var(--lm65-surface));color:var(--library-brand-ink);font-size:1.05rem;line-height:1;}
+#accountSettings #recognitionSettings .scan-recognition-copy{display:grid;min-width:0;gap:3px;}
+#accountSettings #recognitionSettings .scan-recognition-copy strong{color:inherit;font-size:.92rem;line-height:1.3;}
+#accountSettings #recognitionSettings .scan-recognition-card input{width:20px;height:20px;margin:0;accent-color:var(--library-secondary);}
+#accountSettings #recognitionSettings .recognition-choice-help{margin-block:6px 16px;padding:0 2px;color:var(--theme-muted,var(--lm65-muted));font-size:.84rem;line-height:1.55;overflow-wrap:anywhere;}
+#accountSettings #recognitionSettings .recognition-options{display:grid;gap:12px;margin-block:0 16px;}
+#accountSettings #recognitionSettings .recognition-option{display:grid;grid-template-columns:22px minmax(0,1fr);align-items:start;gap:12px;min-width:0;padding:15px 16px;border:1px solid var(--app-brand-border);border-radius:15px;background:var(--theme-surface,var(--lm65-surface));color:var(--theme-ink,var(--lm65-ink));font-size:.9rem;line-height:1.45;}
+#accountSettings #recognitionSettings .recognition-option>span{display:grid;min-width:0;gap:5px;}
+#accountSettings #recognitionSettings .recognition-option strong{font-size:.92rem;line-height:1.4;overflow-wrap:anywhere;}
+#accountSettings #recognitionSettings .recognition-option small{color:var(--theme-muted,var(--lm65-muted));font-size:.82rem;line-height:1.5;overflow-wrap:anywhere;}
+#accountSettings #recognitionSettings .recognition-option input[type=checkbox]{width:20px;height:20px;margin:1px 0 0;accent-color:var(--library-secondary);}
+#accountSettings #recognitionSettings .recognition-option:has(select){grid-template-columns:minmax(0,1fr);gap:9px;}
+#accountSettings #recognitionSettings .recognition-option select{width:100%;min-height:46px;padding:10px 12px;border:1px solid var(--app-brand-border);border-radius:11px;background:var(--theme-surface,var(--lm65-surface));color:var(--theme-ink,var(--lm65-ink));}
+#accountSettings #recognitionSettings .recognition-advanced{margin-block:0;padding:14px 16px;border:1px solid var(--app-brand-border);border-radius:14px;background:var(--app-brand-soft);color:var(--app-on-soft);}
+#accountSettings #recognitionSettings .recognition-advanced>summary{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:30px;color:inherit;font-size:.9rem;font-weight:700;line-height:1.45;cursor:pointer;}
+#accountSettings #recognitionSettings .recognition-advanced>summary:focus-visible{outline:2px solid var(--app-focus-ring);outline-offset:3px;}
+#accountSettings #recognitionSettings .recognition-advanced>p{margin:10px 0 0;color:inherit;font-size:.84rem;line-height:1.6;overflow-wrap:anywhere;}
+#accountSettings #recognitionSettings #recognitionSettingsStatus{margin-block:0 16px;padding:12px 14px;border:1px solid var(--app-brand-border);border-radius:13px;background:var(--app-brand-soft);color:var(--app-on-soft);font-size:.82rem;line-height:1.55;overflow-wrap:anywhere;}
+:root[data-theme=dark] #accountSettings #recognitionSettings .recognition-option{background:var(--theme-surface,var(--lm65-surface));color:var(--app-on-dark-layer);}
+:root[data-theme=dark] #accountSettings #recognitionSettings .recognition-option small{color:var(--theme-muted,var(--lm65-muted));}
+@media(max-width:560px){#accountSettings #recognitionSettings>summary{padding:14px;}#accountSettings #recognitionSettings>:not(summary){margin-inline:13px;}#accountSettings #recognitionSettings .scan-recognition-grid{grid-template-columns:minmax(0,1fr);gap:10px;margin-block:13px 9px;}#accountSettings #recognitionSettings .scan-recognition-card{min-height:62px;padding:11px 12px;}#accountSettings #recognitionSettings .recognition-options{gap:10px;}#accountSettings #recognitionSettings .recognition-option{padding:13px 12px;}}
+@media(prefers-reduced-motion:reduce){#accountSettings #recognitionSettings .scan-recognition-card{transition:none;}}
