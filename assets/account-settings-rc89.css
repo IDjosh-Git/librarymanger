@@ -119,3 +119,10 @@
 #accountSettings .account-settings-hero :is(h2,p,.account-settings-eyebrow){color:var(--app-on-gradient,#fff)!important;}
 #accountSettings .account-settings-layout{gap:clamp(12px,1.5vw,18px);}
 #accountSettings .account-settings-section{padding:clamp(12px,1.4vw,18px);}
+
+
+/* On mobile, bring the settings surface and hero closer to the viewport edges. */
+@media(max-width:760px){
+ #libraryArea .pad:has(> #accountSettings){padding-inline:3px!important;}
+ #accountSettings.account-settings-page{padding-inline:4px;}
+}
