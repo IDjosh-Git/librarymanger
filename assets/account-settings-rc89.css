@@ -110,3 +110,12 @@
 #accountSettings #recognitionSettings:not([open])>summary .toggle-minus{display:none;}
 #accountSettings #recognitionSettings>.recognition-choice-help,#accountSettings #recognitionSettings>#recognitionSettingsStatus{width:auto;max-width:calc(100% - 36px);margin-inline:18px!important;}
 @media(max-width:560px){#accountSettings #recognitionSettings>.recognition-choice-help,#accountSettings #recognitionSettings>#recognitionSettingsStatus{max-width:calc(100% - 26px);margin-inline:13px!important;}}
+
+
+/* Give account settings more usable width at every viewport. */
+#libraryArea .pad:has(>#accountSettings){padding:clamp(6px,1vw,12px);}
+#accountSettings.account-settings-page{width:100%;max-width:none;margin:0;padding:clamp(8px,1.25vw,18px);}
+#accountSettings .account-settings-hero{padding:clamp(18px,2.2vw,28px);background:linear-gradient(125deg,var(--library-primary,#144e58) 0%,var(--library-secondary,#1d727a) 100%)!important;color:var(--app-on-gradient,#fff)!important;}
+#accountSettings .account-settings-hero :is(h2,p,.account-settings-eyebrow){color:var(--app-on-gradient,#fff)!important;}
+#accountSettings .account-settings-layout{gap:clamp(12px,1.5vw,18px);}
+#accountSettings .account-settings-section{padding:clamp(12px,1.4vw,18px);}
