@@ -35,7 +35,7 @@
 #review .review-workspace-hero {
   border:1px solid var(--app-brand-border,var(--lm65-border,var(--line)));
   border-radius:22px;
-  background:linear-gradient(135deg,var(--app-brand-soft,var(--theme-surface-soft)),var(--card,var(--lm65-surface)) 72%);
+  background:linear-gradient(135deg,var(--app-brand-soft,var(--theme-surface-soft,var(--lm65-surface))),var(--card,var(--lm65-surface)) 72%);
   box-shadow:0 14px 34px color-mix(in srgb,var(--lm65-ink) 8%,transparent);
 }
 #review .review-workspace-hero h2 {letter-spacing:-.035em;line-height:1.08;}
@@ -48,7 +48,7 @@
 }
 #review .batch-book-head {
   border-radius:14px;
-  background:var(--app-brand-soft,var(--theme-surface-soft));
+  background:var(--app-brand-soft,var(--theme-surface-soft,var(--lm65-surface)));
 }
 #review .batch-book-source {line-height:1.45;}
 #review .batch-book-content {align-items:start;gap:18px;}
@@ -68,7 +68,7 @@
   min-width:0;
   border:1px solid var(--app-brand-border,var(--lm65-border,var(--line)));
   border-radius:15px;
-  background:var(--app-brand-soft,var(--theme-surface-soft));
+  background:var(--app-brand-soft,var(--theme-surface-soft,var(--lm65-surface)));
 }
 #review .multi-photo-review {padding:0;margin:0;}
 #review .multi-photo-review > summary,
@@ -137,7 +137,7 @@
   padding:14px;
   border:1px solid var(--app-brand-border,var(--lm65-border,var(--line)));
   border-radius:15px;
-  background:var(--app-brand-soft,var(--theme-surface-soft));
+  background:var(--app-brand-soft,var(--theme-surface-soft,var(--lm65-surface)));
 }
 #review .review-save-instructions {min-width:0;line-height:1.45;}
 #review .review-save-instructions strong {color:var(--library-action,var(--app-brand));}
