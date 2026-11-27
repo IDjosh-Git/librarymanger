@@ -1249,13 +1249,33 @@ async function forgotPassword(){let email=$("email").value.trim();if(!email)retu
 async function updatePassword(){let password=$("newPassword").value;if(password.length<8)return msg("Use at least 8 characters.","warn");let {error}=await sb.auth.updateUser({password});if(error)return msg(authError(error),"err");$("recoveryPanel").hidden=true;$("newPassword").value="";msg("Password updated. Your account is ready.","ok")}
 async function signOut(){authGeneration++;let {error}=await sb.auth.signOut();if(error)return msg(authError(error),"err");session=null;resetAccountState();authUI();setAuthMode("signin");$("password").value="";$("confirmPassword").value="";msg("Signed out. Sign in with your own account.","ok")}
 async function fetchShared(table,isCurrent=()=>true){
- let all=[];
- for(let first=0;first<200000;first+=1000){
+ const pageSize=1000,pageWindow=4,all=[];
+ const readPage=async first=>{
   if(!isCurrent())return [];
-  let {data,error}=await sb.from(table).select("*").order("created_at",{ascending:false}).order(table===BOOKS?"record_id":"id",{ascending:false}).range(first,first+999);
+  const {data,error}=await sb.from(table).select("*")
+   .order("created_at",{ascending:false})
+   .order(table===BOOKS?"record_id":"id",{ascending:false})
+   .range(first,first+pageSize-1);
   if(error)throw error;
-  all.push(...(data||[]));
-  if(!data||data.length<1000)break;
+  return data||[];
+ };
+ // Read the first page alone so small libraries keep the one-request fast path.
+ let firstPage=await readPage(0);
+ if(!isCurrent())return [];
+ all.push(...firstPage);
+ if(firstPage.length<pageSize)return all;
+ // Larger libraries fetch bounded groups of pages concurrently instead of
+ // waiting for every 1,000-row range in sequence.
+ for(let first=pageSize;first<200000;first+=pageSize*pageWindow){
+  if(!isCurrent())return [];
+  const starts=Array.from({length:Math.min(pageWindow,Math.ceil((200000-first)/pageSize))},(_,i)=>first+i*pageSize);
+  const results=await Promise.allSettled(starts.map(readPage));
+  if(!isCurrent())return [];
+  const failed=results.find(result=>result.status==='rejected');
+  if(failed)throw failed.reason;
+  const pages=results.map(result=>result.value);
+  for(const page of pages)all.push(...page);
+  if(pages.some(page=>page.length<pageSize))break;
  }
  return all;
 }
