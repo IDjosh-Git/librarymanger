@@ -33,42 +33,42 @@
 /* RC90: polished review cards, accessible disclosure controls and appearance-aware actions. */
 #review.review-workspace {min-width:0;}
 #review .review-workspace-hero {
-  border:1px solid var(--app-brand-border,var(--line,#d8e3e5));
+  border:1px solid var(--app-brand-border,var(--lm65-border,var(--line)));
   border-radius:22px;
-  background:linear-gradient(135deg,var(--app-brand-soft,#edf7f6),var(--card,#fff) 72%);
-  box-shadow:0 14px 34px rgb(20 55 61 / 7%);
+  background:linear-gradient(135deg,var(--app-brand-soft,var(--theme-surface-soft)),var(--card,var(--lm65-surface)) 72%);
+  box-shadow:0 14px 34px color-mix(in srgb,var(--lm65-ink) 8%,transparent);
 }
 #review .review-workspace-hero h2 {letter-spacing:-.035em;line-height:1.08;}
 #review .review-workspace-hero p {max-width:58ch;line-height:1.65;}
 #review .scan-title-review-card {
-  border:1px solid var(--app-brand-border,var(--line,#d8e3e5))!important;
+  border:1px solid var(--app-brand-border,var(--lm65-border,var(--line)))!important;
   border-radius:20px!important;
-  background:var(--card,#fff)!important;
-  box-shadow:0 12px 30px rgb(22 46 52 / 7%);
+  background:var(--card,var(--lm65-surface))!important;
+  box-shadow:0 12px 30px color-mix(in srgb,var(--lm65-ink) 8%,transparent);
 }
 #review .batch-book-head {
   border-radius:14px;
-  background:var(--app-brand-soft,#f2f8f8);
+  background:var(--app-brand-soft,var(--theme-surface-soft));
 }
 #review .batch-book-source {line-height:1.45;}
 #review .batch-book-content {align-items:start;gap:18px;}
 #review .review-edit-form {display:grid;gap:12px;min-width:0;}
 #review .review-edit-form :is(input,select) {
   border-radius:11px;
-  border-color:var(--app-brand-border,var(--line,#d8e3e5));
+  border-color:var(--app-brand-border,var(--lm65-border,var(--line)));
   transition:border-color .16s ease,box-shadow .16s ease;
 }
 #review .review-edit-form :is(input,select):focus {
-  border-color:var(--app-brand,var(--library-action,#1d727a));
-  box-shadow:0 0 0 3px color-mix(in srgb,var(--app-brand,#1d727a) 16%,transparent);
+  border-color:var(--library-action,var(--app-brand));
+  box-shadow:0 0 0 3px color-mix(in srgb,var(--app-brand) 16%,transparent);
 }
 #review .multi-photo-review,
 #review .review-optional-tools,
 #review .scan-card-more {
   min-width:0;
-  border:1px solid var(--app-brand-border,var(--line,#d8e3e5));
+  border:1px solid var(--app-brand-border,var(--lm65-border,var(--line)));
   border-radius:15px;
-  background:var(--app-brand-soft,#f5f9f9);
+  background:var(--app-brand-soft,var(--theme-surface-soft));
 }
 #review .multi-photo-review {padding:0;margin:0;}
 #review .multi-photo-review > summary,
@@ -93,10 +93,10 @@
   width:28px;
   height:28px;
   margin-inline-start:auto;
-  border:1px solid var(--app-brand-border,var(--line,#d8e3e5));
+  border:1px solid var(--app-brand-border,var(--lm65-border,var(--line)));
   border-radius:9px;
-  background:var(--card,#fff);
-  color:var(--app-brand,var(--library-action,#1d727a));
+  background:var(--card,var(--lm65-surface));
+  color:var(--library-action,var(--app-brand));
   font-size:1.1rem;
   font-weight:700;
   line-height:1;
@@ -105,7 +105,7 @@
 #review .review-optional-tools[open] > summary::after {content:"−";}
 #review .multi-photo-heading {padding:12px 14px;}
 #review .multi-photo-heading strong {font-size:.9rem;letter-spacing:-.01em;}
-#review .multi-photo-heading small {color:var(--muted,#64747a);font-size:.75rem;}
+#review .multi-photo-heading small {color:var(--lm65-muted,var(--muted));font-size:.75rem;}
 #review .multi-photo-review[open] .multi-photo-inputs {padding:0 14px;margin:0 0 12px;}
 #review .multi-photo-review[open] .multi-photo-actions,
 #review .multi-photo-feedback {margin-inline:14px;}
@@ -115,9 +115,9 @@
   display:grid;
   gap:7px;
   padding:11px;
-  border:1px solid var(--app-brand-border,var(--line,#d8e3e5));
+  border:1px solid var(--app-brand-border,var(--lm65-border,var(--line)));
   border-radius:12px;
-  background:var(--card,#fff);
+  background:var(--card,var(--lm65-surface));
   line-height:1.4;
 }
 #review .multi-photo-inputs input {min-width:0;max-width:100%;font-size:.75rem;}
@@ -135,32 +135,32 @@
   gap:14px;
   margin-top:4px;
   padding:14px;
-  border:1px solid var(--app-brand-border,var(--line,#d8e3e5));
+  border:1px solid var(--app-brand-border,var(--lm65-border,var(--line)));
   border-radius:15px;
-  background:var(--app-brand-soft,#f2f8f8);
+  background:var(--app-brand-soft,var(--theme-surface-soft));
 }
 #review .review-save-instructions {min-width:0;line-height:1.45;}
-#review .review-save-instructions strong {color:var(--app-brand,var(--library-action,#1d727a));}
+#review .review-save-instructions strong {color:var(--library-action,var(--app-brand));}
 #review .review-approve-button,
 #review #reviewSaveCorrected {
-  border:1px solid var(--app-brand,var(--library-action,#1d727a))!important;
+  border:1px solid var(--library-action,var(--app-brand))!important;
   border-radius:12px!important;
-  background:var(--app-brand,var(--library-action,#1d727a))!important;
-  color:var(--app-on-brand,var(--library-action-text,#fff))!important;
-  box-shadow:0 7px 18px color-mix(in srgb,var(--app-brand,#1d727a) 20%,transparent);
+  background:var(--library-action,var(--app-brand))!important;
+  color:var(--library-action-text,var(--app-on-brand,var(--lm65-surface)))!important;
+  box-shadow:0 7px 18px color-mix(in srgb,var(--app-brand) 20%,transparent);
   font-weight:750;
   transition:filter .16s ease,transform .16s ease,box-shadow .16s ease;
 }
 #review .review-approve-button:hover:not(:disabled),
 #review #reviewSaveCorrected:hover:not(:disabled) {filter:brightness(1.07);transform:translateY(-1px);}
 #review .review-approve-button:focus-visible,
-#review #reviewSaveCorrected:focus-visible {outline:3px solid var(--app-focus-ring,var(--app-brand,#1d727a));outline-offset:3px;}
+#review #reviewSaveCorrected:focus-visible {outline:3px solid var(--app-focus-ring,var(--app-brand));outline-offset:3px;}
 #review .review-approve-button:disabled,
 #review #reviewSaveCorrected:disabled {opacity:.62;box-shadow:none;}
 #review .review-save-feedback {overflow-wrap:anywhere;line-height:1.5;}
 @media(max-width:767px) {
   #review .review-workspace-hero {padding:16px!important;border-radius:18px;}
-  #review .scan-title-review-card {box-shadow:0 8px 22px rgb(22 46 52 / 6%);}
+  #review .scan-title-review-card {box-shadow:0 8px 22px color-mix(in srgb,var(--lm65-ink) 7%,transparent);}
   #review .review-card-footer {padding:11px!important;}
   #review .multi-photo-heading {padding:11px;}
   #review .review-optional-tools[open] > :not(summary),
@@ -186,10 +186,10 @@
   display:grid;
   place-items:center;
   margin-inline-start:auto;
-  border:1px solid var(--app-brand-border,var(--line,#d8e3e5));
+  border:1px solid var(--app-brand-border,var(--lm65-border,var(--line)));
   border-radius:9px;
-  background:var(--card,#fff);
-  color:var(--library-action,var(--app-brand,#1d727a));
+  background:var(--card,var(--lm65-surface));
+  color:var(--library-action,var(--app-brand));
   font-size:0;
   font-weight:750;
 }
@@ -202,13 +202,35 @@
   content:"−";
 }
 #libraryArea #review :is(.review-approve-button,#reviewSaveCorrected) {
-  background:var(--library-action,var(--app-brand,#1d727a))!important;
-  color:var(--library-action-text,var(--app-on-brand,#fff))!important;
-  border-color:var(--library-action,var(--app-brand,#1d727a))!important;
-  box-shadow:0 8px 20px color-mix(in srgb,var(--library-action,#1d727a) 28%,transparent);
+  background:var(--library-action,var(--app-brand))!important;
+  color:var(--library-action-text,var(--app-on-brand,var(--lm65-surface)))!important;
+  border-color:var(--library-action,var(--app-brand))!important;
+  box-shadow:0 8px 20px color-mix(in srgb,var(--library-action,var(--app-brand)) 28%,transparent);
 }
 :root[data-theme="dark"] #libraryArea #review :is(.review-approve-button,#reviewSaveCorrected) {
-  background:var(--library-action,#1d727a)!important;
-  color:var(--library-action-text,#fff)!important;
-  border-color:var(--library-action,#1d727a)!important;
+  background:var(--library-action,var(--app-brand))!important;
+  color:var(--library-action-text,var(--app-on-brand,var(--lm65-surface)))!important;
+  border-color:var(--library-action,var(--app-brand))!important;
+}
+
+
+/* RC92: keep approval guidance plain and use the configured action palette. */
+#review .review-card-footer {
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  padding:0!important;
+}
+#review .review-save-instructions {padding:0!important;background:transparent!important;box-shadow:none!important;}
+#review .review-save-instructions strong {color:var(--library-action,var(--app-brand));}
+#libraryArea #review :is(.review-primary-lookup .review-smart-primary,.review-approve-button,#reviewSaveCorrected) {
+  background:var(--library-action,var(--app-brand))!important;
+  color:var(--library-action-text,var(--app-on-brand,var(--lm65-surface)))!important;
+  border-color:var(--library-action,var(--app-brand))!important;
+  box-shadow:0 8px 20px color-mix(in srgb,var(--library-action,var(--app-brand)) 28%,transparent);
+}
+:root[data-theme="dark"] #libraryArea #review :is(.review-primary-lookup .review-smart-primary,.review-approve-button,#reviewSaveCorrected) {
+  background:var(--library-action,var(--app-brand))!important;
+  color:var(--library-action-text,var(--app-on-brand,var(--lm65-surface)))!important;
+  border-color:var(--library-action,var(--app-brand))!important;
 }
