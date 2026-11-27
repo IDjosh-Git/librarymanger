@@ -234,3 +234,34 @@
   color:var(--library-action-text,var(--app-on-brand,var(--lm65-surface)))!important;
   border-color:var(--library-action,var(--app-brand))!important;
 }
+
+
+/* RC94: visible Smart recognition progress and short success confirmation. */
+#review .review-smart-status {
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  min-height:24px;
+  color:var(--library-action,var(--app-brand));
+  font-size:.84rem;
+  font-weight:700;
+  line-height:1.35;
+}
+#review .review-smart-status:empty {display:none;}
+#review .review-smart-status[data-state="working"]::before {
+  content:"";
+  box-sizing:border-box;
+  width:15px;
+  height:15px;
+  flex:0 0 15px;
+  border:2px solid currentColor;
+  border-inline-end-color:transparent;
+  border-radius:50%;
+  animation:review-smart-spin .72s linear infinite;
+}
+#review .review-smart-status[data-state="done"] {color:var(--state-success-ink,var(--library-action));}
+#review .review-smart-status[data-state="error"] {color:var(--state-danger-ink,var(--library-action));}
+@keyframes review-smart-spin {to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce) {
+  #review .review-smart-status[data-state="working"]::before {animation:none;}
+}
