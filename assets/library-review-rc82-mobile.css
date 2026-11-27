@@ -171,3 +171,44 @@
   #review #reviewSaveCorrected,
   #review .review-edit-form :is(input,select) {transition:none;}
 }
+
+
+/* RC91: use an explicit, unmistakable disclosure control across theme styles. */
+#libraryArea #review :is(.multi-photo-review,.review-optional-tools) > summary::after {
+  content:none!important;
+  display:none!important;
+}
+#libraryArea #review .review-disclosure-toggle {
+  box-sizing:border-box;
+  flex:0 0 30px;
+  width:30px;
+  height:30px;
+  display:grid;
+  place-items:center;
+  margin-inline-start:auto;
+  border:1px solid var(--app-brand-border,var(--line,#d8e3e5));
+  border-radius:9px;
+  background:var(--card,#fff);
+  color:var(--library-action,var(--app-brand,#1d727a));
+  font-size:0;
+  font-weight:750;
+}
+#libraryArea #review .review-disclosure-toggle::before {
+  content:"+";
+  font-size:1.1rem;
+  line-height:1;
+}
+#libraryArea #review :is(.multi-photo-review,.review-optional-tools)[open] > summary .review-disclosure-toggle::before {
+  content:"−";
+}
+#libraryArea #review :is(.review-approve-button,#reviewSaveCorrected) {
+  background:var(--library-action,var(--app-brand,#1d727a))!important;
+  color:var(--library-action-text,var(--app-on-brand,#fff))!important;
+  border-color:var(--library-action,var(--app-brand,#1d727a))!important;
+  box-shadow:0 8px 20px color-mix(in srgb,var(--library-action,#1d727a) 28%,transparent);
+}
+:root[data-theme="dark"] #libraryArea #review :is(.review-approve-button,#reviewSaveCorrected) {
+  background:var(--library-action,#1d727a)!important;
+  color:var(--library-action-text,#fff)!important;
+  border-color:var(--library-action,#1d727a)!important;
+}
