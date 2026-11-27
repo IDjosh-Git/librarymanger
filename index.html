@@ -3113,7 +3113,7 @@ function renderBatch(){
     <form class="batch-book-fields review-edit-form" data-review-form="${i}" data-review-key="${batchAttr(x.saveRecordId)}" novalidate>
      <div class="scan-title-primary">${field('title','Book title <em>required</em>',350,'Enter the title on the cover')}</div>
      <div class="scan-title-support">${field('authors','Author <small>optional</small>',350,'Author name')}${field('barcode','ISBN <small>optional</small>',80,'Leave blank if unknown')}</div>
-     <div class="review-details-hint">No ISBN? You can still save the book after checking its title.</div>${duplicateWarning}<details class="multi-photo-review" data-review-disclosure="multiPhotoOpen" data-review-disclosure-index="${i}" ${x.multiPhotoOpen?"open":""}><summary class="multi-photo-heading"><strong>Multiple book photos</strong><small>Optional · cover, back and title page</small><span class="review-disclosure-toggle" aria-hidden="true"></span></summary><div class="multi-photo-inputs"><label>Front cover<input type="file" accept="image/jpeg,image/png,image/webp" data-multi-photo="front" data-multi-index="${i}" ${rowBusy?'disabled':''}></label><label>Back cover<input type="file" accept="image/jpeg,image/png,image/webp" data-multi-photo="back" data-multi-index="${i}" ${rowBusy?'disabled':''}></label><label>Title page<input type="file" accept="image/jpeg,image/png,image/webp" data-multi-photo="title_page" data-multi-index="${i}" ${rowBusy?'disabled':''}></label></div><div class="multi-photo-actions"><button type="button" class="light" data-multi-run="${i}" ${rowBusy?'disabled':''}>Compare photos</button><button type="button" class="light" data-multi-cancel="${i}" ${x.multiPhotoBusy?'':'hidden'}>Cancel</button><button type="button" class="light" data-multi-history="${i}">History</button></div><p class="multi-photo-feedback" role="status" aria-live="polite">${esc(x.multiPhotoStatus||'Choose at least two photographs to compare visible book details.')}</p></details><div class="review-primary-lookup"><button class="review-smart-primary" type="button" data-review-smart="${i}" ${rowBusy?'disabled':''}>✦ Smart recognition</button><span>OCR + AI + catalogue suggestions · verify before approval</span></div>
+     <div class="review-details-hint">No ISBN? You can still save the book after checking its title.</div>${duplicateWarning}<details class="multi-photo-review" data-review-disclosure="multiPhotoOpen" data-review-disclosure-index="${i}" ${x.multiPhotoOpen?"open":""}><summary class="multi-photo-heading"><strong>Multiple book photos</strong><small>Optional · cover, back and title page</small><span class="review-disclosure-toggle" aria-hidden="true"></span></summary><div class="multi-photo-inputs"><label>Front cover<input type="file" accept="image/jpeg,image/png,image/webp" data-multi-photo="front" data-multi-index="${i}" ${rowBusy?'disabled':''}></label><label>Back cover<input type="file" accept="image/jpeg,image/png,image/webp" data-multi-photo="back" data-multi-index="${i}" ${rowBusy?'disabled':''}></label><label>Title page<input type="file" accept="image/jpeg,image/png,image/webp" data-multi-photo="title_page" data-multi-index="${i}" ${rowBusy?'disabled':''}></label></div><div class="multi-photo-actions"><button type="button" class="light" data-multi-run="${i}" ${rowBusy?'disabled':''}>Compare photos</button><button type="button" class="light" data-multi-cancel="${i}" ${x.multiPhotoBusy?'':'hidden'}>Cancel</button><button type="button" class="light" data-multi-history="${i}">History</button></div><p class="multi-photo-feedback" role="status" aria-live="polite">${esc(x.multiPhotoStatus||'Choose at least two photographs to compare visible book details.')}</p></details><div class="review-primary-lookup"><button class="review-smart-primary" type="button" data-review-smart="${i}" ${rowBusy?'disabled':''}>✦ Smart recognition</button><span class="review-smart-status" data-review-smart-status data-state="${x.smartStatusKind||''}" role="status" aria-live="polite">${esc(x.smartStatus||'')}</span><span class="review-smart-hint">OCR + AI + catalogue suggestions · verify before approval</span></div>
      <details class="scan-card-more"><summary>More book details <span class="review-optional-label">Optional</span></summary><div class="review-extra-fields">${reviewShelfField(x,i,rowBusy)}${field('publisher','Publisher',250,'Publisher')}${field('publication_year','Publication year',20,'e.g. 2024')}${field('language','Language',80,'e.g. English')}${field('pages','Pages',24,'e.g. 240')}${field('subject','Subject / category',250,'e.g. History')}</div></details>
      <div class="review-card-footer"><div class="review-save-instructions"><strong data-review-readiness>${hasBookTitle(x.title)?'Ready for Inventory · ISBN not required':'Enter a book title to enable approval'}</strong><span>One approval saves one physical copy.</span></div><button type="submit" class="scan-inline-save green review-approve-button" data-save-title="${i}" ${rowBusy||!hasBookTitle(x.title)?'disabled':''}>${x.reviewSaving?'Saving…':'✓ Approve & save'}</button></div>
      <p class="review-save-feedback" data-review-feedback data-status="${cardStatus}" role="status" aria-live="polite">${esc(cardMessage)}</p>
@@ -4326,21 +4326,57 @@ async function completeReviewRow(row,{mode='auto',index=-1,refresh=true}={}){
 let reviewAutofillRunning=false;
 async function runSingleReviewAutofill(index,mode='auto'){
  const row=batchItems[index];if(!row||row.saved||row.reviewBusy||row.reviewSaving||batchActive||batchSaving||batchZipLoading||batchExcelLoading)return;
+ const fields=['title','authors','barcode','publisher','publication_year','language','pages','subject'];
  for(const key of ['title','authors','barcode','publisher','publication_year']){
   const input=$('batchResults').querySelector(`[data-batch-index="${index}"][data-batch-field="${key}"]`);
   if(input)row[key]=key==='barcode'?clean(input.value):input.value.trim();
  }
- // A typed title takes precedence over image OCR. Show edition choices instead of
- // guessing an ISBN or silently choosing a similarly named publication.
- if(row.title&&row.title.trim().length>=3&&!validIsbn(row.barcode)){
-  await batchTitleSearch(index,false);
-  $('reviewActionStatus').textContent=row.matches?.length?'Select the correct catalog result below to fill its details. ISBN is not inferred.':'No matching catalog record. Keep your entered title and complete details manually.';
-  return;
- }
+ const before=Object.fromEntries(fields.map(key=>[key,String(row[key]||'').trim()]));
+ const token=(Number(row.smartStatusToken)||0)+1;
+ row.smartStatusToken=token;
+ row.smartStatus='Processing book details…';
+ row.smartStatusKind='working';
  row.reviewBusy=true;
- row.lookup_status='Recognising this book…';renderBatch();
- try{await completeReviewRow(row,{mode:mode==='smart'?'auto':mode,index,refresh:false});row.lookup_status=hasBookTitle(row.title)?'Details suggested. Verify title, author and edition before approval.':(row.lookup_status||'Recognition finished. Enter missing details manually.');}
- finally{row.reviewBusy=false;renderBatch()}
+ row.lookup_status='Recognising this book…';
+ renderBatch();
+ let detailsProvided=false;
+ try{
+  // A manually entered title should use catalogue search, while a cover or
+  // ISBN should use the full OCR/AI workflow.
+  if(row.title&&row.title.trim().length>=3&&!validIsbn(row.barcode)){
+   await batchTitleSearch(index,false);
+   $('reviewActionStatus').textContent=row.matches?.length?'Select the correct catalog result below to fill its details. ISBN is not inferred.':'No matching catalog record. Keep your entered title and complete details manually.';
+  }else{
+   await completeReviewRow(row,{mode:mode==='smart'?'auto':mode,index,refresh:false});
+  }
+  detailsProvided=fields.some(key=>{
+   const value=String(row[key]||'').trim();
+   return !!value&&value!==before[key];
+  })||!!row.matches?.length;
+  if(detailsProvided){
+   row.smartStatus='Done';
+   row.smartStatusKind='done';
+  }else{
+   row.smartStatus=row.lookup_status||'No new book details found. Try another photo or enter the details manually.';
+   row.smartStatusKind='info';
+  }
+ }catch(error){
+  row.smartStatus='Recognition failed: '+String(error?.message||error).slice(0,160);
+  row.smartStatusKind='error';
+  row.lookup_status=row.smartStatus;
+ }finally{
+  row.reviewBusy=false;
+  renderBatch();
+  if(detailsProvided){
+   setTimeout(()=>{
+    if(row.smartStatusToken!==token)return;
+    row.smartStatus='';
+    row.smartStatusKind='';
+    const card=Array.from($('batchResults').querySelectorAll('[data-review-card]')).find(item=>item.dataset.reviewKey===String(row.saveRecordId||''));
+    const status=card?.querySelector('[data-review-smart-status]');
+    if(status){status.textContent='';status.dataset.state=''}
+   },2600);
+  }
 }
 async function runReviewAutoFillAll(){
  if(reviewAutofillRunning||batchActive||batchSaving||batchZipLoading||batchExcelLoading)return;
