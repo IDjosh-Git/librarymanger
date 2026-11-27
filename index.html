@@ -2881,6 +2881,9 @@ function updateReviewFormState(form,row){
  if(badge){badge.textContent=ready?'Ready to approve':'Title needed';badge.className='batch-book-state '+(ready?'ready':'incomplete')}
  const hint=form.querySelector('[data-review-readiness]');
  if(hint)hint.textContent=ready?'Ready for Inventory · ISBN not required':'Enter a book title to enable approval';
+ const approve=form.querySelector('.review-approve-button');
+ const busy=row.saved||row.reviewBusy||row.reviewSaving||batchActive||batchSaving||batchZipLoading||batchExcelLoading;
+ if(approve)approve.disabled=!ready||busy;
  const bulk=$('reviewSaveCorrected');
  if(bulk)bulk.disabled=batchActive||batchSaving||batchZipLoading||batchExcelLoading||reviewCardJobs.size>0||!batchItems.some(item=>item.reviewStaged&&batchValid(item));
 }
@@ -3092,7 +3095,7 @@ function renderBatch(){
      <div class="scan-title-support">${field('authors','Author <small>optional</small>',350,'Author name')}${field('barcode','ISBN <small>optional</small>',80,'Leave blank if unknown')}</div>
      <div class="review-details-hint">No ISBN? You can still save the book after checking its title.</div>${duplicateWarning}<details class="multi-photo-review" data-review-disclosure="multiPhotoOpen" data-review-disclosure-index="${i}" ${x.multiPhotoOpen?"open":""}><summary class="multi-photo-heading"><strong>Multiple book photos</strong><small>Optional · cover, back and title page</small><span class="review-disclosure-toggle" aria-hidden="true"></span></summary><div class="multi-photo-inputs"><label>Front cover<input type="file" accept="image/jpeg,image/png,image/webp" data-multi-photo="front" data-multi-index="${i}" ${rowBusy?'disabled':''}></label><label>Back cover<input type="file" accept="image/jpeg,image/png,image/webp" data-multi-photo="back" data-multi-index="${i}" ${rowBusy?'disabled':''}></label><label>Title page<input type="file" accept="image/jpeg,image/png,image/webp" data-multi-photo="title_page" data-multi-index="${i}" ${rowBusy?'disabled':''}></label></div><div class="multi-photo-actions"><button type="button" class="light" data-multi-run="${i}" ${rowBusy?'disabled':''}>Compare photos</button><button type="button" class="light" data-multi-cancel="${i}" ${x.multiPhotoBusy?'':'hidden'}>Cancel</button><button type="button" class="light" data-multi-history="${i}">History</button></div><p class="multi-photo-feedback" role="status" aria-live="polite">${esc(x.multiPhotoStatus||'Choose at least two photographs to compare visible book details.')}</p></details><div class="review-primary-lookup"><button class="review-smart-primary" type="button" data-review-smart="${i}" ${rowBusy?'disabled':''}>✦ Smart recognition</button><span>OCR + AI + catalogue suggestions · verify before approval</span></div>
      <details class="scan-card-more"><summary>More book details <span class="review-optional-label">Optional</span></summary><div class="review-extra-fields">${reviewShelfField(x,i,rowBusy)}${field('publisher','Publisher',250,'Publisher')}${field('publication_year','Publication year',20,'e.g. 2024')}${field('language','Language',80,'e.g. English')}${field('pages','Pages',24,'e.g. 240')}${field('subject','Subject / category',250,'e.g. History')}</div></details>
-     <div class="review-card-footer"><div class="review-save-instructions"><strong data-review-readiness>${hasBookTitle(x.title)?'Ready for Inventory · ISBN not required':'Enter a book title to enable approval'}</strong><span>One approval saves one physical copy.</span></div><button type="submit" class="scan-inline-save green review-approve-button" data-save-title="${i}" ${rowBusy?'disabled':''}>${x.reviewSaving?'Saving…':'✓ Approve & save'}</button></div>
+     <div class="review-card-footer"><div class="review-save-instructions"><strong data-review-readiness>${hasBookTitle(x.title)?'Ready for Inventory · ISBN not required':'Enter a book title to enable approval'}</strong><span>One approval saves one physical copy.</span></div><button type="submit" class="scan-inline-save green review-approve-button" data-save-title="${i}" ${rowBusy||!hasBookTitle(x.title)?'disabled':''}>${x.reviewSaving?'Saving…':'✓ Approve & save'}</button></div>
      <p class="review-save-feedback" data-review-feedback data-status="${cardStatus}" role="status" aria-live="polite">${esc(cardMessage)}</p>
      <details class="review-optional-tools" data-review-disclosure="lookupToolsOpen" data-review-disclosure-index="${i}" ${x.lookupToolsOpen?"open":""}><summary>Other ways to find this book<span class="review-disclosure-toggle" aria-hidden="true"></span></summary><div class="review-smart-actions" role="group" aria-label="Book recognition tools"><button type="button" class="light" data-batch-retake="${i}" ${rowBusy?'disabled':''}>${(x.file||x.thumbnailData)?'Replace cover':'Add cover photo'}</button></div><div class="review-card-lookup-status" role="status">${esc(x.lookup_status||x.aiNotice||'Optional tools to find missing information.')}</div><div class="batch-action-row"><button type="button" class="light" data-batch-lookup="${i}" ${rowBusy?'disabled':''}>Find by ISBN</button><button type="button" class="light" data-batch-title="${i}" ${rowBusy?'disabled':''}>Find by title</button><button type="button" class="light" data-batch-crop="${i}" ${rowBusy?'disabled':''}>Crop ISBN from cover</button></div></details>
     </form>
@@ -3216,21 +3219,28 @@ displayRecognitionSettings();
 $('batchAutoSave').checked=true; // v5.34: saving is automatic and cannot be switched off
 // Fast first-pass recognition; enhanced and rotated retries run only on poor evidence.
 // The Tesseract worker is reused across images, and the UI remains responsive.
-async function preparedOCRImage(bitmap,angle=0,{enhanced=false}={}){
+async function preparedOCRImage(bitmap,angle=0,{enhanced=false,zoom=false,titleFocus=false}={}){
  const rotated=angle===90||angle===270;
  const quality=window.LibraryOCRQuality;
  const side=quality?.maxSide({memory:navigator.deviceMemory||4,cores:navigator.hardwareConcurrency||2,enhanced})||(enhanced?1950:1600);
- const scale=Math.min(1,side/Math.max(bitmap.width,bitmap.height));
- const w=Math.max(1,Math.round(bitmap.width*scale)),h=Math.max(1,Math.round(bitmap.height*scale));
+ // When the book is small in a wide camera frame, crop from the original pixels
+ // before resizing. This gives Tesseract a larger glyph without discarding the
+ // full-frame pass or changing the image sent to the recognition service.
+ const crop=titleFocus
+  ?{x:.14,y:.08,width:.72,height:.46}
+  :zoom?{x:.19,y:.12,width:.62,height:.76}:{x:0,y:0,width:1,height:1};
+ const sx=Math.round(bitmap.width*crop.x),sy=Math.round(bitmap.height*crop.y);
+ const sw=Math.max(1,Math.round(bitmap.width*crop.width)),sh=Math.max(1,Math.round(bitmap.height*crop.height));
+ const scale=Math.min(1,side/Math.max(sw,sh));
+ const w=Math.max(1,Math.round(sw*scale)),h=Math.max(1,Math.round(sh*scale));
  const canvas=document.createElement('canvas');canvas.width=rotated?h:w;canvas.height=rotated?w:h;
  const ctx=canvas.getContext('2d',{alpha:false,willReadFrequently:false});
  if(!ctx)throw Error('This browser cannot process the cover image.');
  ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
  ctx.imageSmoothingEnabled=true;ctx.imageSmoothingQuality='high';
  ctx.translate(canvas.width/2,canvas.height/2);ctx.rotate(angle*Math.PI/180);
- // Grayscale and measured contrast help pale print, but only on a low-confidence retry.
  if(enhanced&&'filter' in ctx)ctx.filter='grayscale(1) contrast(1.26) brightness(1.06)';
- ctx.drawImage(bitmap,-w/2,-h/2,w,h);
+ ctx.drawImage(bitmap,sx,sy,sw,sh,-w/2,-h/2,w,h);
  return canvas;
 }
 async function ocrText(file,{fast=false}={}){
@@ -3249,16 +3259,24 @@ async function ocrText(file,{fast=false}={}){
    return {text,score:text.length/200,readable:text.length,hasISBN:evidence.hasISBN};
   };
   best=await read(source);
-  // Most clear book covers finish after a single pass. Only difficult covers pay for enhancement.
   if(bitmap&&$('recognitionEnhance')?.checked!==false&&quality?.needsEnhancement(best)&&(!fast||best.readable<20)){
    const improved=await read(await preparedOCRImage(bitmap,0,{enhanced:true}));
    best=quality.prefer(best,improved);
+   // A weak full-frame read often means the book occupies only a small part of
+   // the photo. Retry on an enlarged centre crop, then the upper cover where
+   // titles most often appear. The fast path gets one focused pass only.
+   if(quality.needsEnhancement(best)){
+    const zoomed=await read(await preparedOCRImage(bitmap,0,{enhanced:true,zoom:true}));
+    best=quality.prefer(best,zoomed);
+   }
+   if(!fast&&quality.needsEnhancement(best)){
+    const titleFocus=await read(await preparedOCRImage(bitmap,0,{enhanced:true,titleFocus:true}));
+    best=quality.prefer(best,titleFocus);
+   }
   }
-  // Sideways camera images: rotate only when both normal passes lack meaningful text.
   if(bitmap&&!fast&&quality?.needsOrientation(best)){
    const turned=await read(await preparedOCRImage(bitmap,90,{enhanced:false}));
    best=quality.prefer(best,turned);
-   // A last rotation is reserved for very unclear images on capable devices.
    if(quality.needsOrientation(best)&&(navigator.deviceMemory||4)>=4){
     const reverse=await read(await preparedOCRImage(bitmap,270,{enhanced:false}));
     best=quality.prefer(best,reverse);
@@ -3267,8 +3285,6 @@ async function ocrText(file,{fast=false}={}){
   return best?.text||'';
  }finally{bitmap?.close?.();releaseOCRWorker(entry)}
 }
-
-const scanTitleCache=new Map();
 async function findTitleCandidates(title,author='',{fast=false}={}){
  title=String(title||'').trim().slice(0,150);author=String(author||'').trim().slice(0,100);
  if(title.length<3)return [];
