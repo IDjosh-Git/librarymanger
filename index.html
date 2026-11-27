@@ -3305,6 +3305,7 @@ async function ocrText(file,{fast=false}={}){
   return best?.text||'';
  }finally{bitmap?.close?.();releaseOCRWorker(entry)}
 }
+const scanTitleCache=new Map();
 async function findTitleCandidates(title,author='',{fast=false}={}){
  title=String(title||'').trim().slice(0,150);author=String(author||'').trim().slice(0,100);
  if(title.length<3)return [];
