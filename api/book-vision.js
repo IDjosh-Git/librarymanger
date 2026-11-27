@@ -39,5 +39,12 @@ module.exports=async function handler(req,res){
   },{timeoutMs:9500});
   const safe=k=>typeof found.data[k]==='string'?found.data[k].replace(/[\x00-\x1f<>]/g,' ').trim().slice(0,k==='isbn'?30:350):'';
   return res.status(200).json({metadata:{title:safe('title'),authors:safe('authors'),isbn:safe('isbn'),publisher:safe('publisher'),publication_year:safe('publication_year')},source:'AI image suggestion',provider:found.provider,verified:false});
- }catch(error){return res.status(error?.status===429?429:error?.name==='TimeoutError'||error?.name==='AbortError'?504:503).json({error:'AI image reading unavailable from configured providers; local OCR can still be used.'})}
+ }catch(error){
+  const failures=Array.isArray(error?.providerFailures)?error.providerFailures:[];
+  const detail=failures.map(item=>String(item.provider||'AI')+' '+(item.status?'HTTP '+item.status:String(item.name||'failed'))).join(', ');
+  if(failures.length)console.warn('[book-vision] providers exhausted:',JSON.stringify(failures));
+  const status=error?.status===429?429:error?.name==='TimeoutError'||error?.name==='AbortError'?504:503;
+  const message=detail?'AI image reading failed ('+detail+').':'AI image reading unavailable from configured providers.';
+  return res.status(status).json({error:message})
+ }
 };
